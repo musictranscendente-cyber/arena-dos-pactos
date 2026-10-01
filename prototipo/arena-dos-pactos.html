@@ -1,0 +1,1091 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Arena dos Pactos (protótipo)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Grenze+Gotisch:wght@700;800&family=Alegreya+Sans:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+  --page:#c7ced8; --text:#1d2230;
+  --slate:#263041; --cell:#303c54; --cellf:#38465f; --line:#4a5a7c;
+  --bone:#efe6d2; --foe:#ead6cf; --ink:#2b2320;
+  --gold:#e0aa45; --mana:#3b7fd1; --blood:#c0413b;
+  --sag:#cf5a2e; --esc:#7a3fa6; --aqu:#2e9cc8; --tou:#6f8f2e;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--page:#0f131b;--text:#e6e9f0;}}
+:root[data-theme="dark"]{--page:#0f131b;--text:#e6e9f0;}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+html,body{margin:0;min-height:100%}
+body{background:var(--page);color:var(--text);font-family:'Alegreya Sans','Trebuchet MS',Arial,sans-serif;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none}
+#app{max-width:900px;margin:0 auto;padding:8px;display:flex;flex-direction:column;gap:6px}
+.hero{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:6px 10px;border-radius:12px;background:var(--slate);color:#eef1f6}
+.who{display:flex;align-items:center;gap:8px}
+.av{font-size:26px}
+.nm{font-weight:800;font-size:15px}
+.sub{font-size:12px;color:#aab4c8}
+.stats{display:flex;align-items:center;gap:10px}
+.hp{position:relative;font-weight:800;font-size:20px;color:#ffb3ab}
+.mana{font-weight:700;font-size:15px;color:#a9cbff}
+.table{background:var(--slate);border-radius:14px;padding:7px;display:flex;flex-direction:column;gap:6px}
+.board{display:flex;flex-direction:column;gap:5px}
+.lane{display:grid;grid-template-columns:repeat(3,1fr) 8px repeat(3,1fr);gap:4px;align-items:stretch}
+.divider{border-radius:4px;background:repeating-linear-gradient(180deg,var(--gold) 0 6px,transparent 6px 12px);opacity:.55}
+.heroes{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.side{display:flex;align-items:center;gap:8px}
+.cell{position:relative;height:74px;border-radius:9px;background:var(--cell);box-shadow:inset 0 0 0 1px var(--line);cursor:pointer}
+.cell.front{background:var(--cellf)}
+.cell.ok{background:#45506a;box-shadow:inset 0 0 0 2px var(--gold)}
+.unit{position:absolute;inset:3px;border-radius:7px;background:var(--bone);color:var(--ink);border-left:5px solid var(--rc);display:flex;align-items:center;justify-content:center;transition:transform .15s,box-shadow .15s}
+.unit.foe{background:var(--foe);border-left:0;border-right:5px solid var(--rc)}
+.cell.atk .unit{transform:scale(1.08);box-shadow:0 0 0 2px var(--gold),0 0 14px var(--gold);z-index:2}
+.unit .emo{font-size:26px;line-height:1;margin-top:-10px}
+.unit.foe .emo{transform:scaleX(-1)}
+.unit .a,.unit .h{position:absolute;bottom:2px;font-weight:800;font-size:14px;min-width:20px;height:20px;padding:0 4px;border-radius:10px;display:grid;place-items:center;color:#fff}
+.unit .a{left:2px;background:#8a5a12}
+.unit .h{right:2px;background:var(--blood)}
+.kws{position:absolute;top:1px;left:3px;font-size:11px}
+.shd{position:absolute;top:1px;right:3px;font-size:12px}
+.pnd{position:absolute;top:14px;right:3px;font-size:10px}
+.spell-mark{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-size:20px;z-index:3;pointer-events:none;filter:drop-shadow(0 0 4px #fff)}
+.mid{min-height:36px;margin-top:2px;display:flex;align-items:center;justify-content:center;text-align:center;font-size:14px;line-height:1.25;color:#dfe5ef;padding:3px 6px;border-top:1px dashed var(--line);border-bottom:1px dashed var(--line)}
+.me{flex-wrap:wrap}
+.orbs{display:flex;gap:3px;flex-wrap:wrap;max-width:130px}
+.orb{width:12px;height:12px;border-radius:50%;background:#1d2533;box-shadow:inset 0 0 0 1px var(--line)}
+.orb.on{background:var(--mana);box-shadow:none}
+.orb.spent{background:#22324a;box-shadow:inset 0 0 0 1px var(--mana)}
+.orb.bonus{background:#8ec0ff;box-shadow:none}
+.mtxt{font-size:13px;color:#a9cbff;font-weight:700}
+.acts{display:flex;gap:6px}
+.btn{font:inherit;font-weight:800;font-size:15px;border:0;border-radius:10px;padding:8px 12px;min-height:44px;cursor:pointer}
+.btn:disabled{opacity:.4;cursor:default}
+.btn.go{background:var(--gold);color:#2a1d05}
+.btn.rc{background:#3b4a66;color:#fff}
+.btn:focus-visible,.card:focus-visible{outline:3px solid #fff;outline-offset:2px}
+.hand{display:flex;gap:7px;overflow-x:auto;padding:10px 4px 10px}
+.card{flex:0 0 88px;height:126px;border-radius:10px;background:var(--bone);color:var(--ink);position:relative;padding:18px 5px 5px;border-top:6px solid var(--rc);display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;transition:transform .12s}
+.card.sel{transform:translateY(-6px);box-shadow:0 0 0 3px var(--gold)}
+.card{border-bottom:4px solid var(--rr)}
+.gtop{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.gtop .btn{width:auto}
+.gtabs{display:flex;flex-wrap:wrap;gap:4px;margin:6px 0}
+.gtab{font:inherit;font-size:20px;width:38px;height:38px;border-radius:9px;border:0;background:#1d2533;color:var(--rc);cursor:pointer}
+.gtab.on{box-shadow:inset 0 0 0 2px var(--rc);background:#2a3447}
+.ginfo{min-height:38px;font-size:14px}
+.ggrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(84px,1fr));gap:12px 8px;padding-top:8px}
+.ggrid .card{flex:none;width:auto}
+.card.poor{opacity:.5}
+.cost{position:absolute;top:-8px;left:-6px;width:26px;height:26px;border-radius:50%;background:var(--mana);color:#fff;font-weight:800;display:grid;place-items:center;border:2px solid var(--bone)}
+.card .emo{font-size:28px;line-height:1.1}
+.card .sg{position:absolute;top:2px;right:5px;font-size:14px;color:var(--rc);font-weight:800}
+.card .cn{font-size:11.5px;font-weight:700;text-align:center;line-height:1.1}
+.card .ck{font-size:11px}
+.card .st{margin-top:auto;display:flex;justify-content:space-between;width:100%;font-weight:800;font-size:13px}
+.card .st .x{color:#8a5a12}.card .st .y{color:var(--blood)}
+.card .sp{margin-top:auto;font-size:10.5px;text-align:center;line-height:1.15}
+.empty{font-size:13px;color:var(--text);opacity:.7;padding:20px 4px}
+.fx{position:absolute;left:50%;top:22%;transform:translateX(-50%);font-weight:800;font-size:19px;color:#fff;text-shadow:0 1px 0 #000,0 0 6px #000;pointer-events:none;animation:rise .95s ease-out forwards;z-index:5;white-space:nowrap}
+.fx.heal{color:#8fe388}.fx.dmg{color:#ff8a7a}.fx.sh{color:#9fd3ff}
+@keyframes rise{from{opacity:1;transform:translate(-50%,0)}to{opacity:0;transform:translate(-50%,-26px)}}
+.ov{position:fixed;inset:0;background:rgba(10,13,20,.88);display:grid;place-items:center;padding:20px;z-index:20;overflow:auto}
+.panel{max-width:380px;width:100%;background:var(--slate);color:#eef1f6;border-radius:16px;padding:20px 20px 22px;box-shadow:0 0 0 2px #3a4762}
+.panel h1{font-family:'Grenze Gotisch',Georgia,serif;font-size:44px;line-height:1;margin:0 0 4px;color:var(--gold);letter-spacing:.5px}
+.panel h2{font-family:'Grenze Gotisch',Georgia,serif;font-size:38px;margin:0 0 8px;color:var(--gold)}
+.panel p{margin:6px 0;line-height:1.4;font-size:15px}
+.panel ul{padding-left:18px;margin:8px 0 12px;line-height:1.4;font-size:14.5px}
+.panel li{margin:4px 0}
+.legend{display:grid;grid-template-columns:auto 1fr;gap:4px 8px;font-size:13.5px;margin:6px 0 16px;color:#d5dbe7}
+.panel .btn{width:100%}
+.panel.wide{max-width:680px}
+.acts2{display:flex;flex-direction:column;gap:8px;margin-top:12px}
+.signs{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:10px 0 12px}
+.land .signs{grid-template-columns:repeat(6,1fr)}
+.sign{position:relative;font:inherit;border:0;border-radius:10px;background:#1d2533;color:#eef1f6;padding:8px 4px 7px;display:flex;flex-direction:column;align-items:center;gap:1px;cursor:pointer;box-shadow:inset 0 -3px 0 var(--rc)}
+.sign:focus-visible{outline:3px solid #fff}
+.sign .g{font-size:26px;color:var(--rc);line-height:1.1}
+.sign .sn{font-weight:800;font-size:14px}
+.sign .sm{font-size:11px;color:#aab4c8;text-align:center;line-height:1.1}
+.sign .tag{position:absolute;top:-6px;right:-2px;background:var(--gold);color:#2a1d05;font-size:10px;font-weight:800;border-radius:6px;padding:1px 5px}
+details{margin-top:4px}
+summary{cursor:pointer;font-weight:800;color:var(--gold);padding:6px 0}
+.land .panel{padding:12px 16px}
+.land .panel h1{font-size:32px}
+.land .panel p{font-size:13.5px;margin:4px 0}
+@media (orientation:landscape) and (max-height:520px){
+  .cell{height:62px}
+  .card{flex-basis:84px;height:100px;padding-top:14px}
+  .card .emo{font-size:22px}
+  .hand{padding:8px 4px 4px}
+  .hero{padding:4px 10px}
+}
+@media (max-width:420px){
+  .unit .emo{font-size:22px}
+  .unit .a,.unit .h{font-size:12.5px;min-width:18px;height:18px;padding:0 3px}
+}
+/* modo deitado */
+body.rot{overflow:hidden}
+body.rot #app{position:fixed;top:0;left:0;max-width:none;margin:0;transform-origin:top left;transform:rotate(90deg) translateY(-100%);overflow:hidden;background:var(--page)}
+.bottom{display:flex;flex-direction:column;gap:6px}
+.land #app{gap:4px;padding:6px 8px}
+.land .hero{padding:3px 10px}
+.land .av{font-size:19px}.land .nm{font-size:13px}.land .sub{font-size:11px}.land .hp{font-size:17px}
+.land .table{padding:5px;gap:4px}
+.land .board{gap:4px}
+.land .cell{height:54px}
+.land .unit .emo{font-size:22px;margin-top:-8px}
+.land .unit .a,.land .unit .h{font-size:12.5px;min-width:18px;height:18px}
+.land .mid{min-height:24px;font-size:13px;padding:1px 6px}
+.land .bottom{flex-direction:row;align-items:stretch;gap:8px}
+.land .bottom .hand{flex:1;padding:9px 2px 2px;gap:5px}
+.land .card{flex:0 1 80px;min-width:60px;height:94px;padding:12px 4px 4px}
+.land .card .emo{font-size:20px}.land .card .cn{font-size:10.5px}.land .card .sp{font-size:9.5px}.land .card .st{font-size:12px}
+.land .cost{width:22px;height:22px;font-size:13px}
+.land .me{order:2;flex:0 0 150px;flex-direction:column;justify-content:center;gap:5px;padding:5px 8px}
+.land .acts{flex-direction:column;width:100%;gap:5px}
+.land .btn{min-height:36px;padding:5px 8px;font-size:14px}
+.rotbtn{font:inherit;background:#3b4a66;color:#fff;border:0;border-radius:8px;padding:4px 8px;font-size:15px;cursor:pointer}
+@media (prefers-reduced-motion:reduce){
+  .fx{animation:fade .9s forwards}
+  @keyframes fade{to{opacity:0}}
+  .card.sel,.cell.atk .unit{transform:none}
+}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const sleep = ms => new Promise(r => setTimeout(r, reduce ? ms * 0.4 : ms));
+const $ = s => document.querySelector(s);
+const HERO_HP = 30, MAX_MANA = 9, HAND_MAX = 8;
+
+const ORDER = ['aries','touro','gemeos','cancer','leao','virgem','libra','escorpiao','sagitario','capricornio','aquario','peixes'];
+const RACES = {
+  aries:{n:'Áries',g:'♈',el:'Fogo',c:'#d6452f',m:'Investida',dt:[3,21]},
+  touro:{n:'Touro',g:'♉',el:'Terra',c:'#6f8f2e',m:'Fúria',dt:[4,20]},
+  gemeos:{n:'Gêmeos',g:'♊',el:'Ar',c:'#d4b234',m:'Duplicar',dt:[5,21]},
+  cancer:{n:'Câncer',g:'♋',el:'Água',c:'#3fa79a',m:'Carapaça',dt:[6,21]},
+  leao:{n:'Leão',g:'♌',el:'Fogo',c:'#e08a1e',m:'Liderança',dt:[7,23]},
+  virgem:{n:'Virgem',g:'♍',el:'Terra',c:'#a57c4a',m:'Cura',dt:[8,23]},
+  libra:{n:'Libra',g:'♎',el:'Ar',c:'#c06fb5',m:'Reflexo',dt:[9,23]},
+  escorpiao:{n:'Escorpião',g:'♏',el:'Água',c:'#7a3fa6',m:'Veneno',dt:[10,23]},
+  sagitario:{n:'Sagitário',g:'♐',el:'Fogo',c:'#e35d6a',m:'Distância',dt:[11,22]},
+  capricornio:{n:'Capricórnio',g:'♑',el:'Terra',c:'#7d8a99',m:'Ascensão',dt:[12,22]},
+  aquario:{n:'Aquário',g:'♒',el:'Ar',c:'#2e9cc8',m:'Feitiços',dt:[1,20]},
+  peixes:{n:'Peixes',g:'♓',el:'Água',c:'#4a6fd6',m:'Ilusão',dt:[2,19]}
+};
+function currentSign(){
+  const now = new Date(), m = now.getMonth() + 1, d = now.getDate();
+  let cur = 'capricornio';
+  ORDER.map(k => [k, RACES[k].dt]).sort((a,b) => a[1][0] - b[1][0]).forEach(([k,[sm,sd]]) => { if (m > sm || (m === sm && d >= sd)) cur = k; });
+  return cur;
+}
+const KW = {
+  escudo:{i:'🛡️', n:'Escudo', d:'ignora o primeiro dano que receber.'},
+  perfurar:{i:'🗡️', n:'Perfurar', d:'o dano que sobrar passa para a próxima carta da linha ou para o herói.'},
+  distancia:{i:'🎯', n:'Distância', d:'ataca a carta mais ao fundo da linha inimiga.'},
+  vampirico:{i:'🩸', n:'Vampírico', d:'cura seu herói no valor do dano causado.'},
+  veneno:{i:'🧪', n:'Veneno', d:'a criatura atingida perde 1 de vida no início de cada rodada do dono dela.'},
+  corrente:{i:'🌀', n:'Corrente', d:'enquanto estiver em campo, seus feitiços custam 1 a menos.'},
+  furia:{i:'💢', n:'Fúria', d:'ganha +1 de ataque sempre que sobrevive a um dano.'},
+  investida:{i:'💨', n:'Investida', d:'ataca assim que entra em campo.'},
+  lideranca:{i:'📣', n:'Liderança', d:'outros aliados na mesma linha ganham +1 de ataque.'},
+  carapaca:{i:'🐚', n:'Carapaça', d:'todo dano recebido é reduzido em 1.'},
+  cura:{i:'💚', n:'Cura', d:'no início da sua rodada, cura 2 de vida dos aliados da mesma linha.'},
+  reflexo:{i:'⚖️', n:'Reflexo', d:'quem atacar esta carta leva 1 de dano.'},
+  ascensao:{i:'⛰️', n:'Ascensão', d:'ganha +1/+1 no início de cada rodada sua.'},
+  ilusao:{i:'🫧', n:'Ilusão', d:'na primeira vez que morre, volta para a sua mão.'}
+};
+const ON = {
+  volley:'Chegada: 2 de dano em uma criatura inimiga aleatória.',
+  draw:'Chegada: compre 1 carta.',
+  face1:'Chegada: 1 de dano no herói inimigo.',
+  heal2:'Chegada: cura 2 do seu herói.',
+  twin:'Chegada: cria um Eco 1/1 na mesma linha (Duplicar).'
+};
+const CARDS = {"aries01":{"name":"Carneiro Ígneo","race":"aries","type":"unit","cost":1,"atk":1,"hp":1,"kw":["investida"],"e":"🐏","on":null,"r":"c"},
+"aries02":{"name":"Pajem de Marte","race":"aries","type":"unit","cost":1,"atk":2,"hp":1,"kw":["perfurar"],"e":"🧒","on":null,"r":"c"},
+"aries03":{"name":"Cabrito de Brasa","race":"aries","type":"unit","cost":1,"atk":1,"hp":1,"kw":["investida"],"e":"🐐","on":null,"r":"c"},
+"aries04":{"name":"Batedor Rubro","race":"aries","type":"unit","cost":1,"atk":1,"hp":1,"kw":[],"e":"🏃","on":"face1","r":"c"},
+"aries05":{"name":"Guerreira de Marte","race":"aries","type":"unit","cost":2,"atk":3,"hp":1,"kw":["investida"],"e":"⚔️","on":null,"r":"c"},
+"aries06":{"name":"Lanceiro Ígneo","race":"aries","type":"unit","cost":2,"atk":2,"hp":2,"kw":["escudo"],"e":"🔱","on":null,"r":"c"},
+"aries07":{"name":"Corredor das Cinzas","race":"aries","type":"unit","cost":2,"atk":2,"hp":2,"kw":["investida"],"e":"🐎","on":null,"r":"c"},
+"aries08":{"name":"Escudeiro Rubro","race":"aries","type":"unit","cost":2,"atk":3,"hp":1,"kw":["investida"],"e":"🛡️","on":null,"r":"c"},
+"aries09":{"name":"Arauto do Combate","race":"aries","type":"unit","cost":2,"atk":2,"hp":2,"kw":["perfurar"],"e":"📯","on":null,"r":"c"},
+"aries10":{"name":"Carneiro de Guerra","race":"aries","type":"unit","cost":3,"atk":3,"hp":3,"kw":["investida"],"e":"🐏","on":null,"r":"r"},
+"aries11":{"name":"Duelista Flamejante","race":"aries","type":"unit","cost":3,"atk":4,"hp":2,"kw":[],"e":"🤺","on":"face1","r":"r"},
+"aries12":{"name":"Domador de Brasas","race":"aries","type":"unit","cost":3,"atk":3,"hp":3,"kw":["investida"],"e":"🦎","on":null,"r":"r"},
+"aries13":{"name":"Berserker Rubro","race":"aries","type":"unit","cost":3,"atk":3,"hp":3,"kw":["escudo"],"e":"🪓","on":null,"r":"r"},
+"aries14":{"name":"Sentinela do Vulcão","race":"aries","type":"unit","cost":3,"atk":4,"hp":2,"kw":["investida"],"e":"🌋","on":null,"r":"r"},
+"aries15":{"name":"Cavaleiro de Marte","race":"aries","type":"unit","cost":4,"atk":4,"hp":4,"kw":["perfurar"],"e":"🐴","on":null,"r":"r"},
+"aries16":{"name":"Campeã da Arena","race":"aries","type":"unit","cost":4,"atk":4,"hp":4,"kw":["investida"],"e":"🏆","on":null,"r":"r"},
+"aries17":{"name":"Martelo Ígneo","race":"aries","type":"unit","cost":4,"atk":5,"hp":3,"kw":[],"e":"🔨","on":"face1","r":"r"},
+"aries18":{"name":"Fênix Jovem","race":"aries","type":"unit","cost":4,"atk":4,"hp":4,"kw":["investida"],"e":"🦅","on":null,"r":"r"},
+"aries19":{"name":"Campeão do Vulcão","race":"aries","type":"unit","cost":5,"atk":6,"hp":4,"kw":["escudo"],"e":"🌋","on":null,"r":"e"},
+"aries20":{"name":"General Rubro","race":"aries","type":"unit","cost":5,"atk":6,"hp":3,"kw":["investida"],"e":"🎖️","on":"face1","r":"e"},
+"aries21":{"name":"Carneiro Colossal","race":"aries","type":"unit","cost":5,"atk":5,"hp":5,"kw":["perfurar"],"e":"🐏","on":null,"r":"e"},
+"aries22":{"name":"Titã das Brasas","race":"aries","type":"unit","cost":6,"atk":7,"hp":5,"kw":["investida"],"e":"🔥","on":null,"r":"e"},
+"aries23":{"name":"Senhor da Guerra","race":"aries","type":"unit","cost":6,"atk":7,"hp":5,"kw":[],"e":"👹","on":"face1","r":"e"},
+"aries24":{"name":"Marte Encarnado","race":"aries","type":"unit","cost":7,"atk":8,"hp":7,"kw":["investida","escudo"],"e":"☄️","on":null,"r":"l"},
+"aries25":{"name":"Áries, o Carneiro Dourado","race":"aries","type":"unit","cost":8,"atk":10,"hp":7,"kw":["investida","perfurar"],"e":"🐏","on":null,"r":"l"},
+"ariess1":{"name":"Golpe Flamejante","race":"aries","type":"spell","cost":1,"sp":"dmg","e":"💥","r":"c","kw":[],"v":2},
+"ariess2":{"name":"Grito de Guerra","race":"aries","type":"spell","cost":1,"sp":"buff","e":"📯","r":"c","kw":[],"a":2,"h":0},
+"ariess3":{"name":"Chuva de Brasas","race":"aries","type":"spell","cost":3,"sp":"lane","e":"🔥","r":"r","kw":[],"v":2},
+"ariess4":{"name":"Fúria de Marte","race":"aries","type":"spell","cost":3,"sp":"buff","e":"😤","r":"r","kw":[],"a":3,"h":1},
+"ariess5":{"name":"Meteoro","race":"aries","type":"spell","cost":5,"sp":"dmg","e":"☄️","r":"e","kw":[],"v":5},
+"touro01":{"name":"Bezerro Teimoso","race":"touro","type":"unit","cost":1,"atk":1,"hp":1,"kw":["furia"],"e":"🐂","on":null,"r":"c"},
+"touro02":{"name":"Vaqueira do Vale","race":"touro","type":"unit","cost":1,"atk":1,"hp":1,"kw":["escudo"],"e":"🤠","on":null,"r":"c"},
+"touro03":{"name":"Coelho do Campo","race":"touro","type":"unit","cost":1,"atk":1,"hp":1,"kw":["furia"],"e":"🐇","on":null,"r":"c"},
+"touro04":{"name":"Aprendiz de Ferreiro","race":"touro","type":"unit","cost":1,"atk":1,"hp":1,"kw":[],"e":"⚒️","on":"heal2","r":"c"},
+"touro05":{"name":"Guardião do Vale","race":"touro","type":"unit","cost":2,"atk":2,"hp":2,"kw":["furia"],"e":"🛡️","on":null,"r":"c"},
+"touro06":{"name":"Boi de Arado","race":"touro","type":"unit","cost":2,"atk":1,"hp":3,"kw":["vampirico"],"e":"🐄","on":null,"r":"c"},
+"touro07":{"name":"Pastor das Colinas","race":"touro","type":"unit","cost":2,"atk":1,"hp":3,"kw":["furia"],"e":"🧑‍🌾","on":null,"r":"c"},
+"touro08":{"name":"Javali Robusto","race":"touro","type":"unit","cost":2,"atk":2,"hp":2,"kw":["furia"],"e":"🐗","on":null,"r":"c"},
+"touro09":{"name":"Golem de Barro","race":"touro","type":"unit","cost":2,"atk":1,"hp":3,"kw":["escudo"],"e":"🧱","on":null,"r":"c"},
+"touro10":{"name":"Touro de Bronze","race":"touro","type":"unit","cost":3,"atk":2,"hp":4,"kw":["furia"],"e":"🐃","on":null,"r":"r"},
+"touro11":{"name":"Ferreiro do Vale","race":"touro","type":"unit","cost":3,"atk":3,"hp":3,"kw":[],"e":"🔨","on":"heal2","r":"r"},
+"touro12":{"name":"Sentinela de Pedra","race":"touro","type":"unit","cost":3,"atk":2,"hp":4,"kw":["furia"],"e":"🗿","on":null,"r":"r"},
+"touro13":{"name":"Búfalo Bravo","race":"touro","type":"unit","cost":3,"atk":2,"hp":4,"kw":["vampirico"],"e":"🐃","on":null,"r":"r"},
+"touro14":{"name":"Guardiã dos Campos","race":"touro","type":"unit","cost":3,"atk":3,"hp":3,"kw":["furia"],"e":"🌾","on":null,"r":"r"},
+"touro15":{"name":"Minotauro","race":"touro","type":"unit","cost":4,"atk":2,"hp":6,"kw":["escudo"],"e":"🪓","on":null,"r":"r"},
+"touro16":{"name":"Rinoceronte de Ferro","race":"touro","type":"unit","cost":4,"atk":3,"hp":5,"kw":["furia"],"e":"🦏","on":null,"r":"r"},
+"touro17":{"name":"Colosso de Barro","race":"touro","type":"unit","cost":4,"atk":3,"hp":5,"kw":[],"e":"🧱","on":"heal2","r":"r"},
+"touro18":{"name":"Druida da Terra","race":"touro","type":"unit","cost":4,"atk":2,"hp":6,"kw":["furia"],"e":"🌳","on":null,"r":"r"},
+"touro19":{"name":"Touro de Ouro","race":"touro","type":"unit","cost":5,"atk":4,"hp":6,"kw":["vampirico"],"e":"🐂","on":null,"r":"e"},
+"touro20":{"name":"Guardião do Templo","race":"touro","type":"unit","cost":5,"atk":4,"hp":5,"kw":["furia"],"e":"🏛️","on":"heal2","r":"e"},
+"touro21":{"name":"Mamute Ancestral","race":"touro","type":"unit","cost":5,"atk":3,"hp":7,"kw":["escudo"],"e":"🦣","on":null,"r":"e"},
+"touro22":{"name":"Colosso Taurino","race":"touro","type":"unit","cost":6,"atk":4,"hp":8,"kw":["furia"],"e":"🗿","on":null,"r":"e"},
+"touro23":{"name":"Rei do Vale","race":"touro","type":"unit","cost":6,"atk":5,"hp":7,"kw":[],"e":"👑","on":"heal2","r":"e"},
+"touro24":{"name":"Gigante da Montanha","race":"touro","type":"unit","cost":7,"atk":5,"hp":10,"kw":["furia","vampirico"],"e":"⛰️","on":null,"r":"l"},
+"touro25":{"name":"Touro, o Indomável","race":"touro","type":"unit","cost":8,"atk":6,"hp":11,"kw":["furia","escudo"],"e":"🐂","on":null,"r":"l"},
+"touros1":{"name":"Pele de Bronze","race":"touro","type":"spell","cost":1,"sp":"shield","e":"🛡️","r":"c","kw":[],"v":0},
+"touros2":{"name":"Força da Terra","race":"touro","type":"spell","cost":2,"sp":"buff","e":"💪","r":"c","kw":[],"a":1,"h":3},
+"touros3":{"name":"Banquete","race":"touro","type":"spell","cost":2,"sp":"heal","e":"🍖","r":"c","kw":[],"v":5},
+"touros4":{"name":"Chifrada","race":"touro","type":"spell","cost":2,"sp":"dmg","e":"🐂","r":"c","kw":[],"v":3},
+"touros5":{"name":"Terremoto","race":"touro","type":"spell","cost":4,"sp":"lane","e":"🌍","r":"r","kw":[],"v":2},
+"gemeos01":{"name":"Gêmeo Travesso","race":"gemeos","type":"unit","cost":1,"atk":1,"hp":1,"kw":[],"e":"🎭","on":"twin","r":"c"},
+"gemeos02":{"name":"Pardal Mensageiro","race":"gemeos","type":"unit","cost":1,"atk":2,"hp":1,"kw":["distancia"],"e":"🐦","on":null,"r":"c"},
+"gemeos03":{"name":"Menestrel","race":"gemeos","type":"unit","cost":1,"atk":1,"hp":1,"kw":[],"e":"🎶","on":"twin","r":"c"},
+"gemeos04":{"name":"Pajem Curioso","race":"gemeos","type":"unit","cost":1,"atk":1,"hp":1,"kw":[],"e":"🧒","on":"draw","r":"c"},
+"gemeos05":{"name":"Bardo dos Ventos","race":"gemeos","type":"unit","cost":2,"atk":2,"hp":1,"kw":[],"e":"🪶","on":"twin","r":"c"},
+"gemeos06":{"name":"Duplo Sombrio","race":"gemeos","type":"unit","cost":2,"atk":1,"hp":3,"kw":["reflexo"],"e":"👥","on":null,"r":"c"},
+"gemeos07":{"name":"Malabarista","race":"gemeos","type":"unit","cost":2,"atk":1,"hp":2,"kw":[],"e":"🤹","on":"twin","r":"c"},
+"gemeos08":{"name":"Arqueiro Gêmeo","race":"gemeos","type":"unit","cost":2,"atk":2,"hp":1,"kw":[],"e":"🏹","on":"twin","r":"c"},
+"gemeos09":{"name":"Contadora de Histórias","race":"gemeos","type":"unit","cost":2,"atk":1,"hp":3,"kw":["distancia"],"e":"📖","on":null,"r":"c"},
+"gemeos10":{"name":"Ilusionista Espelhado","race":"gemeos","type":"unit","cost":3,"atk":2,"hp":3,"kw":[],"e":"🪞","on":"twin","r":"r"},
+"gemeos11":{"name":"Dançarina do Vento","race":"gemeos","type":"unit","cost":3,"atk":3,"hp":3,"kw":[],"e":"💃","on":"draw","r":"r"},
+"gemeos12":{"name":"Mago das Palavras","race":"gemeos","type":"unit","cost":3,"atk":2,"hp":3,"kw":[],"e":"📜","on":"twin","r":"r"},
+"gemeos13":{"name":"Raposa Astuta","race":"gemeos","type":"unit","cost":3,"atk":3,"hp":3,"kw":["reflexo"],"e":"🦊","on":null,"r":"r"},
+"gemeos14":{"name":"Eco Errante","race":"gemeos","type":"unit","cost":3,"atk":3,"hp":2,"kw":[],"e":"🌬️","on":"twin","r":"r"},
+"gemeos15":{"name":"Mestre dos Espelhos","race":"gemeos","type":"unit","cost":4,"atk":3,"hp":5,"kw":["distancia"],"e":"🪞","on":null,"r":"r"},
+"gemeos16":{"name":"Irmãos Acrobatas","race":"gemeos","type":"unit","cost":4,"atk":3,"hp":4,"kw":[],"e":"🤸","on":"twin","r":"r"},
+"gemeos17":{"name":"Cronista Alado","race":"gemeos","type":"unit","cost":4,"atk":4,"hp":4,"kw":[],"e":"🕊️","on":"draw","r":"r"},
+"gemeos18":{"name":"Trapaceiro","race":"gemeos","type":"unit","cost":4,"atk":3,"hp":4,"kw":[],"e":"🃏","on":"twin","r":"r"},
+"gemeos19":{"name":"Castor e Pólux","race":"gemeos","type":"unit","cost":5,"atk":5,"hp":5,"kw":["reflexo"],"e":"♊","on":null,"r":"e"},
+"gemeos20":{"name":"Guardião dos Ventos","race":"gemeos","type":"unit","cost":5,"atk":5,"hp":4,"kw":[],"e":"🌪️","on":"twin","r":"e"},
+"gemeos21":{"name":"Arauto Duplo","race":"gemeos","type":"unit","cost":5,"atk":4,"hp":6,"kw":["distancia"],"e":"📯","on":null,"r":"e"},
+"gemeos22":{"name":"Grifo Mensageiro","race":"gemeos","type":"unit","cost":6,"atk":5,"hp":6,"kw":[],"e":"🦅","on":"twin","r":"e"},
+"gemeos23":{"name":"Sábio Bifronte","race":"gemeos","type":"unit","cost":6,"atk":6,"hp":6,"kw":[],"e":"🎭","on":"draw","r":"e"},
+"gemeos24":{"name":"Tempestade Gêmea","race":"gemeos","type":"unit","cost":7,"atk":6,"hp":8,"kw":["reflexo"],"e":"🌀","on":"twin","r":"l"},
+"gemeos25":{"name":"Gêmeos, o Duplo Eterno","race":"gemeos","type":"unit","cost":8,"atk":7,"hp":9,"kw":["distancia"],"e":"♊","on":"twin","r":"l"},
+"gemeoss1":{"name":"Lâmina Gêmea","race":"gemeos","type":"spell","cost":1,"sp":"dmg","e":"🗡️","r":"c","kw":[],"v":2},
+"gemeoss2":{"name":"Reflexo Espelhado","race":"gemeos","type":"spell","cost":1,"sp":"shield","e":"🪞","r":"c","kw":[],"v":0},
+"gemeoss3":{"name":"Sopro Gêmeo","race":"gemeos","type":"spell","cost":1,"sp":"lane","e":"💨","r":"c","kw":[],"v":1},
+"gemeoss4":{"name":"Truque Duplo","race":"gemeos","type":"spell","cost":2,"sp":"draw","e":"🃏","r":"c","kw":[],"v":2},
+"gemeoss5":{"name":"Ventania Dupla","race":"gemeos","type":"spell","cost":3,"sp":"lane","e":"🌪️","r":"r","kw":[],"v":2},
+"cancer01":{"name":"Caranguejo Lunar","race":"cancer","type":"unit","cost":1,"atk":1,"hp":1,"kw":["carapaca"],"e":"🦀","on":null,"r":"c"},
+"cancer02":{"name":"Concha Viva","race":"cancer","type":"unit","cost":1,"atk":2,"hp":1,"kw":["escudo"],"e":"🐚","on":null,"r":"c"},
+"cancer03":{"name":"Siri Guardião","race":"cancer","type":"unit","cost":1,"atk":1,"hp":1,"kw":["carapaca"],"e":"🦀","on":null,"r":"c"},
+"cancer04":{"name":"Ostra Brilhante","race":"cancer","type":"unit","cost":1,"atk":1,"hp":1,"kw":[],"e":"🦪","on":"volley","r":"c"},
+"cancer05":{"name":"Sentinela da Praia","race":"cancer","type":"unit","cost":2,"atk":2,"hp":2,"kw":["carapaca"],"e":"🛡️","on":null,"r":"c"},
+"cancer06":{"name":"Tartaruguinha","race":"cancer","type":"unit","cost":2,"atk":1,"hp":3,"kw":["vampirico"],"e":"🐢","on":null,"r":"c"},
+"cancer07":{"name":"Pescadora Lunar","race":"cancer","type":"unit","cost":2,"atk":2,"hp":2,"kw":["carapaca"],"e":"🎣","on":null,"r":"c"},
+"cancer08":{"name":"Estrela-do-Mar","race":"cancer","type":"unit","cost":2,"atk":2,"hp":2,"kw":["carapaca"],"e":"⭐","on":null,"r":"c"},
+"cancer09":{"name":"Lontra da Maré","race":"cancer","type":"unit","cost":2,"atk":1,"hp":3,"kw":["escudo"],"e":"🦦","on":null,"r":"c"},
+"cancer10":{"name":"Sentinela da Maré","race":"cancer","type":"unit","cost":3,"atk":3,"hp":3,"kw":["carapaca"],"e":"🌙","on":null,"r":"r"},
+"cancer11":{"name":"Caranguejo Ermitão","race":"cancer","type":"unit","cost":3,"atk":3,"hp":3,"kw":[],"e":"🐚","on":"volley","r":"r"},
+"cancer12":{"name":"Guardiã do Farol","race":"cancer","type":"unit","cost":3,"atk":2,"hp":4,"kw":["carapaca"],"e":"🗼","on":null,"r":"r"},
+"cancer13":{"name":"Polvo Protetor","race":"cancer","type":"unit","cost":3,"atk":3,"hp":3,"kw":["vampirico"],"e":"🐙","on":null,"r":"r"},
+"cancer14":{"name":"Sacerdotisa da Lua","race":"cancer","type":"unit","cost":3,"atk":3,"hp":3,"kw":["carapaca"],"e":"🌕","on":null,"r":"r"},
+"cancer15":{"name":"Lagosta Couraçada","race":"cancer","type":"unit","cost":4,"atk":3,"hp":5,"kw":["escudo"],"e":"🦞","on":null,"r":"r"},
+"cancer16":{"name":"Matriarca da Costa","race":"cancer","type":"unit","cost":4,"atk":4,"hp":4,"kw":["carapaca"],"e":"👵","on":null,"r":"r"},
+"cancer17":{"name":"Foca Guardiã","race":"cancer","type":"unit","cost":4,"atk":4,"hp":4,"kw":[],"e":"🦭","on":"volley","r":"r"},
+"cancer18":{"name":"Tritão Jovem","race":"cancer","type":"unit","cost":4,"atk":3,"hp":5,"kw":["carapaca"],"e":"🔱","on":null,"r":"r"},
+"cancer19":{"name":"Crustáceo Ancião","race":"cancer","type":"unit","cost":5,"atk":4,"hp":6,"kw":["vampirico"],"e":"🐢","on":null,"r":"e"},
+"cancer20":{"name":"Guardião das Marés","race":"cancer","type":"unit","cost":5,"atk":5,"hp":4,"kw":["carapaca"],"e":"🌊","on":"volley","r":"e"},
+"cancer21":{"name":"Rainha das Conchas","race":"cancer","type":"unit","cost":5,"atk":4,"hp":6,"kw":["escudo"],"e":"👑","on":null,"r":"e"},
+"cancer22":{"name":"Kraken da Baía","race":"cancer","type":"unit","cost":6,"atk":5,"hp":7,"kw":["carapaca"],"e":"🦑","on":null,"r":"e"},
+"cancer23":{"name":"Tartaruga Continente","race":"cancer","type":"unit","cost":6,"atk":6,"hp":6,"kw":[],"e":"🐢","on":"volley","r":"e"},
+"cancer24":{"name":"Fortaleza Viva","race":"cancer","type":"unit","cost":7,"atk":6,"hp":9,"kw":["carapaca","vampirico"],"e":"🏰","on":null,"r":"l"},
+"cancer25":{"name":"Câncer, o Caranguejo Celeste","race":"cancer","type":"unit","cost":8,"atk":8,"hp":9,"kw":["carapaca","escudo"],"e":"🦀","on":null,"r":"l"},
+"cancers1":{"name":"Concha Lunar","race":"cancer","type":"spell","cost":1,"sp":"shield","e":"🐚","r":"c","kw":[],"v":0},
+"cancers2":{"name":"Pinça Cortante","race":"cancer","type":"spell","cost":2,"sp":"dmg","e":"🦀","r":"c","kw":[],"v":3},
+"cancers3":{"name":"Maré Alta","race":"cancer","type":"spell","cost":2,"sp":"buff","e":"🌊","r":"c","kw":[],"a":0,"h":4},
+"cancers4":{"name":"Abraço da Lua","race":"cancer","type":"spell","cost":2,"sp":"heal","e":"🌙","r":"c","kw":[],"v":4},
+"cancers5":{"name":"Onda Lunar","race":"cancer","type":"spell","cost":4,"sp":"lane","e":"🌊","r":"r","kw":[],"v":2},
+"leao01":{"name":"Filhote Solar","race":"leao","type":"unit","cost":1,"atk":1,"hp":1,"kw":["lideranca"],"e":"🐈","on":null,"r":"c"},
+"leao02":{"name":"Pajem Real","race":"leao","type":"unit","cost":1,"atk":2,"hp":1,"kw":["perfurar"],"e":"👦","on":null,"r":"c"},
+"leao03":{"name":"Leoa Batedora","race":"leao","type":"unit","cost":1,"atk":1,"hp":1,"kw":["lideranca"],"e":"🐆","on":null,"r":"c"},
+"leao04":{"name":"Arauto Dourado","race":"leao","type":"unit","cost":1,"atk":1,"hp":1,"kw":[],"e":"📯","on":"face1","r":"c"},
+"leao05":{"name":"Guarda do Sol","race":"leao","type":"unit","cost":2,"atk":3,"hp":1,"kw":["lideranca"],"e":"🦁","on":null,"r":"c"},
+"leao06":{"name":"Leoa Caçadora","race":"leao","type":"unit","cost":2,"atk":2,"hp":2,"kw":["escudo"],"e":"🐆","on":null,"r":"c"},
+"leao07":{"name":"Escudeiro Real","race":"leao","type":"unit","cost":2,"atk":2,"hp":2,"kw":["lideranca"],"e":"🛡️","on":null,"r":"c"},
+"leao08":{"name":"Porta-Estandarte","race":"leao","type":"unit","cost":2,"atk":3,"hp":1,"kw":["lideranca"],"e":"🚩","on":null,"r":"c"},
+"leao09":{"name":"Lince Dourado","race":"leao","type":"unit","cost":2,"atk":2,"hp":2,"kw":["perfurar"],"e":"🐈","on":null,"r":"c"},
+"leao10":{"name":"Leão da Savana","race":"leao","type":"unit","cost":3,"atk":3,"hp":3,"kw":["lideranca"],"e":"🦁","on":null,"r":"r"},
+"leao11":{"name":"Capitã da Guarda","race":"leao","type":"unit","cost":3,"atk":4,"hp":2,"kw":[],"e":"💂","on":"face1","r":"r"},
+"leao12":{"name":"Sacerdote Solar","race":"leao","type":"unit","cost":3,"atk":3,"hp":3,"kw":["lideranca"],"e":"☀️","on":null,"r":"r"},
+"leao13":{"name":"Guerreiro Dourado","race":"leao","type":"unit","cost":3,"atk":3,"hp":3,"kw":["escudo"],"e":"⚔️","on":null,"r":"r"},
+"leao14":{"name":"Pantera Real","race":"leao","type":"unit","cost":3,"atk":4,"hp":2,"kw":["lideranca"],"e":"🐈‍⬛","on":null,"r":"r"},
+"leao15":{"name":"Comandante Solar","race":"leao","type":"unit","cost":4,"atk":4,"hp":4,"kw":["perfurar"],"e":"🎖️","on":null,"r":"r"},
+"leao16":{"name":"Leão Alado","race":"leao","type":"unit","cost":4,"atk":4,"hp":4,"kw":["lideranca"],"e":"🦁","on":null,"r":"r"},
+"leao17":{"name":"Cavaleiro do Sol","race":"leao","type":"unit","cost":4,"atk":5,"hp":3,"kw":[],"e":"🐴","on":"face1","r":"r"},
+"leao18":{"name":"Juba de Fogo","race":"leao","type":"unit","cost":4,"atk":4,"hp":4,"kw":["lideranca"],"e":"🔥","on":null,"r":"r"},
+"leao19":{"name":"Rei da Savana","race":"leao","type":"unit","cost":5,"atk":6,"hp":4,"kw":["escudo"],"e":"🦁","on":null,"r":"e"},
+"leao20":{"name":"Paladino Solar","race":"leao","type":"unit","cost":5,"atk":6,"hp":3,"kw":["lideranca"],"e":"✨","on":"face1","r":"e"},
+"leao21":{"name":"Esfinge Guardiã","race":"leao","type":"unit","cost":5,"atk":5,"hp":5,"kw":["perfurar"],"e":"🗿","on":null,"r":"e"},
+"leao22":{"name":"Monarca Solar","race":"leao","type":"unit","cost":6,"atk":7,"hp":5,"kw":["lideranca"],"e":"☀️","on":null,"r":"e"},
+"leao23":{"name":"Leão de Nemeia","race":"leao","type":"unit","cost":6,"atk":7,"hp":5,"kw":[],"e":"🦁","on":"face1","r":"e"},
+"leao24":{"name":"Imperador Dourado","race":"leao","type":"unit","cost":7,"atk":8,"hp":7,"kw":["lideranca","escudo"],"e":"👑","on":null,"r":"l"},
+"leao25":{"name":"Leão, o Coração do Sol","race":"leao","type":"unit","cost":8,"atk":10,"hp":7,"kw":["lideranca","perfurar"],"e":"🦁","on":null,"r":"l"},
+"leaos1":{"name":"Bênção Solar","race":"leao","type":"spell","cost":1,"sp":"buff","e":"✨","r":"c","kw":[],"a":1,"h":1},
+"leaos2":{"name":"Raio de Sol","race":"leao","type":"spell","cost":2,"sp":"dmg","e":"☀️","r":"c","kw":[],"v":3},
+"leaos3":{"name":"Glória","race":"leao","type":"spell","cost":2,"sp":"heal","e":"🏆","r":"c","kw":[],"v":4},
+"leaos4":{"name":"Rugido","race":"leao","type":"spell","cost":3,"sp":"buff","e":"🦁","r":"r","kw":[],"a":2,"h":2},
+"leaos5":{"name":"Chamas Reais","race":"leao","type":"spell","cost":5,"sp":"lane","e":"🔥","r":"e","kw":[],"v":3},
+"virgem01":{"name":"Jardineira","race":"virgem","type":"unit","cost":1,"atk":1,"hp":1,"kw":["cura"],"e":"🌼","on":null,"r":"c"},
+"virgem02":{"name":"Abelha Operária","race":"virgem","type":"unit","cost":1,"atk":1,"hp":1,"kw":["escudo"],"e":"🐝","on":null,"r":"c"},
+"virgem03":{"name":"Aprendiz Herbalista","race":"virgem","type":"unit","cost":1,"atk":1,"hp":1,"kw":["cura"],"e":"🌿","on":null,"r":"c"},
+"virgem04":{"name":"Coruja Sábia","race":"virgem","type":"unit","cost":1,"atk":1,"hp":1,"kw":[],"e":"🦉","on":"heal2","r":"c"},
+"virgem05":{"name":"Curandeira do Trigo","race":"virgem","type":"unit","cost":2,"atk":2,"hp":2,"kw":["cura"],"e":"🌾","on":null,"r":"c"},
+"virgem06":{"name":"Guardiã do Pomar","race":"virgem","type":"unit","cost":2,"atk":1,"hp":3,"kw":["reflexo"],"e":"🍎","on":null,"r":"c"},
+"virgem07":{"name":"Ervanária","race":"virgem","type":"unit","cost":2,"atk":1,"hp":3,"kw":["cura"],"e":"🌱","on":null,"r":"c"},
+"virgem08":{"name":"Ceifeira","race":"virgem","type":"unit","cost":2,"atk":2,"hp":2,"kw":["cura"],"e":"🌾","on":null,"r":"c"},
+"virgem09":{"name":"Monge Silencioso","race":"virgem","type":"unit","cost":2,"atk":1,"hp":3,"kw":["escudo"],"e":"🧘","on":null,"r":"c"},
+"virgem10":{"name":"Sacerdotisa da Colheita","race":"virgem","type":"unit","cost":3,"atk":2,"hp":4,"kw":["cura"],"e":"🧝","on":null,"r":"r"},
+"virgem11":{"name":"Ent do Pomar","race":"virgem","type":"unit","cost":3,"atk":3,"hp":3,"kw":[],"e":"🌳","on":"heal2","r":"r"},
+"virgem12":{"name":"Médica do Vilarejo","race":"virgem","type":"unit","cost":3,"atk":2,"hp":4,"kw":["cura"],"e":"🩺","on":null,"r":"r"},
+"virgem13":{"name":"Cervo Sagrado","race":"virgem","type":"unit","cost":3,"atk":2,"hp":4,"kw":["reflexo"],"e":"🦌","on":null,"r":"r"},
+"virgem14":{"name":"Tecelã","race":"virgem","type":"unit","cost":3,"atk":3,"hp":3,"kw":["cura"],"e":"🧵","on":null,"r":"r"},
+"virgem15":{"name":"Guardião do Celeiro","race":"virgem","type":"unit","cost":4,"atk":2,"hp":6,"kw":["escudo"],"e":"🏚️","on":null,"r":"r"},
+"virgem16":{"name":"Abelha Rainha","race":"virgem","type":"unit","cost":4,"atk":3,"hp":5,"kw":["cura"],"e":"🐝","on":null,"r":"r"},
+"virgem17":{"name":"Druidesa","race":"virgem","type":"unit","cost":4,"atk":3,"hp":5,"kw":[],"e":"🍃","on":"heal2","r":"r"},
+"virgem18":{"name":"Unicórnio do Bosque","race":"virgem","type":"unit","cost":4,"atk":2,"hp":6,"kw":["cura"],"e":"🦄","on":null,"r":"r"},
+"virgem19":{"name":"Mãe da Colheita","race":"virgem","type":"unit","cost":5,"atk":4,"hp":6,"kw":["reflexo"],"e":"👩‍🌾","on":null,"r":"e"},
+"virgem20":{"name":"Árvore Anciã","race":"virgem","type":"unit","cost":5,"atk":4,"hp":5,"kw":["cura"],"e":"🌳","on":"heal2","r":"e"},
+"virgem21":{"name":"Arquivista","race":"virgem","type":"unit","cost":5,"atk":3,"hp":7,"kw":["escudo"],"e":"📚","on":null,"r":"e"},
+"virgem22":{"name":"Guardiã Virgem","race":"virgem","type":"unit","cost":6,"atk":4,"hp":8,"kw":["cura"],"e":"🛡️","on":null,"r":"e"},
+"virgem23":{"name":"Santuário Vivo","race":"virgem","type":"unit","cost":6,"atk":5,"hp":7,"kw":[],"e":"⛩️","on":"heal2","r":"e"},
+"virgem24":{"name":"Vestal Eterna","race":"virgem","type":"unit","cost":7,"atk":5,"hp":10,"kw":["cura","reflexo"],"e":"🕯️","on":null,"r":"l"},
+"virgem25":{"name":"Virgem, a Guardiã da Colheita","race":"virgem","type":"unit","cost":8,"atk":6,"hp":11,"kw":["cura","escudo"],"e":"🌾","on":null,"r":"l"},
+"virgems1":{"name":"Erva Curativa","race":"virgem","type":"spell","cost":1,"sp":"heal","e":"🌿","r":"c","kw":[],"v":4},
+"virgems2":{"name":"Escudo de Trigo","race":"virgem","type":"spell","cost":1,"sp":"shield","e":"🌾","r":"c","kw":[],"v":0},
+"virgems3":{"name":"Espinhos","race":"virgem","type":"spell","cost":1,"sp":"dmg","e":"🌵","r":"c","kw":[],"v":2},
+"virgems4":{"name":"Fortalecer","race":"virgem","type":"spell","cost":1,"sp":"buff","e":"🍃","r":"c","kw":[],"a":1,"h":2},
+"virgems5":{"name":"Colheita","race":"virgem","type":"spell","cost":3,"sp":"draw","e":"🧺","r":"r","kw":[],"v":2},
+"libra01":{"name":"Pajem da Balança","race":"libra","type":"unit","cost":1,"atk":1,"hp":1,"kw":["reflexo"],"e":"📜","on":null,"r":"c"},
+"libra02":{"name":"Escriba","race":"libra","type":"unit","cost":1,"atk":2,"hp":1,"kw":["escudo"],"e":"🪶","on":null,"r":"c"},
+"libra03":{"name":"Pomba da Paz","race":"libra","type":"unit","cost":1,"atk":1,"hp":1,"kw":["reflexo"],"e":"🕊️","on":null,"r":"c"},
+"libra04":{"name":"Mensageiro da Corte","race":"libra","type":"unit","cost":1,"atk":1,"hp":1,"kw":[],"e":"📨","on":"draw","r":"c"},
+"libra05":{"name":"Juíza da Balança","race":"libra","type":"unit","cost":2,"atk":2,"hp":2,"kw":["reflexo"],"e":"⚖️","on":null,"r":"c"},
+"libra06":{"name":"Guarda da Corte","race":"libra","type":"unit","cost":2,"atk":1,"hp":3,"kw":["distancia"],"e":"💂","on":null,"r":"c"},
+"libra07":{"name":"Advogado","race":"libra","type":"unit","cost":2,"atk":2,"hp":2,"kw":["reflexo"],"e":"📜","on":null,"r":"c"},
+"libra08":{"name":"Duelista Justo","race":"libra","type":"unit","cost":2,"atk":2,"hp":2,"kw":["reflexo"],"e":"🤺","on":null,"r":"c"},
+"libra09":{"name":"Cisne Elegante","race":"libra","type":"unit","cost":2,"atk":1,"hp":3,"kw":["escudo"],"e":"🦢","on":null,"r":"c"},
+"libra10":{"name":"Mediadora","race":"libra","type":"unit","cost":3,"atk":3,"hp":3,"kw":["reflexo"],"e":"🤝","on":null,"r":"r"},
+"libra11":{"name":"Cavaleiro da Lei","race":"libra","type":"unit","cost":3,"atk":3,"hp":3,"kw":[],"e":"🛡️","on":"draw","r":"r"},
+"libra12":{"name":"Harpista","race":"libra","type":"unit","cost":3,"atk":2,"hp":4,"kw":["reflexo"],"e":"🎻","on":null,"r":"r"},
+"libra13":{"name":"Arcanjo Menor","race":"libra","type":"unit","cost":3,"atk":3,"hp":3,"kw":["distancia"],"e":"😇","on":null,"r":"r"},
+"libra14":{"name":"Guardiã do Equilíbrio","race":"libra","type":"unit","cost":3,"atk":3,"hp":3,"kw":["reflexo"],"e":"☯️","on":null,"r":"r"},
+"libra15":{"name":"Guardião Justo","race":"libra","type":"unit","cost":4,"atk":3,"hp":5,"kw":["escudo"],"e":"🏛️","on":null,"r":"r"},
+"libra16":{"name":"Inquisidor","race":"libra","type":"unit","cost":4,"atk":4,"hp":4,"kw":["reflexo"],"e":"🔍","on":null,"r":"r"},
+"libra17":{"name":"Embaixadora","race":"libra","type":"unit","cost":4,"atk":4,"hp":4,"kw":[],"e":"🎀","on":"draw","r":"r"},
+"libra18":{"name":"Grifo da Justiça","race":"libra","type":"unit","cost":4,"atk":3,"hp":5,"kw":["reflexo"],"e":"🦅","on":null,"r":"r"},
+"libra19":{"name":"Alta Juíza","race":"libra","type":"unit","cost":5,"atk":5,"hp":5,"kw":["distancia"],"e":"⚖️","on":null,"r":"e"},
+"libra20":{"name":"Paladino da Ordem","race":"libra","type":"unit","cost":5,"atk":5,"hp":4,"kw":["reflexo"],"e":"🛡️","on":"draw","r":"e"},
+"libra21":{"name":"Templo Vivo","race":"libra","type":"unit","cost":5,"atk":4,"hp":6,"kw":["escudo"],"e":"🏛️","on":null,"r":"e"},
+"libra22":{"name":"Arcanjo da Balança","race":"libra","type":"unit","cost":6,"atk":6,"hp":6,"kw":["reflexo"],"e":"😇","on":null,"r":"e"},
+"libra23":{"name":"Conselheiro Ancião","race":"libra","type":"unit","cost":6,"atk":6,"hp":6,"kw":[],"e":"🧙","on":"draw","r":"e"},
+"libra24":{"name":"Têmis, a Justa","race":"libra","type":"unit","cost":7,"atk":6,"hp":9,"kw":["reflexo","distancia"],"e":"⚖️","on":null,"r":"l"},
+"libra25":{"name":"Libra, a Balança Cósmica","race":"libra","type":"unit","cost":8,"atk":8,"hp":9,"kw":["reflexo","escudo"],"e":"⚖️","on":null,"r":"l"},
+"libras1":{"name":"Selo da Lei","race":"libra","type":"spell","cost":1,"sp":"shield","e":"📜","r":"c","kw":[],"v":0},
+"libras2":{"name":"Equidade","race":"libra","type":"spell","cost":1,"sp":"heal","e":"☯️","r":"c","kw":[],"v":3},
+"libras3":{"name":"Peso Justo","race":"libra","type":"spell","cost":2,"sp":"dmg","e":"⚖️","r":"c","kw":[],"v":3},
+"libras4":{"name":"Contrapeso","race":"libra","type":"spell","cost":3,"sp":"buff","e":"🤝","r":"r","kw":[],"a":2,"h":2},
+"libras5":{"name":"Julgamento","race":"libra","type":"spell","cost":3,"sp":"lane","e":"🔨","r":"r","kw":[],"v":2},
+"escorpiao01":{"name":"Escorpião do Pântano","race":"escorpiao","type":"unit","cost":1,"atk":1,"hp":1,"kw":["veneno"],"e":"🦂","on":null,"r":"c"},
+"escorpiao02":{"name":"Aranha Tecelã","race":"escorpiao","type":"unit","cost":1,"atk":2,"hp":1,"kw":["vampirico"],"e":"🕷️","on":null,"r":"c"},
+"escorpiao03":{"name":"Morcego Sombrio","race":"escorpiao","type":"unit","cost":1,"atk":1,"hp":1,"kw":["veneno"],"e":"🦇","on":null,"r":"c"},
+"escorpiao04":{"name":"Sapo Venenoso","race":"escorpiao","type":"unit","cost":1,"atk":1,"hp":1,"kw":[],"e":"🐸","on":"volley","r":"c"},
+"escorpiao05":{"name":"Assassina Sombria","race":"escorpiao","type":"unit","cost":2,"atk":2,"hp":2,"kw":["veneno"],"e":"🗡️","on":null,"r":"c"},
+"escorpiao06":{"name":"Serpente do Lodo","race":"escorpiao","type":"unit","cost":2,"atk":1,"hp":3,"kw":["escudo"],"e":"🐍","on":null,"r":"c"},
+"escorpiao07":{"name":"Alquimista Tóxico","race":"escorpiao","type":"unit","cost":2,"atk":2,"hp":2,"kw":["veneno"],"e":"⚗️","on":null,"r":"c"},
+"escorpiao08":{"name":"Guardião do Lodo","race":"escorpiao","type":"unit","cost":2,"atk":2,"hp":2,"kw":["veneno"],"e":"🐊","on":null,"r":"c"},
+"escorpiao09":{"name":"Vespa Negra","race":"escorpiao","type":"unit","cost":2,"atk":1,"hp":3,"kw":["vampirico"],"e":"🐝","on":null,"r":"c"},
+"escorpiao10":{"name":"Sacerdotisa do Lodo","race":"escorpiao","type":"unit","cost":3,"atk":3,"hp":3,"kw":["veneno"],"e":"🐍","on":null,"r":"r"},
+"escorpiao11":{"name":"Caçador Noturno","race":"escorpiao","type":"unit","cost":3,"atk":3,"hp":3,"kw":[],"e":"🌑","on":"volley","r":"r"},
+"escorpiao12":{"name":"Escorpião Gigante","race":"escorpiao","type":"unit","cost":3,"atk":2,"hp":4,"kw":["veneno"],"e":"🦂","on":null,"r":"r"},
+"escorpiao13":{"name":"Bruxa do Pântano","race":"escorpiao","type":"unit","cost":3,"atk":3,"hp":3,"kw":["escudo"],"e":"🧙‍♀️","on":null,"r":"r"},
+"escorpiao14":{"name":"Centopeia Real","race":"escorpiao","type":"unit","cost":3,"atk":3,"hp":3,"kw":["veneno"],"e":"🐛","on":null,"r":"r"},
+"escorpiao15":{"name":"Naga Sombria","race":"escorpiao","type":"unit","cost":4,"atk":3,"hp":5,"kw":["vampirico"],"e":"🐍","on":null,"r":"r"},
+"escorpiao16":{"name":"Feiticeiro Venenoso","race":"escorpiao","type":"unit","cost":4,"atk":4,"hp":4,"kw":["veneno"],"e":"☠️","on":null,"r":"r"},
+"escorpiao17":{"name":"Crocodilo Ancião","race":"escorpiao","type":"unit","cost":4,"atk":4,"hp":4,"kw":[],"e":"🐊","on":"volley","r":"r"},
+"escorpiao18":{"name":"Viúva Negra","race":"escorpiao","type":"unit","cost":4,"atk":3,"hp":5,"kw":["veneno"],"e":"🕷️","on":null,"r":"r"},
+"escorpiao19":{"name":"Hidra do Pântano","race":"escorpiao","type":"unit","cost":5,"atk":4,"hp":6,"kw":["escudo"],"e":"🐉","on":null,"r":"e"},
+"escorpiao20":{"name":"Senhor das Sombras","race":"escorpiao","type":"unit","cost":5,"atk":5,"hp":4,"kw":["veneno"],"e":"🌑","on":"volley","r":"e"},
+"escorpiao21":{"name":"Basilisco","race":"escorpiao","type":"unit","cost":5,"atk":4,"hp":6,"kw":["vampirico"],"e":"🦎","on":null,"r":"e"},
+"escorpiao22":{"name":"Rei Escorpião","race":"escorpiao","type":"unit","cost":6,"atk":5,"hp":7,"kw":["veneno"],"e":"👑","on":null,"r":"e"},
+"escorpiao23":{"name":"Fênix Sombria","race":"escorpiao","type":"unit","cost":6,"atk":6,"hp":6,"kw":[],"e":"🦅","on":"volley","r":"e"},
+"escorpiao24":{"name":"Rainha da Peçonha","race":"escorpiao","type":"unit","cost":7,"atk":6,"hp":9,"kw":["veneno","escudo"],"e":"🕸️","on":null,"r":"l"},
+"escorpiao25":{"name":"Escorpião, o Ferrão Eterno","race":"escorpiao","type":"unit","cost":8,"atk":8,"hp":9,"kw":["veneno","vampirico"],"e":"🦂","on":null,"r":"l"},
+"escorpiaos1":{"name":"Ferroada","race":"escorpiao","type":"spell","cost":1,"sp":"poison","e":"🦂","r":"c","kw":[],"v":0},
+"escorpiaos2":{"name":"Toxina","race":"escorpiao","type":"spell","cost":1,"sp":"dmg","e":"🧪","r":"c","kw":[],"v":2},
+"escorpiaos3":{"name":"Pacto Sombrio","race":"escorpiao","type":"spell","cost":2,"sp":"draw","e":"🌑","r":"c","kw":[],"v":2},
+"escorpiaos4":{"name":"Nuvem Tóxica","race":"escorpiao","type":"spell","cost":3,"sp":"lane","e":"☁️","r":"r","kw":[],"v":2},
+"escorpiaos5":{"name":"Veneno Letal","race":"escorpiao","type":"spell","cost":3,"sp":"dmg","e":"☠️","r":"r","kw":[],"v":4},
+"sagitario01":{"name":"Batedor Centauro","race":"sagitario","type":"unit","cost":1,"atk":1,"hp":1,"kw":["distancia"],"e":"🐎","on":null,"r":"c"},
+"sagitario02":{"name":"Aprendiz de Arqueiro","race":"sagitario","type":"unit","cost":1,"atk":2,"hp":1,"kw":["perfurar"],"e":"🏹","on":null,"r":"c"},
+"sagitario03":{"name":"Falcão Caçador","race":"sagitario","type":"unit","cost":1,"atk":1,"hp":1,"kw":["distancia"],"e":"🦅","on":null,"r":"c"},
+"sagitario04":{"name":"Viajante","race":"sagitario","type":"unit","cost":1,"atk":1,"hp":1,"kw":[],"e":"🧭","on":"face1","r":"c"},
+"sagitario05":{"name":"Arqueira Centaura","race":"sagitario","type":"unit","cost":2,"atk":3,"hp":1,"kw":["distancia"],"e":"🏹","on":null,"r":"c"},
+"sagitario06":{"name":"Lanceiro Errante","race":"sagitario","type":"unit","cost":2,"atk":2,"hp":2,"kw":["investida"],"e":"🔱","on":null,"r":"c"},
+"sagitario07":{"name":"Rastreador","race":"sagitario","type":"unit","cost":2,"atk":2,"hp":2,"kw":["distancia"],"e":"🐾","on":null,"r":"c"},
+"sagitario08":{"name":"Corcel Veloz","race":"sagitario","type":"unit","cost":2,"atk":3,"hp":1,"kw":["distancia"],"e":"🐎","on":null,"r":"c"},
+"sagitario09":{"name":"Caçadora da Lua","race":"sagitario","type":"unit","cost":2,"atk":2,"hp":2,"kw":["perfurar"],"e":"🌙","on":null,"r":"c"},
+"sagitario10":{"name":"Caçador de Estrelas","race":"sagitario","type":"unit","cost":3,"atk":3,"hp":3,"kw":["distancia"],"e":"🌠","on":null,"r":"r"},
+"sagitario11":{"name":"Centauro Guerreiro","race":"sagitario","type":"unit","cost":3,"atk":4,"hp":2,"kw":[],"e":"🐎","on":"face1","r":"r"},
+"sagitario12":{"name":"Atiradora de Elite","race":"sagitario","type":"unit","cost":3,"atk":3,"hp":3,"kw":["distancia"],"e":"🎯","on":null,"r":"r"},
+"sagitario13":{"name":"Explorador","race":"sagitario","type":"unit","cost":3,"atk":3,"hp":3,"kw":["investida"],"e":"🗺️","on":null,"r":"r"},
+"sagitario14":{"name":"Xamã das Planícies","race":"sagitario","type":"unit","cost":3,"atk":4,"hp":2,"kw":["distancia"],"e":"🪶","on":null,"r":"r"},
+"sagitario15":{"name":"Lanceiro Flamejante","race":"sagitario","type":"unit","cost":4,"atk":4,"hp":4,"kw":["perfurar"],"e":"🔥","on":null,"r":"r"},
+"sagitario16":{"name":"Centauro Ancião","race":"sagitario","type":"unit","cost":4,"atk":4,"hp":4,"kw":["distancia"],"e":"🧔","on":null,"r":"r"},
+"sagitario17":{"name":"Arqueira Celeste","race":"sagitario","type":"unit","cost":4,"atk":5,"hp":3,"kw":[],"e":"✨","on":"face1","r":"r"},
+"sagitario18":{"name":"Cavaleiro Nômade","race":"sagitario","type":"unit","cost":4,"atk":4,"hp":4,"kw":["distancia"],"e":"🐴","on":null,"r":"r"},
+"sagitario19":{"name":"General Centauro","race":"sagitario","type":"unit","cost":5,"atk":6,"hp":4,"kw":["investida"],"e":"🎖️","on":null,"r":"e"},
+"sagitario20":{"name":"Caçadora Divina","race":"sagitario","type":"unit","cost":5,"atk":6,"hp":3,"kw":["distancia"],"e":"🏹","on":"face1","r":"e"},
+"sagitario21":{"name":"Cometa Vivo","race":"sagitario","type":"unit","cost":5,"atk":5,"hp":5,"kw":["perfurar"],"e":"☄️","on":null,"r":"e"},
+"sagitario22":{"name":"Quíron, o Mestre","race":"sagitario","type":"unit","cost":6,"atk":7,"hp":5,"kw":["distancia"],"e":"🏇","on":null,"r":"e"},
+"sagitario23":{"name":"Centauro de Guerra","race":"sagitario","type":"unit","cost":6,"atk":7,"hp":5,"kw":[],"e":"⚔️","on":"face1","r":"e"},
+"sagitario24":{"name":"Atirador das Galáxias","race":"sagitario","type":"unit","cost":7,"atk":8,"hp":7,"kw":["distancia","investida"],"e":"🌌","on":null,"r":"l"},
+"sagitario25":{"name":"Sagitário, o Arqueiro Celeste","race":"sagitario","type":"unit","cost":8,"atk":10,"hp":7,"kw":["distancia","perfurar"],"e":"🏹","on":null,"r":"l"},
+"sagitarios1":{"name":"Flecha Certeira","race":"sagitario","type":"spell","cost":1,"sp":"dmg","e":"🎯","r":"c","kw":[],"v":2},
+"sagitarios2":{"name":"Mira Estelar","race":"sagitario","type":"spell","cost":2,"sp":"buff","e":"✨","r":"c","kw":[],"a":3,"h":0},
+"sagitarios3":{"name":"Flecha Flamejante","race":"sagitario","type":"spell","cost":2,"sp":"face","e":"🔥","r":"c","kw":[],"v":3},
+"sagitarios4":{"name":"Galope","race":"sagitario","type":"spell","cost":2,"sp":"draw","e":"🐎","r":"c","kw":[],"v":2},
+"sagitarios5":{"name":"Chuva de Flechas","race":"sagitario","type":"spell","cost":3,"sp":"lane","e":"🏹","r":"r","kw":[],"v":2},
+"capricornio01":{"name":"Cabrito da Montanha","race":"capricornio","type":"unit","cost":1,"atk":1,"hp":1,"kw":["ascensao"],"e":"🐐","on":null,"r":"c"},
+"capricornio02":{"name":"Mineiro","race":"capricornio","type":"unit","cost":1,"atk":1,"hp":1,"kw":["escudo"],"e":"⛏️","on":null,"r":"c"},
+"capricornio03":{"name":"Marmota","race":"capricornio","type":"unit","cost":1,"atk":1,"hp":1,"kw":["ascensao"],"e":"🐿️","on":null,"r":"c"},
+"capricornio04":{"name":"Aprendiz Monge","race":"capricornio","type":"unit","cost":1,"atk":1,"hp":1,"kw":[],"e":"🧒","on":"heal2","r":"c"},
+"capricornio05":{"name":"Escalador","race":"capricornio","type":"unit","cost":2,"atk":2,"hp":1,"kw":["ascensao"],"e":"🧗","on":null,"r":"c"},
+"capricornio06":{"name":"Bode Teimoso","race":"capricornio","type":"unit","cost":2,"atk":1,"hp":3,"kw":["furia"],"e":"🐐","on":null,"r":"c"},
+"capricornio07":{"name":"Guardião do Pico","race":"capricornio","type":"unit","cost":2,"atk":1,"hp":2,"kw":["ascensao"],"e":"🛡️","on":null,"r":"c"},
+"capricornio08":{"name":"Águia das Rochas","race":"capricornio","type":"unit","cost":2,"atk":2,"hp":1,"kw":["ascensao"],"e":"🦅","on":null,"r":"c"},
+"capricornio09":{"name":"Ferreira Anã","race":"capricornio","type":"unit","cost":2,"atk":1,"hp":3,"kw":["escudo"],"e":"⚒️","on":null,"r":"c"},
+"capricornio10":{"name":"Ermitão do Pico","race":"capricornio","type":"unit","cost":3,"atk":2,"hp":3,"kw":["ascensao"],"e":"🏔️","on":null,"r":"r"},
+"capricornio11":{"name":"Golem de Gelo","race":"capricornio","type":"unit","cost":3,"atk":3,"hp":3,"kw":[],"e":"🧊","on":"heal2","r":"r"},
+"capricornio12":{"name":"Monge da Montanha","race":"capricornio","type":"unit","cost":3,"atk":1,"hp":4,"kw":["ascensao"],"e":"🧘","on":null,"r":"r"},
+"capricornio13":{"name":"Íbex Real","race":"capricornio","type":"unit","cost":3,"atk":2,"hp":4,"kw":["furia"],"e":"🐐","on":null,"r":"r"},
+"capricornio14":{"name":"Pastor das Alturas","race":"capricornio","type":"unit","cost":3,"atk":2,"hp":3,"kw":["ascensao"],"e":"🧑‍🌾","on":null,"r":"r"},
+"capricornio15":{"name":"Yeti","race":"capricornio","type":"unit","cost":4,"atk":2,"hp":6,"kw":["escudo"],"e":"🦍","on":null,"r":"r"},
+"capricornio16":{"name":"Mestre Escalador","race":"capricornio","type":"unit","cost":4,"atk":3,"hp":4,"kw":["ascensao"],"e":"🧗","on":null,"r":"r"},
+"capricornio17":{"name":"Sentinela Glacial","race":"capricornio","type":"unit","cost":4,"atk":3,"hp":5,"kw":[],"e":"❄️","on":"heal2","r":"r"},
+"capricornio18":{"name":"Cabra-Peixe Ancestral","race":"capricornio","type":"unit","cost":4,"atk":2,"hp":5,"kw":["ascensao"],"e":"🐟","on":null,"r":"r"},
+"capricornio19":{"name":"Bode Ancestral","race":"capricornio","type":"unit","cost":5,"atk":4,"hp":6,"kw":["furia"],"e":"🦬","on":null,"r":"e"},
+"capricornio20":{"name":"Gigante de Gelo","race":"capricornio","type":"unit","cost":5,"atk":3,"hp":5,"kw":["ascensao"],"e":"🧊","on":"heal2","r":"e"},
+"capricornio21":{"name":"Abade da Montanha","race":"capricornio","type":"unit","cost":5,"atk":3,"hp":7,"kw":["escudo"],"e":"⛪","on":null,"r":"e"},
+"capricornio22":{"name":"Dragão da Montanha","race":"capricornio","type":"unit","cost":6,"atk":4,"hp":7,"kw":["ascensao"],"e":"🐉","on":null,"r":"e"},
+"capricornio23":{"name":"Colosso Glacial","race":"capricornio","type":"unit","cost":6,"atk":5,"hp":7,"kw":[],"e":"❄️","on":"heal2","r":"e"},
+"capricornio24":{"name":"Patriarca do Pico","race":"capricornio","type":"unit","cost":7,"atk":4,"hp":10,"kw":["ascensao","furia"],"e":"🏔️","on":null,"r":"l"},
+"capricornio25":{"name":"Capricórnio, a Cabra-Marinha","race":"capricornio","type":"unit","cost":8,"atk":6,"hp":10,"kw":["ascensao","escudo"],"e":"🐐","on":null,"r":"l"},
+"capricornios1":{"name":"Muralha de Pedra","race":"capricornio","type":"spell","cost":1,"sp":"shield","e":"🧱","r":"c","kw":[],"v":0},
+"capricornios2":{"name":"Resiliência","race":"capricornio","type":"spell","cost":2,"sp":"buff","e":"⛰️","r":"c","kw":[],"a":1,"h":3},
+"capricornios3":{"name":"Pedrada","race":"capricornio","type":"spell","cost":2,"sp":"dmg","e":"🪨","r":"c","kw":[],"v":3},
+"capricornios4":{"name":"Escalada","race":"capricornio","type":"spell","cost":3,"sp":"buff","e":"🧗","r":"r","kw":[],"a":2,"h":2},
+"capricornios5":{"name":"Avalanche","race":"capricornio","type":"spell","cost":5,"sp":"lane","e":"❄️","r":"e","kw":[],"v":3},
+"aquario01":{"name":"Sílfide da Brisa","race":"aquario","type":"unit","cost":1,"atk":1,"hp":1,"kw":["corrente"],"e":"🧚","on":null,"r":"c"},
+"aquario02":{"name":"Gota Viva","race":"aquario","type":"unit","cost":1,"atk":2,"hp":1,"kw":["distancia"],"e":"💧","on":null,"r":"c"},
+"aquario03":{"name":"Pássaro do Trovão","race":"aquario","type":"unit","cost":1,"atk":1,"hp":1,"kw":["corrente"],"e":"🐦","on":null,"r":"c"},
+"aquario04":{"name":"Estudante Arcano","race":"aquario","type":"unit","cost":1,"atk":1,"hp":1,"kw":[],"e":"📘","on":"draw","r":"c"},
+"aquario05":{"name":"Portador da Ânfora","race":"aquario","type":"unit","cost":2,"atk":2,"hp":2,"kw":["corrente"],"e":"🏺","on":null,"r":"c"},
+"aquario06":{"name":"Mago do Vento","race":"aquario","type":"unit","cost":2,"atk":1,"hp":3,"kw":["escudo"],"e":"🌬️","on":null,"r":"c"},
+"aquario07":{"name":"Inventor","race":"aquario","type":"unit","cost":2,"atk":2,"hp":2,"kw":["corrente"],"e":"⚙️","on":null,"r":"c"},
+"aquario08":{"name":"Fada da Chuva","race":"aquario","type":"unit","cost":2,"atk":2,"hp":2,"kw":["corrente"],"e":"🌧️","on":null,"r":"c"},
+"aquario09":{"name":"Cometa Pequeno","race":"aquario","type":"unit","cost":2,"atk":1,"hp":3,"kw":["distancia"],"e":"☄️","on":null,"r":"c"},
+"aquario10":{"name":"Arauto da Tempestade","race":"aquario","type":"unit","cost":3,"atk":3,"hp":3,"kw":["corrente"],"e":"⛈️","on":null,"r":"r"},
+"aquario11":{"name":"Elemental de Água","race":"aquario","type":"unit","cost":3,"atk":3,"hp":3,"kw":[],"e":"💧","on":"draw","r":"r"},
+"aquario12":{"name":"Astrônomo","race":"aquario","type":"unit","cost":3,"atk":2,"hp":4,"kw":["corrente"],"e":"🔭","on":null,"r":"r"},
+"aquario13":{"name":"Arcanista","race":"aquario","type":"unit","cost":3,"atk":3,"hp":3,"kw":["escudo"],"e":"📖","on":null,"r":"r"},
+"aquario14":{"name":"Golem Mecânico","race":"aquario","type":"unit","cost":3,"atk":3,"hp":3,"kw":["corrente"],"e":"🤖","on":null,"r":"r"},
+"aquario15":{"name":"Mestre dos Ventos","race":"aquario","type":"unit","cost":4,"atk":3,"hp":5,"kw":["distancia"],"e":"🌪️","on":null,"r":"r"},
+"aquario16":{"name":"Elemental do Raio","race":"aquario","type":"unit","cost":4,"atk":4,"hp":4,"kw":["corrente"],"e":"⚡","on":null,"r":"r"},
+"aquario17":{"name":"Sábio Excêntrico","race":"aquario","type":"unit","cost":4,"atk":4,"hp":4,"kw":[],"e":"🧪","on":"draw","r":"r"},
+"aquario18":{"name":"Corvo Elétrico","race":"aquario","type":"unit","cost":4,"atk":3,"hp":5,"kw":["corrente"],"e":"🐦‍⬛","on":null,"r":"r"},
+"aquario19":{"name":"Ganimedes, o Copeiro","race":"aquario","type":"unit","cost":5,"atk":5,"hp":5,"kw":["escudo"],"e":"🏺","on":null,"r":"e"},
+"aquario20":{"name":"Tempestade Viva","race":"aquario","type":"unit","cost":5,"atk":5,"hp":4,"kw":["corrente"],"e":"🌩️","on":"draw","r":"e"},
+"aquario21":{"name":"Oráculo Celeste","race":"aquario","type":"unit","cost":5,"atk":4,"hp":6,"kw":["distancia"],"e":"🔮","on":null,"r":"e"},
+"aquario22":{"name":"Arquimago do Céu","race":"aquario","type":"unit","cost":6,"atk":6,"hp":6,"kw":["corrente"],"e":"🧙","on":null,"r":"e"},
+"aquario23":{"name":"Dragão da Tempestade","race":"aquario","type":"unit","cost":6,"atk":6,"hp":6,"kw":[],"e":"🐉","on":"draw","r":"e"},
+"aquario24":{"name":"Avatar do Trovão","race":"aquario","type":"unit","cost":7,"atk":6,"hp":9,"kw":["corrente","escudo"],"e":"⚡","on":null,"r":"l"},
+"aquario25":{"name":"Aquário, o Portador Celeste","race":"aquario","type":"unit","cost":8,"atk":8,"hp":9,"kw":["corrente","distancia"],"e":"🏺","on":null,"r":"l"},
+"aquarios1":{"name":"Raio Celeste","race":"aquario","type":"spell","cost":2,"sp":"dmg","e":"⚡","r":"c","kw":[],"v":3},
+"aquarios2":{"name":"Bênção das Águas","race":"aquario","type":"spell","cost":2,"sp":"buff","e":"✨","r":"c","kw":[],"a":2,"h":2},
+"aquarios3":{"name":"Inspiração","race":"aquario","type":"spell","cost":2,"sp":"draw","e":"💡","r":"c","kw":[],"v":2},
+"aquarios4":{"name":"Vendaval","race":"aquario","type":"spell","cost":3,"sp":"lane","e":"🌪️","r":"r","kw":[],"v":2},
+"aquarios5":{"name":"Tempestade","race":"aquario","type":"spell","cost":5,"sp":"lane","e":"⛈️","r":"e","kw":[],"v":3},
+"peixes01":{"name":"Peixe Sonhador","race":"peixes","type":"unit","cost":1,"atk":1,"hp":1,"kw":["ilusao"],"e":"🐟","on":null,"r":"c"},
+"peixes02":{"name":"Medusa Pálida","race":"peixes","type":"unit","cost":1,"atk":2,"hp":1,"kw":["vampirico"],"e":"🪼","on":null,"r":"c"},
+"peixes03":{"name":"Peixinho Listrado","race":"peixes","type":"unit","cost":1,"atk":1,"hp":1,"kw":["ilusao"],"e":"🐠","on":null,"r":"c"},
+"peixes04":{"name":"Bolha Mágica","race":"peixes","type":"unit","cost":1,"atk":1,"hp":1,"kw":[],"e":"🫧","on":"volley","r":"c"},
+"peixes05":{"name":"Sereia Cantora","race":"peixes","type":"unit","cost":2,"atk":2,"hp":2,"kw":["ilusao"],"e":"🧜‍♀️","on":null,"r":"c"},
+"peixes06":{"name":"Golfinho Místico","race":"peixes","type":"unit","cost":2,"atk":1,"hp":3,"kw":["veneno"],"e":"🐬","on":null,"r":"c"},
+"peixes07":{"name":"Baiacu","race":"peixes","type":"unit","cost":2,"atk":2,"hp":2,"kw":["ilusao"],"e":"🐡","on":null,"r":"c"},
+"peixes08":{"name":"Pescador de Sonhos","race":"peixes","type":"unit","cost":2,"atk":2,"hp":2,"kw":["ilusao"],"e":"🎣","on":null,"r":"c"},
+"peixes09":{"name":"Espírito da Névoa","race":"peixes","type":"unit","cost":2,"atk":1,"hp":3,"kw":["vampirico"],"e":"🌫️","on":null,"r":"c"},
+"peixes10":{"name":"Oráculo das Marés","race":"peixes","type":"unit","cost":3,"atk":3,"hp":3,"kw":["ilusao"],"e":"🔮","on":null,"r":"r"},
+"peixes11":{"name":"Tritão Místico","race":"peixes","type":"unit","cost":3,"atk":3,"hp":3,"kw":[],"e":"🧜","on":"volley","r":"r"},
+"peixes12":{"name":"Raia Fantasma","race":"peixes","type":"unit","cost":3,"atk":2,"hp":4,"kw":["ilusao"],"e":"🐟","on":null,"r":"r"},
+"peixes13":{"name":"Sonâmbulo","race":"peixes","type":"unit","cost":3,"atk":3,"hp":3,"kw":["veneno"],"e":"😴","on":null,"r":"r"},
+"peixes14":{"name":"Coral Vivo","race":"peixes","type":"unit","cost":3,"atk":3,"hp":3,"kw":["ilusao"],"e":"🪸","on":null,"r":"r"},
+"peixes15":{"name":"Baleia Lunar","race":"peixes","type":"unit","cost":4,"atk":3,"hp":5,"kw":["vampirico"],"e":"🐳","on":null,"r":"r"},
+"peixes16":{"name":"Sereia Feiticeira","race":"peixes","type":"unit","cost":4,"atk":4,"hp":4,"kw":["ilusao"],"e":"🧜‍♀️","on":null,"r":"r"},
+"peixes17":{"name":"Peixe Dourado","race":"peixes","type":"unit","cost":4,"atk":4,"hp":4,"kw":[],"e":"🐠","on":"volley","r":"r"},
+"peixes18":{"name":"Polvo Ilusionista","race":"peixes","type":"unit","cost":4,"atk":3,"hp":5,"kw":["ilusao"],"e":"🐙","on":null,"r":"r"},
+"peixes19":{"name":"Leviatã Jovem","race":"peixes","type":"unit","cost":5,"atk":4,"hp":6,"kw":["veneno"],"e":"🐋","on":null,"r":"e"},
+"peixes20":{"name":"Sacerdote dos Sonhos","race":"peixes","type":"unit","cost":5,"atk":5,"hp":4,"kw":["ilusao"],"e":"💤","on":"volley","r":"e"},
+"peixes21":{"name":"Guardião do Abismo","race":"peixes","type":"unit","cost":5,"atk":4,"hp":6,"kw":["vampirico"],"e":"🌊","on":null,"r":"e"},
+"peixes22":{"name":"Leviatã dos Sonhos","race":"peixes","type":"unit","cost":6,"atk":5,"hp":7,"kw":["ilusao"],"e":"🐋","on":null,"r":"e"},
+"peixes23":{"name":"Dragão Marinho","race":"peixes","type":"unit","cost":6,"atk":6,"hp":6,"kw":[],"e":"🐉","on":"volley","r":"e"},
+"peixes24":{"name":"Rainha do Oceano","race":"peixes","type":"unit","cost":7,"atk":6,"hp":9,"kw":["ilusao","veneno"],"e":"👑","on":null,"r":"l"},
+"peixes25":{"name":"Peixes, os Gêmeos do Mar","race":"peixes","type":"unit","cost":8,"atk":8,"hp":9,"kw":["ilusao","vampirico"],"e":"🐟","on":null,"r":"l"},
+"peixess1":{"name":"Névoa","race":"peixes","type":"spell","cost":1,"sp":"shield","e":"🌫️","r":"c","kw":[],"v":0},
+"peixess2":{"name":"Maré Curativa","race":"peixes","type":"spell","cost":1,"sp":"heal","e":"💧","r":"c","kw":[],"v":4},
+"peixess3":{"name":"Afogar","race":"peixes","type":"spell","cost":2,"sp":"dmg","e":"🌊","r":"c","kw":[],"v":3},
+"peixess4":{"name":"Sonho Profundo","race":"peixes","type":"spell","cost":2,"sp":"draw","e":"💤","r":"c","kw":[],"v":2},
+"peixess5":{"name":"Redemoinho","race":"peixes","type":"spell","cost":3,"sp":"lane","e":"🌀","r":"r","kw":[],"v":2},
+"eco":{"name":"Eco","race":"gemeos","type":"unit","cost":0,"atk":1,"hp":1,"kw":[],"e":"👥","on":null,"r":"c"}};
+Object.values(CARDS).forEach(c => { if (!c.kw) c.kw = []; });
+const RARITY = {c:{n:'Comum',col:'#9aa6bd'}, r:{n:'Rara',col:'#4f9be8'}, e:{n:'Épica',col:'#a86be0'}, l:{n:'Lendária',col:'#e0aa45'}};
+const SUPPORT = ['buff','shield','heal','draw'];
+function spellText(c){
+  switch (c.sp){
+    case 'dmg': return `${c.v} de dano em uma criatura inimiga que já estava em campo.`;
+    case 'buff': return `+${c.a}/+${c.h} em uma criatura sua que já estava em campo.`;
+    case 'lane': return `Escolha uma linha inimiga: ${c.v} de dano em todas as criaturas nela.`;
+    case 'shield': return 'Dá Escudo a uma criatura sua que já estava em campo.';
+    case 'poison': return 'Envenena uma criatura inimiga que já estava em campo.';
+    case 'face': return `${c.v} de dano direto no herói inimigo.`;
+    case 'heal': return `Cura ${c.v} de vida do seu herói.`;
+    case 'draw': return `Compre ${c.v} cartas.`;
+  }
+  return '';
+}
+Object.values(CARDS).forEach(c => { if (c.type === 'spell') c.text = spellText(c); });
+
+function shuffle(d){ for (let i = d.length - 1; i > 0; i--){ const j = Math.floor(Math.random() * (i + 1)); [d[i], d[j]] = [d[j], d[i]]; } return d; }
+function buildDeck(sign){
+  return shuffle(Object.keys(CARDS).filter(k => k !== 'eco' && CARDS[k].race === sign));
+}
+
+let S = null, UID = 0;
+const opp = s => s === 'p' ? 'e' : 'p';
+const who = s => s === 'p' ? 'Você' : 'O rival';
+const mkPlayer = sign => ({sign, hp:HERO_HP, max:0, mana:0, deck:buildDeck(sign), hand:[], board:[[null,null,null],[null,null,null],[null,null,null]], recharged:false});
+
+function costOf(side, c){
+  if (c.type !== 'spell') return c.cost;
+  const b = S[side].board;
+  for (let l = 0; l < 3; l++) for (let d = 0; d < 3; d++){ const u = b[l][d]; if (u && u.kw.includes('corrente')) return Math.max(0, c.cost - 1); }
+  return c.cost;
+}
+function cardText(c){
+  if (c.type === 'spell') return c.text;
+  const parts = c.kw.map(k => KW[k].n + ': ' + KW[k].d);
+  if (c.on) parts.push(ON[c.on]);
+  return parts.length ? parts.join(' ') : 'Sem habilidade especial.';
+}
+function fxCell(side,l,d,text,cls){ S.fx.push({id:`c-${side}-${l}-${d}`, text, cls}); }
+function fxHero(side,text,cls){ S.fx.push({id:'hero-' + side, text, cls}); }
+function flushFx(){
+  S.fx.forEach(f => {
+    const el = document.getElementById(f.id); if (!el) return;
+    const s = document.createElement('span'); s.className = 'fx ' + (f.cls || ''); s.textContent = f.text;
+    el.appendChild(s); setTimeout(() => s.remove(), 1000);
+  });
+  S.fx = [];
+}
+
+function newGame(sign){
+  const foes = ORDER.filter(k => k !== sign);
+  const foe = foes[Math.floor(Math.random() * foes.length)];
+  S = {screen:'play', turnNo:0, turn:'p', sel:null, busy:false, over:false, msg:'', fx:[], active:null, result:null, p:mkPlayer(sign), e:mkPlayer(foe)};
+  S.aiQueue = []; S.pQueue = [];
+  for (let i = 0; i < 3; i++){ draw('p'); draw('e'); }
+  startRound();
+}
+function draw(side){
+  const P = S[side];
+  if (!P.deck.length){ P.hp -= 2; fxHero(side, '-2', 'dmg'); if (side === 'p') S.msg = 'Seu deck acabou: -2 de vida.'; return; }
+  const cid = P.deck.pop();
+  if (P.hand.length >= HAND_MAX){ if (side === 'p') S.msg = 'Mão cheia: a carta comprada foi descartada.'; return; }
+  P.hand.push({hid:++UID, cid});
+}
+function checkOver(){
+  if (S.over) return true;
+  if (S.p.hp <= 0 || S.e.hp <= 0){
+    S.over = true; S.busy = false; S.screen = 'end';
+    S.result = (S.p.hp <= 0 && S.e.hp <= 0) ? 'draw' : (S.e.hp <= 0 ? 'win' : 'lose');
+    return true;
+  }
+  return false;
+}
+function tickSide(side){
+  const P = S[side];
+  P.max = Math.min(MAX_MANA, P.max + 1); P.mana = P.max; P.recharged = false;
+  for (let l = 0; l < 3; l++) for (let d = 0; d < 3; d++){
+    const u = P.board[l][d]; if (!u) continue;
+    if (u.kw.includes('ascensao')){ u.atk++; u.hp++; u.max++; fxCell(side,l,d,'+1/+1','heal'); }
+    if (u.kw.includes('cura')){
+      [0,1,2].forEach(dd => { const a = P.board[l][dd]; if (a && a.hp < a.max){ const h = Math.min(2, a.max - a.hp); a.hp += h; fxCell(side,l,dd,'+' + h,'heal'); } });
+    }
+  }
+  for (let l = 0; l < 3; l++) for (let d = 0; d < 3; d++){
+    const u = P.board[l][d];
+    if (u && u.poison){ u.hp -= 1; fxCell(side,l,d,'-1 🧪','dmg'); if (u.hp <= 0) killUnit(side,l,d,u); }
+  }
+  draw(side);
+}
+function startRound(){
+  S.turnNo++; S.turn = 'p'; S.sel = null; S.msg = '';
+  tickSide('p'); tickSide('e');
+  if (checkOver()){ render(); return; }
+  aiPlan();
+  S.busy = false;
+  const extra = S.msg ? S.msg + ' ' : '';
+  S.msg = `${extra}Rodada ${S.turnNo}: faça suas jogadas e toque em Batalha. O rival está jogando em segredo.`;
+  render();
+}
+
+function mkUnit(cid, ghost){
+  const c = CARDS[cid];
+  return {uid:++UID, cid, atk:c.atk, hp:c.hp, max:c.hp, shield:c.kw.includes('escudo'), kw:c.kw, entered:S.turnNo, poison:false, noReturn:!!ghost};
+}
+function killUnit(side,l,d,u){
+  S[side].board[l][d] = null;
+  if (u.kw.includes('ilusao') && !u.noReturn && S[side].hand.length < HAND_MAX){
+    S[side].hand.push({hid:++UID, cid:u.cid, ghost:true});
+    fxCell(side,l,d,'🫧 volta','sh');
+  }
+}
+function place(side, cid, l, d, ghost){
+  const c = CARDS[cid];
+  const u = mkUnit(cid, ghost);
+  u.pending = !!(c.on || u.kw.includes('investida'));
+  S[side].board[l][d] = u;
+  S.msg = `${who(side)} invocou ${c.name}.`;
+}
+function arrive(side, l, d, u){
+  const c = CARDS[u.cid];
+  u.pending = false;
+  if (c.on === 'twin'){
+    let spot = null;
+    [0,1,2].forEach(dd => { if (!spot && !S[side].board[l][dd]) spot = [l,dd]; });
+    if (!spot) for (let a = 0; a < 3 && !spot; a++) for (let b = 0; b < 3 && !spot; b++) if (!S[side].board[a][b]) spot = [a,b];
+    if (spot){ S[side].board[spot[0]][spot[1]] = mkUnit('eco', true); fxCell(side,spot[0],spot[1],'Eco!','heal'); }
+  }
+  if (c.on === 'draw') draw(side);
+  if (c.on === 'face1') hitHero(opp(side), 1);
+  if (c.on === 'heal2'){ S[side].hp = Math.min(HERO_HP, S[side].hp + 2); fxHero(side, '+2', 'heal'); }
+  if (c.on === 'volley'){
+    const o = opp(side), foes = [];
+    for (let a = 0; a < 3; a++) for (let b = 0; b < 3; b++) if (S[o].board[a][b]) foes.push([a,b]);
+    if (foes.length){ const [a,b] = foes[Math.floor(Math.random() * foes.length)]; damageUnit(o, a, b, 2); }
+  }
+  if (u.kw.includes('investida')) attack(side, l, d, u);
+  S.msg = `${CARDS[u.cid].name} (${who(side) === 'Você' ? 'seu' : 'do rival'}): efeito de chegada.`;
+}
+function damageUnit(side,l,d,amt,src){
+  const u = S[side].board[l][d];
+  if (!u) return {dealt:0, overflow:0};
+  if (u.shield){ u.shield = false; fxCell(side,l,d,'🛡️','sh'); return {dealt:0, overflow:0}; }
+  if (u.kw.includes('carapaca')){ amt = Math.max(0, amt - 1); if (!amt){ fxCell(side,l,d,'🐚 0','sh'); return {dealt:0, overflow:0}; } }
+  const before = u.hp; u.hp -= amt;
+  let t = '-' + amt;
+  if (u.hp <= 0) killUnit(side,l,d,u);
+  else {
+    if (src && src.kw.includes('veneno') && !u.poison){ u.poison = true; t += ' 🧪'; }
+    if (u.kw.includes('furia')){ u.atk++; t += ' 💢'; }
+  }
+  fxCell(side,l,d,t,'dmg');
+  return {dealt:Math.min(amt, before), overflow:Math.max(0, amt - before)};
+}
+function hitHero(side, amt){ S[side].hp -= amt; fxHero(side, '-' + amt, 'dmg'); }
+function castSpell(side, cid, tg){
+  const c = CARDS[cid], o = opp(side), u = S[tg.side].board[tg.l][tg.d];
+  if (c.sp === 'dmg') damageUnit(tg.side, tg.l, tg.d, c.v);
+  if (c.sp === 'buff'){ u.atk += c.a; u.hp += c.h; u.max += c.h; fxCell(tg.side, tg.l, tg.d, `+${c.a}/+${c.h}`, 'heal'); }
+  if (c.sp === 'shield'){ u.shield = true; fxCell(tg.side, tg.l, tg.d, '🛡️', 'sh'); }
+  if (c.sp === 'poison'){ u.poison = true; fxCell(tg.side, tg.l, tg.d, '🧪', 'dmg'); }
+  if (c.sp === 'lane') [0,1,2].forEach(d => { if (S[o].board[tg.l][d]) damageUnit(o, tg.l, d, c.v); });
+  if (c.sp === 'face') hitHero(o, c.v);
+  if (c.sp === 'heal'){ S[side].hp = Math.min(HERO_HP, S[side].hp + c.v); fxHero(side, '+' + c.v, 'heal'); }
+  if (c.sp === 'draw') for (let i = 0; i < c.v; i++) draw(side);
+  S.msg = `${who(side)} usou ${c.name}.`;
+}
+const needsUnit = c => ['dmg','buff','shield','poison'].includes(c.sp);
+
+function effAtkU(side,l,u){
+  let a = u.atk;
+  [0,1,2].forEach(dd => { const x = S[side].board[l][dd]; if (x && x !== u && x.kw.includes('lideranca')) a++; });
+  return a;
+}
+function effAtk(side,l,d){ const u = S[side].board[l][d]; return u ? effAtkU(side,l,u) : 0; }
+function attack(side, l, d, uArg){
+  const u = uArg || S[side].board[l][d]; if (!u) return;
+  const atk = effAtkU(side,l,u); if (atk <= 0) return;
+  const o = opp(side);
+  const occ = [0,1,2].filter(dd => S[o].board[l][dd]);
+  let dealt = 0;
+  if (!occ.length){ hitHero(o, atk); dealt = atk; }
+  else {
+    const idx = u.kw.includes('distancia') ? occ.length - 1 : 0;
+    const refl = S[o].board[l][occ[idx]].kw.includes('reflexo');
+    const r = damageUnit(o, l, occ[idx], atk, u); dealt = r.dealt;
+    if (refl && S[side].board[l][d] === u) damageUnit(side, l, d, 1);
+    if (u.kw.includes('perfurar') && r.overflow > 0){
+      const nd = occ[idx + 1];
+      if (nd !== undefined && S[o].board[l][nd]) dealt += damageUnit(o, l, nd, r.overflow, u).dealt;
+      else { hitHero(o, r.overflow); dealt += r.overflow; }
+    }
+  }
+  if (u.kw.includes('vampirico') && dealt > 0 && u){ S[side].hp = Math.min(HERO_HP, S[side].hp + dealt); fxHero(side, '+' + dealt, 'heal'); }
+}
+function battleOrder(side){
+  const list = [];
+  for (let l = 0; l < 3; l++) for (let d = 0; d < 3; d++){ const u = S[side].board[l][d]; if (u) list.push({l, d, u}); }
+  return list;
+}
+function findUnit(side, u){
+  for (let l = 0; l < 3; l++) for (let d = 0; d < 3; d++) if (S[side].board[l][d] === u) return {l, d};
+  return null;
+}
+async function battle(){
+  S.busy = true; S.turn = 'battle'; S.sel = null;
+  // 1) revela as criaturas do rival
+  const units = S.aiQueue.filter(q => q.t === 'unit');
+  if (units.length){
+    S.msg = 'O rival revela suas criaturas...'; render(); await sleep(600);
+    for (const q of units){ if (!S.e.board[q.l][q.d]) place('e', q.cid, q.l, q.d, q.ghost); render(); await sleep(450); }
+  }
+  // 2) magias dos dois lados
+  const spells = S.pQueue.map(q => ({side:'p', ...q})).concat(S.aiQueue.filter(q => q.t === 'spell').map(q => ({side:'e', cid:q.cid, tg:q.tg})))
+    .sort((a,b) => (SUPPORT.includes(CARDS[a.cid].sp) ? 0 : 1) - (SUPPORT.includes(CARDS[b.cid].sp) ? 0 : 1));
+  if (spells.length){ S.msg = 'Magias!'; render(); await sleep(450); }
+  for (const q of spells){
+    const c = CARDS[q.cid], tg = q.tg, u = S[tg.side].board[tg.l][tg.d];
+    if (!needsUnit(c) || (u && u.entered !== S.turnNo)) castSpell(q.side, q.cid, tg);
+    else S.msg = `${CARDS[q.cid].name} ${q.side === 'p' ? '(sua)' : 'do rival'} perdeu o alvo.`;
+    render(); await sleep(650);
+    if (checkOver()){ render(); return; }
+  }
+  S.pQueue = []; S.aiQueue = [];
+  // 3) efeitos de chegada (investida, duplicar, etc.)
+  for (const side of ['p','e']){
+    for (const {l, d, u} of battleOrder(side)){
+      if (!u.pending || S[side].board[l][d] !== u) continue;
+      arrive(side, l, d, u); render(); await sleep(550);
+      if (checkOver()){ render(); return; }
+    }
+  }
+  // 4) enfrentamento fileira por fileira: na mesma fileira, a n-ésima criatura de cada lado ataca junto
+  S.msg = 'Batalha!'; render(); await sleep(450);
+  for (let row = 0; row < 3; row++){
+  const P = battleOrder('p').filter(x => x.l === row), E = battleOrder('e').filter(x => x.l === row);
+  for (let i = 0; i < Math.max(P.length, E.length); i++){
+    const pe = P[i] && findUnit('p', P[i].u) ? {...findUnit('p', P[i].u), u:P[i].u} : null;
+    const ee = E[i] && findUnit('e', E[i].u) ? {...findUnit('e', E[i].u), u:E[i].u} : null;
+    if (!pe && !ee) continue;
+    S.active = []; if (pe) S.active.push({side:'p', l:pe.l, d:pe.d}); if (ee) S.active.push({side:'e', l:ee.l, d:ee.d});
+    render(); await sleep(320);
+    if (pe) attack('p', pe.l, pe.d, pe.u);
+    if (ee) attack('e', ee.l, ee.d, ee.u);
+    S.active = null; render(); await sleep(480);
+    if (checkOver()){ render(); return; }
+  }
+  }
+  startRound();
+}
+
+/* ---------- IA do rival ---------- */
+function aiCell(c, res){
+  const E = S.e, P = S.p; let best = null, bs = -1e9;
+  for (let l = 0; l < 3; l++){
+    const empty = [0,1,2].filter(d => !E.board[l][d] && !res.has(l + ',' + d)); if (!empty.length) continue;
+    const pu = [0,1,2].map(d => P.board[l][d]).filter(Boolean);
+    const ou = [0,1,2].filter(d => E.board[l][d] || res.has(l + ',' + d));
+    const threat = pu.reduce((s,u) => s + u.atk, 0);
+    let s;
+    if (pu.length && !ou.length) s = 10 + threat;
+    else if (!pu.length) s = 6 + c.atk - ou.length * 2;
+    else s = 3 + threat - ou.length * 2;
+    s += Math.random();
+    if (s > bs){ bs = s; const tank = c.hp > c.atk || c.kw.includes('escudo'); best = {l, d: tank ? empty[0] : empty[empty.length - 1]}; }
+  }
+  return best;
+}
+function aiSpell(c){
+  const E = S.e, P = S.p; let best = null, bs = -1e9;
+  const each = (side, fn) => { for (let l = 0; l < 3; l++) for (let d = 0; d < 3; d++){ const u = S[side].board[l][d]; if (u && u.entered !== S.turnNo) fn(u, l, d); } };
+  if (c.sp === 'dmg') each('p', (u,l,d) => { const s = ((!u.shield && u.hp <= c.v) ? 10 : 0) + u.atk - (u.shield ? 3 : 0); if (s > bs){ bs = s; best = {side:'p', l, d}; } });
+  if (c.sp === 'poison') each('p', (u,l,d) => { if (!u.poison && u.hp > bs){ bs = u.hp; best = {side:'p', l, d}; } });
+  if (c.sp === 'buff') each('e', (u,l,d) => { if (u.atk > bs){ bs = u.atk; best = {side:'e', l, d}; } });
+  if (c.sp === 'shield') each('e', (u,l,d) => { if (!u.shield && u.atk + u.hp > bs){ bs = u.atk + u.hp; best = {side:'e', l, d}; } });
+  if (c.sp === 'lane'){
+    for (let l = 0; l < 3; l++){
+      let s = 0;
+      [0,1,2].forEach(d => { const u = P.board[l][d]; if (u && !u.shield) s += Math.min(c.v, u.hp) + (u.hp <= c.v ? 3 : 0); });
+      if (s >= 3 && s > bs){ bs = s; best = {side:'p', l, d:0}; }
+    }
+  }
+  if (c.sp === 'face') best = {side:'p', l:0, d:0};
+  if (c.sp === 'heal' && E.hp <= HERO_HP - c.v) best = {side:'e', l:0, d:0};
+  if (c.sp === 'draw' && E.hand.length <= 4) best = {side:'e', l:0, d:0};
+  return best;
+}
+function aiPick(res){
+  const E = S.e;
+  const opts = E.hand.map((h,i) => ({i, c:CARDS[h.cid]})).filter(o => costOf('e', o.c) <= E.mana).sort((a,b) => b.c.cost - a.c.cost);
+  for (const o of opts){
+    if (o.c.type === 'unit'){ const cell = aiCell(o.c, res); if (cell) return {t:'play', i:o.i, l:cell.l, d:cell.d}; }
+    else { const tg = aiSpell(o.c); if (tg) return {t:'play', i:o.i, tg}; }
+  }
+  if (!E.recharged && E.hand.length >= 2){
+    const want = E.hand.findIndex(h => costOf('e', CARDS[h.cid]) === E.mana + 1);
+    if (want >= 0){
+      let burn = -1, bc = 99;
+      E.hand.forEach((h,i) => { if (i !== want && CARDS[h.cid].cost < bc){ bc = CARDS[h.cid].cost; burn = i; } });
+      if (burn >= 0) return {t:'recharge', i:burn};
+    }
+  }
+  return null;
+}
+function aiPlan(){
+  const E = S.e, res = new Set();
+  S.aiQueue = [];
+  for (let g = 0; g < 12; g++){
+    const act = aiPick(res); if (!act) break;
+    if (act.t === 'recharge'){ E.hand.splice(act.i, 1); E.mana++; E.recharged = true; continue; }
+    const h = E.hand[act.i], c = CARDS[h.cid];
+    E.mana -= costOf('e', c); E.hand.splice(act.i, 1);
+    if (c.type === 'unit'){ res.add(act.l + ',' + act.d); S.aiQueue.push({t:'unit', cid:h.cid, l:act.l, d:act.d, ghost:h.ghost}); }
+    else S.aiQueue.push({t:'spell', cid:h.cid, tg:act.tg});
+  }
+}
+
+/* ---------- jogador ---------- */
+function isValid(side,l,d){
+  if (!S || S.sel === null || S.turn !== 'p' || S.busy) return false;
+  const c = CARDS[S.p.hand[S.sel].cid];
+  if (costOf('p', c) > S.p.mana) return false;
+  const u = S[side].board[l][d];
+  if (c.type === 'unit') return side === 'p' && !u;
+  if (c.sp === 'dmg' || c.sp === 'poison') return side === 'e' && u && u.entered !== S.turnNo;
+  if (c.sp === 'buff' || c.sp === 'shield') return side === 'p' && u && u.entered !== S.turnNo;
+  if (c.sp === 'lane' || c.sp === 'face') return side === 'e';
+  if (c.sp === 'heal' || c.sp === 'draw') return side === 'p';
+  return false;
+}
+function hintFor(c){
+  if (c.type === 'unit') return 'Toque numa casa vazia do seu lado.';
+  if (c.sp === 'dmg' || c.sp === 'poison') return 'Toque numa criatura inimiga que já estava em campo.';
+  if (c.sp === 'buff' || c.sp === 'shield') return 'Toque numa criatura sua que já estava em campo antes desta rodada.';
+  if (c.sp === 'lane') return 'Toque em qualquer casa da linha inimiga.';
+  if (c.sp === 'face') return 'Toque em qualquer casa do lado inimigo.';
+  return 'Toque em qualquer casa do seu lado.';
+}
+
+let rotPref = true;
+try { rotPref = localStorage.getItem('rotPref') !== 'off'; } catch(e){}
+function applyOrient(){
+  const app = document.getElementById('app');
+  const W = window.innerWidth, H = window.innerHeight;
+  const rot = rotPref && H > W;
+  document.body.classList.toggle('rot', rot);
+  document.body.classList.toggle('land', rot || H <= 520);
+  if (rot){ app.style.width = H + 'px'; app.style.height = W + 'px'; }
+  else { app.style.width = ''; app.style.height = ''; }
+}
+window.addEventListener('resize', applyOrient);
+window.addEventListener('orientationchange', () => setTimeout(applyOrient, 150));
+async function tryLandscape(){
+  try {
+    const el = document.documentElement;
+    if (!document.fullscreenElement && el.requestFullscreen) await el.requestFullscreen();
+    if (screen.orientation && screen.orientation.lock) await screen.orientation.lock('landscape');
+  } catch(e){}
+  setTimeout(applyOrient, 200);
+}
+
+document.getElementById('app').addEventListener('click', e => {
+  const t = e.target.closest('[data-act]'); if (!t) return;
+  const a = t.dataset.act;
+  if (a === 'rot'){ rotPref = !rotPref; try { localStorage.setItem('rotPref', rotPref ? 'on' : 'off'); } catch(e){} applyOrient(); return; }
+  if (a === 'gal'){ GAL = t.dataset.r; GALSEL = null; render(); return; }
+  if (a === 'gcard'){ GALSEL = t.dataset.k; const sc = document.querySelector('.ov.gal'); const top = sc ? sc.scrollTop : 0; render(); const sc2 = document.querySelector('.ov.gal'); if (sc2) sc2.scrollTop = top; return; }
+  if (a === 'galback'){ GAL = null; render(); return; }
+  if (a === 'pick'){ tryLandscape(); newGame(t.dataset.r); return; }
+  if (a === 'again'){ newGame(S.p.sign); return; }
+  if (a === 'menu'){ S = null; render(); return; }
+  if (!S || S.over || S.busy || S.turn !== 'p') return;
+  const P = S.p;
+  if (a === 'hand'){
+    const i = +t.dataset.i;
+    S.sel = S.sel === i ? null : i;
+    if (S.sel !== null){
+      const c = CARDS[P.hand[i].cid];
+      S.msg = costOf('p', c) > P.mana ? `${c.name}: mana insuficiente. Você pode queimá-la por +1 de mana.` : `${c.name}: ${cardText(c)} ${hintFor(c)}`;
+    } else S.msg = 'Sua vez. Toque numa carta da mão.';
+    render(); return;
+  }
+  if (a === 'cell'){
+    const side = t.dataset.side, l = +t.dataset.l, d = +t.dataset.d;
+    const u = S[side].board[l][d];
+    if (S.sel === null){
+      if (u){ const c = CARDS[u.cid]; S.msg = `${c.name} (${effAtk(side,l,d)}/${u.hp}). ${cardText(c)}`; render(); }
+      return;
+    }
+    const h = P.hand[S.sel], c = CARDS[h.cid];
+    if (costOf('p', c) > P.mana){ S.msg = `Mana insuficiente para ${c.name}.`; render(); return; }
+    if (!isValid(side,l,d)){ S.msg = hintFor(c); render(); return; }
+    P.mana -= costOf('p', c); P.hand.splice(S.sel, 1); S.sel = null;
+    if (c.type === 'unit') place('p', h.cid, l, d, h.ghost);
+    else { S.pQueue.push({cid:h.cid, tg:{side, l, d}}); S.msg = `${c.name} preparada. Ela acontece primeiro, quando você tocar em Batalha.`; }
+    render(); return;
+  }
+  if (a === 'recharge'){
+    if (S.sel === null || P.recharged) return;
+    const c = CARDS[P.hand[S.sel].cid];
+    P.hand.splice(S.sel, 1); S.sel = null; P.mana++; P.recharged = true;
+    S.msg = `${c.name} queimada: +1 de mana nesta rodada.`;
+    render(); return;
+  }
+  if (a === 'punch'){
+    battle();
+  }
+});
+
+/* ---------- desenho ---------- */
+function cellHtml(side,l,d){
+  const u = S[side].board[l][d];
+  const cls = ['cell'];
+  if (d === 0) cls.push('front');
+  if (isValid(side,l,d)) cls.push('ok');
+  const a = S.active; if (a && a.some(x => x.side === side && x.l === l && x.d === d)) cls.push('atk');
+  const pend = (S.pQueue || []).filter(q => q.tg.side === side && q.tg.l === l && (CARDS[q.cid].sp === 'lane' || q.tg.d === d)).map(q => CARDS[q.cid].e).join('');
+  let inner = '';
+  if (u){
+    const c = CARDS[u.cid];
+    inner = `<div class="unit ${side === 'e' ? 'foe' : ''}" style="--rc:${RACES[c.race].c}"><span class="emo">${c.e}</span><span class="kws">${u.kw.filter(k => k !== 'escudo').map(k => KW[k].i).join('')}${u.poison ? '🤢' : ''}</span>${u.shield ? '<span class="shd">🛡️</span>' : ''}<b class="a"${effAtk(side,l,d) > u.atk ? ' style="background:#c98a12"' : ''}>${effAtk(side,l,d)}</b><b class="h">${u.hp}</b></div>`;
+  }
+  if (u && u.pending) inner = inner.replace('<span class="emo">', '<span class="pnd">⏳</span><span class="emo">');
+  return `<div class="${cls.join(' ')}" id="c-${side}-${l}-${d}" data-act="cell" data-side="${side}" data-l="${l}" data-d="${d}">${inner}${pend ? `<span class="spell-mark">${pend}</span>` : ''}</div>`;
+}
+function boardHtml(){
+  let h = '<div class="board">';
+  for (let l = 0; l < 3; l++){
+    h += '<div class="lane">';
+    [2,1,0].forEach(d => h += cellHtml('p',l,d));
+    h += '<div class="divider"></div>';
+    [0,1,2].forEach(d => h += cellHtml('e',l,d));
+    h += '</div>';
+  }
+  return h + '</div>';
+}
+function heroes(){
+  const E = S.e, P = S.p;
+  return `<div class="hero heroes"><div class="side"><button class="rotbtn" data-act="rot" aria-label="Alternar modo deitado">⟳</button><span class="av" style="color:${RACES[P.sign].c}">${RACES[P.sign].g}</span><div><div class="nm">Você</div><div class="sub">Deck ${P.deck.length}</div></div><span class="hp" id="hero-p">❤ ${Math.max(0,P.hp)}</span></div><div class="side"><span class="hp" id="hero-e">❤ ${Math.max(0,E.hp)}</span><span class="mana">💧 ${E.max}</span><div style="text-align:right"><div class="nm">Rival de ${RACES[E.sign].n}</div><div class="sub">Mão ${E.hand.length}, deck ${E.deck.length}</div></div><span class="av" style="color:${RACES[E.sign].c}">${RACES[E.sign].g}</span></div></div>`;
+}
+function pbar(){
+  const P = S.p, n = Math.max(P.max, P.mana);
+  let orbs = '';
+  for (let i = 0; i < n; i++) orbs += `<span class="orb ${i < P.mana ? (i >= P.max ? 'bonus' : 'on') : 'spent'}"></span>`;
+  const my = S.turn === 'p' && !S.busy && !S.over;
+  return `<div class="hero me"><div class="stats"><span class="orbs">${orbs}</span><span class="mtxt">${P.mana}/${P.max}</span></div><div class="acts"><button class="btn rc" data-act="recharge" ${my && S.sel !== null && !P.recharged ? '' : 'disabled'}>Queimar +1💧</button><button class="btn go" data-act="punch" ${my ? '' : 'disabled'}>Batalha!</button></div></div>`;
+}
+function cardHtml(c, cost, attrs, cls){
+  const body = c.type === 'unit'
+    ? `<span class="ck">${c.kw.map(k => KW[k].i).join('')}${c.on ? '⭐' : ''}</span><span class="st"><span class="x">⚔${c.atk}</span><span class="y">❤${c.hp}</span></span>`
+    : `<span class="sp">${c.text}</span>`;
+  return `<div class="card ${cls || ''}" style="--rc:${RACES[c.race].c};--rr:${RARITY[c.r || 'c'].col}" ${attrs || ''}><span class="cost">${cost}</span><span class="sg">${RACES[c.race].g}</span><span class="emo">${c.e}</span><span class="cn">${c.name}</span>${body}</div>`;
+}
+function handHtml(){
+  const P = S.p;
+  if (!P.hand.length) return '<div class="hand"><div class="empty">Sem cartas na mão.</div></div>';
+  return '<div class="hand">' + P.hand.map((h,i) => {
+    const c = CARDS[h.cid], cost = costOf('p', c);
+    const cls = []; if (S.sel === i) cls.push('sel'); if (cost > P.mana) cls.push('poor');
+    return cardHtml(c, cost, `data-act="hand" data-i="${i}" tabindex="0"`, cls.join(' '));
+  }).join('') + '</div>';
+}
+let GAL = null, GALSEL = null;
+function galleryScreen(){
+  const r = RACES[GAL];
+  const tabs = ORDER.map(k => `<button class="gtab ${k === GAL ? 'on' : ''}" data-act="gal" data-r="${k}" style="--rc:${RACES[k].c}" aria-label="${RACES[k].n}">${RACES[k].g}</button>`).join('');
+  const list = Object.keys(CARDS).filter(k => k !== 'eco' && CARDS[k].race === GAL).sort((a,b) => CARDS[a].cost - CARDS[b].cost || (CARDS[a].type > CARDS[b].type ? 1 : -1));
+  const cards = list.map(k => cardHtml(CARDS[k], CARDS[k].cost, `data-act="gcard" data-k="${k}" tabindex="0"`, GALSEL === k ? 'sel' : '')).join('');
+  const sel = GALSEL ? CARDS[GALSEL] : null;
+  const info = sel ? `<b>${sel.name}</b> (${RARITY[sel.r].n}${sel.type === 'unit' ? `, ${sel.atk}/${sel.hp}` : ', magia'}): ${cardText(sel)}` : 'Toque numa carta para ler o que ela faz.';
+  return `<div class="ov gal"><div class="panel wide">
+    <div class="gtop"><h2 style="color:${r.c}">${r.g} ${r.n}</h2><button class="btn rc" data-act="galback">Voltar</button></div>
+    <div class="gtabs">${tabs}</div>
+    <p class="ginfo">${info}</p>
+    <div class="ggrid">${cards}</div>
+  </div></div>`;
+}
+function startScreen(){
+  const cur = currentSign();
+  const signs = ORDER.map(k => { const r = RACES[k]; return `<button class="sign" data-act="pick" data-r="${k}" style="--rc:${r.c}">${k === cur ? '<span class="tag">Temporada</span>' : ''}<span class="g">${r.g}</span><span class="sn">${r.n}</span><span class="sm">${r.el}, ${r.m}</span></button>`; }).join('');
+  const legend = Object.values(KW).map(k => `<span>${k.i}</span><span>${k.n}: ${k.d}</span>`).join('') + '<span>⭐</span><span>Efeito ao entrar em campo.</span>';
+  return `<div class="ov"><div class="panel wide">
+    <h1>Arena dos Pactos</h1>
+    <p>Escolha o seu signo. Cada mundo tem seu próprio deck de 30 cartas. O rival vem de um signo aleatório.</p>
+    <div class="signs">${signs}</div>
+    <button class="btn rc" data-act="gal" data-r="${cur}" style="width:100%;margin-bottom:6px">Ver as 360 cartas</button>
+    <details><summary>Como jogar</summary>
+    <ul>
+      <li>Seu lado é o esquerdo. Invoque criaturas na sua grade 3x3 gastando mana. A coluna mais clara, perto do centro, é a da frente.</li>
+      <li>Você e o rival jogam ao mesmo tempo, cada um sem ver o que o outro está fazendo.</li>
+      <li>Toque em Batalha: as criaturas do rival são reveladas, depois as magias de fortalecer, depois as magias de dano, depois os efeitos de chegada (⏳).</li>
+      <li>Então a arena se enfrenta fileira por fileira, de cima para baixo. Na mesma fileira, a 1ª criatura de cada lado bate junto com a 1ª do outro, a 2ª com a 2ª, não importa a casa. A próxima fileira só começa quando todos os ataques da anterior terminam.</li>
+      <li>Cada criatura bate na primeira carta inimiga da sua linha. Linha vazia, o dano vai direto no herói.</li>
+      <li>A mana sobe +1 por rodada, até 9. Uma vez por rodada, selecione uma carta e queime-a para ganhar +1 de mana.</li>
+      <li>Zere os 30 de vida do rival. O botão ⟳ no topo liga ou desliga o modo deitado.</li>
+    </ul>
+    <div class="legend">${legend}</div>
+    </details>
+  </div></div>`;
+}
+function endScreen(){
+  const t = S.result === 'win' ? 'Vitória!' : S.result === 'draw' ? 'Empate' : 'Derrota';
+  const p = S.result === 'win' ? `${RACES[S.p.sign].n} venceu ${RACES[S.e.sign].n}.` : S.result === 'draw' ? 'Os dois heróis caíram juntos.' : `${RACES[S.e.sign].n} venceu desta vez.`;
+  return `<div class="ov"><div class="panel"><h2>${t}</h2><p>${p}</p><p>Rodadas jogadas: ${Math.ceil(S.turnNo / 2)}</p><div class="acts2"><button class="btn go" data-act="again">Revanche</button><button class="btn rc" data-act="menu">Trocar signo</button></div></div></div>`;
+}
+function render(){
+  const app = $('#app');
+  if (!S){ app.innerHTML = GAL ? galleryScreen() : startScreen(); return; }
+  const hs = app.querySelector('.hand'); const sl = hs ? hs.scrollLeft : 0;
+  app.innerHTML = heroes() + `<div class="table">${boardHtml()}<div class="mid" aria-live="polite">${S.msg}</div></div>` + `<div class="bottom">${pbar()}${handHtml()}</div>` + (S.screen === 'end' ? endScreen() : '');
+  const h2 = app.querySelector('.hand'); if (h2) h2.scrollLeft = sl;
+  flushFx();
+}
+applyOrient();
+render();
+</script>
+</body>
+</html>

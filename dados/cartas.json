@@ -1,0 +1,4788 @@
+{
+ "aries01": {
+  "name": "Carneiro Ígneo",
+  "race": "aries",
+  "type": "unit",
+  "cost": 1,
+  "atk": 1,
+  "hp": 1,
+  "kw": [
+   "investida"
+  ],
+  "e": "🐏",
+  "on": null,
+  "r": "c"
+ },
+ "aries02": {
+  "name": "Pajem de Marte",
+  "race": "aries",
+  "type": "unit",
+  "cost": 1,
+  "atk": 2,
+  "hp": 1,
+  "kw": [
+   "perfurar"
+  ],
+  "e": "🧒",
+  "on": null,
+  "r": "c"
+ },
+ "aries03": {
+  "name": "Cabrito de Brasa",
+  "race": "aries",
+  "type": "unit",
+  "cost": 1,
+  "atk": 1,
+  "hp": 1,
+  "kw": [
+   "investida"
+  ],
+  "e": "🐐",
+  "on": null,
+  "r": "c"
+ },
+ "aries04": {
+  "name": "Batedor Rubro",
+  "race": "aries",
+  "type": "unit",
+  "cost": 1,
+  "atk": 1,
+  "hp": 1,
+  "kw": [],
+  "e": "🏃",
+  "on": "face1",
+  "r": "c"
+ },
+ "aries05": {
+  "name": "Guerreira de Marte",
+  "race": "aries",
+  "type": "unit",
+  "cost": 2,
+  "atk": 3,
+  "hp": 1,
+  "kw": [
+   "investida"
+  ],
+  "e": "⚔️",
+  "on": null,
+  "r": "c"
+ },
+ "aries06": {
+  "name": "Lanceiro Ígneo",
+  "race": "aries",
+  "type": "unit",
+  "cost": 2,
+  "atk": 2,
+  "hp": 2,
+  "kw": [
+   "escudo"
+  ],
+  "e": "🔱",
+  "on": null,
+  "r": "c"
+ },
+ "aries07": {
+  "name": "Corredor das Cinzas",
+  "race": "aries",
+  "type": "unit",
+  "cost": 2,
+  "atk": 2,
+  "hp": 2,
+  "kw": [
+   "investida"
+  ],
+  "e": "🐎",
+  "on": null,
+  "r": "c"
+ },
+ "aries08": {
+  "name": "Escudeiro Rubro",
+  "race": "aries",
+  "type": "unit",
+  "cost": 2,
+  "atk": 3,
+  "hp": 1,
+  "kw": [
+   "investida"
+  ],
+  "e": "🛡️",
+  "on": null,
+  "r": "c"
+ },
+ "aries09": {
+  "name": "Arauto do Combate",
+  "race": "aries",
+  "type": "unit",
+  "cost": 2,
+  "atk": 2,
+  "hp": 2,
+  "kw": [
+   "perfurar"
+  ],
+  "e": "📯",
+  "on": null,
+  "r": "c"
+ },
+ "aries10": {
+  "name": "Carneiro de Guerra",
+  "race": "aries",
+  "type": "unit",
+  "cost": 3,
+  "atk": 3,
+  "hp": 3,
+  "kw": [
+   "investida"
+  ],
+  "e": "🐏",
+  "on": null,
+  "r": "r"
+ },
+ "aries11": {
+  "name": "Duelista Flamejante",
+  "race": "aries",
+  "type": "unit",
+  "cost": 3,
+  "atk": 4,
+  "hp": 2,
+  "kw": [],
+  "e": "🤺",
+  "on": "face1",
+  "r": "r"
+ },
+ "aries12": {
+  "name": "Domador de Brasas",
+  "race": "aries",
+  "type": "unit",
+  "cost": 3,
+  "atk": 3,
+  "hp": 3,
+  "kw": [
+   "investida"
+  ],
+  "e": "🦎",
+  "on": null,
+  "r": "r"
+ },
+ "aries13": {
+  "name": "Berserker Rubro",
+  "race": "aries",
+  "type": "unit",
+  "cost": 3,
+  "atk": 3,
+  "hp": 3,
+  "kw": [
+   "escudo"
+  ],
+  "e": "🪓",
+  "on": null,
+  "r": "r"
+ },
+ "aries14": {
+  "name": "Sentinela do Vulcão",
+  "race": "aries",
+  "type": "unit",
+  "cost": 3,
+  "atk": 4,
+  "hp": 2,
+  "kw": [
+   "investida"
+  ],
+  "e": "🌋",
+  "on": null,
+  "r": "r"
+ },
+ "aries15": {
+  "name": "Cavaleiro de Marte",
+  "race": "aries",
+  "type": "unit",
+  "cost": 4,
+  "atk": 4,
+  "hp": 4,
+  "kw": [
+   "perfurar"
+  ],
+  "e": "🐴",
+  "on": null,
+  "r": "r"
+ },
+ "aries16": {
+  "name": "Campeã da Arena",
+  "race": "aries",
+  "type": "unit",
+  "cost": 4,
+  "atk": 4,
+  "hp": 4,
+  "kw": [
+   "investida"
+  ],
+  "e": "🏆",
+  "on": null,
+  "r": "r"
+ },
+ "aries17": {
+  "name": "Martelo Ígneo",
+  "race": "aries",
+  "type": "unit",
+  "cost": 4,
+  "atk": 5,
+  "hp": 3,
+  "kw": [],
+  "e": "🔨",
+  "on": "face1",
+  "r": "r"
+ },
+ "aries18": {
+  "name": "Fênix Jovem",
+  "race": "aries",
+  "type": "unit",
+  "cost": 4,
+  "atk": 4,
+  "hp": 4,
+  "kw": [
+   "investida"
+  ],
+  "e": "🦅",
+  "on": null,
+  "r": "r"
+ },
+ "aries19": {
+  "name": "Campeão do Vulcão",
+  "race": "aries",
+  "type": "unit",
+  "cost": 5,
+  "atk": 6,
+  "hp": 4,
+  "kw": [
+   "escudo"
+  ],
+  "e": "🌋",
+  "on": null,
+  "r": "e"
+ },
+ "aries20": {
+  "name": "General Rubro",
+  "race": "aries",
+  "type": "unit",
+  "cost": 5,
+  "atk": 6,
+  "hp": 3,
+  "kw": [
+   "investida"
+  ],
+  "e": "🎖️",
+  "on": "face1",
+  "r": "e"
+ },
+ "aries21": {
+  "name": "Carneiro Colossal",
+  "race": "aries",
+  "type": "unit",
+  "cost": 5,
+  "atk": 5,
+  "hp": 5,
+  "kw": [
+   "perfurar"
+  ],
+  "e": "🐏",
+  "on": null,
+  "r": "e"
+ },
+ "aries22": {
+  "name": "Titã das Brasas",
+  "race": "aries",
+  "type": "unit",
+  "cost": 6,
+  "atk": 7,
+  "hp": 5,
+  "kw": [
+   "investida"
+  ],
+  "e": "🔥",
+  "on": null,
+  "r": "e"
+ },
+ "aries23": {
+  "name": "Senhor da Guerra",
+  "race": "aries",
+  "type": "unit",
+  "cost": 6,
+  "atk": 7,
+  "hp": 5,
+  "kw": [],
+  "e": "👹",
+  "on": "face1",
+  "r": "e"
+ },
+ "aries24": {
+  "name": "Marte Encarnado",
+  "race": "aries",
+  "type": "unit",
+  "cost": 7,
+  "atk": 8,
+  "hp": 7,
+  "kw": [
+   "investida",
+   "escudo"
+  ],
+  "e": "☄️",
+  "on": null,
+  "r": "l"
+ },
+ "aries25": {
+  "name": "Áries, o Carneiro Dourado",
+  "race": "aries",
+  "type": "unit",
+  "cost": 8,
+  "atk": 10,
+  "hp": 7,
+  "kw": [
+   "investida",
+   "perfurar"
+  ],
+  "e": "🐏",
+  "on": null,
+  "r": "l"
+ },
+ "ariess1": {
+  "name": "Golpe Flamejante",
+  "race": "aries",
+  "type": "spell",
+  "cost": 1,
+  "sp": "dmg",
+  "e": "💥",
+  "r": "c",
+  "kw": [],
+  "v": 2
+ },
+ "ariess2": {
+  "name": "Grito de Guerra",
+  "race": "aries",
+  "type": "spell",
+  "cost": 1,
+  "sp": "buff",
+  "e": "📯",
+  "r": "c",
+  "kw": [],
+  "a": 2,
+  "h": 0
+ },
+ "ariess3": {
+  "name": "Chuva de Brasas",
+  "race": "aries",
+  "type": "spell",
+  "cost": 3,
+  "sp": "lane",
+  "e": "🔥",
+  "r": "r",
+  "kw": [],
+  "v": 2
+ },
+ "ariess4": {
+  "name": "Fúria de Marte",
+  "race": "aries",
+  "type": "spell",
+  "cost": 3,
+  "sp": "buff",
+  "e": "😤",
+  "r": "r",
+  "kw": [],
+  "a": 3,
+  "h": 1
+ },
+ "ariess5": {
+  "name": "Meteoro",
+  "race": "aries",
+  "type": "spell",
+  "cost": 5,
+  "sp": "dmg",
+  "e": "☄️",
+  "r": "e",
+  "kw": [],
+  "v": 5
+ },
+ "touro01": {
+  "name": "Bezerro Teimoso",
+  "race": "touro",
+  "type": "unit",
+  "cost": 1,
+  "atk": 1,
+  "hp": 1,
+  "kw": [
+   "furia"
+  ],
+  "e": "🐂",
+  "on": null,
+  "r": "c"
+ },
+ "touro02": {
+  "name": "Vaqueira do Vale",
+  "race": "touro",
+  "type": "unit",
+  "cost": 1,
+  "atk": 1,
+  "hp": 1,
+  "kw": [
+   "escudo"
+  ],
+  "e": "🤠",
+  "on": null,
+  "r": "c"
+ },
+ "touro03": {
+  "name": "Coelho do Campo",
+  "race": "touro",
+  "type": "unit",
+  "cost": 1,
+  "atk": 1,
+  "hp": 1,
+  "kw": [
+   "furia"
+  ],
+  "e": "🐇",
+  "on": null,
+  "r": "c"
+ },
+ "touro04": {
+  "name": "Aprendiz de Ferreiro",
+  "race": "touro",
+  "type": "unit",
+  "cost": 1,
+  "atk": 1,
+  "hp": 1,
+  "kw": [],
+  "e": "⚒️",
+  "on": "heal2",
+  "r": "c"
+ },
+ "touro05": {
+  "name": "Guardião do Vale",
+  "race": "touro",
+  "type": "unit",
+  "cost": 2,
+  "atk": 2,
+  "hp": 2,
+  "kw": [
+   "furia"
+  ],
+  "e": "🛡️",
+  "on": null,
+  "r": "c"
+ },
+ "touro06": {
+  "name": "Boi de Arado",
+  "race": "touro",
+  "type": "unit",
+  "cost": 2,
+  "atk": 1,
+  "hp": 3,
+  "kw": [
+   "vampirico"
+  ],
+  "e": "🐄",
+  "on": null,
+  "r": "c"
+ },
+ "touro07": {
+  "name": "Pastor das Colinas",
+  "race": "touro",
+  "type": "unit",
+  "cost": 2,
+  "atk": 1,
+  "hp": 3,
+  "kw": [
+   "furia"
+  ],
+  "e": "🧑‍🌾",
+  "on": null,
+  "r": "c"
+ },
+ "touro08": {
+  "name": "Javali Robusto",
+  "race": "touro",
+  "type": "unit",
+  "cost": 2,
+  "atk": 2,
+  "hp": 2,
+  "kw": [
+   "furia"
+  ],
+  "e": "🐗",
+  "on": null,
+  "r": "c"
+ },
+ "touro09": {
+  "name": "Golem de Barro",
+  "race": "touro",
+  "type": "unit",
+  "cost": 2,
+  "atk": 1,
+  "hp": 3,
+  "kw": [
+   "escudo"
+  ],
+  "e": "🧱",
+  "on": null,
+  "r": "c"
+ },
+ "touro10": {
+  "name": "Touro de Bronze",
+  "race": "touro",
+  "type": "unit",
+  "cost": 3,
+  "atk": 2,
+  "hp": 4,
+  "kw": [
+   "furia"
+  ],
+  "e": "🐃",
+  "on": null,
+  "r": "r"
+ },
+ "touro11": {
+  "name": "Ferreiro do Vale",
+  "race": "touro",
+  "type": "unit",
+  "cost": 3,
+  "atk": 3,
+  "hp": 3,
+  "kw": [],
+  "e": "🔨",
+  "on": "heal2",
+  "r": "r"
+ },
+ "touro12": {
+  "name": "Sentinela de Pedra",
+  "race": "touro",
+  "type": "unit",
+  "cost": 3,
+  "atk": 2,
+  "hp": 4,
+  "kw": [
+   "furia"
+  ],
+  "e": "🗿",
+  "on": null,
+  "r": "r"
+ },
+ "touro13": {
+  "name": "Búfalo Bravo",
+  "race": "touro",
+  "type": "unit",
+  "cost": 3,
+  "atk": 2,
+  "hp": 4,
+  "kw": [
+   "vampirico"
+  ],
+  "e": "🐃",
+  "on": null,
+  "r": "r"
+ },
+ "touro14": {
+  "name": "Guardiã dos Campos",
+  "race": "touro",
+  "type": "unit",
+  "cost": 3,
+  "atk": 3,
+  "hp": 3,
+  "kw": [
+   "furia"
+  ],
+  "e": "🌾",
+  "on": null,
+  "r": "r"
+ },
+ "touro15": {
+  "name": "Minotauro",
+  "race": "touro",
+  "type": "unit",
+  "cost": 4,
+  "atk": 2,
+  "hp": 6,
+  "kw": [
+   "escudo"
+  ],
+  "e": "🪓",
+  "on": null,
+  "r": "r"
+ },
+ "touro16": {
+  "name": "Rinoceronte de Ferro",
+  "race": "touro",
+  "type": "unit",
+  "cost": 4,
+  "atk": 3,
+  "hp": 5,
+  "kw": [
+   "furia"
+  ],
+  "e": "🦏",
+  "on": null,
+  "r": "r"
+ },
+ "touro17": {
+  "name": "Colosso de Barro",
+  "race": "touro",
+  "type": "unit",
+  "cost": 4,
+  "atk": 3,
+  "hp": 5,
+  "kw": [],
+  "e": "🧱",
+  "on": "heal2",
+  "r": "r"
+ },
+ "touro18": {
+  "name": "Druida da Terra",
+  "race": "touro",
+  "type": "unit",
+  "cost": 4,
+  "atk": 2,
+  "hp": 6,
+  "kw": [
+   "furia"
+  ],
+  "e": "🌳",
+  "on": null,
+  "r": "r"
+ },
+ "touro19": {
+  "name": "Touro de Ouro",
+  "race": "touro",
+  "type": "unit",
+  "cost": 5,
+  "atk": 4,
+  "hp": 6,
+  "kw": [
+   "vampirico"
+  ],
+  "e": "🐂",
+  "on": null,
+  "r": "e"
+ },
+ "touro20": {
+  "name": "Guardião do Templo",
+  "race": "touro",
+  "type": "unit",
+  "cost": 5,
+  "atk": 4,
+  "hp": 5,
+  "kw": [
+   "furia"
+  ],
+  "e": "🏛️",
+  "on": "heal2",
+  "r": "e"
+ },
+ "touro21": {
+  "name": "Mamute Ancestral",
+  "race": "touro",
+  "type": "unit",
+  "cost": 5,
+  "atk": 3,
+  "hp": 7,
+  "kw": [
+   "escudo"
+  ],
+  "e": "🦣",
+  "on": null,
+  "r": "e"
+ },
+ "touro22": {
+  "name": "Colosso Taurino",
+  "race": "touro",
+  "type": "unit",
+  "cost": 6,
+  "atk": 4,
+  "hp": 8,
+  "kw": [
+   "furia"
+  ],
+  "e": "🗿",
+  "on": null,
+  "r": "e"
+ },
+ "touro23": {
+  "name": "Rei do Vale",
+  "race": "touro",
+  "type": "unit",
+  "cost": 6,
+  "atk": 5,
+  "hp": 7,
+  "kw": [],
+  "e": "👑",
+  "on": "heal2",
+  "r": "e"
+ },
+ "touro24": {
+  "name": "Gigante da Montanha",
+  "race": "touro",
+  "type": "unit",
+  "cost": 7,
+  "atk": 5,
+  "hp": 10,
+  "kw": [
+   "furia",
+   "vampirico"
+  ],
+  "e": "⛰️",
+  "on": null,
+  "r": "l"
+ },
+ "touro25": {
+  "name": "Touro, o Indomável",
+  "race": "touro",
+  "type": "unit",
+  "cost": 8,
+  "atk": 6,
+  "hp": 11,
+  "kw": [
+   "furia",
+   "escudo"
+  ],
+  "e": "🐂",
+  "on": null,
+  "r": "l"
+ },
+ "touros1": {
+  "name": "Pele de Bronze",
+  "race": "touro",
+  "type": "spell",
+  "cost": 1,
+  "sp": "shield",
+  "e": "🛡️",
+  "r": "c",
+  "kw": [],
+  "v": 0
+ },
+ "touros2": {
+  "name": "Força da Terra",
+  "race": "touro",
+  "type": "spell",
+  "cost": 2,
+  "sp": "buff",
+  "e": "💪",
+  "r": "c",
+  "kw": [],
+  "a": 1,
+  "h": 3
+ },
+ "touros3": {
+  "name": "Banquete",
+  "race": "touro",
+  "type": "spell",
+  "cost": 2,
+  "sp": "heal",
+  "e": "🍖",
+  "r": "c",
+  "kw": [],
+  "v": 5
+ },
+ "touros4": {
+  "name": "Chifrada",
+  "race": "touro",
+  "type": "spell",
+  "cost": 2,
+  "sp": "dmg",
+  "e": "🐂",
+  "r": "c",
+  "kw": [],
+  "v": 3
+ },
+ "touros5": {
+  "name": "Terremoto",
+  "race": "touro",
+  "type": "spell",
+  "cost": 4,
+  "sp": "lane",
+  "e": "🌍",
+  "r": "r",
+  "kw": [],
+  "v": 2
+ },
+ "gemeos01": {
+  "name": "Gêmeo Travesso",
+  "race": "gemeos",
+  "type": "unit",
+  "cost": 1,
+  "atk": 1,
+  "hp": 1,
+  "kw": [],
+  "e": "🎭",
+  "on": "twin",
+  "r": "c"
+ },
+ "gemeos02": {
+  "name": "Pardal Mensageiro",
+  "race": "gemeos",
+  "type": "unit",
+  "cost": 1,
+  "atk": 2,
+  "hp": 1,
+  "kw": [
+   "distancia"
+  ],
+  "e": "🐦",
+  "on": null,
+  "r": "c"
+ },
+ "gemeos03": {
+  "name": "Menestrel",
+  "race": "gemeos",
+  "type": "unit",
+  "cost": 1,
+  "atk": 1,
+  "hp": 1,
+  "kw": [],
+  "e": "🎶",
+  "on": "twin",
+  "r": "c"
+ },
+ "gemeos04": {
+  "name": "Pajem Curioso",
+  "race": "gemeos",
+  "type": "unit",
+  "cost": 1,
+  "atk": 1,
+  "hp": 1,
+  "kw": [],
+  "e": "🧒",
+  "on": "draw",
+  "r": "c"
+ },
+ "gemeos05": {
+  "name": "Bardo dos Ventos",
+  "race": "gemeos",
+  "type": "unit",
+  "cost": 2,
+  "atk": 2,
+  "hp": 1,
+  "kw": [],
+  "e": "🪶",
+  "on": "twin",
+  "r": "c"
+ },
+ "gemeos06": {
+  "name": "Duplo Sombrio",
+  "race": "gemeos",
+  "type": "unit",
+  "cost": 2,
+  "atk": 1,
+  "hp": 3,
+  "kw": [
+   "reflexo"
+  ],
+  "e": "👥",
+  "on": null,
+  "r": "c"
+ },
+ "gemeos07": {
+  "name": "Malabarista",
+  "race": "gemeos",
+  "type": "unit",
+  "cost": 2,
+  "atk": 1,
+  "hp": 2,
+  "kw": [],
+  "e": "🤹",
+  "on": "twin",
+  "r": "c"
+ },
+ "gemeos08": {
+  "name": "Arqueiro Gêmeo",
+  "race": "gemeos",
+  "type": "unit",
+  "cost": 2,
+  "atk": 2,
+  "hp": 1,
+  "kw": [],
+  "e": "🏹",
+  "on": "twin",
+  "r": "c"
+ },
+ "gemeos09": {
+  "name": "Contadora de Histórias",
+  "race": "gemeos",
+  "type": "unit",
+  "cost": 2,
+  "atk": 1,
+  "hp": 3,
+  "kw": [
+   "distancia"
+  ],
+  "e": "📖",
+  "on": null,
+  "r": "c"
+ },
+ "gemeos10": {
+  "name": "Ilusionista Espelhado",
+  "race": "gemeos",
+  "type": "unit",
+  "cost": 3,
+  "atk": 2,
+  "hp": 3,
+  "kw": [],
+  "e": "🪞",
+  "on": "twin",
+  "r": "r"
+ },
+ "gemeos11": {
+  "name": "Dançarina do Vento",
+  "race": "gemeos",
+  "type": "unit",
+  "cost": 3,
+  "atk": 3,
+  "hp": 3,
+  "kw": [],
+  "e": "💃",
+  "on": "draw",
+  "r": "r"
+ },
+ "gemeos12": {
+  "name": "Mago das Palavras",
+  "race": "gemeos",
+  "type": "unit",
+  "cost": 3,
+  "atk": 2,
+  "hp": 3,
+  "kw": [],
+  "e": "📜",
+  "on": "twin",
+  "r": "r"
+ },
+ "gemeos13": {
+  "name": "Raposa Astuta",
+  "race": "gemeos",
+  "type": "unit",
+  "cost": 3,
+  "atk": 3,
+  "hp": 3,
+  "kw": [
+   "reflexo"
+  ],
+  "e": "🦊",
+  "on": null,
+  "r": "r"
+ },
+ "gemeos14": {
+  "name": "Eco Errante",
+  "race": "gemeos",
+  "type": "unit",
+  "cost": 3,
+  "atk": 3,
+  "hp": 2,
+  "kw": [],
+  "e": "🌬️",
+  "on": "twin",
+  "r": "r"
+ },
+ "gemeos15": {
+  "name": "Mestre dos Espelhos",
+  "race": "gemeos",
+  "type": "unit",
+  "cost": 4,
+  "atk": 3,
+  "hp": 5,
+  "kw": [
+   "distancia"
+  ],
+  "e": "🪞",
+  "on": null,
+  "r": "r"
+ },
+ "gemeos16": {
+  "name": "Irmãos Acrobatas",
+  "race": "gemeos",
+  "type": "unit",
+  "cost": 4,
+  "atk": 3,
+  "hp": 4,
+  "kw": [],
+  "e": "🤸",
+  "on": "twin",
+  "r": "r"
+ },
+ "gemeos17": {
+  "name": "Cronista Alado",
+  "race": "gemeos",
+  "type": "unit",
+  "cost": 4,
+  "atk": 4,
+  "hp": 4,
+  "kw": [],
+  "e": "🕊️",
+  "on": "draw",
+  "r": "r"
+ },
+ "gemeos18": {
+  "name": "Trapaceiro",
+  "race": "gemeos",
+  "type": "unit",
+  "cost": 4,
+  "atk": 3,
+  "hp": 4,
+  "kw": [],
+  "e": "🃏",
+  "on": "twin",
+  "r": "r"
+ },
+ "gemeos19": {
+  "name": "Castor e Pólux",
+  "race": "gemeos",
+  "type": "unit",
+  "cost": 5,
+  "atk": 5,
+  "hp": 5,
+  "kw": [
+   "reflexo"
+  ],
+  "e": "♊",
+  "on": null,
+  "r": "e"
+ },
+ "gemeos20": {
+  "name": "Guardião dos Ventos",
+  "race": "gemeos",
+  "type": "unit",
+  "cost": 5,
+  "atk": 5,
+  "hp": 4,
+  "kw": [],
+  "e": "🌪️",
+  "on": "twin",
+  "r": "e"
+ },
+ "gemeos21": {
+  "name": "Arauto Duplo",
+  "race": "gemeos",
+  "type": "unit",
+  "cost": 5,
+  "atk": 4,
+  "hp": 6,
+  "kw": [
+   "distancia"
+  ],
+  "e": "📯",
+  "on": null,
+  "r": "e"
+ },
+ "gemeos22": {
+  "name": "Grifo Mensageiro",
+  "race": "gemeos",
+  "type": "unit",
+  "cost": 6,
+  "atk": 5,
+  "hp": 6,
+  "kw": [],
+  "e": "🦅",
+  "on": "twin",
+  "r": "e"
+ },
+ "gemeos23": {
+  "name": "Sábio Bifronte",
+  "race": "gemeos",
+  "type": "unit",
+  "cost": 6,
+  "atk": 6,
+  "hp": 6,
+  "kw": [],
+  "e": "🎭",
+  "on": "draw",
+  "r": "e"
+ },
+ "gemeos24": {
+  "name": "Tempestade Gêmea",
+  "race": "gemeos",
+  "type": "unit",
+  "cost": 7,
+  "atk": 6,
+  "hp": 8,
+  "kw": [
+   "reflexo"
+  ],
+  "e": "🌀",
+  "on": "twin",
+  "r": "l"
+ },
+ "gemeos25": {
+  "name": "Gêmeos, o Duplo Eterno",
+  "race": "gemeos",
+  "type": "unit",
+  "cost": 8,
+  "atk": 7,
+  "hp": 9,
+  "kw": [
+   "distancia"
+  ],
+  "e": "♊",
+  "on": "twin",
+  "r": "l"
+ },
+ "gemeoss1": {
+  "name": "Lâmina Gêmea",
+  "race": "gemeos",
+  "type": "spell",
+  "cost": 1,
+  "sp": "dmg",
+  "e": "🗡️",
+  "r": "c",
+  "kw": [],
+  "v": 2
+ },
+ "gemeoss2": {
+  "name": "Reflexo Espelhado",
+  "race": "gemeos",
+  "type": "spell",
+  "cost": 1,
+  "sp": "shield",
+  "e": "🪞",
+  "r": "c",
+  "kw": [],
+  "v": 0
+ },
+ "gemeoss3": {
+  "name": "Sopro Gêmeo",
+  "race": "gemeos",
+  "type": "spell",
+  "cost": 1,
+  "sp": "lane",
+  "e": "💨",
+  "r": "c",
+  "kw": [],
+  "v": 1
+ },
+ "gemeoss4": {
+  "name": "Truque Duplo",
+  "race": "gemeos",
+  "type": "spell",
+  "cost": 2,
+  "sp": "draw",
+  "e": "🃏",
+  "r": "c",
+  "kw": [],
+  "v": 2
+ },
+ "gemeoss5": {
+  "name": "Ventania Dupla",
+  "race": "gemeos",
+  "type": "spell",
+  "cost": 3,
+  "sp": "lane",
+  "e": "🌪️",
+  "r": "r",
+  "kw": [],
+  "v": 2
+ },
+ "cancer01": {
+  "name": "Caranguejo Lunar",
+  "race": "cancer",
+  "type": "unit",
+  "cost": 1,
+  "atk": 1,
+  "hp": 1,
+  "kw": [
+   "carapaca"
+  ],
+  "e": "🦀",
+  "on": null,
+  "r": "c"
+ },
+ "cancer02": {
+  "name": "Concha Viva",
+  "race": "cancer",
+  "type": "unit",
+  "cost": 1,
+  "atk": 2,
+  "hp": 1,
+  "kw": [
+   "escudo"
+  ],
+  "e": "🐚",
+  "on": null,
+  "r": "c"
+ },
+ "cancer03": {
+  "name": "Siri Guardião",
+  "race": "cancer",
+  "type": "unit",
+  "cost": 1,
+  "atk": 1,
+  "hp": 1,
+  "kw": [
+   "carapaca"
+  ],
+  "e": "🦀",
+  "on": null,
+  "r": "c"
+ },
+ "cancer04": {
+  "name": "Ostra Brilhante",
+  "race": "cancer",
+  "type": "unit",
+  "cost": 1,
+  "atk": 1,
+  "hp": 1,
+  "kw": [],
+  "e": "🦪",
+  "on": "volley",
+  "r": "c"
+ },
+ "cancer05": {
+  "name": "Sentinela da Praia",
+  "race": "cancer",
+  "type": "unit",
+  "cost": 2,
+  "atk": 2,
+  "hp": 2,
+  "kw": [
+   "carapaca"
+  ],
+  "e": "🛡️",
+  "on": null,
+  "r": "c"
+ },
+ "cancer06": {
+  "name": "Tartaruguinha",
+  "race": "cancer",
+  "type": "unit",
+  "cost": 2,
+  "atk": 1,
+  "hp": 3,
+  "kw": [
+   "vampirico"
+  ],
+  "e": "🐢",
+  "on": null,
+  "r": "c"
+ },
+ "cancer07": {
+  "name": "Pescadora Lunar",
+  "race": "cancer",
+  "type": "unit",
+  "cost": 2,
+  "atk": 2,
+  "hp": 2,
+  "kw": [
+   "carapaca"
+  ],
+  "e": "🎣",
+  "on": null,
+  "r": "c"
+ },
+ "cancer08": {
+  "name": "Estrela-do-Mar",
+  "race": "cancer",
+  "type": "unit",
+  "cost": 2,
+  "atk": 2,
+  "hp": 2,
+  "kw": [
+   "carapaca"
+  ],
+  "e": "⭐",
+  "on": null,
+  "r": "c"
+ },
+ "cancer09": {
+  "name": "Lontra da Maré",
+  "race": "cancer",
+  "type": "unit",
+  "cost": 2,
+  "atk": 1,
+  "hp": 3,
+  "kw": [
+   "escudo"
+  ],
+  "e": "🦦",
+  "on": null,
+  "r": "c"
+ },
+ "cancer10": {
+  "name": "Sentinela da Maré",
+  "race": "cancer",
+  "type": "unit",
+  "cost": 3,
+  "atk": 3,
+  "hp": 3,
+  "kw": [
+   "carapaca"
+  ],
+  "e": "🌙",
+  "on": null,
+  "r": "r"
+ },
+ "cancer11": {
+  "name": "Caranguejo Ermitão",
+  "race": "cancer",
+  "type": "unit",
+  "cost": 3,
+  "atk": 3,
+  "hp": 3,
+  "kw": [],
+  "e": "🐚",
+  "on": "volley",
+  "r": "r"
+ },
+ "cancer12": {
+  "name": "Guardiã do Farol",
+  "race": "cancer",
+  "type": "unit",
+  "cost": 3,
+  "atk": 2,
+  "hp": 4,
+  "kw": [
+   "carapaca"
+  ],
+  "e": "🗼",
+  "on": null,
+  "r": "r"
+ },
+ "cancer13": {
+  "name": "Polvo Protetor",
+  "race": "cancer",
+  "type": "unit",
+  "cost": 3,
+  "atk": 3,
+  "hp": 3,
+  "kw": [
+   "vampirico"
+  ],
+  "e": "🐙",
+  "on": null,
+  "r": "r"
+ },
+ "cancer14": {
+  "name": "Sacerdotisa da Lua",
+  "race": "cancer",
+  "type": "unit",
+  "cost": 3,
+  "atk": 3,
+  "hp": 3,
+  "kw": [
+   "carapaca"
+  ],
+  "e": "🌕",
+  "on": null,
+  "r": "r"
+ },
+ "cancer15": {
+  "name": "Lagosta Couraçada",
+  "race": "cancer",
+  "type": "unit",
+  "cost": 4,
+  "atk": 3,
+  "hp": 5,
+  "kw": [
+   "escudo"
+  ],
+  "e": "🦞",
+  "on": null,
+  "r": "r"
+ },
+ "cancer16": {
+  "name": "Matriarca da Costa",
+  "race": "cancer",
+  "type": "unit",
+  "cost": 4,
+  "atk": 4,
+  "hp": 4,
+  "kw": [
+   "carapaca"
+  ],
+  "e": "👵",
+  "on": null,
+  "r": "r"
+ },
+ "cancer17": {
+  "name": "Foca Guardiã",
+  "race": "cancer",
+  "type": "unit",
+  "cost": 4,
+  "atk": 4,
+  "hp": 4,
+  "kw": [],
+  "e": "🦭",
+  "on": "volley",
+  "r": "r"
+ },
+ "cancer18": {
+  "name": "Tritão Jovem",
+  "race": "cancer",
+  "type": "unit",
+  "cost": 4,
+  "atk": 3,
+  "hp": 5,
+  "kw": [
+   "carapaca"
+  ],
+  "e": "🔱",
+  "on": null,
+  "r": "r"
+ },
+ "cancer19": {
+  "name": "Crustáceo Ancião",
+  "race": "cancer",
+  "type": "unit",
+  "cost": 5,
+  "atk": 4,
+  "hp": 6,
+  "kw": [
+   "vampirico"
+  ],
+  "e": "🐢",
+  "on": null,
+  "r": "e"
+ },
+ "cancer20": {
+  "name": "Guardião das Marés",
+  "race": "cancer",
+  "type": "unit",
+  "cost": 5,
+  "atk": 5,
+  "hp": 4,
+  "kw": [
+   "carapaca"
+  ],
+  "e": "🌊",
+  "on": "volley",
+  "r": "e"
+ },
+ "cancer21": {
+  "name": "Rainha das Conchas",
+  "race": "cancer",
+  "type": "unit",
+  "cost": 5,
+  "atk": 4,
+  "hp": 6,
+  "kw": [
+   "escudo"
+  ],
+  "e": "👑",
+  "on": null,
+  "r": "e"
+ },
+ "cancer22": {
+  "name": "Kraken da Baía",
+  "race": "cancer",
+  "type": "unit",
+  "cost": 6,
+  "atk": 5,
+  "hp": 7,
+  "kw": [
+   "carapaca"
+  ],
+  "e": "🦑",
+  "on": null,
+  "r": "e"
+ },
+ "cancer23": {
+  "name": "Tartaruga Continente",
+  "race": "cancer",
+  "type": "unit",
+  "cost": 6,
+  "atk": 6,
+  "hp": 6,
+  "kw": [],
+  "e": "🐢",
+  "on": "volley",
+  "r": "e"
+ },
+ "cancer24": {
+  "name": "Fortaleza Viva",
+  "race": "cancer",
+  "type": "unit",
+  "cost": 7,
+  "atk": 6,
+  "hp": 9,
+  "kw": [
+   "carapaca",
+   "vampirico"
+  ],
+  "e": "🏰",
+  "on": null,
+  "r": "l"
+ },
+ "cancer25": {
+  "name": "Câncer, o Caranguejo Celeste",
+  "race": "cancer",
+  "type": "unit",
+  "cost": 8,
+  "atk": 8,
+  "hp": 9,
+  "kw": [
+   "carapaca",
+   "escudo"
+  ],
+  "e": "🦀",
+  "on": null,
+  "r": "l"
+ },
+ "cancers1": {
+  "name": "Concha Lunar",
+  "race": "cancer",
+  "type": "spell",
+  "cost": 1,
+  "sp": "shield",
+  "e": "🐚",
+  "r": "c",
+  "kw": [],
+  "v": 0
+ },
+ "cancers2": {
+  "name": "Pinça Cortante",
+  "race": "cancer",
+  "type": "spell",
+  "cost": 2,
+  "sp": "dmg",
+  "e": "🦀",
+  "r": "c",
+  "kw": [],
+  "v": 3
+ },
+ "cancers3": {
+  "name": "Maré Alta",
+  "race": "cancer",
+  "type": "spell",
+  "cost": 2,
+  "sp": "buff",
+  "e": "🌊",
+  "r": "c",
+  "kw": [],
+  "a": 0,
+  "h": 4
+ },
+ "cancers4": {
+  "name": "Abraço da Lua",
+  "race": "cancer",
+  "type": "spell",
+  "cost": 2,
+  "sp": "heal",
+  "e": "🌙",
+  "r": "c",
+  "kw": [],
+  "v": 4
+ },
+ "cancers5": {
+  "name": "Onda Lunar",
+  "race": "cancer",
+  "type": "spell",
+  "cost": 4,
+  "sp": "lane",
+  "e": "🌊",
+  "r": "r",
+  "kw": [],
+  "v": 2
+ },
+ "leao01": {
+  "name": "Filhote Solar",
+  "race": "leao",
+  "type": "unit",
+  "cost": 1,
+  "atk": 1,
+  "hp": 1,
+  "kw": [
+   "lideranca"
+  ],
+  "e": "🐈",
+  "on": null,
+  "r": "c"
+ },
+ "leao02": {
+  "name": "Pajem Real",
+  "race": "leao",
+  "type": "unit",
+  "cost": 1,
+  "atk": 2,
+  "hp": 1,
+  "kw": [
+   "perfurar"
+  ],
+  "e": "👦",
+  "on": null,
+  "r": "c"
+ },
+ "leao03": {
+  "name": "Leoa Batedora",
+  "race": "leao",
+  "type": "unit",
+  "cost": 1,
+  "atk": 1,
+  "hp": 1,
+  "kw": [
+   "lideranca"
+  ],
+  "e": "🐆",
+  "on": null,
+  "r": "c"
+ },
+ "leao04": {
+  "name": "Arauto Dourado",
+  "race": "leao",
+  "type": "unit",
+  "cost": 1,
+  "atk": 1,
+  "hp": 1,
+  "kw": [],
+  "e": "📯",
+  "on": "face1",
+  "r": "c"
+ },
+ "leao05": {
+  "name": "Guarda do Sol",
+  "race": "leao",
+  "type": "unit",
+  "cost": 2,
+  "atk": 3,
+  "hp": 1,
+  "kw": [
+   "lideranca"
+  ],
+  "e": "🦁",
+  "on": null,
+  "r": "c"
+ },
+ "leao06": {
+  "name": "Leoa Caçadora",
+  "race": "leao",
+  "type": "unit",
+  "cost": 2,
+  "atk": 2,
+  "hp": 2,
+  "kw": [
+   "escudo"
+  ],
+  "e": "🐆",
+  "on": null,
+  "r": "c"
+ },
+ "leao07": {
+  "name": "Escudeiro Real",
+  "race": "leao",
+  "type": "unit",
+  "cost": 2,
+  "atk": 2,
+  "hp": 2,
+  "kw": [
+   "lideranca"
+  ],
+  "e": "🛡️",
+  "on": null,
+  "r": "c"
+ },
+ "leao08": {
+  "name": "Porta-Estandarte",
+  "race": "leao",
+  "type": "unit",
+  "cost": 2,
+  "atk": 3,
+  "hp": 1,
+  "kw": [
+   "lideranca"
+  ],
+  "e": "🚩",
+  "on": null,
+  "r": "c"
+ },
+ "leao09": {
+  "name": "Lince Dourado",
+  "race": "leao",
+  "type": "unit",
+  "cost": 2,
+  "atk": 2,
+  "hp": 2,
+  "kw": [
+   "perfurar"
+  ],
+  "e": "🐈",
+  "on": null,
+  "r": "c"
+ },
+ "leao10": {
+  "name": "Leão da Savana",
+  "race": "leao",
+  "type": "unit",
+  "cost": 3,
+  "atk": 3,
+  "hp": 3,
+  "kw": [
+   "lideranca"
+  ],
+  "e": "🦁",
+  "on": null,
+  "r": "r"
+ },
+ "leao11": {
+  "name": "Capitã da Guarda",
+  "race": "leao",
+  "type": "unit",
+  "cost": 3,
+  "atk": 4,
+  "hp": 2,
+  "kw": [],
+  "e": "💂",
+  "on": "face1",
+  "r": "r"
+ },
+ "leao12": {
+  "name": "Sacerdote Solar",
+  "race": "leao",
+  "type": "unit",
+  "cost": 3,
+  "atk": 3,
+  "hp": 3,
+  "kw": [
+   "lideranca"
+  ],
+  "e": "☀️",
+  "on": null,
+  "r": "r"
+ },
+ "leao13": {
+  "name": "Guerreiro Dourado",
+  "race": "leao",
+  "type": "unit",
+  "cost": 3,
+  "atk": 3,
+  "hp": 3,
+  "kw": [
+   "escudo"
+  ],
+  "e": "⚔️",
+  "on": null,
+  "r": "r"
+ },
+ "leao14": {
+  "name": "Pantera Real",
+  "race": "leao",
+  "type": "unit",
+  "cost": 3,
+  "atk": 4,
+  "hp": 2,
+  "kw": [
+   "lideranca"
+  ],
+  "e": "🐈‍⬛",
+  "on": null,
+  "r": "r"
+ },
+ "leao15": {
+  "name": "Comandante Solar",
+  "race": "leao",
+  "type": "unit",
+  "cost": 4,
+  "atk": 4,
+  "hp": 4,
+  "kw": [
+   "perfurar"
+  ],
+  "e": "🎖️",
+  "on": null,
+  "r": "r"
+ },
+ "leao16": {
+  "name": "Leão Alado",
+  "race": "leao",
+  "type": "unit",
+  "cost": 4,
+  "atk": 4,
+  "hp": 4,
+  "kw": [
+   "lideranca"
+  ],
+  "e": "🦁",
+  "on": null,
+  "r": "r"
+ },
+ "leao17": {
+  "name": "Cavaleiro do Sol",
+  "race": "leao",
+  "type": "unit",
+  "cost": 4,
+  "atk": 5,
+  "hp": 3,
+  "kw": [],
+  "e": "🐴",
+  "on": "face1",
+  "r": "r"
+ },
+ "leao18": {
+  "name": "Juba de Fogo",
+  "race": "leao",
+  "type": "unit",
+  "cost": 4,
+  "atk": 4,
+  "hp": 4,
+  "kw": [
+   "lideranca"
+  ],
+  "e": "🔥",
+  "on": null,
+  "r": "r"
+ },
+ "leao19": {
+  "name": "Rei da Savana",
+  "race": "leao",
+  "type": "unit",
+  "cost": 5,
+  "atk": 6,
+  "hp": 4,
+  "kw": [
+   "escudo"
+  ],
+  "e": "🦁",
+  "on": null,
+  "r": "e"
+ },
+ "leao20": {
+  "name": "Paladino Solar",
+  "race": "leao",
+  "type": "unit",
+  "cost": 5,
+  "atk": 6,
+  "hp": 3,
+  "kw": [
+   "lideranca"
+  ],
+  "e": "✨",
+  "on": "face1",
+  "r": "e"
+ },
+ "leao21": {
+  "name": "Esfinge Guardiã",
+  "race": "leao",
+  "type": "unit",
+  "cost": 5,
+  "atk": 5,
+  "hp": 5,
+  "kw": [
+   "perfurar"
+  ],
+  "e": "🗿",
+  "on": null,
+  "r": "e"
+ },
+ "leao22": {
+  "name": "Monarca Solar",
+  "race": "leao",
+  "type": "unit",
+  "cost": 6,
+  "atk": 7,
+  "hp": 5,
+  "kw": [
+   "lideranca"
+  ],
+  "e": "☀️",
+  "on": null,
+  "r": "e"
+ },
+ "leao23": {
+  "name": "Leão de Nemeia",
+  "race": "leao",
+  "type": "unit",
+  "cost": 6,
+  "atk": 7,
+  "hp": 5,
+  "kw": [],
+  "e": "🦁",
+  "on": "face1",
+  "r": "e"
+ },
+ "leao24": {
+  "name": "Imperador Dourado",
+  "race": "leao",
+  "type": "unit",
+  "cost": 7,
+  "atk": 8,
+  "hp": 7,
+  "kw": [
+   "lideranca",
+   "escudo"
+  ],
+  "e": "👑",
+  "on": null,
+  "r": "l"
+ },
+ "leao25": {
+  "name": "Leão, o Coração do Sol",
+  "race": "leao",
+  "type": "unit",
+  "cost": 8,
+  "atk": 10,
+  "hp": 7,
+  "kw": [
+   "lideranca",
+   "perfurar"
+  ],
+  "e": "🦁",
+  "on": null,
+  "r": "l"
+ },
+ "leaos1": {
+  "name": "Bênção Solar",
+  "race": "leao",
+  "type": "spell",
+  "cost": 1,
+  "sp": "buff",
+  "e": "✨",
+  "r": "c",
+  "kw": [],
+  "a": 1,
+  "h": 1
+ },
+ "leaos2": {
+  "name": "Raio de Sol",
+  "race": "leao",
+  "type": "spell",
+  "cost": 2,
+  "sp": "dmg",
+  "e": "☀️",
+  "r": "c",
+  "kw": [],
+  "v": 3
+ },
+ "leaos3": {
+  "name": "Glória",
+  "race": "leao",
+  "type": "spell",
+  "cost": 2,
+  "sp": "heal",
+  "e": "🏆",
+  "r": "c",
+  "kw": [],
+  "v": 4
+ },
+ "leaos4": {
+  "name": "Rugido",
+  "race": "leao",
+  "type": "spell",
+  "cost": 3,
+  "sp": "buff",
+  "e": "🦁",
+  "r": "r",
+  "kw": [],
+  "a": 2,
+  "h": 2
+ },
+ "leaos5": {
+  "name": "Chamas Reais",
+  "race": "leao",
+  "type": "spell",
+  "cost": 5,
+  "sp": "lane",
+  "e": "🔥",
+  "r": "e",
+  "kw": [],
+  "v": 3
+ },
+ "virgem01": {
+  "name": "Jardineira",
+  "race": "virgem",
+  "type": "unit",
+  "cost": 1,
+  "atk": 1,
+  "hp": 1,
+  "kw": [
+   "cura"
+  ],
+  "e": "🌼",
+  "on": null,
+  "r": "c"
+ },
+ "virgem02": {
+  "name": "Abelha Operária",
+  "race": "virgem",
+  "type": "unit",
+  "cost": 1,
+  "atk": 1,
+  "hp": 1,
+  "kw": [
+   "escudo"
+  ],
+  "e": "🐝",
+  "on": null,
+  "r": "c"
+ },
+ "virgem03": {
+  "name": "Aprendiz Herbalista",
+  "race": "virgem",
+  "type": "unit",
+  "cost": 1,
+  "atk": 1,
+  "hp": 1,
+  "kw": [
+   "cura"
+  ],
+  "e": "🌿",
+  "on": null,
+  "r": "c"
+ },
+ "virgem04": {
+  "name": "Coruja Sábia",
+  "race": "virgem",
+  "type": "unit",
+  "cost": 1,
+  "atk": 1,
+  "hp": 1,
+  "kw": [],
+  "e": "🦉",
+  "on": "heal2",
+  "r": "c"
+ },
+ "virgem05": {
+  "name": "Curandeira do Trigo",
+  "race": "virgem",
+  "type": "unit",
+  "cost": 2,
+  "atk": 2,
+  "hp": 2,
+  "kw": [
+   "cura"
+  ],
+  "e": "🌾",
+  "on": null,
+  "r": "c"
+ },
+ "virgem06": {
+  "name": "Guardiã do Pomar",
+  "race": "virgem",
+  "type": "unit",
+  "cost": 2,
+  "atk": 1,
+  "hp": 3,
+  "kw": [
+   "reflexo"
+  ],
+  "e": "🍎",
+  "on": null,
+  "r": "c"
+ },
+ "virgem07": {
+  "name": "Ervanária",
+  "race": "virgem",
+  "type": "unit",
+  "cost": 2,
+  "atk": 1,
+  "hp": 3,
+  "kw": [
+   "cura"
+  ],
+  "e": "🌱",
+  "on": null,
+  "r": "c"
+ },
+ "virgem08": {
+  "name": "Ceifeira",
+  "race": "virgem",
+  "type": "unit",
+  "cost": 2,
+  "atk": 2,
+  "hp": 2,
+  "kw": [
+   "cura"
+  ],
+  "e": "🌾",
+  "on": null,
+  "r": "c"
+ },
+ "virgem09": {
+  "name": "Monge Silencioso",
+  "race": "virgem",
+  "type": "unit",
+  "cost": 2,
+  "atk": 1,
+  "hp": 3,
+  "kw": [
+   "escudo"
+  ],
+  "e": "🧘",
+  "on": null,
+  "r": "c"
+ },
+ "virgem10": {
+  "name": "Sacerdotisa da Colheita",
+  "race": "virgem",
+  "type": "unit",
+  "cost": 3,
+  "atk": 2,
+  "hp": 4,
+  "kw": [
+   "cura"
+  ],
+  "e": "🧝",
+  "on": null,
+  "r": "r"
+ },
+ "virgem11": {
+  "name": "Ent do Pomar",
+  "race": "virgem",
+  "type": "unit",
+  "cost": 3,
+  "atk": 3,
+  "hp": 3,
+  "kw": [],
+  "e": "🌳",
+  "on": "heal2",
+  "r": "r"
+ },
+ "virgem12": {
+  "name": "Médica do Vilarejo",
+  "race": "virgem",
+  "type": "unit",
+  "cost": 3,
+  "atk": 2,
+  "hp": 4,
+  "kw": [
+   "cura"
+  ],
+  "e": "🩺",
+  "on": null,
+  "r": "r"
+ },
+ "virgem13": {
+  "name": "Cervo Sagrado",
+  "race": "virgem",
+  "type": "unit",
+  "cost": 3,
+  "atk": 2,
+  "hp": 4,
+  "kw": [
+   "reflexo"
+  ],
+  "e": "🦌",
+  "on": null,
+  "r": "r"
+ },
+ "virgem14": {
+  "name": "Tecelã",
+  "race": "virgem",
+  "type": "unit",
+  "cost": 3,
+  "atk": 3,
+  "hp": 3,
+  "kw": [
+   "cura"
+  ],
+  "e": "🧵",
+  "on": null,
+  "r": "r"
+ },
+ "virgem15": {
+  "name": "Guardião do Celeiro",
+  "race": "virgem",
+  "type": "unit",
+  "cost": 4,
+  "atk": 2,
+  "hp": 6,
+  "kw": [
+   "escudo"
+  ],
+  "e": "🏚️",
+  "on": null,
+  "r": "r"
+ },
+ "virgem16": {
+  "name": "Abelha Rainha",
+  "race": "virgem",
+  "type": "unit",
+  "cost": 4,
+  "atk": 3,
+  "hp": 5,
+  "kw": [
+   "cura"
+  ],
+  "e": "🐝",
+  "on": null,
+  "r": "r"
+ },
+ "virgem17": {
+  "name": "Druidesa",
+  "race": "virgem",
+  "type": "unit",
+  "cost": 4,
+  "atk": 3,
+  "hp": 5,
+  "kw": [],
+  "e": "🍃",
+  "on": "heal2",
+  "r": "r"
+ },
+ "virgem18": {
+  "name": "Unicórnio do Bosque",
+  "race": "virgem",
+  "type": "unit",
+  "cost": 4,
+  "atk": 2,
+  "hp": 6,
+  "kw": [
+   "cura"
+  ],
+  "e": "🦄",
+  "on": null,
+  "r": "r"
+ },
+ "virgem19": {
+  "name": "Mãe da Colheita",
+  "race": "virgem",
+  "type": "unit",
+  "cost": 5,
+  "atk": 4,
+  "hp": 6,
+  "kw": [
+   "reflexo"
+  ],
+  "e": "👩‍🌾",
+  "on": null,
+  "r": "e"
+ },
+ "virgem20": {
+  "name": "Árvore Anciã",
+  "race": "virgem",
+  "type": "unit",
+  "cost": 5,
+  "atk": 4,
+  "hp": 5,
+  "kw": [
+   "cura"
+  ],
+  "e": "🌳",
+  "on": "heal2",
+  "r": "e"
+ },
+ "virgem21": {
+  "name": "Arquivista",
+  "race": "virgem",
+  "type": "unit",
+  "cost": 5,
+  "atk": 3,
+  "hp": 7,
+  "kw": [
+   "escudo"
+  ],
+  "e": "📚",
+  "on": null,
+  "r": "e"
+ },
+ "virgem22": {
+  "name": "Guardiã Virgem",
+  "race": "virgem",
+  "type": "unit",
+  "cost": 6,
+  "atk": 4,
+  "hp": 8,
+  "kw": [
+   "cura"
+  ],
+  "e": "🛡️",
+  "on": null,
+  "r": "e"
+ },
+ "virgem23": {
+  "name": "Santuário Vivo",
+  "race": "virgem",
+  "type": "unit",
+  "cost": 6,
+  "atk": 5,
+  "hp": 7,
+  "kw": [],
+  "e": "⛩️",
+  "on": "heal2",
+  "r": "e"
+ },
+ "virgem24": {
+  "name": "Vestal Eterna",
+  "race": "virgem",
+  "type": "unit",
+  "cost": 7,
+  "atk": 5,
+  "hp": 10,
+  "kw": [
+   "cura",
+   "reflexo"
+  ],
+  "e": "🕯️",
+  "on": null,
+  "r": "l"
+ },
+ "virgem25": {
+  "name": "Virgem, a Guardiã da Colheita",
+  "race": "virgem",
+  "type": "unit",
+  "cost": 8,
+  "atk": 6,
+  "hp": 11,
+  "kw": [
+   "cura",
+   "escudo"
+  ],
+  "e": "🌾",
+  "on": null,
+  "r": "l"
+ },
+ "virgems1": {
+  "name": "Erva Curativa",
+  "race": "virgem",
+  "type": "spell",
+  "cost": 1,
+  "sp": "heal",
+  "e": "🌿",
+  "r": "c",
+  "kw": [],
+  "v": 4
+ },
+ "virgems2": {
+  "name": "Escudo de Trigo",
+  "race": "virgem",
+  "type": "spell",
+  "cost": 1,
+  "sp": "shield",
+  "e": "🌾",
+  "r": "c",
+  "kw": [],
+  "v": 0
+ },
+ "virgems3": {
+  "name": "Espinhos",
+  "race": "virgem",
+  "type": "spell",
+  "cost": 1,
+  "sp": "dmg",
+  "e": "🌵",
+  "r": "c",
+  "kw": [],
+  "v": 2
+ },
+ "virgems4": {
+  "name": "Fortalecer",
+  "race": "virgem",
+  "type": "spell",
+  "cost": 1,
+  "sp": "buff",
+  "e": "🍃",
+  "r": "c",
+  "kw": [],
+  "a": 1,
+  "h": 2
+ },
+ "virgems5": {
+  "name": "Colheita",
+  "race": "virgem",
+  "type": "spell",
+  "cost": 3,
+  "sp": "draw",
+  "e": "🧺",
+  "r": "r",
+  "kw": [],
+  "v": 2
+ },
+ "libra01": {
+  "name": "Pajem da Balança",
+  "race": "libra",
+  "type": "unit",
+  "cost": 1,
+  "atk": 1,
+  "hp": 1,
+  "kw": [
+   "reflexo"
+  ],
+  "e": "📜",
+  "on": null,
+  "r": "c"
+ },
+ "libra02": {
+  "name": "Escriba",
+  "race": "libra",
+  "type": "unit",
+  "cost": 1,
+  "atk": 2,
+  "hp": 1,
+  "kw": [
+   "escudo"
+  ],
+  "e": "🪶",
+  "on": null,
+  "r": "c"
+ },
+ "libra03": {
+  "name": "Pomba da Paz",
+  "race": "libra",
+  "type": "unit",
+  "cost": 1,
+  "atk": 1,
+  "hp": 1,
+  "kw": [
+   "reflexo"
+  ],
+  "e": "🕊️",
+  "on": null,
+  "r": "c"
+ },
+ "libra04": {
+  "name": "Mensageiro da Corte",
+  "race": "libra",
+  "type": "unit",
+  "cost": 1,
+  "atk": 1,
+  "hp": 1,
+  "kw": [],
+  "e": "📨",
+  "on": "draw",
+  "r": "c"
+ },
+ "libra05": {
+  "name": "Juíza da Balança",
+  "race": "libra",
+  "type": "unit",
+  "cost": 2,
+  "atk": 2,
+  "hp": 2,
+  "kw": [
+   "reflexo"
+  ],
+  "e": "⚖️",
+  "on": null,
+  "r": "c"
+ },
+ "libra06": {
+  "name": "Guarda da Corte",
+  "race": "libra",
+  "type": "unit",
+  "cost": 2,
+  "atk": 1,
+  "hp": 3,
+  "kw": [
+   "distancia"
+  ],
+  "e": "💂",
+  "on": null,
+  "r": "c"
+ },
+ "libra07": {
+  "name": "Advogado",
+  "race": "libra",
+  "type": "unit",
+  "cost": 2,
+  "atk": 2,
+  "hp": 2,
+  "kw": [
+   "reflexo"
+  ],
+  "e": "📜",
+  "on": null,
+  "r": "c"
+ },
+ "libra08": {
+  "name": "Duelista Justo",
+  "race": "libra",
+  "type": "unit",
+  "cost": 2,
+  "atk": 2,
+  "hp": 2,
+  "kw": [
+   "reflexo"
+  ],
+  "e": "🤺",
+  "on": null,
+  "r": "c"
+ },
+ "libra09": {
+  "name": "Cisne Elegante",
+  "race": "libra",
+  "type": "unit",
+  "cost": 2,
+  "atk": 1,
+  "hp": 3,
+  "kw": [
+   "escudo"
+  ],
+  "e": "🦢",
+  "on": null,
+  "r": "c"
+ },
+ "libra10": {
+  "name": "Mediadora",
+  "race": "libra",
+  "type": "unit",
+  "cost": 3,
+  "atk": 3,
+  "hp": 3,
+  "kw": [
+   "reflexo"
+  ],
+  "e": "🤝",
+  "on": null,
+  "r": "r"
+ },
+ "libra11": {
+  "name": "Cavaleiro da Lei",
+  "race": "libra",
+  "type": "unit",
+  "cost": 3,
+  "atk": 3,
+  "hp": 3,
+  "kw": [],
+  "e": "🛡️",
+  "on": "draw",
+  "r": "r"
+ },
+ "libra12": {
+  "name": "Harpista",
+  "race": "libra",
+  "type": "unit",
+  "cost": 3,
+  "atk": 2,
+  "hp": 4,
+  "kw": [
+   "reflexo"
+  ],
+  "e": "🎻",
+  "on": null,
+  "r": "r"
+ },
+ "libra13": {
+  "name": "Arcanjo Menor",
+  "race": "libra",
+  "type": "unit",
+  "cost": 3,
+  "atk": 3,
+  "hp": 3,
+  "kw": [
+   "distancia"
+  ],
+  "e": "😇",
+  "on": null,
+  "r": "r"
+ },
+ "libra14": {
+  "name": "Guardiã do Equilíbrio",
+  "race": "libra",
+  "type": "unit",
+  "cost": 3,
+  "atk": 3,
+  "hp": 3,
+  "kw": [
+   "reflexo"
+  ],
+  "e": "☯️",
+  "on": null,
+  "r": "r"
+ },
+ "libra15": {
+  "name": "Guardião Justo",
+  "race": "libra",
+  "type": "unit",
+  "cost": 4,
+  "atk": 3,
+  "hp": 5,
+  "kw": [
+   "escudo"
+  ],
+  "e": "🏛️",
+  "on": null,
+  "r": "r"
+ },
+ "libra16": {
+  "name": "Inquisidor",
+  "race": "libra",
+  "type": "unit",
+  "cost": 4,
+  "atk": 4,
+  "hp": 4,
+  "kw": [
+   "reflexo"
+  ],
+  "e": "🔍",
+  "on": null,
+  "r": "r"
+ },
+ "libra17": {
+  "name": "Embaixadora",
+  "race": "libra",
+  "type": "unit",
+  "cost": 4,
+  "atk": 4,
+  "hp": 4,
+  "kw": [],
+  "e": "🎀",
+  "on": "draw",
+  "r": "r"
+ },
+ "libra18": {
+  "name": "Grifo da Justiça",
+  "race": "libra",
+  "type": "unit",
+  "cost": 4,
+  "atk": 3,
+  "hp": 5,
+  "kw": [
+   "reflexo"
+  ],
+  "e": "🦅",
+  "on": null,
+  "r": "r"
+ },
+ "libra19": {
+  "name": "Alta Juíza",
+  "race": "libra",
+  "type": "unit",
+  "cost": 5,
+  "atk": 5,
+  "hp": 5,
+  "kw": [
+   "distancia"
+  ],
+  "e": "⚖️",
+  "on": null,
+  "r": "e"
+ },
+ "libra20": {
+  "name": "Paladino da Ordem",
+  "race": "libra",
+  "type": "unit",
+  "cost": 5,
+  "atk": 5,
+  "hp": 4,
+  "kw": [
+   "reflexo"
+  ],
+  "e": "🛡️",
+  "on": "draw",
+  "r": "e"
+ },
+ "libra21": {
+  "name": "Templo Vivo",
+  "race": "libra",
+  "type": "unit",
+  "cost": 5,
+  "atk": 4,
+  "hp": 6,
+  "kw": [
+   "escudo"
+  ],
+  "e": "🏛️",
+  "on": null,
+  "r": "e"
+ },
+ "libra22": {
+  "name": "Arcanjo da Balança",
+  "race": "libra",
+  "type": "unit",
+  "cost": 6,
+  "atk": 6,
+  "hp": 6,
+  "kw": [
+   "reflexo"
+  ],
+  "e": "😇",
+  "on": null,
+  "r": "e"
+ },
+ "libra23": {
+  "name": "Conselheiro Ancião",
+  "race": "libra",
+  "type": "unit",
+  "cost": 6,
+  "atk": 6,
+  "hp": 6,
+  "kw": [],
+  "e": "🧙",
+  "on": "draw",
+  "r": "e"
+ },
+ "libra24": {
+  "name": "Têmis, a Justa",
+  "race": "libra",
+  "type": "unit",
+  "cost": 7,
+  "atk": 6,
+  "hp": 9,
+  "kw": [
+   "reflexo",
+   "distancia"
+  ],
+  "e": "⚖️",
+  "on": null,
+  "r": "l"
+ },
+ "libra25": {
+  "name": "Libra, a Balança Cósmica",
+  "race": "libra",
+  "type": "unit",
+  "cost": 8,
+  "atk": 8,
+  "hp": 9,
+  "kw": [
+   "reflexo",
+   "escudo"
+  ],
+  "e": "⚖️",
+  "on": null,
+  "r": "l"
+ },
+ "libras1": {
+  "name": "Selo da Lei",
+  "race": "libra",
+  "type": "spell",
+  "cost": 1,
+  "sp": "shield",
+  "e": "📜",
+  "r": "c",
+  "kw": [],
+  "v": 0
+ },
+ "libras2": {
+  "name": "Equidade",
+  "race": "libra",
+  "type": "spell",
+  "cost": 1,
+  "sp": "heal",
+  "e": "☯️",
+  "r": "c",
+  "kw": [],
+  "v": 3
+ },
+ "libras3": {
+  "name": "Peso Justo",
+  "race": "libra",
+  "type": "spell",
+  "cost": 2,
+  "sp": "dmg",
+  "e": "⚖️",
+  "r": "c",
+  "kw": [],
+  "v": 3
+ },
+ "libras4": {
+  "name": "Contrapeso",
+  "race": "libra",
+  "type": "spell",
+  "cost": 3,
+  "sp": "buff",
+  "e": "🤝",
+  "r": "r",
+  "kw": [],
+  "a": 2,
+  "h": 2
+ },
+ "libras5": {
+  "name": "Julgamento",
+  "race": "libra",
+  "type": "spell",
+  "cost": 3,
+  "sp": "lane",
+  "e": "🔨",
+  "r": "r",
+  "kw": [],
+  "v": 2
+ },
+ "escorpiao01": {
+  "name": "Escorpião do Pântano",
+  "race": "escorpiao",
+  "type": "unit",
+  "cost": 1,
+  "atk": 1,
+  "hp": 1,
+  "kw": [
+   "veneno"
+  ],
+  "e": "🦂",
+  "on": null,
+  "r": "c"
+ },
+ "escorpiao02": {
+  "name": "Aranha Tecelã",
+  "race": "escorpiao",
+  "type": "unit",
+  "cost": 1,
+  "atk": 2,
+  "hp": 1,
+  "kw": [
+   "vampirico"
+  ],
+  "e": "🕷️",
+  "on": null,
+  "r": "c"
+ },
+ "escorpiao03": {
+  "name": "Morcego Sombrio",
+  "race": "escorpiao",
+  "type": "unit",
+  "cost": 1,
+  "atk": 1,
+  "hp": 1,
+  "kw": [
+   "veneno"
+  ],
+  "e": "🦇",
+  "on": null,
+  "r": "c"
+ },
+ "escorpiao04": {
+  "name": "Sapo Venenoso",
+  "race": "escorpiao",
+  "type": "unit",
+  "cost": 1,
+  "atk": 1,
+  "hp": 1,
+  "kw": [],
+  "e": "🐸",
+  "on": "volley",
+  "r": "c"
+ },
+ "escorpiao05": {
+  "name": "Assassina Sombria",
+  "race": "escorpiao",
+  "type": "unit",
+  "cost": 2,
+  "atk": 2,
+  "hp": 2,
+  "kw": [
+   "veneno"
+  ],
+  "e": "🗡️",
+  "on": null,
+  "r": "c"
+ },
+ "escorpiao06": {
+  "name": "Serpente do Lodo",
+  "race": "escorpiao",
+  "type": "unit",
+  "cost": 2,
+  "atk": 1,
+  "hp": 3,
+  "kw": [
+   "escudo"
+  ],
+  "e": "🐍",
+  "on": null,
+  "r": "c"
+ },
+ "escorpiao07": {
+  "name": "Alquimista Tóxico",
+  "race": "escorpiao",
+  "type": "unit",
+  "cost": 2,
+  "atk": 2,
+  "hp": 2,
+  "kw": [
+   "veneno"
+  ],
+  "e": "⚗️",
+  "on": null,
+  "r": "c"
+ },
+ "escorpiao08": {
+  "name": "Guardião do Lodo",
+  "race": "escorpiao",
+  "type": "unit",
+  "cost": 2,
+  "atk": 2,
+  "hp": 2,
+  "kw": [
+   "veneno"
+  ],
+  "e": "🐊",
+  "on": null,
+  "r": "c"
+ },
+ "escorpiao09": {
+  "name": "Vespa Negra",
+  "race": "escorpiao",
+  "type": "unit",
+  "cost": 2,
+  "atk": 1,
+  "hp": 3,
+  "kw": [
+   "vampirico"
+  ],
+  "e": "🐝",
+  "on": null,
+  "r": "c"
+ },
+ "escorpiao10": {
+  "name": "Sacerdotisa do Lodo",
+  "race": "escorpiao",
+  "type": "unit",
+  "cost": 3,
+  "atk": 3,
+  "hp": 3,
+  "kw": [
+   "veneno"
+  ],
+  "e": "🐍",
+  "on": null,
+  "r": "r"
+ },
+ "escorpiao11": {
+  "name": "Caçador Noturno",
+  "race": "escorpiao",
+  "type": "unit",
+  "cost": 3,
+  "atk": 3,
+  "hp": 3,
+  "kw": [],
+  "e": "🌑",
+  "on": "volley",
+  "r": "r"
+ },
+ "escorpiao12": {
+  "name": "Escorpião Gigante",
+  "race": "escorpiao",
+  "type": "unit",
+  "cost": 3,
+  "atk": 2,
+  "hp": 4,
+  "kw": [
+   "veneno"
+  ],
+  "e": "🦂",
+  "on": null,
+  "r": "r"
+ },
+ "escorpiao13": {
+  "name": "Bruxa do Pântano",
+  "race": "escorpiao",
+  "type": "unit",
+  "cost": 3,
+  "atk": 3,
+  "hp": 3,
+  "kw": [
+   "escudo"
+  ],
+  "e": "🧙‍♀️",
+  "on": null,
+  "r": "r"
+ },
+ "escorpiao14": {
+  "name": "Centopeia Real",
+  "race": "escorpiao",
+  "type": "unit",
+  "cost": 3,
+  "atk": 3,
+  "hp": 3,
+  "kw": [
+   "veneno"
+  ],
+  "e": "🐛",
+  "on": null,
+  "r": "r"
+ },
+ "escorpiao15": {
+  "name": "Naga Sombria",
+  "race": "escorpiao",
+  "type": "unit",
+  "cost": 4,
+  "atk": 3,
+  "hp": 5,
+  "kw": [
+   "vampirico"
+  ],
+  "e": "🐍",
+  "on": null,
+  "r": "r"
+ },
+ "escorpiao16": {
+  "name": "Feiticeiro Venenoso",
+  "race": "escorpiao",
+  "type": "unit",
+  "cost": 4,
+  "atk": 4,
+  "hp": 4,
+  "kw": [
+   "veneno"
+  ],
+  "e": "☠️",
+  "on": null,
+  "r": "r"
+ },
+ "escorpiao17": {
+  "name": "Crocodilo Ancião",
+  "race": "escorpiao",
+  "type": "unit",
+  "cost": 4,
+  "atk": 4,
+  "hp": 4,
+  "kw": [],
+  "e": "🐊",
+  "on": "volley",
+  "r": "r"
+ },
+ "escorpiao18": {
+  "name": "Viúva Negra",
+  "race": "escorpiao",
+  "type": "unit",
+  "cost": 4,
+  "atk": 3,
+  "hp": 5,
+  "kw": [
+   "veneno"
+  ],
+  "e": "🕷️",
+  "on": null,
+  "r": "r"
+ },
+ "escorpiao19": {
+  "name": "Hidra do Pântano",
+  "race": "escorpiao",
+  "type": "unit",
+  "cost": 5,
+  "atk": 4,
+  "hp": 6,
+  "kw": [
+   "escudo"
+  ],
+  "e": "🐉",
+  "on": null,
+  "r": "e"
+ },
+ "escorpiao20": {
+  "name": "Senhor das Sombras",
+  "race": "escorpiao",
+  "type": "unit",
+  "cost": 5,
+  "atk": 5,
+  "hp": 4,
+  "kw": [
+   "veneno"
+  ],
+  "e": "🌑",
+  "on": "volley",
+  "r": "e"
+ },
+ "escorpiao21": {
+  "name": "Basilisco",
+  "race": "escorpiao",
+  "type": "unit",
+  "cost": 5,
+  "atk": 4,
+  "hp": 6,
+  "kw": [
+   "vampirico"
+  ],
+  "e": "🦎",
+  "on": null,
+  "r": "e"
+ },
+ "escorpiao22": {
+  "name": "Rei Escorpião",
+  "race": "escorpiao",
+  "type": "unit",
+  "cost": 6,
+  "atk": 5,
+  "hp": 7,
+  "kw": [
+   "veneno"
+  ],
+  "e": "👑",
+  "on": null,
+  "r": "e"
+ },
+ "escorpiao23": {
+  "name": "Fênix Sombria",
+  "race": "escorpiao",
+  "type": "unit",
+  "cost": 6,
+  "atk": 6,
+  "hp": 6,
+  "kw": [],
+  "e": "🦅",
+  "on": "volley",
+  "r": "e"
+ },
+ "escorpiao24": {
+  "name": "Rainha da Peçonha",
+  "race": "escorpiao",
+  "type": "unit",
+  "cost": 7,
+  "atk": 6,
+  "hp": 9,
+  "kw": [
+   "veneno",
+   "escudo"
+  ],
+  "e": "🕸️",
+  "on": null,
+  "r": "l"
+ },
+ "escorpiao25": {
+  "name": "Escorpião, o Ferrão Eterno",
+  "race": "escorpiao",
+  "type": "unit",
+  "cost": 8,
+  "atk": 8,
+  "hp": 9,
+  "kw": [
+   "veneno",
+   "vampirico"
+  ],
+  "e": "🦂",
+  "on": null,
+  "r": "l"
+ },
+ "escorpiaos1": {
+  "name": "Ferroada",
+  "race": "escorpiao",
+  "type": "spell",
+  "cost": 1,
+  "sp": "poison",
+  "e": "🦂",
+  "r": "c",
+  "kw": [],
+  "v": 0
+ },
+ "escorpiaos2": {
+  "name": "Toxina",
+  "race": "escorpiao",
+  "type": "spell",
+  "cost": 1,
+  "sp": "dmg",
+  "e": "🧪",
+  "r": "c",
+  "kw": [],
+  "v": 2
+ },
+ "escorpiaos3": {
+  "name": "Pacto Sombrio",
+  "race": "escorpiao",
+  "type": "spell",
+  "cost": 2,
+  "sp": "draw",
+  "e": "🌑",
+  "r": "c",
+  "kw": [],
+  "v": 2
+ },
+ "escorpiaos4": {
+  "name": "Nuvem Tóxica",
+  "race": "escorpiao",
+  "type": "spell",
+  "cost": 3,
+  "sp": "lane",
+  "e": "☁️",
+  "r": "r",
+  "kw": [],
+  "v": 2
+ },
+ "escorpiaos5": {
+  "name": "Veneno Letal",
+  "race": "escorpiao",
+  "type": "spell",
+  "cost": 3,
+  "sp": "dmg",
+  "e": "☠️",
+  "r": "r",
+  "kw": [],
+  "v": 4
+ },
+ "sagitario01": {
+  "name": "Batedor Centauro",
+  "race": "sagitario",
+  "type": "unit",
+  "cost": 1,
+  "atk": 1,
+  "hp": 1,
+  "kw": [
+   "distancia"
+  ],
+  "e": "🐎",
+  "on": null,
+  "r": "c"
+ },
+ "sagitario02": {
+  "name": "Aprendiz de Arqueiro",
+  "race": "sagitario",
+  "type": "unit",
+  "cost": 1,
+  "atk": 2,
+  "hp": 1,
+  "kw": [
+   "perfurar"
+  ],
+  "e": "🏹",
+  "on": null,
+  "r": "c"
+ },
+ "sagitario03": {
+  "name": "Falcão Caçador",
+  "race": "sagitario",
+  "type": "unit",
+  "cost": 1,
+  "atk": 1,
+  "hp": 1,
+  "kw": [
+   "distancia"
+  ],
+  "e": "🦅",
+  "on": null,
+  "r": "c"
+ },
+ "sagitario04": {
+  "name": "Viajante",
+  "race": "sagitario",
+  "type": "unit",
+  "cost": 1,
+  "atk": 1,
+  "hp": 1,
+  "kw": [],
+  "e": "🧭",
+  "on": "face1",
+  "r": "c"
+ },
+ "sagitario05": {
+  "name": "Arqueira Centaura",
+  "race": "sagitario",
+  "type": "unit",
+  "cost": 2,
+  "atk": 3,
+  "hp": 1,
+  "kw": [
+   "distancia"
+  ],
+  "e": "🏹",
+  "on": null,
+  "r": "c"
+ },
+ "sagitario06": {
+  "name": "Lanceiro Errante",
+  "race": "sagitario",
+  "type": "unit",
+  "cost": 2,
+  "atk": 2,
+  "hp": 2,
+  "kw": [
+   "investida"
+  ],
+  "e": "🔱",
+  "on": null,
+  "r": "c"
+ },
+ "sagitario07": {
+  "name": "Rastreador",
+  "race": "sagitario",
+  "type": "unit",
+  "cost": 2,
+  "atk": 2,
+  "hp": 2,
+  "kw": [
+   "distancia"
+  ],
+  "e": "🐾",
+  "on": null,
+  "r": "c"
+ },
+ "sagitario08": {
+  "name": "Corcel Veloz",
+  "race": "sagitario",
+  "type": "unit",
+  "cost": 2,
+  "atk": 3,
+  "hp": 1,
+  "kw": [
+   "distancia"
+  ],
+  "e": "🐎",
+  "on": null,
+  "r": "c"
+ },
+ "sagitario09": {
+  "name": "Caçadora da Lua",
+  "race": "sagitario",
+  "type": "unit",
+  "cost": 2,
+  "atk": 2,
+  "hp": 2,
+  "kw": [
+   "perfurar"
+  ],
+  "e": "🌙",
+  "on": null,
+  "r": "c"
+ },
+ "sagitario10": {
+  "name": "Caçador de Estrelas",
+  "race": "sagitario",
+  "type": "unit",
+  "cost": 3,
+  "atk": 3,
+  "hp": 3,
+  "kw": [
+   "distancia"
+  ],
+  "e": "🌠",
+  "on": null,
+  "r": "r"
+ },
+ "sagitario11": {
+  "name": "Centauro Guerreiro",
+  "race": "sagitario",
+  "type": "unit",
+  "cost": 3,
+  "atk": 4,
+  "hp": 2,
+  "kw": [],
+  "e": "🐎",
+  "on": "face1",
+  "r": "r"
+ },
+ "sagitario12": {
+  "name": "Atiradora de Elite",
+  "race": "sagitario",
+  "type": "unit",
+  "cost": 3,
+  "atk": 3,
+  "hp": 3,
+  "kw": [
+   "distancia"
+  ],
+  "e": "🎯",
+  "on": null,
+  "r": "r"
+ },
+ "sagitario13": {
+  "name": "Explorador",
+  "race": "sagitario",
+  "type": "unit",
+  "cost": 3,
+  "atk": 3,
+  "hp": 3,
+  "kw": [
+   "investida"
+  ],
+  "e": "🗺️",
+  "on": null,
+  "r": "r"
+ },
+ "sagitario14": {
+  "name": "Xamã das Planícies",
+  "race": "sagitario",
+  "type": "unit",
+  "cost": 3,
+  "atk": 4,
+  "hp": 2,
+  "kw": [
+   "distancia"
+  ],
+  "e": "🪶",
+  "on": null,
+  "r": "r"
+ },
+ "sagitario15": {
+  "name": "Lanceiro Flamejante",
+  "race": "sagitario",
+  "type": "unit",
+  "cost": 4,
+  "atk": 4,
+  "hp": 4,
+  "kw": [
+   "perfurar"
+  ],
+  "e": "🔥",
+  "on": null,
+  "r": "r"
+ },
+ "sagitario16": {
+  "name": "Centauro Ancião",
+  "race": "sagitario",
+  "type": "unit",
+  "cost": 4,
+  "atk": 4,
+  "hp": 4,
+  "kw": [
+   "distancia"
+  ],
+  "e": "🧔",
+  "on": null,
+  "r": "r"
+ },
+ "sagitario17": {
+  "name": "Arqueira Celeste",
+  "race": "sagitario",
+  "type": "unit",
+  "cost": 4,
+  "atk": 5,
+  "hp": 3,
+  "kw": [],
+  "e": "✨",
+  "on": "face1",
+  "r": "r"
+ },
+ "sagitario18": {
+  "name": "Cavaleiro Nômade",
+  "race": "sagitario",
+  "type": "unit",
+  "cost": 4,
+  "atk": 4,
+  "hp": 4,
+  "kw": [
+   "distancia"
+  ],
+  "e": "🐴",
+  "on": null,
+  "r": "r"
+ },
+ "sagitario19": {
+  "name": "General Centauro",
+  "race": "sagitario",
+  "type": "unit",
+  "cost": 5,
+  "atk": 6,
+  "hp": 4,
+  "kw": [
+   "investida"
+  ],
+  "e": "🎖️",
+  "on": null,
+  "r": "e"
+ },
+ "sagitario20": {
+  "name": "Caçadora Divina",
+  "race": "sagitario",
+  "type": "unit",
+  "cost": 5,
+  "atk": 6,
+  "hp": 3,
+  "kw": [
+   "distancia"
+  ],
+  "e": "🏹",
+  "on": "face1",
+  "r": "e"
+ },
+ "sagitario21": {
+  "name": "Cometa Vivo",
+  "race": "sagitario",
+  "type": "unit",
+  "cost": 5,
+  "atk": 5,
+  "hp": 5,
+  "kw": [
+   "perfurar"
+  ],
+  "e": "☄️",
+  "on": null,
+  "r": "e"
+ },
+ "sagitario22": {
+  "name": "Quíron, o Mestre",
+  "race": "sagitario",
+  "type": "unit",
+  "cost": 6,
+  "atk": 7,
+  "hp": 5,
+  "kw": [
+   "distancia"
+  ],
+  "e": "🏇",
+  "on": null,
+  "r": "e"
+ },
+ "sagitario23": {
+  "name": "Centauro de Guerra",
+  "race": "sagitario",
+  "type": "unit",
+  "cost": 6,
+  "atk": 7,
+  "hp": 5,
+  "kw": [],
+  "e": "⚔️",
+  "on": "face1",
+  "r": "e"
+ },
+ "sagitario24": {
+  "name": "Atirador das Galáxias",
+  "race": "sagitario",
+  "type": "unit",
+  "cost": 7,
+  "atk": 8,
+  "hp": 7,
+  "kw": [
+   "distancia",
+   "investida"
+  ],
+  "e": "🌌",
+  "on": null,
+  "r": "l"
+ },
+ "sagitario25": {
+  "name": "Sagitário, o Arqueiro Celeste",
+  "race": "sagitario",
+  "type": "unit",
+  "cost": 8,
+  "atk": 10,
+  "hp": 7,
+  "kw": [
+   "distancia",
+   "perfurar"
+  ],
+  "e": "🏹",
+  "on": null,
+  "r": "l"
+ },
+ "sagitarios1": {
+  "name": "Flecha Certeira",
+  "race": "sagitario",
+  "type": "spell",
+  "cost": 1,
+  "sp": "dmg",
+  "e": "🎯",
+  "r": "c",
+  "kw": [],
+  "v": 2
+ },
+ "sagitarios2": {
+  "name": "Mira Estelar",
+  "race": "sagitario",
+  "type": "spell",
+  "cost": 2,
+  "sp": "buff",
+  "e": "✨",
+  "r": "c",
+  "kw": [],
+  "a": 3,
+  "h": 0
+ },
+ "sagitarios3": {
+  "name": "Flecha Flamejante",
+  "race": "sagitario",
+  "type": "spell",
+  "cost": 2,
+  "sp": "face",
+  "e": "🔥",
+  "r": "c",
+  "kw": [],
+  "v": 3
+ },
+ "sagitarios4": {
+  "name": "Galope",
+  "race": "sagitario",
+  "type": "spell",
+  "cost": 2,
+  "sp": "draw",
+  "e": "🐎",
+  "r": "c",
+  "kw": [],
+  "v": 2
+ },
+ "sagitarios5": {
+  "name": "Chuva de Flechas",
+  "race": "sagitario",
+  "type": "spell",
+  "cost": 3,
+  "sp": "lane",
+  "e": "🏹",
+  "r": "r",
+  "kw": [],
+  "v": 2
+ },
+ "capricornio01": {
+  "name": "Cabrito da Montanha",
+  "race": "capricornio",
+  "type": "unit",
+  "cost": 1,
+  "atk": 1,
+  "hp": 1,
+  "kw": [
+   "ascensao"
+  ],
+  "e": "🐐",
+  "on": null,
+  "r": "c"
+ },
+ "capricornio02": {
+  "name": "Mineiro",
+  "race": "capricornio",
+  "type": "unit",
+  "cost": 1,
+  "atk": 1,
+  "hp": 1,
+  "kw": [
+   "escudo"
+  ],
+  "e": "⛏️",
+  "on": null,
+  "r": "c"
+ },
+ "capricornio03": {
+  "name": "Marmota",
+  "race": "capricornio",
+  "type": "unit",
+  "cost": 1,
+  "atk": 1,
+  "hp": 1,
+  "kw": [
+   "ascensao"
+  ],
+  "e": "🐿️",
+  "on": null,
+  "r": "c"
+ },
+ "capricornio04": {
+  "name": "Aprendiz Monge",
+  "race": "capricornio",
+  "type": "unit",
+  "cost": 1,
+  "atk": 1,
+  "hp": 1,
+  "kw": [],
+  "e": "🧒",
+  "on": "heal2",
+  "r": "c"
+ },
+ "capricornio05": {
+  "name": "Escalador",
+  "race": "capricornio",
+  "type": "unit",
+  "cost": 2,
+  "atk": 2,
+  "hp": 1,
+  "kw": [
+   "ascensao"
+  ],
+  "e": "🧗",
+  "on": null,
+  "r": "c"
+ },
+ "capricornio06": {
+  "name": "Bode Teimoso",
+  "race": "capricornio",
+  "type": "unit",
+  "cost": 2,
+  "atk": 1,
+  "hp": 3,
+  "kw": [
+   "furia"
+  ],
+  "e": "🐐",
+  "on": null,
+  "r": "c"
+ },
+ "capricornio07": {
+  "name": "Guardião do Pico",
+  "race": "capricornio",
+  "type": "unit",
+  "cost": 2,
+  "atk": 1,
+  "hp": 2,
+  "kw": [
+   "ascensao"
+  ],
+  "e": "🛡️",
+  "on": null,
+  "r": "c"
+ },
+ "capricornio08": {
+  "name": "Águia das Rochas",
+  "race": "capricornio",
+  "type": "unit",
+  "cost": 2,
+  "atk": 2,
+  "hp": 1,
+  "kw": [
+   "ascensao"
+  ],
+  "e": "🦅",
+  "on": null,
+  "r": "c"
+ },
+ "capricornio09": {
+  "name": "Ferreira Anã",
+  "race": "capricornio",
+  "type": "unit",
+  "cost": 2,
+  "atk": 1,
+  "hp": 3,
+  "kw": [
+   "escudo"
+  ],
+  "e": "⚒️",
+  "on": null,
+  "r": "c"
+ },
+ "capricornio10": {
+  "name": "Ermitão do Pico",
+  "race": "capricornio",
+  "type": "unit",
+  "cost": 3,
+  "atk": 2,
+  "hp": 3,
+  "kw": [
+   "ascensao"
+  ],
+  "e": "🏔️",
+  "on": null,
+  "r": "r"
+ },
+ "capricornio11": {
+  "name": "Golem de Gelo",
+  "race": "capricornio",
+  "type": "unit",
+  "cost": 3,
+  "atk": 3,
+  "hp": 3,
+  "kw": [],
+  "e": "🧊",
+  "on": "heal2",
+  "r": "r"
+ },
+ "capricornio12": {
+  "name": "Monge da Montanha",
+  "race": "capricornio",
+  "type": "unit",
+  "cost": 3,
+  "atk": 1,
+  "hp": 4,
+  "kw": [
+   "ascensao"
+  ],
+  "e": "🧘",
+  "on": null,
+  "r": "r"
+ },
+ "capricornio13": {
+  "name": "Íbex Real",
+  "race": "capricornio",
+  "type": "unit",
+  "cost": 3,
+  "atk": 2,
+  "hp": 4,
+  "kw": [
+   "furia"
+  ],
+  "e": "🐐",
+  "on": null,
+  "r": "r"
+ },
+ "capricornio14": {
+  "name": "Pastor das Alturas",
+  "race": "capricornio",
+  "type": "unit",
+  "cost": 3,
+  "atk": 2,
+  "hp": 3,
+  "kw": [
+   "ascensao"
+  ],
+  "e": "🧑‍🌾",
+  "on": null,
+  "r": "r"
+ },
+ "capricornio15": {
+  "name": "Yeti",
+  "race": "capricornio",
+  "type": "unit",
+  "cost": 4,
+  "atk": 2,
+  "hp": 6,
+  "kw": [
+   "escudo"
+  ],
+  "e": "🦍",
+  "on": null,
+  "r": "r"
+ },
+ "capricornio16": {
+  "name": "Mestre Escalador",
+  "race": "capricornio",
+  "type": "unit",
+  "cost": 4,
+  "atk": 3,
+  "hp": 4,
+  "kw": [
+   "ascensao"
+  ],
+  "e": "🧗",
+  "on": null,
+  "r": "r"
+ },
+ "capricornio17": {
+  "name": "Sentinela Glacial",
+  "race": "capricornio",
+  "type": "unit",
+  "cost": 4,
+  "atk": 3,
+  "hp": 5,
+  "kw": [],
+  "e": "❄️",
+  "on": "heal2",
+  "r": "r"
+ },
+ "capricornio18": {
+  "name": "Cabra-Peixe Ancestral",
+  "race": "capricornio",
+  "type": "unit",
+  "cost": 4,
+  "atk": 2,
+  "hp": 5,
+  "kw": [
+   "ascensao"
+  ],
+  "e": "🐟",
+  "on": null,
+  "r": "r"
+ },
+ "capricornio19": {
+  "name": "Bode Ancestral",
+  "race": "capricornio",
+  "type": "unit",
+  "cost": 5,
+  "atk": 4,
+  "hp": 6,
+  "kw": [
+   "furia"
+  ],
+  "e": "🦬",
+  "on": null,
+  "r": "e"
+ },
+ "capricornio20": {
+  "name": "Gigante de Gelo",
+  "race": "capricornio",
+  "type": "unit",
+  "cost": 5,
+  "atk": 3,
+  "hp": 5,
+  "kw": [
+   "ascensao"
+  ],
+  "e": "🧊",
+  "on": "heal2",
+  "r": "e"
+ },
+ "capricornio21": {
+  "name": "Abade da Montanha",
+  "race": "capricornio",
+  "type": "unit",
+  "cost": 5,
+  "atk": 3,
+  "hp": 7,
+  "kw": [
+   "escudo"
+  ],
+  "e": "⛪",
+  "on": null,
+  "r": "e"
+ },
+ "capricornio22": {
+  "name": "Dragão da Montanha",
+  "race": "capricornio",
+  "type": "unit",
+  "cost": 6,
+  "atk": 4,
+  "hp": 7,
+  "kw": [
+   "ascensao"
+  ],
+  "e": "🐉",
+  "on": null,
+  "r": "e"
+ },
+ "capricornio23": {
+  "name": "Colosso Glacial",
+  "race": "capricornio",
+  "type": "unit",
+  "cost": 6,
+  "atk": 5,
+  "hp": 7,
+  "kw": [],
+  "e": "❄️",
+  "on": "heal2",
+  "r": "e"
+ },
+ "capricornio24": {
+  "name": "Patriarca do Pico",
+  "race": "capricornio",
+  "type": "unit",
+  "cost": 7,
+  "atk": 4,
+  "hp": 10,
+  "kw": [
+   "ascensao",
+   "furia"
+  ],
+  "e": "🏔️",
+  "on": null,
+  "r": "l"
+ },
+ "capricornio25": {
+  "name": "Capricórnio, a Cabra-Marinha",
+  "race": "capricornio",
+  "type": "unit",
+  "cost": 8,
+  "atk": 6,
+  "hp": 10,
+  "kw": [
+   "ascensao",
+   "escudo"
+  ],
+  "e": "🐐",
+  "on": null,
+  "r": "l"
+ },
+ "capricornios1": {
+  "name": "Muralha de Pedra",
+  "race": "capricornio",
+  "type": "spell",
+  "cost": 1,
+  "sp": "shield",
+  "e": "🧱",
+  "r": "c",
+  "kw": [],
+  "v": 0
+ },
+ "capricornios2": {
+  "name": "Resiliência",
+  "race": "capricornio",
+  "type": "spell",
+  "cost": 2,
+  "sp": "buff",
+  "e": "⛰️",
+  "r": "c",
+  "kw": [],
+  "a": 1,
+  "h": 3
+ },
+ "capricornios3": {
+  "name": "Pedrada",
+  "race": "capricornio",
+  "type": "spell",
+  "cost": 2,
+  "sp": "dmg",
+  "e": "🪨",
+  "r": "c",
+  "kw": [],
+  "v": 3
+ },
+ "capricornios4": {
+  "name": "Escalada",
+  "race": "capricornio",
+  "type": "spell",
+  "cost": 3,
+  "sp": "buff",
+  "e": "🧗",
+  "r": "r",
+  "kw": [],
+  "a": 2,
+  "h": 2
+ },
+ "capricornios5": {
+  "name": "Avalanche",
+  "race": "capricornio",
+  "type": "spell",
+  "cost": 5,
+  "sp": "lane",
+  "e": "❄️",
+  "r": "e",
+  "kw": [],
+  "v": 3
+ },
+ "aquario01": {
+  "name": "Sílfide da Brisa",
+  "race": "aquario",
+  "type": "unit",
+  "cost": 1,
+  "atk": 1,
+  "hp": 1,
+  "kw": [
+   "corrente"
+  ],
+  "e": "🧚",
+  "on": null,
+  "r": "c"
+ },
+ "aquario02": {
+  "name": "Gota Viva",
+  "race": "aquario",
+  "type": "unit",
+  "cost": 1,
+  "atk": 2,
+  "hp": 1,
+  "kw": [
+   "distancia"
+  ],
+  "e": "💧",
+  "on": null,
+  "r": "c"
+ },
+ "aquario03": {
+  "name": "Pássaro do Trovão",
+  "race": "aquario",
+  "type": "unit",
+  "cost": 1,
+  "atk": 1,
+  "hp": 1,
+  "kw": [
+   "corrente"
+  ],
+  "e": "🐦",
+  "on": null,
+  "r": "c"
+ },
+ "aquario04": {
+  "name": "Estudante Arcano",
+  "race": "aquario",
+  "type": "unit",
+  "cost": 1,
+  "atk": 1,
+  "hp": 1,
+  "kw": [],
+  "e": "📘",
+  "on": "draw",
+  "r": "c"
+ },
+ "aquario05": {
+  "name": "Portador da Ânfora",
+  "race": "aquario",
+  "type": "unit",
+  "cost": 2,
+  "atk": 2,
+  "hp": 2,
+  "kw": [
+   "corrente"
+  ],
+  "e": "🏺",
+  "on": null,
+  "r": "c"
+ },
+ "aquario06": {
+  "name": "Mago do Vento",
+  "race": "aquario",
+  "type": "unit",
+  "cost": 2,
+  "atk": 1,
+  "hp": 3,
+  "kw": [
+   "escudo"
+  ],
+  "e": "🌬️",
+  "on": null,
+  "r": "c"
+ },
+ "aquario07": {
+  "name": "Inventor",
+  "race": "aquario",
+  "type": "unit",
+  "cost": 2,
+  "atk": 2,
+  "hp": 2,
+  "kw": [
+   "corrente"
+  ],
+  "e": "⚙️",
+  "on": null,
+  "r": "c"
+ },
+ "aquario08": {
+  "name": "Fada da Chuva",
+  "race": "aquario",
+  "type": "unit",
+  "cost": 2,
+  "atk": 2,
+  "hp": 2,
+  "kw": [
+   "corrente"
+  ],
+  "e": "🌧️",
+  "on": null,
+  "r": "c"
+ },
+ "aquario09": {
+  "name": "Cometa Pequeno",
+  "race": "aquario",
+  "type": "unit",
+  "cost": 2,
+  "atk": 1,
+  "hp": 3,
+  "kw": [
+   "distancia"
+  ],
+  "e": "☄️",
+  "on": null,
+  "r": "c"
+ },
+ "aquario10": {
+  "name": "Arauto da Tempestade",
+  "race": "aquario",
+  "type": "unit",
+  "cost": 3,
+  "atk": 3,
+  "hp": 3,
+  "kw": [
+   "corrente"
+  ],
+  "e": "⛈️",
+  "on": null,
+  "r": "r"
+ },
+ "aquario11": {
+  "name": "Elemental de Água",
+  "race": "aquario",
+  "type": "unit",
+  "cost": 3,
+  "atk": 3,
+  "hp": 3,
+  "kw": [],
+  "e": "💧",
+  "on": "draw",
+  "r": "r"
+ },
+ "aquario12": {
+  "name": "Astrônomo",
+  "race": "aquario",
+  "type": "unit",
+  "cost": 3,
+  "atk": 2,
+  "hp": 4,
+  "kw": [
+   "corrente"
+  ],
+  "e": "🔭",
+  "on": null,
+  "r": "r"
+ },
+ "aquario13": {
+  "name": "Arcanista",
+  "race": "aquario",
+  "type": "unit",
+  "cost": 3,
+  "atk": 3,
+  "hp": 3,
+  "kw": [
+   "escudo"
+  ],
+  "e": "📖",
+  "on": null,
+  "r": "r"
+ },
+ "aquario14": {
+  "name": "Golem Mecânico",
+  "race": "aquario",
+  "type": "unit",
+  "cost": 3,
+  "atk": 3,
+  "hp": 3,
+  "kw": [
+   "corrente"
+  ],
+  "e": "🤖",
+  "on": null,
+  "r": "r"
+ },
+ "aquario15": {
+  "name": "Mestre dos Ventos",
+  "race": "aquario",
+  "type": "unit",
+  "cost": 4,
+  "atk": 3,
+  "hp": 5,
+  "kw": [
+   "distancia"
+  ],
+  "e": "🌪️",
+  "on": null,
+  "r": "r"
+ },
+ "aquario16": {
+  "name": "Elemental do Raio",
+  "race": "aquario",
+  "type": "unit",
+  "cost": 4,
+  "atk": 4,
+  "hp": 4,
+  "kw": [
+   "corrente"
+  ],
+  "e": "⚡",
+  "on": null,
+  "r": "r"
+ },
+ "aquario17": {
+  "name": "Sábio Excêntrico",
+  "race": "aquario",
+  "type": "unit",
+  "cost": 4,
+  "atk": 4,
+  "hp": 4,
+  "kw": [],
+  "e": "🧪",
+  "on": "draw",
+  "r": "r"
+ },
+ "aquario18": {
+  "name": "Corvo Elétrico",
+  "race": "aquario",
+  "type": "unit",
+  "cost": 4,
+  "atk": 3,
+  "hp": 5,
+  "kw": [
+   "corrente"
+  ],
+  "e": "🐦‍⬛",
+  "on": null,
+  "r": "r"
+ },
+ "aquario19": {
+  "name": "Ganimedes, o Copeiro",
+  "race": "aquario",
+  "type": "unit",
+  "cost": 5,
+  "atk": 5,
+  "hp": 5,
+  "kw": [
+   "escudo"
+  ],
+  "e": "🏺",
+  "on": null,
+  "r": "e"
+ },
+ "aquario20": {
+  "name": "Tempestade Viva",
+  "race": "aquario",
+  "type": "unit",
+  "cost": 5,
+  "atk": 5,
+  "hp": 4,
+  "kw": [
+   "corrente"
+  ],
+  "e": "🌩️",
+  "on": "draw",
+  "r": "e"
+ },
+ "aquario21": {
+  "name": "Oráculo Celeste",
+  "race": "aquario",
+  "type": "unit",
+  "cost": 5,
+  "atk": 4,
+  "hp": 6,
+  "kw": [
+   "distancia"
+  ],
+  "e": "🔮",
+  "on": null,
+  "r": "e"
+ },
+ "aquario22": {
+  "name": "Arquimago do Céu",
+  "race": "aquario",
+  "type": "unit",
+  "cost": 6,
+  "atk": 6,
+  "hp": 6,
+  "kw": [
+   "corrente"
+  ],
+  "e": "🧙",
+  "on": null,
+  "r": "e"
+ },
+ "aquario23": {
+  "name": "Dragão da Tempestade",
+  "race": "aquario",
+  "type": "unit",
+  "cost": 6,
+  "atk": 6,
+  "hp": 6,
+  "kw": [],
+  "e": "🐉",
+  "on": "draw",
+  "r": "e"
+ },
+ "aquario24": {
+  "name": "Avatar do Trovão",
+  "race": "aquario",
+  "type": "unit",
+  "cost": 7,
+  "atk": 6,
+  "hp": 9,
+  "kw": [
+   "corrente",
+   "escudo"
+  ],
+  "e": "⚡",
+  "on": null,
+  "r": "l"
+ },
+ "aquario25": {
+  "name": "Aquário, o Portador Celeste",
+  "race": "aquario",
+  "type": "unit",
+  "cost": 8,
+  "atk": 8,
+  "hp": 9,
+  "kw": [
+   "corrente",
+   "distancia"
+  ],
+  "e": "🏺",
+  "on": null,
+  "r": "l"
+ },
+ "aquarios1": {
+  "name": "Raio Celeste",
+  "race": "aquario",
+  "type": "spell",
+  "cost": 2,
+  "sp": "dmg",
+  "e": "⚡",
+  "r": "c",
+  "kw": [],
+  "v": 3
+ },
+ "aquarios2": {
+  "name": "Bênção das Águas",
+  "race": "aquario",
+  "type": "spell",
+  "cost": 2,
+  "sp": "buff",
+  "e": "✨",
+  "r": "c",
+  "kw": [],
+  "a": 2,
+  "h": 2
+ },
+ "aquarios3": {
+  "name": "Inspiração",
+  "race": "aquario",
+  "type": "spell",
+  "cost": 2,
+  "sp": "draw",
+  "e": "💡",
+  "r": "c",
+  "kw": [],
+  "v": 2
+ },
+ "aquarios4": {
+  "name": "Vendaval",
+  "race": "aquario",
+  "type": "spell",
+  "cost": 3,
+  "sp": "lane",
+  "e": "🌪️",
+  "r": "r",
+  "kw": [],
+  "v": 2
+ },
+ "aquarios5": {
+  "name": "Tempestade",
+  "race": "aquario",
+  "type": "spell",
+  "cost": 5,
+  "sp": "lane",
+  "e": "⛈️",
+  "r": "e",
+  "kw": [],
+  "v": 3
+ },
+ "peixes01": {
+  "name": "Peixe Sonhador",
+  "race": "peixes",
+  "type": "unit",
+  "cost": 1,
+  "atk": 1,
+  "hp": 1,
+  "kw": [
+   "ilusao"
+  ],
+  "e": "🐟",
+  "on": null,
+  "r": "c"
+ },
+ "peixes02": {
+  "name": "Medusa Pálida",
+  "race": "peixes",
+  "type": "unit",
+  "cost": 1,
+  "atk": 2,
+  "hp": 1,
+  "kw": [
+   "vampirico"
+  ],
+  "e": "🪼",
+  "on": null,
+  "r": "c"
+ },
+ "peixes03": {
+  "name": "Peixinho Listrado",
+  "race": "peixes",
+  "type": "unit",
+  "cost": 1,
+  "atk": 1,
+  "hp": 1,
+  "kw": [
+   "ilusao"
+  ],
+  "e": "🐠",
+  "on": null,
+  "r": "c"
+ },
+ "peixes04": {
+  "name": "Bolha Mágica",
+  "race": "peixes",
+  "type": "unit",
+  "cost": 1,
+  "atk": 1,
+  "hp": 1,
+  "kw": [],
+  "e": "🫧",
+  "on": "volley",
+  "r": "c"
+ },
+ "peixes05": {
+  "name": "Sereia Cantora",
+  "race": "peixes",
+  "type": "unit",
+  "cost": 2,
+  "atk": 2,
+  "hp": 2,
+  "kw": [
+   "ilusao"
+  ],
+  "e": "🧜‍♀️",
+  "on": null,
+  "r": "c"
+ },
+ "peixes06": {
+  "name": "Golfinho Místico",
+  "race": "peixes",
+  "type": "unit",
+  "cost": 2,
+  "atk": 1,
+  "hp": 3,
+  "kw": [
+   "veneno"
+  ],
+  "e": "🐬",
+  "on": null,
+  "r": "c"
+ },
+ "peixes07": {
+  "name": "Baiacu",
+  "race": "peixes",
+  "type": "unit",
+  "cost": 2,
+  "atk": 2,
+  "hp": 2,
+  "kw": [
+   "ilusao"
+  ],
+  "e": "🐡",
+  "on": null,
+  "r": "c"
+ },
+ "peixes08": {
+  "name": "Pescador de Sonhos",
+  "race": "peixes",
+  "type": "unit",
+  "cost": 2,
+  "atk": 2,
+  "hp": 2,
+  "kw": [
+   "ilusao"
+  ],
+  "e": "🎣",
+  "on": null,
+  "r": "c"
+ },
+ "peixes09": {
+  "name": "Espírito da Névoa",
+  "race": "peixes",
+  "type": "unit",
+  "cost": 2,
+  "atk": 1,
+  "hp": 3,
+  "kw": [
+   "vampirico"
+  ],
+  "e": "🌫️",
+  "on": null,
+  "r": "c"
+ },
+ "peixes10": {
+  "name": "Oráculo das Marés",
+  "race": "peixes",
+  "type": "unit",
+  "cost": 3,
+  "atk": 3,
+  "hp": 3,
+  "kw": [
+   "ilusao"
+  ],
+  "e": "🔮",
+  "on": null,
+  "r": "r"
+ },
+ "peixes11": {
+  "name": "Tritão Místico",
+  "race": "peixes",
+  "type": "unit",
+  "cost": 3,
+  "atk": 3,
+  "hp": 3,
+  "kw": [],
+  "e": "🧜",
+  "on": "volley",
+  "r": "r"
+ },
+ "peixes12": {
+  "name": "Raia Fantasma",
+  "race": "peixes",
+  "type": "unit",
+  "cost": 3,
+  "atk": 2,
+  "hp": 4,
+  "kw": [
+   "ilusao"
+  ],
+  "e": "🐟",
+  "on": null,
+  "r": "r"
+ },
+ "peixes13": {
+  "name": "Sonâmbulo",
+  "race": "peixes",
+  "type": "unit",
+  "cost": 3,
+  "atk": 3,
+  "hp": 3,
+  "kw": [
+   "veneno"
+  ],
+  "e": "😴",
+  "on": null,
+  "r": "r"
+ },
+ "peixes14": {
+  "name": "Coral Vivo",
+  "race": "peixes",
+  "type": "unit",
+  "cost": 3,
+  "atk": 3,
+  "hp": 3,
+  "kw": [
+   "ilusao"
+  ],
+  "e": "🪸",
+  "on": null,
+  "r": "r"
+ },
+ "peixes15": {
+  "name": "Baleia Lunar",
+  "race": "peixes",
+  "type": "unit",
+  "cost": 4,
+  "atk": 3,
+  "hp": 5,
+  "kw": [
+   "vampirico"
+  ],
+  "e": "🐳",
+  "on": null,
+  "r": "r"
+ },
+ "peixes16": {
+  "name": "Sereia Feiticeira",
+  "race": "peixes",
+  "type": "unit",
+  "cost": 4,
+  "atk": 4,
+  "hp": 4,
+  "kw": [
+   "ilusao"
+  ],
+  "e": "🧜‍♀️",
+  "on": null,
+  "r": "r"
+ },
+ "peixes17": {
+  "name": "Peixe Dourado",
+  "race": "peixes",
+  "type": "unit",
+  "cost": 4,
+  "atk": 4,
+  "hp": 4,
+  "kw": [],
+  "e": "🐠",
+  "on": "volley",
+  "r": "r"
+ },
+ "peixes18": {
+  "name": "Polvo Ilusionista",
+  "race": "peixes",
+  "type": "unit",
+  "cost": 4,
+  "atk": 3,
+  "hp": 5,
+  "kw": [
+   "ilusao"
+  ],
+  "e": "🐙",
+  "on": null,
+  "r": "r"
+ },
+ "peixes19": {
+  "name": "Leviatã Jovem",
+  "race": "peixes",
+  "type": "unit",
+  "cost": 5,
+  "atk": 4,
+  "hp": 6,
+  "kw": [
+   "veneno"
+  ],
+  "e": "🐋",
+  "on": null,
+  "r": "e"
+ },
+ "peixes20": {
+  "name": "Sacerdote dos Sonhos",
+  "race": "peixes",
+  "type": "unit",
+  "cost": 5,
+  "atk": 5,
+  "hp": 4,
+  "kw": [
+   "ilusao"
+  ],
+  "e": "💤",
+  "on": "volley",
+  "r": "e"
+ },
+ "peixes21": {
+  "name": "Guardião do Abismo",
+  "race": "peixes",
+  "type": "unit",
+  "cost": 5,
+  "atk": 4,
+  "hp": 6,
+  "kw": [
+   "vampirico"
+  ],
+  "e": "🌊",
+  "on": null,
+  "r": "e"
+ },
+ "peixes22": {
+  "name": "Leviatã dos Sonhos",
+  "race": "peixes",
+  "type": "unit",
+  "cost": 6,
+  "atk": 5,
+  "hp": 7,
+  "kw": [
+   "ilusao"
+  ],
+  "e": "🐋",
+  "on": null,
+  "r": "e"
+ },
+ "peixes23": {
+  "name": "Dragão Marinho",
+  "race": "peixes",
+  "type": "unit",
+  "cost": 6,
+  "atk": 6,
+  "hp": 6,
+  "kw": [],
+  "e": "🐉",
+  "on": "volley",
+  "r": "e"
+ },
+ "peixes24": {
+  "name": "Rainha do Oceano",
+  "race": "peixes",
+  "type": "unit",
+  "cost": 7,
+  "atk": 6,
+  "hp": 9,
+  "kw": [
+   "ilusao",
+   "veneno"
+  ],
+  "e": "👑",
+  "on": null,
+  "r": "l"
+ },
+ "peixes25": {
+  "name": "Peixes, os Gêmeos do Mar",
+  "race": "peixes",
+  "type": "unit",
+  "cost": 8,
+  "atk": 8,
+  "hp": 9,
+  "kw": [
+   "ilusao",
+   "vampirico"
+  ],
+  "e": "🐟",
+  "on": null,
+  "r": "l"
+ },
+ "peixess1": {
+  "name": "Névoa",
+  "race": "peixes",
+  "type": "spell",
+  "cost": 1,
+  "sp": "shield",
+  "e": "🌫️",
+  "r": "c",
+  "kw": [],
+  "v": 0
+ },
+ "peixess2": {
+  "name": "Maré Curativa",
+  "race": "peixes",
+  "type": "spell",
+  "cost": 1,
+  "sp": "heal",
+  "e": "💧",
+  "r": "c",
+  "kw": [],
+  "v": 4
+ },
+ "peixess3": {
+  "name": "Afogar",
+  "race": "peixes",
+  "type": "spell",
+  "cost": 2,
+  "sp": "dmg",
+  "e": "🌊",
+  "r": "c",
+  "kw": [],
+  "v": 3
+ },
+ "peixess4": {
+  "name": "Sonho Profundo",
+  "race": "peixes",
+  "type": "spell",
+  "cost": 2,
+  "sp": "draw",
+  "e": "💤",
+  "r": "c",
+  "kw": [],
+  "v": 2
+ },
+ "peixess5": {
+  "name": "Redemoinho",
+  "race": "peixes",
+  "type": "spell",
+  "cost": 3,
+  "sp": "lane",
+  "e": "🌀",
+  "r": "r",
+  "kw": [],
+  "v": 2
+ },
+ "eco": {
+  "name": "Eco",
+  "race": "gemeos",
+  "type": "unit",
+  "cost": 0,
+  "atk": 1,
+  "hp": 1,
+  "kw": [],
+  "e": "👥",
+  "on": null,
+  "r": "c"
+ }
+}
