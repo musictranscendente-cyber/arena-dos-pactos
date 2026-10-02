@@ -44,6 +44,13 @@ const PORTE_EXTRA: Record<string, number> = {
   aries18: 0.95, // fênix jovem
   aries21: 1.1, // carneiro colossal
   aries22: 1.12, // titã
+  escorpiao01: 0.9, // escorpiãozinho
+  escorpiao03: 0.9, // morceguinho
+  escorpiao04: 0.9, // sapinho
+  escorpiao09: 0.92, // vespa
+  escorpiao12: 1.08, // escorpião gigante
+  escorpiao19: 1.1, // hidra
+  escorpiao21: 1.05, // basilisco
 };
 
 export function porte(cid: string, custo: number, raridade: string): number {

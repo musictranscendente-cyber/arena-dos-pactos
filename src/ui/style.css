@@ -398,3 +398,5 @@ body:not(.land) .board{flex:0 0 auto;height:min(54vh,44vw)}
 
 /* magia com arte: a ilustração preenche o quadro da carta */
 .card.spell .cart .art{object-fit:cover;padding:0}
+.shot.veneno i{width:17px;height:17px;background:radial-gradient(circle at 60% 40%,#fff 0,#e8b8ff 25%,#a64dff 60%,#5a1a9e);box-shadow:0 0 12px #b56cff,0 0 22px #7a3fa6;--tc:#d7a6ffcc}
+.boom.veneno{background:radial-gradient(circle,#fff 0,#e0b3ff 30%,#9b4dff 55%,transparent 72%)}

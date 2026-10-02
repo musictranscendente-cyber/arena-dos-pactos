@@ -4,10 +4,12 @@ import { RACES } from '../data/signos';
 import type { GameEvent, Side } from '../engine';
 
 /** Criaturas sem Distância cuja arte lança algo (o golpe sai de longe). */
-const LANCA = new Set(['virgem25', 'peixes25', 'aquario25', 'aries09', 'aries06', 'aries04']);
+const LANCA = new Set(['virgem25', 'peixes25', 'aquario25', 'aries09', 'aries06', 'aries04',
+  'escorpiao02', 'escorpiao04', 'escorpiao07', 'escorpiao10', 'escorpiao11', 'escorpiao13', 'escorpiao16',
+  'escorpiao17', 'escorpiao18', 'escorpiao20', 'escorpiao21', 'escorpiao23']);
 
 /** Projétil próprio de algumas cartas (senão vale o do elemento do signo). */
-const TIPO: Record<string, string> = { aries06: 'flecha', aries09: 'ar' };
+const TIPO: Record<string, string> = { aries06: 'flecha', aries09: 'ar', escorpiao11: 'flecha', escorpiao23: 'flecha' };
 
 export function isRanged(cid: string): boolean {
   const c = card(cid);
@@ -20,6 +22,7 @@ function kindOf(cid: string): string {
   if (TIPO[cid]) return TIPO[cid];
   const race = card(cid).race;
   if (race === 'sagitario' || race === 'gemeos') return 'flecha';
+  if (race === 'escorpiao') return 'veneno';
   return ELEMENTO[RACES[race].el];
 }
 
