@@ -89,11 +89,21 @@ b{font-weight:800}
 
 /* animações de combate */
 .cell.atk{z-index:10!important}
-.cell.atk .unit{animation:lunge .42s ease-out}
-.cell.atk .unit.foe{animation-name:lunge-foe}
-.cell.atk .unit .aura{box-shadow:0 0 16px var(--gold)}
-@keyframes lunge{0%{transform:none}40%{transform:translateX(26%) scale(1.12)}100%{transform:none}}
-@keyframes lunge-foe{0%{transform:none}40%{transform:translateX(-26%) scale(1.12)}100%{transform:none}}
+/* ataque em dois tempos: prepara (recua) e avança; depois segura o golpe enquanto o dano aparece e volta */
+.cell.atk .unit{--dir:1;animation:windup .74s cubic-bezier(.3,0,.2,1) forwards}
+.cell.strike .unit{--dir:1;animation:recover .62s ease-in-out forwards}
+.cell.atk .unit.foe,.cell.strike .unit.foe{--dir:-1}
+.cell.atk,.cell.strike{z-index:10!important}
+.cell.atk .unit .aura,.cell.strike .unit .aura{box-shadow:0 0 16px var(--gold)}
+@keyframes windup{
+  0%{transform:none}
+  40%{transform:translateX(calc(var(--dir) * -10%)) rotate(calc(var(--dir) * -4deg))}
+  52%{transform:translateX(calc(var(--dir) * -12%)) rotate(calc(var(--dir) * -5deg))}
+  78%{transform:translateX(calc(var(--dir) * 34%)) scale(1.1)}
+  100%{transform:translateX(calc(var(--dir) * 30%)) scale(1.08)}}
+@keyframes recover{
+  0%,35%{transform:translateX(calc(var(--dir) * 30%)) scale(1.08)}
+  100%{transform:none}}
 .hit{animation:hit .35s ease-out}
 @keyframes hit{0%,100%{transform:none}20%{transform:translateX(-4px)}40%{transform:translateX(4px)}60%{transform:translateX(-3px)}80%{transform:translateX(2px)}}
 .cell.hit::before{content:'';position:absolute;inset:0;border-radius:9px;background:#ff3b3b55;animation:flash .35s forwards;z-index:4;pointer-events:none}
@@ -158,10 +168,23 @@ b{font-weight:800}
 .unit .fig.has-art{position:absolute;left:50%;bottom:14%;margin:0;transform:translateX(-50%);pointer-events:none;filter:drop-shadow(0 3px 2px #0007) drop-shadow(0 0 5px color-mix(in srgb,var(--rc) 60%,transparent))}
 .unit.foe .fig.has-art{transform:translateX(-50%) scaleX(-1)}
 .unit .fig.has-art .art{display:block;height:128cqh;width:calc(128cqh * var(--rw));max-width:none;object-fit:fill}
-.unit .fig.has-art .art.parado{transform-origin:50% 100%;animation:breathe 2.4s ease-in-out infinite}
-.unit .fig.has-art .art.ataque{transform:translateX(calc(128cqh * var(--dx)))}
-@keyframes breathe{50%{transform:scale(1.025,.975)}}
-.cell:nth-child(odd) .fig.has-art .art.parado{animation-delay:-1.2s}
+.unit .fig.has-art .art.parado,.unit .fig .emo{transform-origin:50% 100%;animation:ready 3.6s ease-in-out infinite;animation-delay:var(--ph,0s)}
+.unit .fig .emo{display:inline-block}
+.unit .fig.has-art .art.ataque{position:absolute;left:50%;bottom:0;transform:translateX(calc(-50% + 128cqh * var(--dx)))}
+/* troca de pose no meio do ataque: recua parado e avança já golpeando */
+.unit .fig.has-art .art.parado.wind{animation:pose-out .74s linear forwards}
+.unit .fig.has-art .art.ataque.late{opacity:0;animation:pose-in .74s linear forwards}
+.unit .fig.has-art .art.parado.gone{visibility:hidden;animation:none}
+@keyframes pose-out{0%,52%{opacity:1}53%,100%{opacity:0}}
+@keyframes pose-in{0%,52%{opacity:0}53%,100%{opacity:1}}
+/* parado: respira, recua o peso e depois inclina para a frente, pronto para atacar */
+@keyframes ready{
+  0%,100%{transform:translate(0,0) rotate(0)}
+  22%{transform:translate(-1.5%,-1.8%) rotate(-1.2deg)}
+  45%{transform:translate(0,0) rotate(0)}
+  62%{transform:translate(2.5%,.6%) rotate(1.8deg)}
+  74%{transform:translate(2%,-1.2%) rotate(1.2deg)}
+  86%{transform:translate(1%,0) rotate(.5deg)}}
 .unit:has(.has-art) .aura{left:20%;right:20%;bottom:10%;height:16%}
 
 /* números flutuantes */
@@ -262,6 +285,6 @@ body.rot.land #app{height:auto}
   .fx,.fx.die{animation:fade .9s forwards}
   @keyframes fade{to{opacity:0}}
   .card.sel{transform:none}
-  .cell.atk .unit,.hit,.cell.ok,.btn.go:not(:disabled),.fig.has-art .art.parado{animation:none}
+  .cell.atk .unit,.cell.strike .unit,.hit,.cell.ok,.btn.go:not(:disabled),.fig.has-art .art.parado,.unit .fig .emo{animation:none}
 }
 .land .pips{display:none}

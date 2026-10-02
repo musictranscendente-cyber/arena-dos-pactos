@@ -16,7 +16,7 @@ const randomSeed = () => Math.floor(Math.random() * 2 ** 31);
 
 /** Pausa depois de cada tipo de quadro da Batalha (mesmos tempos do protótipo). */
 const PAUSE: Record<Frame['kind'], number> = {
-  tick: 0, reveal: 450, spells: 450, spell: 650, arrival: 550, battle: 450, row: 0, 'step-start': 320, step: 480, end: 700,
+  tick: 0, reveal: 450, spells: 450, spell: 650, arrival: 550, battle: 450, row: 0, 'step-start': 760, step: 640, end: 700,
 };
 
 interface Match {
@@ -28,6 +28,8 @@ interface Match {
   busy: boolean;
   msg: string;
   active: Target[] | null;
+  /** Quem acabou de atacar: fica na pose de golpe enquanto o dano aparece, depois recua. */
+  striking: Target[] | null;
   aiRng: Rng;
 }
 
@@ -45,7 +47,7 @@ function startMatch(sign: Signo): void {
   const foe = foes[Math.floor(Math.random() * foes.length)];
   const seed = randomSeed();
   const { state } = newGame({ pSign: sign, eSign: foe, seed, record: false });
-  M = { g: state, shown: state, sel: null, busy: false, msg: '', active: null, aiRng: new Rng(seed ^ 0x5bd1e995) };
+  M = { g: state, shown: state, sel: null, busy: false, msg: '', active: null, striking: null, aiRng: new Rng(seed ^ 0x5bd1e995) };
   beginPlanning([]);
 }
 
@@ -57,6 +59,7 @@ function beginPlanning(tickEvents: GameEvent[]): void {
   m.busy = false;
   m.sel = null;
   m.active = null;
+  m.striking = null;
   const extra: string[] = [];
   if (tickEvents.some(e => e.t === 'DeckEmpty' && e.side === 'p')) extra.push(T.deckAcabou);
   if (tickEvents.some(e => e.t === 'DrawDiscarded' && e.side === 'p')) extra.push(T.maoCheia);
@@ -94,6 +97,7 @@ async function battle(): Promise<void> {
     }
     if (f.kind === 'tick') break; // nova rodada: tratada abaixo
     m.shown = f.state;
+    m.striking = f.kind === 'step' ? m.active : null;
     m.active = f.active ?? null;
     const msg = frameMsg(f);
     if (msg) m.msg = msg;
@@ -102,6 +106,7 @@ async function battle(): Promise<void> {
     await sleep(PAUSE[f.kind]);
   }
   m.active = null;
+  m.striking = null;
   m.g = state;
   const tick = frames.find(f => f.kind === 'tick');
   if (state.phase === 'over') { m.shown = state; m.busy = false; render(); return; }
@@ -178,7 +183,7 @@ function render(): void {
   const hs = root.querySelector('.hand');
   const sl = hs ? hs.scrollLeft : 0;
   const v: View = {
-    s: M.shown, sel: M.sel, msg: M.msg, active: M.active,
+    s: M.shown, sel: M.sel, msg: M.msg, active: M.active, striking: M.striking,
     canAct: !M.busy && M.g.phase === 'plan',
   };
   root.innerHTML = gameHtml(v) + (M.g.phase === 'over' && !M.busy ? endHtml(M.g) : '');

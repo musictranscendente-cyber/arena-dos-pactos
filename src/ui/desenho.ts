@@ -14,6 +14,7 @@ export interface View {
   canAct: boolean;
   msg: string;
   active: Target[] | null;
+  striking: Target[] | null;
 }
 
 function artOrEmoji(c: Card, cid?: string): string {
@@ -22,14 +23,21 @@ function artOrEmoji(c: Card, cid?: string): string {
 }
 
 /** Figura da criatura no campo: arte com pose parada/ataque, ou o emoji enquanto não houver arte. */
-function figHtml(c: Card, cid: string, attacking: boolean): string {
+/** Fase da animação parada, contínua entre redesenhos (cada criatura numa fase diferente). */
+const IDLE_S = 3.6;
+const idlePhase = (uid: number) => `--ph:-${((Date.now() / 1000 + uid * 0.77) % IDLE_S).toFixed(2)}s`;
+
+function figHtml(c: Card, cid: string, cell: { atk: boolean; strike: boolean }, uid: number): string {
   const ar = ARTE[cid];
-  if (!ar) return `<span class="fig">${artOrEmoji(c)}</span>`;
-  const pose = attacking ? 'ataque' : 'parado';
-  const rw = attacking ? ar[1] : ar[0];
-  // a pose de ataque é mais larga (o golpe vai para a frente): desloca para o corpo ficar no mesmo lugar
-  const dx = attacking ? (ar[1] - ar[0]) / 2 : 0;
-  return `<span class="fig has-art"><img class="art ${pose}" src="${artUrl(cid, c.race, pose)}" style="--rw:${rw};--dx:${dx}" alt=""></span>`;
+  if (!ar) return `<span class="fig" style="${idlePhase(uid)}">${artOrEmoji(c)}</span>`;
+  // a pose parada define o lugar da figura; a de ataque (mais larga, o golpe vai para a frente)
+  // fica por cima, deslocada para o corpo não sair do lugar
+  const mode = cell.strike ? 'gone' : cell.atk ? 'wind' : '';
+  let h = `<img class="art parado ${mode}" src="${artUrl(cid, c.race, 'parado')}" style="--rw:${ar[0]};${idlePhase(uid)}" alt="">`;
+  if (cell.atk || cell.strike) {
+    h += `<img class="art ataque ${cell.strike ? '' : 'late'}" src="${artUrl(cid, c.race, 'ataque')}" style="--rw:${ar[1]};--dx:${(ar[1] - ar[0]) / 2}" alt="">`;
+  }
+  return `<span class="fig has-art">${h}</span>`;
 }
 
 const HEART_MAX = 30;
@@ -41,8 +49,10 @@ function cellHtml(v: View, side: Side, l: number, d: number): string {
   const cls = ['cell', side === 'p' ? 'mine' : 'theirs'];
   if (d === 0) cls.push('front');
   if (v.canAct && v.sel !== null && isValidTarget(s, 'p', v.sel, { side, l, d })) cls.push('ok');
-  const attacking = !!v.active?.some(x => x.side === side && x.l === l && x.d === d);
-  if (attacking) cls.push('atk');
+  const here = (ts: Target[] | null) => !!ts?.some(x => x.side === side && x.l === l && x.d === d);
+  const pose = { atk: here(v.active), strike: here(v.striking) };
+  if (pose.atk) cls.push('atk');
+  if (pose.strike) cls.push('strike');
   // Ícone das magias que o jogador já preparou neste alvo (magia de fileira marca a fileira toda).
   const pend = s.p.queue
     .filter(q => {
@@ -57,7 +67,7 @@ function cellHtml(v: View, side: Side, l: number, d: number): string {
     inner = `<div class="unit ${side === 'e' ? 'foe' : ''} r-${c.r}" style="--rc:${RACES[c.race].c}">`
       + '<span class="aura"></span>'
       + (u.pending ? '<span class="pnd">⏳</span>' : '')
-      + figHtml(c, u.cid, attacking)
+      + figHtml(c, u.cid, pose, u.uid)
       + `<span class="kws">${u.kw.filter(k => k !== 'escudo').map(k => KW[k].i).join('')}${u.poison ? '🤢' : ''}</span>`
       + (u.shield ? '<span class="shd">🛡️</span>' : '')
       + `<b class="a${atk > u.atk ? ' up' : ''}">${atk}</b><b class="h">${u.hp}</b></div>`;
