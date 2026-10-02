@@ -36,7 +36,7 @@ function idlePhase(uid: number): string {
 export const ATK_MS = { start: 900, strike: 900 };
 
 function tiraHtml(src: string, t: Tira, base: number, extra: string, cls: string): string {
-  return `<span class="spr ${cls}" style="--n:${t.n};--fw:${t.w / base};--fh:${t.h / base};--ax:${t.ax};${extra}">`
+  return `<span class="spr ${cls}" style="--n:${t.n};--fw:${t.w / base};--fh:${t.h / base};--ax:${t.ax};--by:${t.by};${extra}">`
     + `<img src="${src}" alt=""></span>`;
 }
 
