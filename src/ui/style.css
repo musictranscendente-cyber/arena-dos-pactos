@@ -170,12 +170,12 @@ b{font-weight:800}
 .cell{container-type:size}
 .unit .fig.has-art{position:absolute;left:50%;bottom:14%;margin:0;transform:translateX(-50%);pointer-events:none;filter:drop-shadow(0 3px 2px #0007) drop-shadow(0 0 5px color-mix(in srgb,var(--rc) 60%,transparent))}
 .unit.foe .fig.has-art{transform:translateX(-50%) scaleX(-1)}
-.unit .fig.has-art .art{display:block;height:128cqh;width:calc(128cqh * var(--rw));max-width:none;object-fit:fill}
+.unit .fig.has-art .art{display:block;height:var(--H);width:calc(var(--H) * var(--rw));max-width:none;object-fit:fill}
 /* parado: dois movimentos com ritmos diferentes somados (balanço do corpo + respiração), nunca fica igual */
 .unit .fig.has-art .art.parado,.unit .fig .emo{transform-origin:50% 100%;animation:sway 3.6s ease-in-out infinite;animation-delay:var(--ph,0s)}
 .unit .fig{animation:bob 2.3s ease-in-out infinite;animation-delay:var(--pb,0s)}
 .unit .fig .emo{display:inline-block}
-.unit .fig.has-art .art.ataque{position:absolute;left:50%;bottom:0;transform:translateX(calc(-50% + 128cqh * var(--dx)))}
+.unit .fig.has-art .art.ataque{position:absolute;left:50%;bottom:0;transform:translateX(calc(-50% + var(--H) * var(--dx)))}
 /* troca de pose no meio do ataque: recua parado e avança já golpeando */
 .unit .fig.has-art .art.parado.wind{animation:pose-out .74s linear forwards}
 .unit .fig.has-art .art.ataque.late{opacity:0;animation:pose-in .74s linear forwards}
@@ -310,12 +310,13 @@ body.rot.land #app{height:auto}
 @media (prefers-reduced-motion:reduce){.boom{animation-duration:.2s}}
 
 /* animação quadro a quadro (tira de quadros feita de vídeo) */
+.unit .fig.has-art,.unit .fig.has-anim{--H:calc(128cqh * var(--s,1))}
 .unit .fig.has-anim{position:absolute;left:50%;bottom:14%;width:0;height:0;margin:0;pointer-events:none;filter:drop-shadow(0 3px 2px #0007) drop-shadow(0 0 5px color-mix(in srgb,var(--rc) 60%,transparent))}
 .unit.foe .fig.has-anim{transform:scaleX(-1)}
-.unit .fig.has-anim .spr{position:absolute;bottom:calc(-128cqh * var(--fh) * var(--by,0));left:0;overflow:hidden;height:calc(128cqh * var(--fh));width:calc(128cqh * var(--fw));transform:translateX(calc(-100% * var(--ax)))}
+.unit .fig.has-anim .spr{position:absolute;bottom:calc(-1 * var(--H) * var(--fh) * var(--by,0));left:0;overflow:hidden;height:calc(var(--H) * var(--fh));width:calc(var(--H) * var(--fw));transform:translateX(calc(-100% * var(--ax)))}
 .unit .fig.has-anim .spr img{display:block;height:100%;width:calc(var(--n) * 100%);max-width:none;animation-delay:var(--pa,0s)}
 .unit .fig.has-anim .spr.idle img{animation:spr 3s steps(var(--n)) infinite var(--pa,0s)}
-.unit .fig.has-anim .spr.ataque img{animation:spr 1.8s steps(var(--n)) forwards var(--pa,0s)}
+.unit .fig.has-anim .spr.ataque img{animation:spr 1.8s steps(var(--n)) 1 var(--pa,0s)}
 @keyframes spr{to{transform:translateX(-100%)}}
 .cell.animated .unit{--reach:8%}
 @media (prefers-reduced-motion:reduce){.unit .fig.has-anim .spr.idle img{animation:none}}

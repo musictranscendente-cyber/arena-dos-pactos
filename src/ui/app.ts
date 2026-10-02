@@ -9,6 +9,7 @@ import {
 } from '../engine';
 import { ATK_MS, endHtml, galleryHtml, gameHtml, startHtml, type View } from './desenho';
 import { toggleRot, tryLandscape } from './orientacao';
+import { precarregar } from './precarga';
 import { launch, shotsOf } from './projetil';
 
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -48,6 +49,7 @@ function startMatch(sign: Signo): void {
   const foe = foes[Math.floor(Math.random() * foes.length)];
   const seed = randomSeed();
   const { state } = newGame({ pSign: sign, eSign: foe, seed, record: false });
+  precarregar([...state.p.deck, ...state.e.deck, ...state.p.hand.map(h => h.cid), ...state.e.hand.map(h => h.cid)]);
   M = { g: state, shown: state, sel: null, busy: false, msg: '', active: null, striking: null, aiRng: new Rng(seed ^ 0x5bd1e995) };
   beginPlanning([]);
 }

@@ -5,6 +5,7 @@ import { RARITY } from '../data/raridades';
 import type { Card, Signo } from '../data/schema';
 import { currentSign, ORDER, RACES } from '../data/signos';
 import { cardText, KW, T } from '../data/textos';
+import { pronta } from './precarga';
 import { isRanged } from './projetil';
 import { costOf, effAtk, isValidTarget, type GameState, type Side, type Target } from '../engine';
 
@@ -44,24 +45,29 @@ function figHtml(c: Card, cid: string, cell: { atk: boolean; strike: boolean }, 
   const an = ANIM[cid];
   if (an) {
     const base = an.idle.h;
-    if (!cell.atk && !cell.strike) {
+    const sz = `--s:${an.s ?? 1}`;
+    const urlAtk = animUrl(cid, c.race, 'ataque');
+    // só troca para o golpe se a imagem dele já carregou; senão continua respirando
+    if ((!cell.atk && !cell.strike) || !pronta(urlAtk)) {
       const ph = ((Date.now() / 1000 + uid * 0.77) % 3).toFixed(2);
-      return `<span class="fig has-anim">${tiraHtml(animUrl(cid, c.race, 'idle'), an.idle, base, `--pa:-${ph}s`, 'idle')}</span>`;
+      return `<span class="fig has-anim" style="${sz}">${tiraHtml(animUrl(cid, c.race, 'idle'), an.idle, base, `--pa:-${ph}s`, 'idle')}</span>`;
     }
     // o ataque continua do ponto certo quando a tela é redesenhada no quadro do golpe
     const delay = cell.strike ? -ATK_MS.start : 0;
-    return `<span class="fig has-anim">${tiraHtml(animUrl(cid, c.race, 'ataque'), an.ataque, base, `--pa:${delay}ms`, 'ataque')}</span>`;
+    return `<span class="fig has-anim" style="${sz}">${tiraHtml(urlAtk, an.ataque, base, `--pa:${delay}ms`, 'ataque')}</span>`;
   }
   const ar = ARTE[cid];
   if (!ar) return `<span class="fig" style="${idlePhase(uid)}">${artOrEmoji(c)}</span>`;
   // a pose parada define o lugar da figura; a de ataque (mais larga, o golpe vai para a frente)
   // fica por cima, deslocada para o corpo não sair do lugar
+  const podeGolpear = pronta(artUrl(cid, c.race, 'ataque'));
+  if (!podeGolpear) cell = { atk: false, strike: false };
   const mode = cell.strike ? 'gone' : cell.atk ? 'wind' : '';
   let h = `<img class="art parado ${mode}" src="${artUrl(cid, c.race, 'parado')}" style="--rw:${ar[0]};${idlePhase(uid)}" alt="">`;
   if (cell.atk || cell.strike) {
     h += `<img class="art ataque ${cell.strike ? '' : 'late'}" src="${artUrl(cid, c.race, 'ataque')}" style="--rw:${ar[1]};--dx:${(ar[1] - ar[0]) / 2}" alt="">`;
   }
-  return `<span class="fig has-art" style="${idlePhase(uid)}">${h}</span>`;
+  return `<span class="fig has-art" style="${idlePhase(uid)};--s:${ar[2] ?? 1}">${h}</span>`;
 }
 
 const HEART_MAX = 30;

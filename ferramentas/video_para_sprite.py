@@ -89,6 +89,22 @@ def ancoras(im):
     return round(ax, 3), round((h - base) / h, 3)
 
 
+TAMANHO_REF = 0.64  # "tamanho visual" de um personagem médio (ver tamanho())
+
+
+def tamanho(im, altura_quadro):
+    """Fator de escala para o personagem ter tamanho parecido com os outros no tabuleiro.
+    Mede a raiz da área ocupada (relativa à altura do quadro) e aproxima da referência, sem igualar
+    totalmente: um colosso continua um pouco maior que um anão."""
+    a = np.array(im)[..., 3] > 128
+    if not a.any():
+        return 1.0
+    ys = np.where(a.any(1))[0]
+    usado = (ys.max() - ys.min() + 1) / altura_quadro
+    v = usado * np.sqrt(a.sum() / (ys.max() - ys.min() + 1) ** 2)
+    return round(float(np.clip((TAMANHO_REF / v) ** 0.7, 0.75, 1.3)), 3)
+
+
 def tira(imgs, escala, destino):
     bb = caixa(imgs)
     imgs = [im.crop(bb) for im in imgs]
@@ -188,7 +204,9 @@ def main():
     r_par = parada(idle[0], 'parado')
     r_atk = parada(pico, 'ataque')
 
-    for arq, valor in (('src/data/arte.json', [r_par, r_atk]), ('src/data/anim.json', {'idle': t_idle, 'ataque': t_atk})):
+    primeiro = Image.open(os.path.join(pasta, f'{cid}-idle-anim.webp')).crop((0, 0, t_idle['w'], t_idle['h']))
+    fator = tamanho(primeiro, t_idle['h'])
+    for arq, valor in (('src/data/arte.json', [r_par, r_atk, fator]), ('src/data/anim.json', {'idle': t_idle, 'ataque': t_atk, 's': fator})):
         caminho = os.path.join(RAIZ, arq)
         dados = json.load(open(caminho, encoding='utf-8')) if os.path.exists(caminho) else {}
         dados[cid] = valor

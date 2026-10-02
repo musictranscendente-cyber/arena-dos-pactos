@@ -5,10 +5,11 @@ import animJson from './anim.json';
 
 /**
  * Imagens paradas (public/art/<signo>/<id>-parado.webp e -ataque.webp).
- * Os números são largura/altura de cada pose: servem para a pose de ataque não "pular" de lugar.
+ * Os números: largura/altura de cada pose (para a pose de ataque não "pular" de lugar) e o fator de
+ * tamanho, que deixa os personagens com tamanhos parecidos no tabuleiro.
  * Carta sem entrada aqui continua usando o emoji.
  */
-export const ARTE = arteJson as unknown as Record<string, readonly [parado: number, ataque: number]>;
+export const ARTE = arteJson as unknown as Record<string, readonly [parado: number, ataque: number, tamanho?: number]>;
 
 export type Pose = 'parado' | 'ataque';
 
@@ -20,7 +21,7 @@ export function artUrl(cid: string, race: string, pose: Pose): string {
 export interface Tira { n: number; w: number; h: number; ax: number; by: number }
 
 /** Cartas com animação quadro a quadro (public/art/<signo>/<id>-idle-anim.webp e -ataque-anim.webp). */
-export const ANIM = animJson as Record<string, { idle: Tira; ataque: Tira }>;
+export const ANIM = animJson as Record<string, { idle: Tira; ataque: Tira; s?: number }>;
 
 export function animUrl(cid: string, race: string, kind: 'idle' | 'ataque'): string {
   return `art/${race}/${cid}-${kind}-anim.webp`;
