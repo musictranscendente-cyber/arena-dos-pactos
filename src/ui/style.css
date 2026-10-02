@@ -362,3 +362,36 @@ body.rot.land #app{height:auto}
 .board{margin-bottom:40px}
 .land .board{margin-bottom:28px}
 .mid{position:relative;z-index:5}
+
+/* ---------- layout da partida no estilo arena: tabuleiro grande no centro, mão por cima da borda de baixo ---------- */
+#app{height:100vh;height:100dvh;overflow:hidden}
+body.rot #app{height:auto}
+.table{flex:1;min-height:0;position:relative;perspective-origin:50% 35%}
+.board{flex:1;min-height:0;grid-template-rows:repeat(3,minmax(0,1fr));--tilt:30deg;
+  grid-template-columns:repeat(3,1fr) 7% repeat(3,1fr);margin:6px 2% 120px}
+.land .board{margin:2px 2% 84px;grid-template-columns:repeat(3,1fr) 7% repeat(3,1fr);padding:8px 8px 14px}
+.chasm{margin:-4px 18%}
+.board::before{top:55%;width:min(30%,40vh)}
+/* mensagem: faixa pequena no topo, no meio, sobre o vão entre as plataformas */
+.mid{position:absolute;top:0;left:50%;translate:-50% 0;max-width:46%;z-index:45;font-size:12.5px;min-height:0;padding:2px 12px;line-height:1.2}
+.land .mid{font-size:11.5px;min-height:0;padding:2px 10px}
+/* parte de baixo por cima da arena */
+.bottom{position:absolute;left:10px;right:10px;bottom:6px;z-index:40;pointer-events:none;align-items:flex-end}
+.bottom>*{pointer-events:auto}
+.hand{justify-content:center;padding-top:18px;padding-bottom:0}
+.card{flex:0 0 76px;height:104px}
+.land .card{flex:0 0 60px;height:80px;padding:2px 2px 3px}
+.land .cart .emo{font-size:18px}
+.land .card .cn{font-size:9px}
+.land .card .sp{font-size:7.5px;max-height:3.4em}
+.land .card .st{height:16px}
+.land .card .st .a,.land .card .st .h{min-width:17px;height:16px;font-size:10.5px}
+.land .cost{width:20px;height:20px;font-size:12px;top:-7px;left:-6px}
+.land .ck{display:none}
+.land .hand{padding:16px 2px 0;gap:6px}
+.land .acts{width:116px}
+.land .btn{min-height:30px;font-size:12.5px}
+.land .btn.go{min-height:40px;font-size:19px}
+/* tela grande (computador): o tabuleiro não estica demais na altura */
+body:not(.land) .table{justify-content:center}
+body:not(.land) .board{flex:0 0 auto;height:min(54vh,44vw)}
