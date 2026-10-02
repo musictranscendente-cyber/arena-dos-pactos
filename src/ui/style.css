@@ -88,7 +88,7 @@ b{font-weight:800}
 .spell-mark{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-size:22px;z-index:3;pointer-events:none;filter:drop-shadow(0 0 5px #fff)}
 
 /* animações de combate */
-.cell.atk{z-index:3}
+.cell.atk{z-index:10!important}
 .cell.atk .unit{animation:lunge .42s ease-out}
 .cell.atk .unit.foe{animation-name:lunge-foe}
 .cell.atk .unit .aura{box-shadow:0 0 16px var(--gold)}
@@ -140,6 +140,7 @@ b{font-weight:800}
 .cart{position:relative;width:100%;height:50%;border-radius:7px;display:grid;place-items:center;overflow:hidden;
   background:radial-gradient(circle at 50% 70%,color-mix(in srgb,var(--rc) 55%,#fff) 0,var(--rc) 45%,color-mix(in srgb,var(--rc) 50%,#000) 100%);
   box-shadow:inset 0 0 0 1px #0004,inset 0 -8px 14px #0004}
+.cart .art{padding:2px}
 .cart .emo{font-size:30px;line-height:1;filter:drop-shadow(0 2px 0 #0005)}
 .cart .sg{position:absolute;top:1px;right:4px;font-size:12px;color:#fff;opacity:.85;text-shadow:0 1px 2px #000}
 .card .cn{font-size:11.5px;font-weight:800;text-align:center;line-height:1.05;max-height:2.2em;overflow:hidden}
@@ -152,6 +153,16 @@ b{font-weight:800}
 .art{width:100%;height:100%;object-fit:contain}
 .unit .art{width:52px;height:52px}
 .unit.foe .art{transform:none}
+/* criatura com arte própria: maior que a casa, em pé sobre a pedra */
+.cell{container-type:size}
+.unit .fig.has-art{position:absolute;left:50%;bottom:14%;margin:0;transform:translateX(-50%);pointer-events:none;filter:drop-shadow(0 3px 2px #0007) drop-shadow(0 0 5px color-mix(in srgb,var(--rc) 60%,transparent))}
+.unit.foe .fig.has-art{transform:translateX(-50%) scaleX(-1)}
+.unit .fig.has-art .art{display:block;height:128cqh;width:calc(128cqh * var(--rw));max-width:none;object-fit:fill}
+.unit .fig.has-art .art.parado{transform-origin:50% 100%;animation:breathe 2.4s ease-in-out infinite}
+.unit .fig.has-art .art.ataque{transform:translateX(calc(128cqh * var(--dx)))}
+@keyframes breathe{50%{transform:scale(1.025,.975)}}
+.cell:nth-child(odd) .fig.has-art .art.parado{animation-delay:-1.2s}
+.unit:has(.has-art) .aura{left:20%;right:20%;bottom:10%;height:16%}
 
 /* números flutuantes */
 .fx{position:absolute;left:50%;top:18%;transform:translateX(-50%);font-weight:800;font-size:22px;color:#fff;text-shadow:0 2px 0 #000,0 0 6px #000;pointer-events:none;animation:rise .95s ease-out forwards;z-index:6;white-space:nowrap}
@@ -231,7 +242,8 @@ body.rot.land #app{height:auto}
 .land .pips i{width:6px;height:6px}
 .land .hand{padding:11px 2px 3px 9px;gap:7px}
 .land .card{flex:0 0 74px;height:98px;padding:3px 3px 4px}
-.land .cart .emo{font-size:22px}
+.land .cart .art{padding:2px}
+.cart .emo{font-size:22px}
 .land .card .cn{font-size:10px}
 .land .card .sp{font-size:8.5px}
 .land .card .st{height:18px}
@@ -250,6 +262,6 @@ body.rot.land #app{height:auto}
   .fx,.fx.die{animation:fade .9s forwards}
   @keyframes fade{to{opacity:0}}
   .card.sel{transform:none}
-  .cell.atk .unit,.hit,.cell.ok,.btn.go:not(:disabled){animation:none}
+  .cell.atk .unit,.hit,.cell.ok,.btn.go:not(:disabled),.fig.has-art .art.parado{animation:none}
 }
 .land .pips{display:none}

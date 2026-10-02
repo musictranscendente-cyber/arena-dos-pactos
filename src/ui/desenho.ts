@@ -1,5 +1,6 @@
 // Funções que montam o HTML de cada parte da tela (sem estado próprio).
 import { card, cardsOfSign, CARDS } from '../data/cards';
+import { ARTE, artUrl } from '../data/arte';
 import { RARITY } from '../data/raridades';
 import type { Card, Signo } from '../data/schema';
 import { currentSign, ORDER, RACES } from '../data/signos';
@@ -15,7 +16,21 @@ export interface View {
   active: Target[] | null;
 }
 
-const artOrEmoji = (c: Card) => (c.art ? `<img class="art" src="${c.art}" alt="">` : `<span class="emo">${c.e}</span>`);
+function artOrEmoji(c: Card, cid?: string): string {
+  if (cid && ARTE[cid]) return `<img class="art" src="${artUrl(cid, c.race, 'parado')}" alt="">`;
+  return c.art ? `<img class="art" src="${c.art}" alt="">` : `<span class="emo">${c.e}</span>`;
+}
+
+/** Figura da criatura no campo: arte com pose parada/ataque, ou o emoji enquanto não houver arte. */
+function figHtml(c: Card, cid: string, attacking: boolean): string {
+  const ar = ARTE[cid];
+  if (!ar) return `<span class="fig">${artOrEmoji(c)}</span>`;
+  const pose = attacking ? 'ataque' : 'parado';
+  const rw = attacking ? ar[1] : ar[0];
+  // a pose de ataque é mais larga (o golpe vai para a frente): desloca para o corpo ficar no mesmo lugar
+  const dx = attacking ? (ar[1] - ar[0]) / 2 : 0;
+  return `<span class="fig has-art"><img class="art ${pose}" src="${artUrl(cid, c.race, pose)}" style="--rw:${rw};--dx:${dx}" alt=""></span>`;
+}
 
 const HEART_MAX = 30;
 
@@ -26,7 +41,8 @@ function cellHtml(v: View, side: Side, l: number, d: number): string {
   const cls = ['cell', side === 'p' ? 'mine' : 'theirs'];
   if (d === 0) cls.push('front');
   if (v.canAct && v.sel !== null && isValidTarget(s, 'p', v.sel, { side, l, d })) cls.push('ok');
-  if (v.active?.some(x => x.side === side && x.l === l && x.d === d)) cls.push('atk');
+  const attacking = !!v.active?.some(x => x.side === side && x.l === l && x.d === d);
+  if (attacking) cls.push('atk');
   // Ícone das magias que o jogador já preparou neste alvo (magia de fileira marca a fileira toda).
   const pend = s.p.queue
     .filter(q => {
@@ -41,13 +57,13 @@ function cellHtml(v: View, side: Side, l: number, d: number): string {
     inner = `<div class="unit ${side === 'e' ? 'foe' : ''} r-${c.r}" style="--rc:${RACES[c.race].c}">`
       + '<span class="aura"></span>'
       + (u.pending ? '<span class="pnd">⏳</span>' : '')
-      + `<span class="fig">${artOrEmoji(c)}</span>`
+      + figHtml(c, u.cid, attacking)
       + `<span class="kws">${u.kw.filter(k => k !== 'escudo').map(k => KW[k].i).join('')}${u.poison ? '🤢' : ''}</span>`
       + (u.shield ? '<span class="shd">🛡️</span>' : '')
       + `<b class="a${atk > u.atk ? ' up' : ''}">${atk}</b><b class="h">${u.hp}</b></div>`;
   }
   const col = side === 'p' ? 3 - d : 5 + d;
-  return `<div class="${cls.join(' ')}" style="grid-row:${l + 1};grid-column:${col}" id="c-${side}-${l}-${d}" data-act="cell" data-side="${side}" data-l="${l}" data-d="${d}">${inner}${pend ? `<span class="spell-mark">${pend}</span>` : ''}</div>`;
+  return `<div class="${cls.join(' ')}" style="grid-row:${l + 1};grid-column:${col};z-index:${l + 1}" id="c-${side}-${l}-${d}" data-act="cell" data-side="${side}" data-l="${l}" data-d="${d}">${inner}${pend ? `<span class="spell-mark">${pend}</span>` : ''}</div>`;
 }
 
 function boardHtml(v: View): string {
@@ -91,12 +107,12 @@ function actsHtml(v: View): string {
     + `<button class="btn go" data-act="punch" ${v.canAct ? '' : 'disabled'}><span class="ico">⚔️</span>${T.batalha}</button></div>`;
 }
 
-export function cardHtml(c: Card, cost: number, attrs = '', cls = ''): string {
+export function cardHtml(c: Card, cost: number, attrs = '', cls = '', cid?: string): string {
   const body = c.type === 'unit'
     ? `<span class="ck">${c.kw.map(k => KW[k].i).join('')}${c.on ? '⭐' : ''}</span><span class="st"><b class="a">${c.atk}</b><b class="h">${c.hp}</b></span>`
     : `<span class="sp">${cardText(c)}</span>`;
   return `<div class="card ${c.type === 'spell' ? 'spell' : ''} r-${c.r} ${cls}" style="--rc:${RACES[c.race].c};--rr:${RARITY[c.r].col}" ${attrs}><span class="cost">${cost}</span>`
-    + `<span class="cart">${artOrEmoji(c)}<span class="sg">${RACES[c.race].g}</span></span><span class="cn">${c.name}</span>${body}</div>`;
+    + `<span class="cart">${artOrEmoji(c, cid)}<span class="sg">${RACES[c.race].g}</span></span><span class="cn">${c.name}</span>${body}</div>`;
 }
 
 function handHtml(v: View): string {
@@ -107,7 +123,7 @@ function handHtml(v: View): string {
     const cls: string[] = [];
     if (v.sel === i) cls.push('sel');
     if (cost > P.mana) cls.push('poor');
-    return cardHtml(c, cost, `data-act="hand" data-i="${i}" tabindex="0" role="button"`, cls.join(' '));
+    return cardHtml(c, cost, `data-act="hand" data-i="${i}" tabindex="0" role="button"`, cls.join(' '), h.cid);
   }).join('') + '</div>';
 }
 
@@ -121,7 +137,7 @@ export function galleryHtml(sign: Signo, selected: string | null): string {
   const r = RACES[sign];
   const tabs = ORDER.map(k => `<button class="gtab ${k === sign ? 'on' : ''}" data-act="gal" data-r="${k}" style="--rc:${RACES[k].c}" aria-label="${RACES[k].n}">${RACES[k].g}</button>`).join('');
   const list = cardsOfSign(sign).sort((a, b) => CARDS[a].cost - CARDS[b].cost || (CARDS[a].type > CARDS[b].type ? 1 : -1));
-  const cards = list.map(k => cardHtml(CARDS[k], CARDS[k].cost, `data-act="gcard" data-k="${k}" tabindex="0" role="button"`, selected === k ? 'sel' : '')).join('');
+  const cards = list.map(k => cardHtml(CARDS[k], CARDS[k].cost, `data-act="gcard" data-k="${k}" tabindex="0" role="button"`, selected === k ? 'sel' : '', k)).join('');
   const sel = selected ? CARDS[selected] : null;
   const info = sel
     ? `<b>${sel.name}</b> (${RARITY[sel.r].n}${sel.type === 'unit' ? `, ${sel.atk}/${sel.hp}` : `, ${T.magia}`}): ${cardText(sel)}`
