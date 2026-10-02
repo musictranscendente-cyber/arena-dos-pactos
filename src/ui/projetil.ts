@@ -41,16 +41,20 @@ export function shotsOf(events: GameEvent[]): Shot[] {
   return out;
 }
 
-/** Centro de um elemento em coordenadas do #app (funciona também com a tela girada no modo deitado). */
+/**
+ * Centro de um elemento em coordenadas do #app, já com a perspectiva da arena aplicada
+ * (usa a posição real na tela e desfaz o giro do modo deitado, se ele estiver ligado).
+ */
 function center(el: HTMLElement, root: HTMLElement, up = 0): { x: number; y: number } {
-  let x = el.offsetWidth / 2, y = el.offsetHeight / 2 - el.offsetHeight * up;
-  let e: HTMLElement | null = el;
-  while (e && e !== root) {
-    x += e.offsetLeft;
-    y += e.offsetTop;
-    e = e.offsetParent as HTMLElement | null;
+  const r = el.getBoundingClientRect();
+  const X = (r.left + r.right) / 2, Y = (r.top + r.bottom) / 2;
+  if (document.body.classList.contains('rot')) {
+    // #app está girado 90° (rotate(90deg) translateY(-100%), a partir do canto de cima à esquerda):
+    // o "para cima" do jogo é o "para a direita" da tela
+    return { x: Y, y: root.offsetHeight - X - r.width * up };
   }
-  return { x, y };
+  const a = root.getBoundingClientRect();
+  return { x: X - a.left, y: Y - a.top - r.height * up };
 }
 
 export function launch(root: HTMLElement, shot: Shot, delayMs: number, durMs: number): void {

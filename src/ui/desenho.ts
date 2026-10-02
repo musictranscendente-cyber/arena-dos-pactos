@@ -110,7 +110,9 @@ function cellHtml(v: View, side: Side, l: number, d: number): string {
 
 function boardHtml(v: View): string {
   const { s } = v;
-  let h = `<div class="board"><div class="plat mine" style="--rc:${RACES[s.p.sign].c}"></div><div class="chasm"></div><div class="plat theirs" style="--rc:${RACES[s.e.sign].c}"></div>`;
+  const pr = RACES[s.p.sign], er = RACES[s.e.sign];
+  let h = `<div class="board" style="--prc:${pr.c};--erc:${er.c}"><div class="plat mine" data-g="${pr.g}\uFE0E" style="--rc:${pr.c}"></div>`
+    + `<div class="chasm"></div><div class="plat theirs" data-g="${er.g}\uFE0E" style="--rc:${er.c}"></div>`;
   for (let l = 0; l < 3; l++) {
     for (let d = 0; d < 3; d++) h += cellHtml(v, 'p', l, d) + cellHtml(v, 'e', l, d);
   }
