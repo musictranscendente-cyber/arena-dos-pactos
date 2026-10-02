@@ -9,6 +9,7 @@ import {
 } from '../engine';
 import { endHtml, galleryHtml, gameHtml, startHtml, type View } from './desenho';
 import { toggleRot, tryLandscape } from './orientacao';
+import { launch, shotsOf } from './projetil';
 
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const sleep = (ms: number) => new Promise(r => setTimeout(r, reduce ? ms * 0.4 : ms));
@@ -87,7 +88,8 @@ async function battle(): Promise<void> {
   m.sel = null;
   const { state, frames } = resolveBattle(m.g);
   let revealed = false;
-  for (const f of frames) {
+  for (let i = 0; i < frames.length; i++) {
+    const f = frames[i];
     if (!f.state) continue;
     // as minhas criaturas já estavam à vista: a Revelação delas não precisa de pausa
     if (f.kind === 'reveal' && f.events.every(e => e.t !== 'Reveal' || e.side === 'p')) { m.shown = f.state; continue; }
@@ -103,6 +105,12 @@ async function battle(): Promise<void> {
     if (msg) m.msg = msg;
     render();
     showFx(f.events);
+    // ataque à distância: o projétil sai no meio do avanço e chega junto com o dano do próximo quadro
+    const next = frames[i + 1];
+    if (f.kind === 'step-start' && next?.kind === 'step') {
+      const t = PAUSE['step-start'] * (reduce ? 0.4 : 1);
+      for (const sh of shotsOf(next.events)) launch(app(), sh, t * 0.5, t * 0.48);
+    }
     await sleep(PAUSE[f.kind]);
   }
   m.active = null;

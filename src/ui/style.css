@@ -14,7 +14,7 @@
 html{scroll-padding-top:env(safe-area-inset-top,0px)}
 html,body{margin:0;min-height:100%}
 body{background:var(--page) var(--scene) center/cover fixed no-repeat;color:var(--text);font-family:'Alegreya Sans','Trebuchet MS',Arial,sans-serif;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none;min-height:100vh}
-#app{max-width:980px;margin:0 auto;padding:8px;display:flex;flex-direction:column;gap:6px}
+#app{position:relative;max-width:980px;margin:0 auto;padding:8px;display:flex;flex-direction:column;gap:6px}
 b{font-weight:800}
 
 /* ---------- topo: heróis ---------- */
@@ -89,20 +89,23 @@ b{font-weight:800}
 
 /* animações de combate */
 .cell.atk{z-index:10!important}
-/* ataque em dois tempos: prepara (recua) e avança; depois segura o golpe enquanto o dano aparece e volta */
-.cell.atk .unit{--dir:1;animation:windup .74s cubic-bezier(.3,0,.2,1) forwards}
-.cell.strike .unit{--dir:1;animation:recover .62s ease-in-out forwards}
+/* ataque em dois tempos: prepara (recua) e avança; depois segura o golpe enquanto o dano aparece e volta.
+   Quem ataca de longe (.ranged) quase não sai do lugar: o projétil é que viaja. */
+.cell.atk .unit{--dir:1;--reach:30%;animation:windup .74s linear forwards;will-change:transform}
+.cell.strike .unit{--dir:1;--reach:30%;animation:recover .62s linear forwards;will-change:transform}
 .cell.atk .unit.foe,.cell.strike .unit.foe{--dir:-1}
+.cell.ranged .unit{--reach:5%}
 .cell.atk,.cell.strike{z-index:10!important}
 .cell.atk .unit .aura,.cell.strike .unit .aura{box-shadow:0 0 16px var(--gold)}
 @keyframes windup{
-  0%{transform:none}
-  40%{transform:translateX(calc(var(--dir) * -10%)) rotate(calc(var(--dir) * -4deg))}
-  52%{transform:translateX(calc(var(--dir) * -12%)) rotate(calc(var(--dir) * -5deg))}
-  78%{transform:translateX(calc(var(--dir) * 34%)) scale(1.1)}
-  100%{transform:translateX(calc(var(--dir) * 30%)) scale(1.08)}}
+  0%{transform:none;animation-timing-function:cubic-bezier(.25,.1,.3,1)}
+  48%{transform:translateX(calc(var(--dir) * -11%)) rotate(calc(var(--dir) * -5deg)) scale(.98,1.02);animation-timing-function:cubic-bezier(.7,0,.9,.5)}
+  68%{transform:translateX(calc(var(--dir) * (var(--reach) + 5%))) rotate(calc(var(--dir) * 3deg)) scale(1.1);animation-timing-function:cubic-bezier(.2,.7,.3,1)}
+  100%{transform:translateX(calc(var(--dir) * var(--reach))) scale(1.06)}}
 @keyframes recover{
-  0%,35%{transform:translateX(calc(var(--dir) * 30%)) scale(1.08)}
+  0%{transform:translateX(calc(var(--dir) * var(--reach))) scale(1.06)}
+  30%{transform:translateX(calc(var(--dir) * var(--reach))) scale(1.06);animation-timing-function:cubic-bezier(.45,0,.25,1)}
+  82%{transform:translateX(calc(var(--dir) * -2%)) scale(.995);animation-timing-function:ease-out}
   100%{transform:none}}
 .hit{animation:hit .35s ease-out}
 @keyframes hit{0%,100%{transform:none}20%{transform:translateX(-4px)}40%{transform:translateX(4px)}60%{transform:translateX(-3px)}80%{transform:translateX(2px)}}
@@ -168,23 +171,23 @@ b{font-weight:800}
 .unit .fig.has-art{position:absolute;left:50%;bottom:14%;margin:0;transform:translateX(-50%);pointer-events:none;filter:drop-shadow(0 3px 2px #0007) drop-shadow(0 0 5px color-mix(in srgb,var(--rc) 60%,transparent))}
 .unit.foe .fig.has-art{transform:translateX(-50%) scaleX(-1)}
 .unit .fig.has-art .art{display:block;height:128cqh;width:calc(128cqh * var(--rw));max-width:none;object-fit:fill}
-.unit .fig.has-art .art.parado,.unit .fig .emo{transform-origin:50% 100%;animation:ready 3.6s ease-in-out infinite;animation-delay:var(--ph,0s)}
+/* parado: dois movimentos com ritmos diferentes somados (balanço do corpo + respiração), nunca fica igual */
+.unit .fig.has-art .art.parado,.unit .fig .emo{transform-origin:50% 100%;animation:sway 3.6s ease-in-out infinite;animation-delay:var(--ph,0s)}
+.unit .fig{animation:bob 2.3s ease-in-out infinite;animation-delay:var(--pb,0s)}
 .unit .fig .emo{display:inline-block}
 .unit .fig.has-art .art.ataque{position:absolute;left:50%;bottom:0;transform:translateX(calc(-50% + 128cqh * var(--dx)))}
 /* troca de pose no meio do ataque: recua parado e avança já golpeando */
 .unit .fig.has-art .art.parado.wind{animation:pose-out .74s linear forwards}
 .unit .fig.has-art .art.ataque.late{opacity:0;animation:pose-in .74s linear forwards}
 .unit .fig.has-art .art.parado.gone{visibility:hidden;animation:none}
-@keyframes pose-out{0%,52%{opacity:1}53%,100%{opacity:0}}
-@keyframes pose-in{0%,52%{opacity:0}53%,100%{opacity:1}}
-/* parado: respira, recua o peso e depois inclina para a frente, pronto para atacar */
-@keyframes ready{
-  0%,100%{transform:translate(0,0) rotate(0)}
-  22%{transform:translate(-1.5%,-1.8%) rotate(-1.2deg)}
-  45%{transform:translate(0,0) rotate(0)}
-  62%{transform:translate(2.5%,.6%) rotate(1.8deg)}
-  74%{transform:translate(2%,-1.2%) rotate(1.2deg)}
-  86%{transform:translate(1%,0) rotate(.5deg)}}
+@keyframes pose-out{0%,50%{opacity:1}51%,100%{opacity:0}}
+@keyframes pose-in{0%,50%{opacity:0}51%,100%{opacity:1}}
+@keyframes sway{
+  0%,100%{rotate:0deg;translate:0 0}
+  25%{rotate:-1.3deg;translate:-1.4% 0}
+  50%{rotate:.3deg;translate:.4% 0}
+  75%{rotate:1.7deg;translate:2.4% 0}}
+@keyframes bob{0%,100%{translate:0 0}50%{translate:0 -2.4%}}
 .unit:has(.has-art) .aura{left:20%;right:20%;bottom:10%;height:16%}
 
 /* números flutuantes */
@@ -285,6 +288,23 @@ body.rot.land #app{height:auto}
   .fx,.fx.die{animation:fade .9s forwards}
   @keyframes fade{to{opacity:0}}
   .card.sel{transform:none}
-  .cell.atk .unit,.cell.strike .unit,.hit,.cell.ok,.btn.go:not(:disabled),.fig.has-art .art.parado,.unit .fig .emo{animation:none}
+  .cell.atk .unit,.cell.strike .unit,.hit,.cell.ok,.btn.go:not(:disabled),.fig.has-art .art.parado,.unit .fig .emo,.unit .fig{animation:none}
 }
 .land .pips{display:none}
+
+/* projéteis */
+.shot{position:absolute;z-index:30;width:0;height:0;pointer-events:none;transform:rotate(var(--ang));animation:fly linear forwards}
+@keyframes fly{from{transform:translate(0,0) rotate(var(--ang))}to{transform:translate(var(--dx),var(--dy)) rotate(var(--ang))}}
+.shot i{position:absolute;left:0;top:0;display:block;transform:translate(-50%,-50%);border-radius:50%}
+.shot i::after{content:'';position:absolute;right:50%;top:50%;height:60%;width:46px;transform:translateY(-50%);border-radius:4px;background:linear-gradient(to left,var(--tc,#fff8),transparent)}
+.shot.fogo i{width:18px;height:18px;background:radial-gradient(circle at 60% 40%,#fff 0,#ffe08a 25%,#ff8a1f 60%,#d63a10);box-shadow:0 0 12px #ff8a1f,0 0 24px #ff5a1a;--tc:#ffb04acc}
+.shot.agua i{width:17px;height:17px;background:radial-gradient(circle at 60% 40%,#fff 0,#bfe9ff 25%,#3fa9ff 60%,#1a5fd0);box-shadow:0 0 12px #4fb6ff,0 0 22px #2a7de0;--tc:#8fd3ffcc}
+.shot.terra i{width:16px;height:16px;background:radial-gradient(circle at 60% 40%,#fff6c8 0,#e6c25a 35%,#9a7a2a 75%,#5e4a17);box-shadow:0 0 10px #f2d46a,0 0 18px #c99a2a;--tc:#f2d46acc}
+.shot.ar i{width:16px;height:16px;background:radial-gradient(circle at 60% 40%,#fff 0,#f4f9ff 30%,#bfe0ff 70%,#8ab8e8);box-shadow:0 0 12px #fff,0 0 22px #bfe0ff;--tc:#ffffffcc}
+.shot.flecha i{width:30px;height:4px;border-radius:2px;background:linear-gradient(90deg,#8a5a2a 0,#d9a54a 70%,#fff3c4 100%);box-shadow:0 0 8px #ffe08a;--tc:#ffe08a99}
+.shot.flecha i::before{content:'';position:absolute;right:-7px;top:50%;transform:translateY(-50%);border:6px solid transparent;border-left:9px solid #fff3c4;border-right:0}
+.boom{position:absolute;z-index:29;width:46px;height:46px;margin:-23px 0 0 -23px;border-radius:50%;pointer-events:none;background:radial-gradient(circle,#fff 0,var(--c) 40%,transparent 70%);animation:boom .45s ease-out forwards}
+.boom.fogo{background:radial-gradient(circle,#fff 0,#ffd166 30%,#ff6a1a 55%,transparent 72%)}
+.boom.agua{background:radial-gradient(circle,#fff 0,#9fdcff 35%,#2a7de0 55%,transparent 72%)}
+@keyframes boom{0%{transform:scale(.3);opacity:1}100%{transform:scale(1.6);opacity:0}}
+@media (prefers-reduced-motion:reduce){.boom{animation-duration:.2s}}

@@ -5,6 +5,7 @@ import { RARITY } from '../data/raridades';
 import type { Card, Signo } from '../data/schema';
 import { currentSign, ORDER, RACES } from '../data/signos';
 import { cardText, KW, T } from '../data/textos';
+import { isRanged } from './projetil';
 import { costOf, effAtk, isValidTarget, type GameState, type Side, type Target } from '../engine';
 
 export interface View {
@@ -25,7 +26,11 @@ function artOrEmoji(c: Card, cid?: string): string {
 /** Figura da criatura no campo: arte com pose parada/ataque, ou o emoji enquanto não houver arte. */
 /** Fase da animação parada, contínua entre redesenhos (cada criatura numa fase diferente). */
 const IDLE_S = 3.6;
-const idlePhase = (uid: number) => `--ph:-${((Date.now() / 1000 + uid * 0.77) % IDLE_S).toFixed(2)}s`;
+const BOB_S = 2.3;
+function idlePhase(uid: number): string {
+  const t = Date.now() / 1000;
+  return `--ph:-${((t + uid * 0.77) % IDLE_S).toFixed(2)}s;--pb:-${((t + uid * 0.41) % BOB_S).toFixed(2)}s`;
+}
 
 function figHtml(c: Card, cid: string, cell: { atk: boolean; strike: boolean }, uid: number): string {
   const ar = ARTE[cid];
@@ -37,7 +42,7 @@ function figHtml(c: Card, cid: string, cell: { atk: boolean; strike: boolean }, 
   if (cell.atk || cell.strike) {
     h += `<img class="art ataque ${cell.strike ? '' : 'late'}" src="${artUrl(cid, c.race, 'ataque')}" style="--rw:${ar[1]};--dx:${(ar[1] - ar[0]) / 2}" alt="">`;
   }
-  return `<span class="fig has-art">${h}</span>`;
+  return `<span class="fig has-art" style="${idlePhase(uid)}">${h}</span>`;
 }
 
 const HEART_MAX = 30;
@@ -52,6 +57,7 @@ function cellHtml(v: View, side: Side, l: number, d: number): string {
   const here = (ts: Target[] | null) => !!ts?.some(x => x.side === side && x.l === l && x.d === d);
   const pose = { atk: here(v.active), strike: here(v.striking) };
   if (pose.atk) cls.push('atk');
+  if ((pose.atk || pose.strike) && u && isRanged(u.cid)) cls.push('ranged');
   if (pose.strike) cls.push('strike');
   // Ícone das magias que o jogador já preparou neste alvo (magia de fileira marca a fileira toda).
   const pend = s.p.queue
