@@ -70,7 +70,7 @@ b{font-weight:800}
 .unit{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;transition:transform .15s}
 .unit .aura{position:absolute;left:14%;right:14%;bottom:12%;height:22%;border-radius:50%;background:radial-gradient(closest-side,color-mix(in srgb,var(--rc) 80%,#fff),color-mix(in srgb,var(--rc) 40%,transparent) 60%,transparent);opacity:.85}
 .unit .fig{position:relative;display:block;margin-top:-12px;filter:drop-shadow(0 3px 0 #0005) drop-shadow(0 0 6px color-mix(in srgb,var(--rc) 70%,transparent))}
-.unit .emo{font-size:38px;line-height:1;display:block}
+.unit .emo{font-size:calc(38px * var(--s,1));line-height:1;display:block}
 .unit.foe .fig{transform:scaleX(-1)}
 .unit.r-l .aura{background:radial-gradient(closest-side,#fff2b0,#f2b93bbb 55%,transparent);box-shadow:0 0 14px #f2b93b}
 .unit .a,.unit .h,.card .st .a,.card .st .h{position:absolute;display:grid;place-items:center;font-weight:800;color:#fff;line-height:1}
@@ -256,7 +256,7 @@ body.rot.land #app{height:auto}
 .land .vsb{font-size:20px}
 .land .board{gap:4px;padding:7px 8px 16px;grid-template-columns:repeat(3,1fr) 24px repeat(3,1fr)}
 .land .plat{margin:-6px -5px -3px}
-.land .unit .emo{font-size:28px}
+.land .unit .emo{font-size:calc(30px * var(--s,1))}
 .land .unit .fig{margin-top:-9px}
 .land .unit .a,.land .unit .h{min-width:20px;height:20px;font-size:12px}
 .land .mid{min-height:22px;font-size:12.5px;padding:2px 12px}

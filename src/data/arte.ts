@@ -26,3 +26,27 @@ export const ANIM = animJson as Record<string, { idle: Tira; ataque: Tira; s?: n
 export function animUrl(cid: string, race: string, kind: 'idle' | 'ataque'): string {
   return `art/${race}/${cid}-${kind}-anim.webp`;
 }
+
+/**
+ * Porte da criatura no tabuleiro: as mais caras/raras ficam maiores e se destacam.
+ * Vai de ~0,74 (custo 1) a ~1,2 (custo 8); a lendária ganha um extra.
+ */
+const PORTE_CUSTO = [0.74, 0.74, 0.82, 0.9, 0.96, 1.02, 1.08, 1.14, 1.2];
+
+/** Ajuste pela natureza do personagem (bicho pequeno, gigante...), multiplicado ao porte pelo custo. */
+const PORTE_EXTRA: Record<string, number> = {
+  aries01: 0.9, // cordeirinho
+  aries02: 0.9, // planetinha
+  aries04: 0.9, // passarinho
+  aries08: 0.95, // escudeiro mirim
+  aries10: 1.08, // carneiro de guerra
+  aries15: 1.08, // cavaleiro montado
+  aries18: 0.95, // fênix jovem
+  aries21: 1.1, // carneiro colossal
+  aries22: 1.12, // titã
+};
+
+export function porte(cid: string, custo: number, raridade: string): number {
+  const base = PORTE_CUSTO[Math.max(0, Math.min(8, custo))] * (raridade === 'l' ? 1.04 : 1);
+  return Math.round(base * (PORTE_EXTRA[cid] ?? 1) * 1000) / 1000;
+}
