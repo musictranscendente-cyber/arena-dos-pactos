@@ -28,8 +28,10 @@ from PIL import Image
 
 RAIZ = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 FPS = 12
-ALTURA_PARADO = 150  # px da tira parada; as outras usam a mesma escala
-ALTURA_IMAGEM = 480  # px da imagem parada (mão/galeria)
+ALTURA_PARADO = 120  # px da tira parada; as outras usam a mesma escala
+ALTURA_IMAGEM = 240  # px da imagem parada (mão/galeria)
+MAX_ATAQUE = 20  # quadros no máximo no ataque (peso)
+PASSO_IDLE = 3  # respiração: um quadro a cada 3 (12 quadros no loop)
 
 
 def quadros(video):
@@ -118,7 +120,7 @@ def tira(imgs, escala, destino):
     st = Image.new('RGBA', (W * len(imgs), H))
     for i, im in enumerate(imgs):
         st.paste(im.resize((W, H), Image.LANCZOS), (i * W, 0))
-    st.save(destino, quality=80, method=6)
+    st.save(destino, quality=75, method=6)
     ax, by = ancoras(imgs[0].resize((W, H)))
     return {'n': len(imgs), 'w': W, 'h': H, 'ax': ax, 'by': by}, bb
 
@@ -185,9 +187,9 @@ def main():
         mov = [i for i, d in enumerate(dif) if d > lim_d]
         a0, a1 = (max(busca, mov[0] - 3), min(len(fr), mov[-1] + 4)) if mov else (busca, len(fr))
     ids_atk = list(range(a0, a1))
-    if len(ids_atk) > 36:  # limita o peso
-        passo = len(ids_atk) / 36
-        ids_atk = [ids_atk[int(i * passo)] for i in range(36)]
+    if len(ids_atk) > MAX_ATAQUE:  # limita o peso
+        passo = len(ids_atk) / MAX_ATAQUE
+        ids_atk = [ids_atk[int(i * passo)] for i in range(MAX_ATAQUE)]
 
     # respiração: 2 s, um quadro sim outro não, indo e voltando (loop sem pulo)
     if '--idle' in sel:
@@ -196,7 +198,7 @@ def main():
         i0, i1 = 6, min(len(fr), 30)
     else:
         i0, i1 = 0, min(len(fr), 2 * FPS)
-    ids_idle = list(range(i0, i1, 2))
+    ids_idle = list(range(i0, i1, PASSO_IDLE))
     ids_idle = ids_idle + ids_idle[-2:0:-1]
 
     idle = [recorta(esq[i], cor, lim) for i in ids_idle]
@@ -214,7 +216,7 @@ def main():
         im = im.crop(im.getbbox())
         f = ALTURA_IMAGEM / im.size[1]
         im = im.resize((max(1, round(im.size[0] * f)), ALTURA_IMAGEM), Image.LANCZOS)
-        im.save(os.path.join(pasta, f'{cid}-{nome}.webp'), quality=88, method=6)
+        im.save(os.path.join(pasta, f'{cid}-{nome}.webp'), quality=82, method=6)
         return round(im.size[0] / im.size[1], 3)
     pico = max(atk, key=lambda im: (lambda b: (b[2] - b[0]) if b else 0)(im.getbbox()))
     r_par = parada(idle[0], 'parado')
