@@ -252,8 +252,7 @@ body.rot.land #app{height:auto}
 .land .heart{width:40px;height:36px;font-size:16px}
 .land .vsb{font-size:20px}
 .land .board{gap:4px;padding:7px 8px 16px;grid-template-columns:repeat(3,1fr) 24px repeat(3,1fr)}
-.land .plat{margin:-6px -5px -3px;box-shadow:inset 0 0 0 2px #e9c77a88,inset 0 2px 0 #fff6,0 6px 0 #3a2f4f,0 8px 0 #261d36,0 14px 20px #000a,0 16px 34px color-mix(in srgb,var(--rc) 45%,transparent)}
-.land .plat::after{bottom:-12px;height:7px}
+.land .plat{margin:-6px -5px -3px}
 .land .unit .emo{font-size:28px}
 .land .unit .fig{margin-top:-9px}
 .land .unit .a,.land .unit .h{min-width:20px;height:20px;font-size:12px}
@@ -330,25 +329,33 @@ body.rot.land #app{height:auto}
 @keyframes roda{to{rotate:360deg}}
 /* o chão achata o que está em cima (cos 24° ≈ 0,91): as criaturas esticam um pouco na vertical para compensar */
 .unit{transform-origin:50% 100%;scale:1 1.12}
-/* plataformas: altares de mármore com constelações gravadas e o símbolo do signo em mosaico */
-.plat{border-radius:20px;
+/* plataformas: blocos grossos de mármore — tampo com borda dourada e, na frente, um friso esculpido com relevo */
+.plat{border-radius:18px 18px 6px 6px;
   background:
     url('./img/constelacoes.svg') 0 0/120px 120px,
-    radial-gradient(120% 90% at 50% 0,#ffffff55,transparent 60%),
-    linear-gradient(180deg,#f1e9fa,#d9cdea 55%,#c3b4da);
-  box-shadow:inset 0 0 0 3px #e9c77a,inset 0 0 0 6px #fff8,inset 0 0 30px color-mix(in srgb,var(--rc) 35%,transparent),
-    0 10px 0 #8e7fb0,0 13px 0 #6b5c8e,0 16px 0 #4a3d6a,0 26px 30px #0009,0 30px 60px color-mix(in srgb,var(--rc) 55%,transparent)}
+    radial-gradient(120% 90% at 50% 0,#ffffff66,transparent 60%),
+    linear-gradient(180deg,#efe7f8,#d6c9e8 55%,#bfb0d8);
+  box-shadow:inset 0 0 0 3px #e9c77a,inset 0 0 0 6px #fff9,inset 0 0 0 7px #b89a5a66,inset 0 0 34px color-mix(in srgb,var(--rc) 35%,transparent),
+    0 0 0 1px #8a6a2a}
+/* frente do bloco: friso de mármore esculpido (fica na parte de baixo, como a lateral de um bloco em 3D) */
+.plat::after{content:'';display:block;position:absolute;left:4px;right:4px;top:calc(100% - 2px);bottom:auto;height:48px;border-radius:0 0 10px 10px;
+  background:url('./img/friso.webp') 0 0/auto 100% repeat-x;opacity:1;
+  box-shadow:inset 0 3px 0 #e9c77a,inset 0 -6px 10px #0006,0 10px 18px #0009,0 18px 50px color-mix(in srgb,var(--rc) 60%,transparent)}
+.land .plat::after{height:36px}
 .plat::before{content:attr(data-g);position:absolute;inset:0;display:grid;place-items:center;font-size:min(22vh,150px);line-height:1;
   color:#c9a24a2e;-webkit-text-stroke:2px #c9a24ab0;text-shadow:0 0 22px color-mix(in srgb,var(--rc) 60%,transparent);opacity:.7;pointer-events:none;font-family:'DejaVu Sans',sans-serif}
-.plat::after{display:none}
 .chasm{background:linear-gradient(90deg,transparent,#ffe9a855 35%,#fffbe8aa 50%,#ffe9a855 65%,transparent);box-shadow:0 0 26px #ffd77a99;opacity:.9}
-/* casas: lajes de mármore encaixadas, a da frente com brilho na cor do signo */
-.cell{background:linear-gradient(160deg,#ffffffaa,#e7dcf3aa 60%,#cdbfe2aa);
-  box-shadow:inset 0 0 0 1.5px #c9a24a88,inset 0 2px 0 #fff,inset 0 -3px 6px #6b5c8e44,0 2px 0 #9d8fbf}
-.cell.front{background:linear-gradient(160deg,#ffffffcc,#efe6f8cc 55%,#d8cbeacc);
-  box-shadow:inset 0 0 0 1.5px #e9c77a,inset 0 0 14px color-mix(in srgb,var(--sc,#ffd77a) 45%,transparent),inset 0 2px 0 #fff,0 2px 0 #9d8fbf}
+/* casas: lajes de mármore esculpido em relevo (borda chanfrada, constelações em ouro) */
+.cell{background:url('./img/laje.webp') center/100% 100% no-repeat;border-radius:8px;
+  box-shadow:0 3px 0 #8e7fb0,0 4px 6px #0005}
+.cell.front{background:url('./img/laje.webp') center/100% 100% no-repeat;box-shadow:inset 0 0 18px color-mix(in srgb,var(--sc,#ffd77a) 55%,transparent),inset 0 0 0 2px color-mix(in srgb,var(--sc,#ffd77a) 70%,#fff),0 3px 0 #8e7fb0,0 4px 6px #0005}
+.cell.ok{box-shadow:inset 0 0 0 3px var(--gold),0 0 14px var(--gold),inset 0 0 22px #ffd77aaa}
 .cell.mine{--sc:var(--prc)}
 .cell.theirs{--sc:var(--erc)}
 .unit .aura{opacity:.95}
 .mid{background:#1b123cd9}
 @media (prefers-reduced-motion:reduce){.board::before{animation:none}}
+/* espaço para o friso da frente das plataformas não cobrir a mensagem */
+.board{margin-bottom:40px}
+.land .board{margin-bottom:28px}
+.mid{position:relative;z-index:5}
