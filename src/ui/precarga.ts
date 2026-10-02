@@ -11,7 +11,8 @@ export function precarregar(cids: Iterable<string>): void {
     const race = card(cid).race;
     const urls: string[] = [];
     if (ANIM[cid]) urls.push(animUrl(cid, race, 'idle'), animUrl(cid, race, 'ataque'));
-    if (ARTE[cid]) urls.push(artUrl(cid, race, 'parado'), artUrl(cid, race, 'ataque'));
+    if (ARTE[cid]) urls.push(artUrl(cid, race, 'parado'));
+    if (ARTE[cid] && card(cid).type === 'unit') urls.push(artUrl(cid, race, 'ataque'));
     for (const u of urls) {
       if (pedidas.has(u)) continue;
       pedidas.add(u);

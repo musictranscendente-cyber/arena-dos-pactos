@@ -395,3 +395,6 @@ body.rot #app{height:auto}
 /* tela grande (computador): o tabuleiro não estica demais na altura */
 body:not(.land) .table{justify-content:center}
 body:not(.land) .board{flex:0 0 auto;height:min(54vh,44vw)}
+
+/* magia com arte: a ilustração preenche o quadro da carta */
+.card.spell .cart .art{object-fit:cover;padding:0}
