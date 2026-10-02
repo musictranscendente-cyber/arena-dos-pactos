@@ -1,9 +1,11 @@
 """
-Transforma um vídeo do Grok (dois personagens iguais em fundo verde ou magenta:
-à esquerda respirando, à direita atacando) nas animações do jogo.
+Transforma um vídeo do Grok (fundo verde ou magenta) nas animações do jogo.
+
+Formato padrão (um personagem só, 6 s): nos 2 primeiros segundos ele respira; depois ataca e volta
+à posição inicial. Formato antigo (--dois): dois personagens iguais, à esquerda respirando e à direita atacando.
 
 Uso:
-    python3 ferramentas/video_para_sprite.py <video.mp4> <id-da-carta> [--idle INICIO FIM] [--ataque INICIO FIM]
+    python3 ferramentas/video_para_sprite.py <video.mp4> <id-da-carta> [--dois] [--idle INICIO FIM] [--ataque INICIO FIM]
 
 Exemplo:
     python3 ferramentas/video_para_sprite.py touro25.mp4 touro25
@@ -137,49 +139,60 @@ def main():
     cor = 'verde' if bg[1] > bg[0] and bg[1] > bg[2] else 'magenta'
     lim = float(np.median(chave(fr[0], cor)[0][:20].ravel()))
 
-    # coluna que separa os dois personagens: o maior vão vazio perto do meio, somando todos os quadros
-    ocup = np.zeros(W, bool)
-    for f in fr:
-        ocup |= (chave(f, cor)[0] < lim * 0.5).sum(0) > 0
-    livres = [x for x in range(int(W * 0.25), int(W * 0.75)) if not ocup[x]]
-    if livres:
-        runs, s, p = [], livres[0], livres[0]
-        for x in livres[1:]:
-            if x != p + 1:
-                runs.append((s, p))
-                s = x
-            p = x
-        runs.append((s, p))
-        s, e = max(runs, key=lambda t: t[1] - t[0])
-        corte = (s + e) // 2
-    else:
-        soma = np.zeros(W)
+    dois = '--dois' in args
+    if dois:
+        # coluna que separa os dois personagens: o maior vão vazio perto do meio, somando todos os quadros
+        ocup = np.zeros(W, bool)
         for f in fr:
-            soma += (chave(f, cor)[0] < lim * 0.5).sum(0)
-        corte = int(np.argmin(soma[int(W * 0.3):int(W * 0.7)])) + int(W * 0.3)
+            ocup |= (chave(f, cor)[0] < lim * 0.5).sum(0) > 0
+        livres = [x for x in range(int(W * 0.25), int(W * 0.75)) if not ocup[x]]
+        if livres:
+            runs, s, p = [], livres[0], livres[0]
+            for x in livres[1:]:
+                if x != p + 1:
+                    runs.append((s, p))
+                    s = x
+                p = x
+            runs.append((s, p))
+            s, e = max(runs, key=lambda t: t[1] - t[0])
+            corte = (s + e) // 2
+        else:
+            soma = np.zeros(W)
+            for f in fr:
+                soma += (chave(f, cor)[0] < lim * 0.5).sum(0)
+            corte = int(np.argmin(soma[int(W * 0.3):int(W * 0.7)])) + int(W * 0.3)
+        esq = [f[:, :corte] for f in fr]
+        dir_ = [f[:, corte:] for f in fr]
+        ref_i, busca = 0, 0
+    else:
+        # um personagem só: respiração nos 2 primeiros segundos, ataque depois
+        corte = W
+        esq = dir_ = fr
+        ref_i, busca = min(len(fr) - 1, 2 * FPS), int(1.7 * FPS)
 
-    esq = [f[:, :corte] for f in fr]
-    dir_ = [f[:, corte:] for f in fr]
-
-    # ataque: quadros em que o personagem da direita sai da pose inicial
+    # ataque: quadros em que o personagem sai da pose de referência
     if '--ataque' in sel:
         a0, a1 = (int(t * FPS) for t in sel['--ataque'])
     else:
-        ref = np.array(Image.fromarray(dir_[0].astype(np.uint8)).resize((96, 54))).astype(float)
-        dif = [np.abs(np.array(Image.fromarray(d.astype(np.uint8)).resize((96, 54))).astype(float) - ref).mean() for d in dir_]
+        def mini(f):
+            return np.array(Image.fromarray(f.astype(np.uint8)).resize((96, 54))).astype(float)
+        ref = mini(dir_[ref_i])
+        dif = [np.abs(mini(d) - ref).mean() if i >= busca else 0.0 for i, d in enumerate(dir_)]
         lim_d = max(4.0, max(dif) * 0.3)
         mov = [i for i, d in enumerate(dif) if d > lim_d]
-        a0, a1 = (max(0, mov[0] - 3), min(len(fr), mov[-1] + 4)) if mov else (0, len(fr))
+        a0, a1 = (max(busca, mov[0] - 3), min(len(fr), mov[-1] + 4)) if mov else (busca, len(fr))
     ids_atk = list(range(a0, a1))
     if len(ids_atk) > 36:  # limita o peso
         passo = len(ids_atk) / 36
         ids_atk = [ids_atk[int(i * passo)] for i in range(36)]
 
-    # respiração: 2 s da esquerda, um quadro sim outro não, indo e voltando (loop sem pulo)
+    # respiração: 2 s, um quadro sim outro não, indo e voltando (loop sem pulo)
     if '--idle' in sel:
         i0, i1 = (int(t * FPS) for t in sel['--idle'])
-    else:
+    elif dois:
         i0, i1 = 6, min(len(fr), 30)
+    else:
+        i0, i1 = 0, min(len(fr), 2 * FPS)
     ids_idle = list(range(i0, i1, 2))
     ids_idle = ids_idle + ids_idle[-2:0:-1]
 
@@ -213,7 +226,7 @@ def main():
         with open(caminho, 'w', encoding='utf-8') as fh:
             json.dump(dict(sorted(dados.items())), fh, ensure_ascii=False, indent=1)
             fh.write('\n')
-    print(f'{cid}: fundo {cor}, corte x={corte}, respiração {len(ids_idle)} quadros, ataque {len(ids_atk)} quadros ({a0 / FPS:.1f}s a {a1 / FPS:.1f}s)')
+    print(f'{cid}: fundo {cor}, {"dois personagens, corte x=" + str(corte) if dois else "um personagem"}, respiração {len(ids_idle)} quadros, ataque {len(ids_atk)} quadros ({a0 / FPS:.1f}s a {a1 / FPS:.1f}s)')
 
 
 if __name__ == '__main__':
