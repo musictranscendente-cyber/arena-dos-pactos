@@ -4,7 +4,7 @@ import { RACES } from '../data/signos';
 import type { GameEvent, Side } from '../engine';
 
 /** Criaturas sem Distância cuja arte lança algo (o golpe sai de longe). */
-const LANCA = new Set(['virgem25', 'peixes25', 'aquario25', 'aries09', 'aries06']);
+const LANCA = new Set(['virgem25', 'peixes25', 'aquario25', 'aries09', 'aries06', 'aries04']);
 
 /** Projétil próprio de algumas cartas (senão vale o do elemento do signo). */
 const TIPO: Record<string, string> = { aries06: 'flecha', aries09: 'ar' };

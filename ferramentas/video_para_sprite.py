@@ -45,7 +45,10 @@ def chave(fr, cor):
     if cor == 'verde':
         k = g - np.maximum(r, b)
         # tira o verde que vaza nas bordas (chama amarela sobre verde vira laranja, não verde-limão)
-        g = np.where(k > -20, np.minimum(g, np.maximum(r, b) * 0.85), g)
+        # branco/cinza (vapor, brilho) fica neutro; só cores quentes perdem um pouco mais de verde
+        neutro = np.abs(r - b) < 45
+        alvo = np.where(neutro, np.maximum(r, b), np.maximum(r, b) * 0.85)
+        g = np.where(k > -20, np.minimum(g, alvo), g)
     else:
         k = np.minimum(r, b) - g
         r = np.where(k > 0, np.minimum(r, np.maximum(g, r - k)), r)
