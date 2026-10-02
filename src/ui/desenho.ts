@@ -105,7 +105,7 @@ function cellHtml(v: View, side: Side, l: number, d: number): string {
       + `<b class="a${atk > u.atk ? ' up' : ''}">${atk}</b><b class="h">${u.hp}</b></div>`;
   }
   const col = side === 'p' ? 3 - d : 5 + d;
-  return `<div class="${cls.join(' ')}" style="grid-row:${l + 1};grid-column:${col};z-index:${l + 1}" id="c-${side}-${l}-${d}" data-act="cell" data-side="${side}" data-l="${l}" data-d="${d}">${inner}${pend ? `<span class="spell-mark">${pend}</span>` : ''}</div>`;
+  return `<div class="${cls.join(' ')}" style="grid-row:${l + 1};grid-column:${col};--z:${l + 1}" id="c-${side}-${l}-${d}" data-act="cell" data-side="${side}" data-l="${l}" data-d="${d}">${inner}${pend ? `<span class="spell-mark">${pend}</span>` : ''}</div>`;
 }
 
 function boardHtml(v: View): string {

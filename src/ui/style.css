@@ -41,7 +41,8 @@ b{font-weight:800}
   filter:drop-shadow(0 3px 3px #0009)}
 .vs{display:flex;flex-direction:column;align-items:center;gap:2px}
 .vsb{font-family:'Grenze Gotisch',Georgia,serif;font-size:26px;line-height:.9;color:var(--gold);text-shadow:0 2px 0 #5a2d00,0 0 10px #f2b93b99}
-.rd{font-size:11px;font-weight:800;letter-spacing:.5px;text-transform:uppercase;color:#f5e6c4;text-shadow:0 1px 2px #000}
+.rd{font-size:11px;font-weight:800;letter-spacing:.5px;text-transform:uppercase;color:#fff3d6;text-shadow:0 1px 2px #000;background:#1b123ccc;border:1px solid var(--line);border-radius:999px;padding:1px 8px}
+.vs{position:relative;z-index:2;background:radial-gradient(closest-side,#1b123cb3,transparent);padding:0 10px}
 .rotbtn{font:inherit;background:var(--glass);color:#fff;border:1px solid var(--line);border-radius:8px;padding:1px 8px;font-size:14px;cursor:pointer}
 
 /* ---------- tabuleiro ---------- */
@@ -88,14 +89,16 @@ b{font-weight:800}
 .spell-mark{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-size:22px;z-index:3;pointer-events:none;filter:drop-shadow(0 0 5px #fff)}
 
 /* animações de combate */
-.cell.atk{z-index:10!important}
 /* ataque em dois tempos: prepara (recua) e avança; depois segura o golpe enquanto o dano aparece e volta.
    Quem ataca de longe (.ranged) quase não sai do lugar: o projétil é que viaja. */
 .cell.atk .unit{--dir:1;--reach:30%;animation:windup .74s linear forwards;will-change:transform}
 .cell.strike .unit{--dir:1;--reach:30%;animation:recover .62s linear forwards;will-change:transform}
 .cell.atk .unit.foe,.cell.strike .unit.foe{--dir:-1}
 .cell.ranged .unit{--reach:5%}
-.cell.atk,.cell.strike{z-index:10!important}
+/* ordem de profundidade: a fileira de baixo (mais perto) fica sempre na frente; quem ataca só passa à frente
+   dos vizinhos da MESMA fileira */
+.cell{z-index:calc(var(--z,1) * 10)}
+.cell.atk,.cell.strike{z-index:calc(var(--z,1) * 10 + 5)}
 .cell.atk .unit .aura,.cell.strike .unit .aura{box-shadow:0 0 16px var(--gold)}
 @keyframes windup{
   0%{transform:none;animation-timing-function:cubic-bezier(.25,.1,.3,1)}
@@ -139,14 +142,14 @@ b{font-weight:800}
 .btn:focus-visible,.card:focus-visible{outline:3px solid #fff;outline-offset:2px}
 
 /* ---------- cartas ---------- */
-.hand{flex:1;min-width:0;display:flex;gap:8px;overflow-x:auto;padding:14px 4px 6px 10px;scrollbar-width:none}
+.hand{flex:1;min-width:0;display:flex;gap:8px;overflow-x:auto;padding:24px 4px 6px 10px;scrollbar-width:none}
 .card{flex:0 0 92px;height:132px;border-radius:10px;position:relative;padding:4px 4px 5px;display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;color:var(--ink);transition:transform .12s;
   background:linear-gradient(180deg,var(--parch),var(--parch2));
   box-shadow:0 0 0 2px var(--rr),0 0 0 4px #2a1d3d,0 6px 10px #0009}
 .card.r-l{box-shadow:0 0 0 2px var(--rr),0 0 0 4px #2a1d3d,0 6px 10px #0009,0 0 14px #f2b93b99}
 .card.r-e{box-shadow:0 0 0 2px var(--rr),0 0 0 4px #2a1d3d,0 6px 10px #0009,0 0 10px #a86be088}
 .card.spell{background:linear-gradient(180deg,#efe3f7,#d4bfe6)}
-.card.sel{transform:translateY(-10px) scale(1.04);box-shadow:0 0 0 2px #fff3c4,0 0 0 4px var(--gold),0 0 20px var(--gold),0 10px 14px #0009}
+.card.sel{transform:translateY(-8px) scale(1.03);box-shadow:0 0 0 2px #fff3c4,0 0 0 4px var(--gold),0 0 20px var(--gold),0 10px 14px #0009}
 .card.poor{filter:grayscale(.65) brightness(.75)}
 .cost{position:absolute;top:-9px;left:-8px;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;font-weight:800;font-size:15px;color:#fff;z-index:2;text-shadow:0 1px 0 #0a2a66;
   background:radial-gradient(circle at 35% 30%,#bfe4ff,#3b8ff0 50%,#164a9e);box-shadow:0 0 0 2px #f6d78b,0 0 0 3px #4a2c0a,0 2px 4px #0008}
@@ -265,7 +268,7 @@ body.rot.land #app{height:auto}
 .land .orbc b{font-size:23px}
 .land .orbc small{font-size:11px}
 .land .pips i{width:6px;height:6px}
-.land .hand{padding:11px 2px 3px 9px;gap:7px}
+.land .hand{padding:20px 2px 3px 9px;gap:7px}
 .land .card{flex:0 0 74px;height:98px;padding:3px 3px 4px}
 .land .cart .art{padding:2px}
 .cart .emo{font-size:22px}
@@ -323,7 +326,7 @@ body.rot.land #app{height:auto}
 /* ---------- arena 3D: o chão inclina em perspectiva, as criaturas continuam em pé ---------- */
 .table{perspective:1000px;perspective-origin:50% 0}
 .board{--tilt:24deg;transform:rotateX(var(--tilt));transform-origin:50% 100%}
-.board::before{content:'';position:absolute;left:50%;top:50%;width:min(48%,60vh);aspect-ratio:1;translate:-50% -50%;
+.board::before{content:'';position:absolute;left:50%;top:62%;width:min(34%,44vh);aspect-ratio:1;translate:-50% -50%;
   background:url('./img/roda.svg') center/contain no-repeat;opacity:.85;animation:roda 120s linear infinite;pointer-events:none;
   filter:drop-shadow(0 0 12px #ffd77a88)}
 @keyframes roda{to{rotate:360deg}}
@@ -348,7 +351,7 @@ body.rot.land #app{height:auto}
 /* casas: lajes de mármore esculpido em relevo (borda chanfrada, constelações em ouro) */
 .cell{background:url('./img/laje.webp') center/100% 100% no-repeat;border-radius:8px;
   box-shadow:0 3px 0 #8e7fb0,0 4px 6px #0005}
-.cell.front{background:url('./img/laje.webp') center/100% 100% no-repeat;box-shadow:inset 0 0 18px color-mix(in srgb,var(--sc,#ffd77a) 55%,transparent),inset 0 0 0 2px color-mix(in srgb,var(--sc,#ffd77a) 70%,#fff),0 3px 0 #8e7fb0,0 4px 6px #0005}
+.cell.front{background:url('./img/laje.webp') center/100% 100% no-repeat;box-shadow:0 3px 0 #8e7fb0,0 4px 6px #0005}
 .cell.ok{box-shadow:inset 0 0 0 3px var(--gold),0 0 14px var(--gold),inset 0 0 22px #ffd77aaa}
 .cell.mine{--sc:var(--prc)}
 .cell.theirs{--sc:var(--erc)}
