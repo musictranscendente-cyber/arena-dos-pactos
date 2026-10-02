@@ -138,10 +138,18 @@ function fxText(e: GameEvent): [string, string, string] | null {
     case 'UnitHealed': return [cell(e.side, e.l, e.d), `+${e.amount}`, 'heal'];
     case 'UnitReturnedToHand': return [cell(e.side, e.l, e.d), '🫧 volta', 'sh'];
     case 'UnitPlaced': return e.token ? [cell(e.side, e.l, e.d), 'Eco!', 'heal'] : null;
+    case 'UnitDied': return [cell(e.side, e.l, e.d), '💀', 'die'];
     case 'HeroDamaged': return [`hero-${e.side}`, `-${e.amount}`, 'dmg'];
     case 'HeroHealed': return [`hero-${e.side}`, `+${e.amount}`, 'heal'];
   }
   return null;
+}
+
+/** Tremida rápida em quem levou dano. */
+function shake(el: HTMLElement): void {
+  el.classList.remove('hit');
+  void el.offsetWidth; // reinicia a animação
+  el.classList.add('hit');
 }
 
 function showFx(events: GameEvent[]): void {
@@ -150,6 +158,7 @@ function showFx(events: GameEvent[]): void {
     if (!fx) continue;
     const el = document.getElementById(fx[0]);
     if (!el) continue;
+    if (fx[2] === 'dmg' || fx[2] === 'die') shake(el.closest<HTMLElement>('.hcard') ?? el);
     const s = document.createElement('span');
     s.className = 'fx ' + fx[2];
     s.textContent = fx[1];

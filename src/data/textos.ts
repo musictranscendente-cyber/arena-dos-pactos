@@ -72,6 +72,7 @@ export const T = {
   rivalDe: (signo: string) => `Rival de ${signo}`,
   deck: (n: number) => `Deck ${n}`,
   maoDeck: (m: number, d: number) => `Mão ${m}, deck ${d}`,
+  rodadaN: (n: number) => `Rodada ${n}`,
   rodadaInicio: (n: number) => `Rodada ${n}: faça suas jogadas e toque em Batalha. O rival está jogando em segredo.`,
   suaVez: 'Sua vez. Toque numa carta da mão.',
   manaInsuficienteQueimar: (nome: string) => `${nome}: mana insuficiente. Você pode queimá-la por +1 de mana.`,

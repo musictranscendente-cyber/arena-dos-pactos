@@ -17,11 +17,13 @@ export interface View {
 
 const artOrEmoji = (c: Card) => (c.art ? `<img class="art" src="${c.art}" alt="">` : `<span class="emo">${c.e}</span>`);
 
+const HEART_MAX = 30;
+
 function cellHtml(v: View, side: Side, l: number, d: number): string {
   const { s } = v;
   const raw = s[side].board[l][d];
   const u = raw && !(side === 'e' && raw.hidden) ? raw : null; // invocação secreta do rival não aparece
-  const cls = ['cell'];
+  const cls = ['cell', side === 'p' ? 'mine' : 'theirs'];
   if (d === 0) cls.push('front');
   if (v.canAct && v.sel !== null && isValidTarget(s, 'p', v.sel, { side, l, d })) cls.push('ok');
   if (v.active?.some(x => x.side === side && x.l === l && x.d === d)) cls.push('atk');
@@ -36,53 +38,65 @@ function cellHtml(v: View, side: Side, l: number, d: number): string {
   if (u) {
     const c = card(u.cid);
     const atk = effAtk(s[side].board, l, u);
-    inner = `<div class="unit ${side === 'e' ? 'foe' : ''}" style="--rc:${RACES[c.race].c}">`
+    inner = `<div class="unit ${side === 'e' ? 'foe' : ''} r-${c.r}" style="--rc:${RACES[c.race].c}">`
+      + '<span class="aura"></span>'
       + (u.pending ? '<span class="pnd">⏳</span>' : '')
-      + artOrEmoji(c)
+      + `<span class="fig">${artOrEmoji(c)}</span>`
       + `<span class="kws">${u.kw.filter(k => k !== 'escudo').map(k => KW[k].i).join('')}${u.poison ? '🤢' : ''}</span>`
       + (u.shield ? '<span class="shd">🛡️</span>' : '')
-      + `<b class="a"${atk > u.atk ? ' style="background:#c98a12"' : ''}>${atk}</b><b class="h">${u.hp}</b></div>`;
+      + `<b class="a${atk > u.atk ? ' up' : ''}">${atk}</b><b class="h">${u.hp}</b></div>`;
   }
-  return `<div class="${cls.join(' ')}" id="c-${side}-${l}-${d}" data-act="cell" data-side="${side}" data-l="${l}" data-d="${d}">${inner}${pend ? `<span class="spell-mark">${pend}</span>` : ''}</div>`;
+  const col = side === 'p' ? 3 - d : 5 + d;
+  return `<div class="${cls.join(' ')}" style="grid-row:${l + 1};grid-column:${col}" id="c-${side}-${l}-${d}" data-act="cell" data-side="${side}" data-l="${l}" data-d="${d}">${inner}${pend ? `<span class="spell-mark">${pend}</span>` : ''}</div>`;
 }
 
 function boardHtml(v: View): string {
-  let h = '<div class="board">';
+  const { s } = v;
+  let h = `<div class="board"><div class="plat mine" style="--rc:${RACES[s.p.sign].c}"></div><div class="chasm"></div><div class="plat theirs" style="--rc:${RACES[s.e.sign].c}"></div>`;
   for (let l = 0; l < 3; l++) {
-    h += '<div class="lane">';
-    [2, 1, 0].forEach(d => { h += cellHtml(v, 'p', l, d); });
-    h += '<div class="divider"></div>';
-    [0, 1, 2].forEach(d => { h += cellHtml(v, 'e', l, d); });
-    h += '</div>';
+    for (let d = 0; d < 3; d++) h += cellHtml(v, 'p', l, d) + cellHtml(v, 'e', l, d);
   }
   return h + '</div>';
 }
 
-function heroesHtml(s: GameState): string {
-  const E = s.e, P = s.p;
-  return `<div class="hero heroes"><div class="side"><button class="rotbtn" data-act="rot" aria-label="${T.alternarDeitado}">⟳</button>`
-    + `<span class="av" style="color:${RACES[P.sign].c}">${RACES[P.sign].g}</span><div><div class="nm">${T.voce}</div><div class="sub">${T.deck(P.deck.length)}</div></div>`
-    + `<span class="hp" id="hero-p">❤ ${Math.max(0, P.hp)}</span></div>`
-    + `<div class="side"><span class="hp" id="hero-e">❤ ${Math.max(0, E.hp)}</span><span class="mana">💧 ${E.max}</span>`
-    + `<div style="text-align:right"><div class="nm">${T.rivalDe(RACES[E.sign].n)}</div><div class="sub">${T.maoDeck(E.hand.length, E.deck.length)}</div></div>`
-    + `<span class="av" style="color:${RACES[E.sign].c}">${RACES[E.sign].g}</span></div></div>`;
+function heroCard(s: GameState, side: Side): string {
+  const H = s[side], r = RACES[H.sign];
+  const hp = Math.max(0, H.hp);
+  const pct = Math.min(100, (hp / HEART_MAX) * 100);
+  const name = side === 'p' ? T.voce : T.rivalDe(r.n);
+  const sub = side === 'p' ? T.deck(H.deck.length) : T.maoDeck(H.hand.length, H.deck.length);
+  const extra = side === 'e' ? `<span class="gem" title="Mana">${H.max}</span>` : '';
+  return `<div class="hcard ${side === 'p' ? 'mine' : 'theirs'}" style="--rc:${r.c}">`
+    + `<div class="medal"><span>${r.g}</span></div>`
+    + `<div class="hinfo"><div class="hname">${name}</div><div class="hpbar${pct <= 30 ? ' low' : ''}"><i style="width:${pct}%"></i></div><div class="hsub">${sub}${extra}</div></div>`
+    + `<div class="heart" id="hero-${side}">${hp}</div></div>`;
 }
 
-function pbarHtml(v: View): string {
+function hudHtml(s: GameState): string {
+  return `<div class="hud">${heroCard(s, 'p')}`
+    + `<div class="vs"><button class="rotbtn" data-act="rot" aria-label="${T.alternarDeitado}">⟳</button><span class="vsb">VS</span><span class="rd">${T.rodadaN(s.round)}</span></div>`
+    + `${heroCard(s, 'e')}</div>`;
+}
+
+function manaHtml(v: View): string {
   const P = v.s.p, n = Math.max(P.max, P.mana);
-  let orbs = '';
-  for (let i = 0; i < n; i++) orbs += `<span class="orb ${i < P.mana ? (i >= P.max ? 'bonus' : 'on') : 'spent'}"></span>`;
-  return `<div class="hero me"><div class="stats"><span class="orbs">${orbs}</span><span class="mtxt">${P.mana}/${P.max}</span></div>`
-    + `<div class="acts"><button class="btn rc" data-act="recharge" ${v.canAct && v.sel !== null && !P.recharged ? '' : 'disabled'}>${T.queimar}</button>`
-    + `<button class="btn go" data-act="punch" ${v.canAct ? '' : 'disabled'}>${T.batalha}</button></div></div>`;
+  let pips = '';
+  for (let i = 0; i < n; i++) pips += `<i class="${i < P.mana ? (i >= P.max ? 'bonus' : 'on') : ''}"></i>`;
+  return `<div class="manaorb" aria-label="Mana ${P.mana}/${P.max}"><div class="orbc"><b>${P.mana}</b><small>/${P.max}</small></div><span class="pips">${pips}</span></div>`;
+}
+
+function actsHtml(v: View): string {
+  const P = v.s.p;
+  return `<div class="acts"><button class="btn rc" data-act="recharge" ${v.canAct && v.sel !== null && !P.recharged ? '' : 'disabled'}>${T.queimar}</button>`
+    + `<button class="btn go" data-act="punch" ${v.canAct ? '' : 'disabled'}><span class="ico">⚔️</span>${T.batalha}</button></div>`;
 }
 
 export function cardHtml(c: Card, cost: number, attrs = '', cls = ''): string {
   const body = c.type === 'unit'
-    ? `<span class="ck">${c.kw.map(k => KW[k].i).join('')}${c.on ? '⭐' : ''}</span><span class="st"><span class="x">⚔${c.atk}</span><span class="y">❤${c.hp}</span></span>`
+    ? `<span class="ck">${c.kw.map(k => KW[k].i).join('')}${c.on ? '⭐' : ''}</span><span class="st"><b class="a">${c.atk}</b><b class="h">${c.hp}</b></span>`
     : `<span class="sp">${cardText(c)}</span>`;
-  return `<div class="card ${cls}" style="--rc:${RACES[c.race].c};--rr:${RARITY[c.r].col}" ${attrs}><span class="cost">${cost}</span>`
-    + `<span class="sg">${RACES[c.race].g}</span>${artOrEmoji(c)}<span class="cn">${c.name}</span>${body}</div>`;
+  return `<div class="card ${c.type === 'spell' ? 'spell' : ''} r-${c.r} ${cls}" style="--rc:${RACES[c.race].c};--rr:${RARITY[c.r].col}" ${attrs}><span class="cost">${cost}</span>`
+    + `<span class="cart">${artOrEmoji(c)}<span class="sg">${RACES[c.race].g}</span></span><span class="cn">${c.name}</span>${body}</div>`;
 }
 
 function handHtml(v: View): string {
@@ -98,9 +112,9 @@ function handHtml(v: View): string {
 }
 
 export function gameHtml(v: View): string {
-  return heroesHtml(v.s)
+  return hudHtml(v.s)
     + `<div class="table">${boardHtml(v)}<div class="mid" aria-live="polite">${v.msg}</div></div>`
-    + `<div class="bottom">${pbarHtml(v)}${handHtml(v)}</div>`;
+    + `<div class="bottom">${manaHtml(v)}${handHtml(v)}${actsHtml(v)}</div>`;
 }
 
 export function galleryHtml(sign: Signo, selected: string | null): string {
@@ -125,7 +139,7 @@ export function startHtml(now: Date): string {
   const signs = ORDER.map(k => {
     const r = RACES[k];
     return `<button class="sign" data-act="pick" data-r="${k}" style="--rc:${r.c}">${k === cur ? `<span class="tag">${T.temporada}</span>` : ''}`
-      + `<span class="g">${r.g}</span><span class="sn">${r.n}</span><span class="sm">${r.el}, ${r.m}</span></button>`;
+      + `<span class="g"><span>${r.g}</span></span><span class="sn">${r.n}</span><span class="sm">${r.el}, ${r.m}</span></button>`;
   }).join('');
   const legend = Object.values(KW).map(k => `<span>${k.i}</span><span>${k.n}: ${k.d}</span>`).join('') + `<span>⭐</span><span>${T.efeitoChegada}</span>`;
   return `<div class="ov"><div class="panel wide">
