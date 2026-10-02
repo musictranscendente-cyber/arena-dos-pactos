@@ -1,6 +1,6 @@
 // Funções que montam o HTML de cada parte da tela (sem estado próprio).
 import { card, cardsOfSign, CARDS } from '../data/cards';
-import { ARTE, artUrl } from '../data/arte';
+import { ANIM, animUrl, ARTE, artUrl, type Tira } from '../data/arte';
 import { RARITY } from '../data/raridades';
 import type { Card, Signo } from '../data/schema';
 import { currentSign, ORDER, RACES } from '../data/signos';
@@ -32,7 +32,26 @@ function idlePhase(uid: number): string {
   return `--ph:-${((t + uid * 0.77) % IDLE_S).toFixed(2)}s;--pb:-${((t + uid * 0.41) % BOB_S).toFixed(2)}s`;
 }
 
+/** Duração do ataque animado: os dois quadros da Batalha (avanço + golpe), ver PAUSE em app.ts. */
+export const ATK_MS = { start: 900, strike: 900 };
+
+function tiraHtml(src: string, t: Tira, base: number, extra: string, cls: string): string {
+  return `<span class="spr ${cls}" style="--n:${t.n};--fw:${t.w / base};--fh:${t.h / base};--ax:${t.ax};${extra}">`
+    + `<img src="${src}" alt=""></span>`;
+}
+
 function figHtml(c: Card, cid: string, cell: { atk: boolean; strike: boolean }, uid: number): string {
+  const an = ANIM[cid];
+  if (an) {
+    const base = an.idle.h;
+    if (!cell.atk && !cell.strike) {
+      const ph = ((Date.now() / 1000 + uid * 0.77) % 3).toFixed(2);
+      return `<span class="fig has-anim">${tiraHtml(animUrl(cid, c.race, 'idle'), an.idle, base, `--pa:-${ph}s`, 'idle')}</span>`;
+    }
+    // o ataque continua do ponto certo quando a tela é redesenhada no quadro do golpe
+    const delay = cell.strike ? -ATK_MS.start : 0;
+    return `<span class="fig has-anim">${tiraHtml(animUrl(cid, c.race, 'ataque'), an.ataque, base, `--pa:${delay}ms`, 'ataque')}</span>`;
+  }
   const ar = ARTE[cid];
   if (!ar) return `<span class="fig" style="${idlePhase(uid)}">${artOrEmoji(c)}</span>`;
   // a pose parada define o lugar da figura; a de ataque (mais larga, o golpe vai para a frente)
@@ -58,6 +77,7 @@ function cellHtml(v: View, side: Side, l: number, d: number): string {
   const pose = { atk: here(v.active), strike: here(v.striking) };
   if (pose.atk) cls.push('atk');
   if ((pose.atk || pose.strike) && u && isRanged(u.cid)) cls.push('ranged');
+  if ((pose.atk || pose.strike) && u && ANIM[u.cid]) cls.push('animated');
   if (pose.strike) cls.push('strike');
   // Ícone das magias que o jogador já preparou neste alvo (magia de fileira marca a fileira toda).
   const pend = s.p.queue

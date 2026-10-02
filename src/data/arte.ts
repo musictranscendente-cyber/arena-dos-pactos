@@ -22,3 +22,18 @@ export type Pose = 'parado' | 'ataque';
 export function artUrl(cid: string, race: string, pose: Pose): string {
   return `art/${race}/${cid}-${pose}.webp`;
 }
+
+/** Uma tira de quadros (sprite sheet) feita a partir de vídeo. w/h em px de um quadro; ax = centro do corpo (0..1). */
+export interface Tira { n: number; w: number; h: number; ax: number }
+
+/**
+ * Cartas com animação quadro a quadro (public/art/<signo>/<id>-idle-anim.webp e -ataque-anim.webp).
+ * A altura do quadro parado é a referência de tamanho: as outras tiras usam a mesma escala.
+ */
+export const ANIM: Record<string, { idle: Tira; ataque: Tira }> = {
+  aries25: { idle: { n: 24, w: 120, h: 150, ax: 0.487 }, ataque: { n: 31, w: 246, h: 179, ax: 0.451 } },
+};
+
+export function animUrl(cid: string, race: string, kind: 'idle' | 'ataque'): string {
+  return `art/${race}/${cid}-${kind}-anim.webp`;
+}

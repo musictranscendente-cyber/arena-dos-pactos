@@ -308,3 +308,14 @@ body.rot.land #app{height:auto}
 .boom.agua{background:radial-gradient(circle,#fff 0,#9fdcff 35%,#2a7de0 55%,transparent 72%)}
 @keyframes boom{0%{transform:scale(.3);opacity:1}100%{transform:scale(1.6);opacity:0}}
 @media (prefers-reduced-motion:reduce){.boom{animation-duration:.2s}}
+
+/* animação quadro a quadro (tira de quadros feita de vídeo) */
+.unit .fig.has-anim{position:absolute;left:50%;bottom:14%;width:0;height:0;margin:0;pointer-events:none;filter:drop-shadow(0 3px 2px #0007) drop-shadow(0 0 5px color-mix(in srgb,var(--rc) 60%,transparent))}
+.unit.foe .fig.has-anim{transform:scaleX(-1)}
+.unit .fig.has-anim .spr{position:absolute;bottom:0;left:0;overflow:hidden;height:calc(128cqh * var(--fh));width:calc(128cqh * var(--fw));transform:translateX(calc(-100% * var(--ax)))}
+.unit .fig.has-anim .spr img{display:block;height:100%;width:calc(var(--n) * 100%);max-width:none;animation-delay:var(--pa,0s)}
+.unit .fig.has-anim .spr.idle img{animation:spr 3s steps(var(--n)) infinite var(--pa,0s)}
+.unit .fig.has-anim .spr.ataque img{animation:spr 1.8s steps(var(--n)) forwards var(--pa,0s)}
+@keyframes spr{to{transform:translateX(-100%)}}
+.cell.animated .unit{--reach:8%}
+@media (prefers-reduced-motion:reduce){.unit .fig.has-anim .spr.idle img{animation:none}}
