@@ -173,7 +173,7 @@ b{font-weight:800}
 .unit.foe .art{transform:none}
 /* criatura com arte própria: maior que a casa, em pé sobre a pedra */
 .cell{container-type:size}
-.unit .fig.has-art{position:absolute;left:50%;bottom:22cqh;margin:0;transform:translateX(-50%);pointer-events:none;filter:drop-shadow(.7px 0 0 #111) drop-shadow(-.7px 0 0 #111) drop-shadow(0 .7px 0 #111) drop-shadow(0 -.7px 0 #111) drop-shadow(0 3px 2px #0005)}
+.unit .fig.has-art{position:absolute;left:50%;bottom:12cqh;margin:0;transform:translateX(-50%);pointer-events:none;filter:drop-shadow(.7px 0 0 #111) drop-shadow(-.7px 0 0 #111) drop-shadow(0 .7px 0 #111) drop-shadow(0 -.7px 0 #111) drop-shadow(0 3px 2px #0005)}
 .unit.foe .fig.has-art{transform:translateX(-50%) scaleX(-1)}
 .unit .fig.has-art .art{display:block;height:var(--H);width:calc(var(--H) * var(--rw));max-width:none;object-fit:fill}
 /* parado: dois movimentos com ritmos diferentes somados (balanço do corpo + respiração), nunca fica igual */
@@ -195,7 +195,7 @@ b{font-weight:800}
 @keyframes bob{0%,100%{translate:0 0}50%{translate:0 -2.4%}}
 .unit:has(.has-art) .aura{left:20%;right:20%;bottom:10%;height:16%}
 .unit.com-arte{--H:calc(128cqh * var(--s,1))}
-.unit.com-arte .aura{bottom:16cqh;height:13cqh;left:24%;right:24%}
+.unit.com-arte .aura{bottom:6cqh;height:13cqh;left:24%;right:24%}
 
 /* números flutuantes */
 .fx{position:absolute;left:50%;top:18%;transform:translateX(-50%);font-weight:800;font-size:22px;color:#fff;text-shadow:0 2px 0 #000,0 0 6px #000;pointer-events:none;animation:rise .95s ease-out forwards;z-index:6;white-space:nowrap}
@@ -359,7 +359,7 @@ body.rot.land #app{height:auto}
 
 /* animação quadro a quadro (tira de quadros feita de vídeo) */
 .unit .fig.has-art,.unit .fig.has-anim{--H:calc(128cqh * var(--s,1))}
-.unit .fig.has-anim{position:absolute;left:calc(50% - var(--ox,0) * var(--H));bottom:22cqh;width:0;height:0;margin:0;pointer-events:none;filter:drop-shadow(.7px 0 0 #111) drop-shadow(-.7px 0 0 #111) drop-shadow(0 .7px 0 #111) drop-shadow(0 -.7px 0 #111) drop-shadow(0 3px 2px #0005)}
+.unit .fig.has-anim{position:absolute;left:calc(50% - var(--ox,0) * var(--H));bottom:12cqh;width:0;height:0;margin:0;pointer-events:none;filter:drop-shadow(.7px 0 0 #111) drop-shadow(-.7px 0 0 #111) drop-shadow(0 .7px 0 #111) drop-shadow(0 -.7px 0 #111) drop-shadow(0 3px 2px #0005)}
 .unit.foe .fig.has-anim{transform:scaleX(-1);left:calc(50% + var(--ox,0) * var(--H))}
 .unit .fig.has-anim .spr{position:absolute;bottom:calc(-1 * var(--H) * var(--fh) * var(--by,0));left:0;overflow:hidden;height:calc(var(--H) * var(--fh));width:calc(var(--H) * var(--fw));transform:translateX(calc(-100% * var(--ax)));clip-path:inset(0 1.5px)}
 .unit .fig.has-anim .spr img{display:block;height:100%;width:calc(var(--n) * 100%);max-width:none;animation-delay:var(--pa,0s)}
