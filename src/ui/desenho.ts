@@ -19,6 +19,39 @@ export interface View {
   striking: Target[] | null;
   /** Há jogadas nesta rodada que podem ser desfeitas. */
   canUndo?: boolean;
+  /** Carta aberta grande no meio de uma das metades da arena, para ler os detalhes. */
+  zoom?: Zoom | null;
+}
+
+export interface Zoom {
+  cid: string;
+  /** Lado da arena onde a carta aparece (o outro fica livre para tocar). */
+  lado: Side;
+  cost?: number;
+  atk?: number;
+  hp?: number;
+}
+
+/** Carta grande com a descrição completa: nome, arte, raridade, atributos e cada habilidade explicada. */
+function zoomHtml(z: Zoom): string {
+  const c = card(z.cid);
+  const r = RACES[c.race];
+  const img = ARTE[z.cid]
+    ? `<img src="${artUrl(z.cid, c.race, 'parado')}" alt="">`
+    : c.art ? `<img src="${c.art}" alt="">` : `<span class="z-emo">${c.e}</span>`;
+  let corpo: string;
+  if (c.type === 'unit') {
+    const habs = c.kw.map(k => `<li><b>${KW[k].i} ${KW[k].n}</b> ${KW[k].d}</li>`);
+    if (c.on) habs.push(`<li><b>⭐ ${T.aoEntrar}</b> ${cardText({ ...c, kw: [] })}</li>`);
+    corpo = `<div class="z-st"><span class="z-a"><b class="a">${z.atk ?? c.atk}</b> ${T.ataque}</span><span class="z-h"><b class="h">${z.hp ?? c.hp}</b> ${T.vida}</span></div>`
+      + `<ul class="z-hab">${habs.length ? habs.join('') : `<li>${T.semHabilidade}</li>`}</ul>`;
+  } else {
+    corpo = `<p class="z-magia"><b>✨ ${T.magia}</b> ${cardText(c)}</p>`;
+  }
+  return `<div class="zoom lado-${z.lado} r-${c.r}" style="--rc:${r.c};--rr:${RARITY[c.r].col}" aria-live="polite">`
+    + `<div class="z-topo"><span class="cost">${z.cost ?? c.cost}</span><span class="z-nome">${c.name}</span></div>`
+    + `<div class="z-arte">${img}<span class="z-sg">${r.g}</span></div>`
+    + `<div class="z-rar">${RARITY[c.r].n} · ${r.n}</div>${corpo}</div>`;
 }
 
 function artOrEmoji(c: Card, cid?: string): string {
@@ -43,11 +76,19 @@ function tiraHtml(src: string, t: Tira, base: number, extra: string, cls: string
     + `<img src="${src}" alt=""></span>`;
 }
 
+/** Fator de tamanho (--s) da figura no campo, para cartas com arte; null = emoji. */
+function escalaFig(c: Card, cid: string): number | null {
+  const an = ANIM[cid], ar = ARTE[cid];
+  if (an) return escalaCampo((an.s ?? 1) * porte(cid, c.cost, c.r));
+  if (ar) return escalaCampo((ar[2] ?? 1) * porte(cid, c.cost, c.r));
+  return null;
+}
+
 function figHtml(c: Card, cid: string, cell: { atk: boolean; strike: boolean }, uid: number): string {
   const an = ANIM[cid];
   if (an) {
     const base = an.idle.h;
-    const sz = `--s:${escalaCampo((an.s ?? 1) * porte(cid, c.cost, c.r))}`;
+    const sz = `--s:${escalaFig(c, cid)}`;
     const urlAtk = animUrl(cid, c.race, 'ataque');
     // só troca para o golpe se a imagem dele já carregou; senão continua respirando
     if ((!cell.atk && !cell.strike) || !pronta(urlAtk)) {
@@ -69,7 +110,7 @@ function figHtml(c: Card, cid: string, cell: { atk: boolean; strike: boolean }, 
   if (cell.atk || cell.strike) {
     h += `<img class="art ataque ${cell.strike ? '' : 'late'}" src="${artUrl(cid, c.race, 'ataque')}" style="--rw:${ar[1]};--dx:${(ar[1] - ar[0]) / 2}" alt="">`;
   }
-  return `<span class="fig has-art" style="${idlePhase(uid)};--s:${escalaCampo((ar[2] ?? 1) * porte(cid, c.cost, c.r))}">${h}</span>`;
+  return `<span class="fig has-art" style="${idlePhase(uid)};--s:${escalaFig(c, cid)}">${h}</span>`;
 }
 
 const HEART_MAX = 30;
@@ -98,12 +139,19 @@ function cellHtml(v: View, side: Side, l: number, d: number): string {
   if (u) {
     const c = card(u.cid);
     const atk = effAtk(s[side].board, l, u);
-    inner = `<div class="unit ${side === 'e' ? 'foe' : ''} r-${c.r}" style="--rc:${RACES[c.race].c}">`
+    const esc = escalaFig(c, u.cid);
+    // habilidades e estados em fichas pequenas embaixo da criatura, entre o ataque e a vida
+    const fichas = [
+      ...(u.shield ? ['<i class="f-escudo" title="Escudo">🛡️</i>'] : []),
+      ...u.kw.filter(k => k !== 'escudo').map(k => `<i title="${KW[k].n}">${KW[k].i}</i>`),
+      ...(c.type === 'unit' && c.on ? ['<i title="Efeito de chegada">⭐</i>'] : []),
+      ...(u.poison ? ['<i class="f-veneno" title="Envenenada">🤢</i>'] : []),
+    ];
+    inner = `<div class="unit ${side === 'e' ? 'foe' : ''} r-${c.r}${esc ? ' com-arte' : ''}" style="--rc:${RACES[c.race].c}${esc ? `;--s:${esc}` : ''}">`
       + '<span class="aura"></span>'
       + (u.pending ? '<span class="pnd">⏳</span>' : '')
       + figHtml(c, u.cid, pose, u.uid)
-      + `<span class="kws">${u.kw.filter(k => k !== 'escudo').map(k => KW[k].i).join('')}${u.poison ? '🤢' : ''}</span>`
-      + (u.shield ? '<span class="shd">🛡️</span>' : '')
+      + (fichas.length ? `<span class="kws">${fichas.join('')}</span>` : '')
       + `<b class="a${atk > u.atk ? ' up' : ''}">${atk}</b><b class="h">${u.hp}</b></div>`;
   }
   const col = side === 'p' ? 3 - d : 5 + d;
@@ -177,7 +225,8 @@ function handHtml(v: View): string {
 export function gameHtml(v: View): string {
   return hudHtml(v.s)
     + `<div class="table">${boardHtml(v)}<div class="mid" aria-live="polite">${v.msg}</div></div>`
-    + `<div class="bottom">${manaHtml(v)}${handHtml(v)}${actsHtml(v)}</div>`;
+    + `<div class="bottom">${manaHtml(v)}${handHtml(v)}${actsHtml(v)}</div>`
+    + (v.zoom ? zoomHtml(v.zoom) : '');
 }
 
 export function galleryHtml(sign: Signo, selected: string | null): string {

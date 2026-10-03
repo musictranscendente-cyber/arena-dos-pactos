@@ -7,7 +7,7 @@ import {
   applyAction, costOf, effAtk, newGame, planTurn, resolveBattle, Rng,
   type Action, type Frame, type GameEvent, type GameState, type Side, type Target,
 } from '../engine';
-import { ATK_MS, endHtml, galleryHtml, gameHtml, startHtml, type View } from './desenho';
+import { ATK_MS, endHtml, galleryHtml, gameHtml, startHtml, type View, type Zoom } from './desenho';
 import { toggleRot, tryLandscape } from './orientacao';
 import { efeitoGeral, efeitosDeMagia, EXTRA_GERAL_MS, MAGIA_MS } from './efeitoMagia';
 import { precarregarVisiveis } from './precarga';
@@ -38,6 +38,8 @@ interface Match {
   base: GameState;
   /** Jogadas feitas nesta rodada; bi = posição da carta na mão do começo da rodada. */
   plan: { bi: number; a: Action }[];
+  /** Criatura do tabuleiro aberta grande para ver os detalhes. */
+  inspect: Target | null;
 }
 
 let M: Match | null = null;
@@ -54,7 +56,7 @@ function startMatch(sign: Signo): void {
   const foe = foes[Math.floor(Math.random() * foes.length)];
   const seed = randomSeed();
   const { state } = newGame({ pSign: sign, eSign: foe, seed, record: false });
-  M = { g: state, shown: state, sel: null, busy: false, msg: '', active: null, striking: null, aiRng: new Rng(seed ^ 0x5bd1e995), base: state, plan: [] };
+  M = { g: state, shown: state, sel: null, busy: false, msg: '', active: null, striking: null, aiRng: new Rng(seed ^ 0x5bd1e995), base: state, plan: [], inspect: null };
   beginPlanning([]);
 }
 
@@ -72,7 +74,9 @@ function beginPlanning(tickEvents: GameEvent[]): void {
   if (tickEvents.some(e => e.t === 'DeckEmpty' && e.side === 'p')) extra.push(T.deckAcabou);
   if (tickEvents.some(e => e.t === 'DrawDiscarded' && e.side === 'p')) extra.push(T.maoCheia);
   m.msg = [...extra, T.rodadaInicio(m.g.round)].join(' ');
+  m.inspect = null;
   render();
+  if (m.g.phase === 'plan') faixaRodada(m.g.round);
 }
 
 /** Cartas da mão do começo da rodada que ainda não foram usadas (na ordem em que aparecem na mão). */
@@ -124,6 +128,7 @@ async function battle(): Promise<void> {
   const m = M!;
   m.busy = true;
   m.sel = null;
+  m.inspect = null;
   const { state, frames } = resolveBattle(m.g);
   let revealed = false;
   for (let i = 0; i < frames.length; i++) {
@@ -337,11 +342,41 @@ function render(): void {
     s: M.shown, sel: M.sel, msg: M.msg, active: M.active, striking: M.striking,
     canAct: !M.busy && M.g.phase === 'plan',
     canUndo: !M.busy && M.g.phase === 'plan' && M.plan.length > 0,
+    zoom: zoomAtual(M),
   };
   root.innerHTML = gameHtml(v) + (M.g.phase === 'over' && !M.busy ? endHtml(M.g) : '');
   reporMortos();
   const h2 = root.querySelector('.hand');
   if (h2) h2.scrollLeft = sl;
+}
+
+/** Carta aberta grande: a selecionada na mão, ou a criatura tocada no tabuleiro. */
+function zoomAtual(m: Match): Zoom | null {
+  if (m.busy || m.g.phase !== 'plan') return null;
+  if (m.sel !== null) {
+    const h = m.g.p.hand[m.sel];
+    if (!h) return null;
+    const c = card(h.cid);
+    // aparece na metade da arena que não vai ser tocada: criatura e magia em aliado vão para o seu lado
+    const miraInimigo = c.type === 'spell' && ['dmg', 'poison', 'lane', 'face'].includes(c.sp);
+    return { cid: h.cid, cost: costOf(m.g.p, h.cid), lado: miraInimigo ? 'p' : 'e' };
+  }
+  if (m.inspect) {
+    const { side, l, d } = m.inspect;
+    const u = m.g[side].board[l][d];
+    if (!u || (side === 'e' && u.hidden)) return null;
+    return { cid: u.cid, atk: effAtk(m.g[side].board, l, u), hp: u.hp, lado: side === 'p' ? 'e' : 'p' };
+  }
+  return null;
+}
+
+/** Faixa grande "Rodada N" atravessando a tela no começo de cada rodada. */
+function faixaRodada(n: number): void {
+  const f = document.createElement('div');
+  f.className = 'faixa-rodada';
+  f.innerHTML = `<span>${T.rodadaFaixa(n)}</span>`;
+  app().appendChild(f);
+  setTimeout(() => f.remove(), 1700);
 }
 
 /* ---------- toques ---------- */
@@ -368,6 +403,7 @@ function onClick(ev: Event): void {
   const m = M;
   if (!m || m.busy || m.g.phase !== 'plan') return;
   const P = m.g.p;
+  if (a !== 'cell') m.inspect = null;
 
   if (a === 'hand') {
     const i = Number(t.dataset.i);
@@ -399,11 +435,13 @@ function onClick(ev: Event): void {
     }
     if (m.sel === null) {
       const u = m.g[side].board[l][d];
-      if (u && !(side === 'e' && u.hidden)) {
+      const mesma = m.inspect && m.inspect.side === side && m.inspect.l === l && m.inspect.d === d;
+      if (u && !(side === 'e' && u.hidden) && !mesma) {
         const c = card(u.cid);
+        m.inspect = { side, l, d };
         m.msg = `${c.name} (${effAtk(m.g[side].board, l, u)}/${u.hp}). ${cardText(c)}`;
-        render();
-      }
+      } else m.inspect = null;
+      render();
       return;
     }
     const h = m.g.p.hand[m.sel];

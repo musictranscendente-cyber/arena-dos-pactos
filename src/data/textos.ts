@@ -68,6 +68,11 @@ export const T = {
   queimar: 'Queimar +1💧',
   desfazer: 'Desfazer a última jogada',
   investida: '💨 Investida!',
+  ataque: 'ataque',
+  aoEntrar: 'Ao entrar em campo:',
+  rodadaFaixa: (n: number) => `Rodada ${n}`,
+  vida: 'vida',
+  semHabilidade: 'Sem habilidade especial.',
   investidaMsg: (nome: string, dono: string) => `${nome} (${dono}) entrou com Investida e já ataca!`,
   efeito: {
     cura: (lado: 'p' | 'e', n: number) => lado === 'p' ? `Você recuperou ${n} de vida` : `O rival recuperou ${n} de vida`,
