@@ -71,9 +71,9 @@ export function porte(cid: string, custo: number, raridade: string): number {
 /**
  * Tamanho final da figura no campo (fator --s), a partir de normalização × porte.
  * A figura tem 1,28 × s da altura da casa; acima de LIVRE o crescimento é bem amortecido
- * (a maior chega a ~0,9 da casa), para todas caberem centralizadas no quadrado e os grandes ainda se destacarem.
+ * (a maior chega a ~0,8 da casa), para todas caberem centralizadas no quadrado e os grandes ainda se destacarem.
  */
-const LIVRE = 0.6, AMORTECE = 0.26;
+const LIVRE = 0.55, AMORTECE = 0.22;
 export function escalaCampo(s: number): number {
   const h = 1.28 * s;
   return h <= LIVRE ? s : (LIVRE + (h - LIVRE) * AMORTECE) / 1.28;

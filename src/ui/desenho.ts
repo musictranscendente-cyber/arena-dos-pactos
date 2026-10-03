@@ -1,6 +1,6 @@
 // Funções que montam o HTML de cada parte da tela (sem estado próprio).
 import { card, cardsOfSign, CARDS } from '../data/cards';
-import { ANIM, animUrl, ARTE, artUrl, escalaCampo, porte, type Tira } from '../data/arte';
+import { ANIM, animUrl, ARTE, artUrl, CENTRO, escalaCampo, porte, type Tira } from '../data/arte';
 import { RARITY } from '../data/raridades';
 import type { Card, Signo } from '../data/schema';
 import { currentSign, ORDER, RACES } from '../data/signos';
@@ -90,7 +90,9 @@ function figHtml(c: Card, cid: string, cell: { atk: boolean; strike: boolean }, 
   const an = ANIM[cid];
   if (an) {
     const base = an.idle.h;
-    const sz = `--s:${escalaFig(c, cid)}`;
+    // centro visível do desenho no meio da casa (na horizontal); os pés ficam logo acima dos números
+    const ox = CENTRO[cid]?.[0] ?? 0;
+    const sz = `--s:${escalaFig(c, cid)};--ox:${ox}`;
     const urlAtk = animUrl(cid, c.race, 'ataque');
     // só troca para o golpe se a imagem dele já carregou; senão continua respirando
     if ((!cell.atk && !cell.strike) || !pronta(urlAtk)) {
