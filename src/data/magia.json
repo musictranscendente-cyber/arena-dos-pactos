@@ -9,6 +9,26 @@
  "escorpiaos3": 16,
  "escorpiaos4": 16,
  "escorpiaos5": 16,
+ "gemeoss1": {
+  "n": 16,
+  "livre": true
+ },
+ "gemeoss2": {
+  "n": 16,
+  "livre": true
+ },
+ "gemeoss3": {
+  "n": 16,
+  "livre": true
+ },
+ "gemeoss4": {
+  "n": 16,
+  "livre": true
+ },
+ "gemeoss5": {
+  "n": 16,
+  "livre": true
+ },
  "libras1": 16,
  "libras2": 16,
  "libras3": 16,

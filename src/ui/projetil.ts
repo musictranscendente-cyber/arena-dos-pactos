@@ -11,14 +11,19 @@ const LANCA = new Set(['virgem25', 'aquario25', 'aries09', 'aries06', 'aries04',
   'sagitario02', 'sagitario04', 'sagitario11', 'sagitario13', 'sagitario17', 'sagitario23',
   'touro03', 'touro04', 'touro09', 'touro18', 'touro23', 'touro24',
   'peixes01', 'peixes04', 'peixes05', 'peixes06', 'peixes07', 'peixes08', 'peixes10', 'peixes11', 'peixes13', 'peixes14',
-  'peixes15', 'peixes16', 'peixes17', 'peixes18', 'peixes19', 'peixes20', 'peixes22', 'peixes23', 'peixes24']);
+  'peixes15', 'peixes16', 'peixes17', 'peixes18', 'peixes19', 'peixes20', 'peixes22', 'peixes23', 'peixes24',
+  'gemeos01', 'gemeos03', 'gemeos04', 'gemeos05', 'gemeos07', 'gemeos08', 'gemeos10', 'gemeos11', 'gemeos12', 'gemeos14',
+  'gemeos17', 'gemeos18', 'gemeos20', 'gemeos23', 'gemeos24']);
 
 /** Projétil próprio de algumas cartas (senão vale o do elemento do signo). */
 const TIPO: Record<string, string> = { aries06: 'flecha', aries09: 'ar', escorpiao11: 'flecha', escorpiao23: 'flecha',
   libra06: 'flecha', libra13: 'flecha', libra17: 'flecha', libra24: 'flecha',
   sagitario01: 'fogo', sagitario03: 'ar', sagitario04: 'ar', sagitario08: 'fogo', sagitario10: 'fogo', sagitario11: 'ar',
   sagitario13: 'terra', sagitario14: 'fogo', sagitario23: 'terra', sagitario24: 'ar', touro04: 'fogo',
-  peixes05: 'ar', peixes06: 'veneno', peixes08: 'fogo', peixes13: 'veneno', peixes17: 'fogo', peixes18: 'ar', peixes19: 'veneno' };
+  peixes05: 'ar', peixes06: 'veneno', peixes08: 'fogo', peixes13: 'veneno', peixes17: 'fogo', peixes18: 'ar', peixes19: 'veneno',
+  gemeos01: 'fogo', gemeos02: 'ar', gemeos03: 'ar', gemeos04: 'ar', gemeos05: 'ar', gemeos07: 'fogo', gemeos09: 'ar',
+  gemeos10: 'fogo', gemeos11: 'ar', gemeos12: 'ar', gemeos14: 'ar', gemeos15: 'fogo', gemeos17: 'ar', gemeos18: 'ar',
+  gemeos20: 'ar', gemeos21: 'fogo', gemeos23: 'fogo', gemeos24: 'fogo', gemeos25: 'fogo' };
 
 export function isRanged(cid: string): boolean {
   const c = card(cid);

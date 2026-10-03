@@ -1,6 +1,6 @@
 // Funções que montam o HTML de cada parte da tela (sem estado próprio).
 import { card, cardsOfSign, CARDS } from '../data/cards';
-import { ANIM, animUrl, ARTE, artUrl, escalaCampo, porte, type Tira } from '../data/arte';
+import { ANIM, animUrl, ARTE, artUrl, CENTRO, escalaCampo, porte, type Tira } from '../data/arte';
 import { RARITY } from '../data/raridades';
 import type { Card, Signo } from '../data/schema';
 import { currentSign, ORDER, RACES } from '../data/signos';
@@ -84,11 +84,22 @@ function escalaFig(c: Card, cid: string): number | null {
   return null;
 }
 
+/**
+ * Onde fica o centro do desenho em relação à âncora (corpo/pés), em alturas do quadro parado.
+ * Com isso o centro do personagem vai exatamente para o meio da casa. Sem a medida, usa o meio do quadro.
+ */
+function centroFig(cid: string): [number, number] | null {
+  const an = ANIM[cid];
+  if (!an) return null;
+  return CENTRO[cid] ?? [(0.5 - an.idle.ax) * an.idle.w / an.idle.h, 0.5 - an.idle.by];
+}
+
 function figHtml(c: Card, cid: string, cell: { atk: boolean; strike: boolean }, uid: number): string {
   const an = ANIM[cid];
   if (an) {
     const base = an.idle.h;
-    const sz = `--s:${escalaFig(c, cid)}`;
+    const [ox, oy] = centroFig(cid)!;
+    const sz = `--s:${escalaFig(c, cid)};--ox:${ox};--oy:${oy}`;
     const urlAtk = animUrl(cid, c.race, 'ataque');
     // só troca para o golpe se a imagem dele já carregou; senão continua respirando
     if ((!cell.atk && !cell.strike) || !pronta(urlAtk)) {
@@ -147,7 +158,7 @@ function cellHtml(v: View, side: Side, l: number, d: number): string {
       ...(c.type === 'unit' && c.on ? ['<i title="Efeito de chegada">⭐</i>'] : []),
       ...(u.poison ? ['<i class="f-veneno" title="Envenenada">🤢</i>'] : []),
     ];
-    inner = `<div class="unit ${side === 'e' ? 'foe' : ''} r-${c.r}${esc ? ' com-arte' : ''}" style="--rc:${RACES[c.race].c}${esc ? `;--s:${esc}` : ''}">`
+    inner = `<div class="unit ${side === 'e' ? 'foe' : ''} r-${c.r}${esc ? ' com-arte' : ''}" style="--rc:${RACES[c.race].c}${esc ? `;--s:${esc}` : ''}${centroFig(u.cid) ? `;--oy:${centroFig(u.cid)![1]}` : ''}">`
       + '<span class="aura"></span>'
       + (u.pending ? '<span class="pnd">⏳</span>' : '')
       + figHtml(c, u.cid, pose, u.uid)

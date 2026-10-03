@@ -3,6 +3,7 @@
 import arteJson from './arte.json';
 import animJson from './anim.json';
 import magiaJson from './magia.json';
+import centroJson from './centro.json';
 
 /**
  * Imagens paradas (public/art/<signo>/<id>-parado.webp e -ataque.webp).
@@ -77,6 +78,12 @@ export function escalaCampo(s: number): number {
   const h = 1.28 * s;
   return h <= LIVRE ? s : (LIVRE + (h - LIVRE) * AMORTECE) / 1.28;
 }
+
+/**
+ * Centro visível de cada personagem animado (ferramentas/centros.py): [ox, oy] em alturas do quadro,
+ * medidos a partir da âncora do corpo (ox) e dos pés (oy). Usado para pôr o personagem bem no meio da casa.
+ */
+export const CENTRO = centroJson as Record<string, [number, number]>;
 
 /**
  * Magias com animação de efeito (public/art/<signo>/<id>-magia-anim.webp): número de quadros.
