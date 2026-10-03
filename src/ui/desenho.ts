@@ -1,6 +1,6 @@
 // Funções que montam o HTML de cada parte da tela (sem estado próprio).
 import { card, cardsOfSign, CARDS } from '../data/cards';
-import { ANIM, animUrl, ARTE, artUrl, CENTRO, escalaCampo, porte, type Tira } from '../data/arte';
+import { ANIM, animUrl, ARTE, artUrl, escalaCampo, porte, type Tira } from '../data/arte';
 import { RARITY } from '../data/raridades';
 import type { Card, Signo } from '../data/schema';
 import { currentSign, ORDER, RACES } from '../data/signos';
@@ -21,6 +21,8 @@ export interface View {
   canUndo?: boolean;
   /** Carta aberta grande no meio de uma das metades da arena, para ler os detalhes. */
   zoom?: Zoom | null;
+  /** Mostrar a mensagem de ajuda (só quando o jogador toca no ícone de informação). */
+  info?: boolean;
 }
 
 export interface Zoom {
@@ -84,22 +86,11 @@ function escalaFig(c: Card, cid: string): number | null {
   return null;
 }
 
-/**
- * Onde fica o centro do desenho em relação à âncora (corpo/pés), em alturas do quadro parado.
- * Com isso o centro do personagem vai exatamente para o meio da casa. Sem a medida, usa o meio do quadro.
- */
-function centroFig(cid: string): [number, number] | null {
-  const an = ANIM[cid];
-  if (!an) return null;
-  return CENTRO[cid] ?? [(0.5 - an.idle.ax) * an.idle.w / an.idle.h, 0.5 - an.idle.by];
-}
-
 function figHtml(c: Card, cid: string, cell: { atk: boolean; strike: boolean }, uid: number): string {
   const an = ANIM[cid];
   if (an) {
     const base = an.idle.h;
-    const [ox, oy] = centroFig(cid)!;
-    const sz = `--s:${escalaFig(c, cid)};--ox:${ox};--oy:${oy}`;
+    const sz = `--s:${escalaFig(c, cid)}`;
     const urlAtk = animUrl(cid, c.race, 'ataque');
     // só troca para o golpe se a imagem dele já carregou; senão continua respirando
     if ((!cell.atk && !cell.strike) || !pronta(urlAtk)) {
@@ -158,7 +149,7 @@ function cellHtml(v: View, side: Side, l: number, d: number): string {
       ...(c.type === 'unit' && c.on ? ['<i title="Efeito de chegada">⭐</i>'] : []),
       ...(u.poison ? ['<i class="f-veneno" title="Envenenada">🤢</i>'] : []),
     ];
-    inner = `<div class="unit ${side === 'e' ? 'foe' : ''} r-${c.r}${esc ? ' com-arte' : ''}" style="--rc:${RACES[c.race].c}${esc ? `;--s:${esc}` : ''}${centroFig(u.cid) ? `;--oy:${centroFig(u.cid)![1]}` : ''}">`
+    inner = `<div class="unit ${side === 'e' ? 'foe' : ''} r-${c.r}${esc ? ' com-arte' : ''}" style="--rc:${RACES[c.race].c}${esc ? `;--s:${esc}` : ''}">`
       + '<span class="aura"></span>'
       + (u.pending ? '<span class="pnd">⏳</span>' : '')
       + figHtml(c, u.cid, pose, u.uid)
@@ -195,7 +186,7 @@ function heroCard(s: GameState, side: Side): string {
 
 function hudHtml(s: GameState): string {
   return `<div class="hud">${heroCard(s, 'p')}`
-    + `<div class="vs"><button class="rotbtn" data-act="rot" aria-label="${T.alternarDeitado}">⟳</button><span class="vsb">VS</span><span class="rd">${T.rodadaN(s.round)}</span></div>`
+    + `<div class="vs"><button class="rotbtn" data-act="rot" aria-label="${T.alternarDeitado}">⟳</button><span class="vsb">VS</span><span class="rd">${T.rodadaN(s.round)}<button class="infobtn" data-act="info" aria-label="${T.info}">i</button></span></div>`
     + `${heroCard(s, 'e')}</div>`;
 }
 
@@ -235,7 +226,7 @@ function handHtml(v: View): string {
 
 export function gameHtml(v: View): string {
   return hudHtml(v.s)
-    + `<div class="table">${boardHtml(v)}<div class="mid" aria-live="polite">${v.msg}</div></div>`
+    + `<div class="table">${boardHtml(v)}<div class="mid${v.info ? ' aberta' : ''}" aria-live="polite">${v.msg}</div></div>`
     + `<div class="bottom">${manaHtml(v)}${handHtml(v)}${actsHtml(v)}</div>`
     + (v.zoom ? zoomHtml(v.zoom) : '');
 }

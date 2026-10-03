@@ -42,6 +42,9 @@ interface Match {
   inspect: Target | null;
 }
 
+/** Dica de texto aberta pelo ícone de informação (fica escondida para não poluir a tela). */
+let infoAberta = false;
+
 let M: Match | null = null;
 let gal: Signo | null = null, galSel: string | null = null;
 const app = () => document.getElementById('app')!;
@@ -343,6 +346,7 @@ function render(): void {
     canAct: !M.busy && M.g.phase === 'plan',
     canUndo: !M.busy && M.g.phase === 'plan' && M.plan.length > 0,
     zoom: zoomAtual(M),
+    info: infoAberta,
   };
   root.innerHTML = gameHtml(v) + (M.g.phase === 'over' && !M.busy ? endHtml(M.g) : '');
   reporMortos();
@@ -389,6 +393,7 @@ function onClick(ev: Event): void {
   if (!t) return;
   const a = t.dataset.act;
   if (a === 'rot') { toggleRot(); return; }
+  if (a === 'info') { infoAberta = !infoAberta; render(); return; }
   if (a === 'gal') { gal = t.dataset.r as Signo; galSel = null; render(); return; }
   if (a === 'gcard') {
     galSel = t.dataset.k!;
