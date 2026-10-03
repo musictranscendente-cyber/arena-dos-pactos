@@ -9,7 +9,7 @@ import {
 } from '../engine';
 import { ATK_MS, endHtml, galleryHtml, gameHtml, startHtml, type View } from './desenho';
 import { toggleRot, tryLandscape } from './orientacao';
-import { efeitosDeMagia, MAGIA_MS } from './efeitoMagia';
+import { efeitoGeral, efeitosDeMagia, EXTRA_GERAL_MS, MAGIA_MS } from './efeitoMagia';
 import { precarregarVisiveis } from './precarga';
 import { launch, shotsOf } from './projetil';
 
@@ -136,8 +136,20 @@ async function battle(): Promise<void> {
       m.msg = T.revela; render(); await sleep(600);
     }
     if (f.kind === 'tick') break; // nova rodada: tratada abaixo
+    // Investida: a criatura acabou de entrar e já ataca — mostra o avanço antes do golpe, com o aviso
+    const inv = f.kind === 'arrival' ? f.events.find(e => e.t === 'Attack') : undefined;
+    if (inv && inv.t === 'Attack') {
+      m.active = [{ side: inv.side, l: inv.l, d: inv.d }];
+      m.striking = null;
+      m.msg = T.investidaMsg(name(inv.cid), inv.side === 'p' ? 'sua' : 'do rival');
+      render();
+      avisoInvestida(`c-${inv.side}-${inv.l}-${inv.d}`);
+      const t = PAUSE['step-start'] * (reduce ? 0.4 : 1);
+      for (const sh of shotsOf(f.events)) launch(app(), sh, t * 0.5, t * 0.48);
+      await sleep(PAUSE['step-start']);
+    }
     m.shown = f.state;
-    m.striking = f.kind === 'step' ? m.active : null;
+    m.striking = f.kind === 'step' || inv ? m.active : null;
     m.active = f.active ?? null;
     const msg = frameMsg(f);
     if (msg) m.msg = msg;
@@ -145,14 +157,19 @@ async function battle(): Promise<void> {
     render();
     soltarMortos(mortos);
     efeitosDeMagia(app(), f.events);
-    showFx(f.events);
+    // fortalecer/escudo de magia: o número e a luz aparecem logo depois do efeito da magia, para não ficarem por baixo dele
+    const reforco: GameEvent[] = f.kind === 'spell' ? f.events.filter(e => e.t === 'Buffed' || e.t === 'ShieldGained') : [];
+    showFx(f.events.filter(e => !reforco.includes(e)));
+    if (reforco.length) setTimeout(() => showFx(reforco), REFORCO_MS);
     // ataque à distância: o projétil sai no meio do avanço e chega junto com o dano do próximo quadro
     const next = frames[i + 1];
     if (f.kind === 'step-start' && next?.kind === 'step') {
       const t = PAUSE['step-start'] * (reduce ? 0.4 : 1);
       for (const sh of shotsOf(next.events)) launch(app(), sh, t * 0.5, t * 0.48);
     }
-    await sleep(PAUSE[f.kind]);
+    const pausa = inv ? PAUSE.step
+      : PAUSE[f.kind] + (f.kind === 'spell' && efeitoGeral(f.events) ? EXTRA_GERAL_MS : 0) + (reforco.length ? REFORCO_MS : 0);
+    await sleep(pausa);
   }
   m.active = null;
   m.striking = null;
@@ -187,10 +204,10 @@ function fxText(e: GameEvent): [string, string, string] | null {
     case 'Damage': return [cell(e.side, e.l, e.d), `-${e.amount}${e.poisoned ? ' 🧪' : ''}${e.fury ? ' 💢' : ''}`, 'dmg'];
     case 'ShieldBroken': return [cell(e.side, e.l, e.d), '🛡️', 'sh'];
     case 'ArmorBlocked': return [cell(e.side, e.l, e.d), '🐚 0', 'sh'];
-    case 'ShieldGained': return [cell(e.side, e.l, e.d), '🛡️', 'sh'];
+    case 'ShieldGained': return [cell(e.side, e.l, e.d), '🛡️ Escudo!', 'sh ganho'];
     case 'Poisoned': return [cell(e.side, e.l, e.d), '🧪', 'dmg'];
     case 'PoisonTick': return [cell(e.side, e.l, e.d), '-1 🧪', 'dmg'];
-    case 'Buffed': return [cell(e.side, e.l, e.d), `+${e.atk}/+${e.hp}`, 'heal'];
+    case 'Buffed': return [cell(e.side, e.l, e.d), `⬆ +${e.atk}/+${e.hp}`, 'buff'];
     case 'UnitHealed': return [cell(e.side, e.l, e.d), `+${e.amount}`, 'heal'];
     case 'UnitReturnedToHand': return [cell(e.side, e.l, e.d), '🫧 volta', 'sh'];
     case 'UnitPlaced': return e.token ? [cell(e.side, e.l, e.d), 'Eco!', 'heal'] : null;
@@ -248,6 +265,20 @@ function golpeNoHeroi(side: Side, amount: number): void {
   setTimeout(() => v.remove(), 800);
 }
 
+/** Atraso do número de fortalecer/escudo depois do efeito da magia. */
+const REFORCO_MS = 550;
+
+/** Aviso grande em cima de quem entrou com Investida. */
+function avisoInvestida(id: string): void {
+  const cell = document.getElementById(id);
+  if (!cell) return;
+  const a = document.createElement('span');
+  a.className = 'aviso-investida';
+  a.textContent = T.investida;
+  cell.appendChild(a);
+  cell.classList.add('investindo');
+}
+
 /** Tremida rápida em quem levou dano. */
 function shake(el: HTMLElement): void {
   el.classList.remove('hit');
@@ -269,6 +300,19 @@ function showFx(events: GameEvent[]): void {
       el.appendChild(imp);
       setTimeout(() => imp.remove(), 500);
       if (e.t === 'HeroDamaged') golpeNoHeroi(e.side, e.amount);
+    }
+    if (fx[2] === 'buff' || fx[2] === 'sh ganho') {
+      // fortalecer: coluna de luz dourada com setas subindo e a criatura brilhando
+      const au = document.createElement('span');
+      au.className = fx[2] === 'buff' ? 'buff-aura' : 'buff-aura escudo';
+      au.innerHTML = '<i></i><i></i><i></i>';
+      el.appendChild(au);
+      el.classList.add('fortalecida');
+      setTimeout(() => { au.remove(); el.classList.remove('fortalecida'); }, 1200);
+    }
+    if (e.t === 'HeroHealed') {
+      const hc = el.closest<HTMLElement>('.hcard');
+      if (hc) { hc.classList.add('curado'); setTimeout(() => hc.classList.remove('curado'), 900); }
     }
     const s = document.createElement('span');
     s.className = 'fx ' + fx[2];

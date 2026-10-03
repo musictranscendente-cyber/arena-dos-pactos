@@ -67,6 +67,13 @@ export const T = {
   magia: 'magia',
   queimar: 'Queimar +1💧',
   desfazer: 'Desfazer a última jogada',
+  investida: '💨 Investida!',
+  investidaMsg: (nome: string, dono: string) => `${nome} (${dono}) entrou com Investida e já ataca!`,
+  efeito: {
+    cura: (lado: 'p' | 'e', n: number) => lado === 'p' ? `Você recuperou ${n} de vida` : `O rival recuperou ${n} de vida`,
+    compra: (lado: 'p' | 'e', n: number) => (lado === 'p' ? 'Você comprou' : 'O rival comprou') + ` ${n} carta${n === 1 ? '' : 's'}`,
+    dano: (lado: 'p' | 'e', n: number) => lado === 'p' ? `Seu herói levou ${n} de dano` : `O herói rival levou ${n} de dano`,
+  },
   desfeito: (nome: string) => `${nome} voltou para a mão.`,
   voltouMao: (nome: string) => `${nome} voltou para a mão: toque outra casa, ou escolha outra carta.`,
   batalha: 'Batalha!',
