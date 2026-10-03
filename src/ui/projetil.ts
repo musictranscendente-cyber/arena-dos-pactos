@@ -14,7 +14,9 @@ const LANCA = new Set(['virgem25', 'aquario25', 'aries09', 'aries06', 'aries04',
   'peixes15', 'peixes16', 'peixes17', 'peixes18', 'peixes19', 'peixes20', 'peixes22', 'peixes23', 'peixes24',
   'gemeos01', 'gemeos03', 'gemeos04', 'gemeos05', 'gemeos07', 'gemeos08', 'gemeos10', 'gemeos11', 'gemeos12', 'gemeos14',
   'gemeos17', 'gemeos18', 'gemeos20', 'gemeos23', 'gemeos24',
-  'leao01', 'leao04', 'leao08', 'leao10', 'leao11', 'leao12', 'leao17', 'leao18', 'leao19', 'leao21', 'leao22', 'leao24', 'leao25']);
+  'leao01', 'leao04', 'leao08', 'leao10', 'leao11', 'leao12', 'leao17', 'leao18', 'leao19', 'leao21', 'leao22', 'leao24', 'leao25',
+  'cancer04', 'cancer10', 'cancer11', 'cancer12', 'cancer13', 'cancer14', 'cancer16', 'cancer17', 'cancer18', 'cancer19', 'cancer21', 'cancer23', 'cancer24', 'cancer25',
+  'virgem02', 'virgem03', 'virgem04', 'virgem06', 'virgem10', 'virgem11', 'virgem12', 'virgem15', 'virgem16', 'virgem17', 'virgem18', 'virgem19', 'virgem21', 'virgem23', 'virgem24']);
 
 /** Projétil próprio de algumas cartas (senão vale o do elemento do signo). */
 const TIPO: Record<string, string> = { aries06: 'flecha', aries09: 'ar', escorpiao11: 'flecha', escorpiao23: 'flecha',
@@ -24,7 +26,8 @@ const TIPO: Record<string, string> = { aries06: 'flecha', aries09: 'ar', escorpi
   peixes05: 'ar', peixes06: 'veneno', peixes08: 'fogo', peixes13: 'veneno', peixes17: 'fogo', peixes18: 'ar', peixes19: 'veneno',
   gemeos01: 'fogo', gemeos02: 'ar', gemeos03: 'ar', gemeos04: 'ar', gemeos05: 'ar', gemeos07: 'fogo', gemeos09: 'ar',
   gemeos10: 'fogo', gemeos11: 'ar', gemeos12: 'ar', gemeos14: 'ar', gemeos15: 'fogo', gemeos17: 'ar', gemeos18: 'ar',
-  gemeos20: 'ar', gemeos21: 'fogo', gemeos23: 'fogo', gemeos24: 'fogo', gemeos25: 'fogo' };
+  gemeos20: 'ar', gemeos21: 'fogo', gemeos23: 'fogo', gemeos24: 'fogo', gemeos25: 'fogo',
+  cancer10: 'ar', cancer11: 'ar', cancer12: 'fogo', cancer17: 'ar', cancer24: 'fogo', cancer25: 'ar', virgem02: 'fogo', virgem03: 'veneno', virgem18: 'fogo', virgem21: 'fogo', virgem23: 'fogo', virgem24: 'fogo', virgem25: 'fogo' };
 
 export function isRanged(cid: string): boolean {
   const c = card(cid);

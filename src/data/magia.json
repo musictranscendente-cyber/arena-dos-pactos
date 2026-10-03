@@ -4,6 +4,26 @@
  "ariess3": 16,
  "ariess4": 16,
  "ariess5": 16,
+ "cancers1": {
+  "n": 16,
+  "livre": true
+ },
+ "cancers2": {
+  "n": 16,
+  "livre": true
+ },
+ "cancers3": {
+  "n": 16,
+  "livre": true
+ },
+ "cancers4": {
+  "n": 16,
+  "livre": true
+ },
+ "cancers5": {
+  "n": 16,
+  "livre": true
+ },
  "escorpiaos1": 16,
  "escorpiaos2": 16,
  "escorpiaos3": 16,
@@ -96,6 +116,22 @@
   "livre": true
  },
  "touros5": {
+  "n": 16,
+  "livre": true
+ },
+ "virgems1": {
+  "n": 16,
+  "livre": true
+ },
+ "virgems2": {
+  "n": 16,
+  "livre": true
+ },
+ "virgems4": {
+  "n": 16,
+  "livre": true
+ },
+ "virgems5": {
   "n": 16,
   "livre": true
  }
