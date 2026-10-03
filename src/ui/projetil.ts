@@ -6,10 +6,12 @@ import type { GameEvent, Side } from '../engine';
 /** Criaturas sem Distância cuja arte lança algo (o golpe sai de longe). */
 const LANCA = new Set(['virgem25', 'peixes25', 'aquario25', 'aries09', 'aries06', 'aries04',
   'escorpiao02', 'escorpiao04', 'escorpiao07', 'escorpiao10', 'escorpiao11', 'escorpiao13', 'escorpiao16',
-  'escorpiao17', 'escorpiao18', 'escorpiao20', 'escorpiao21', 'escorpiao23']);
+  'escorpiao17', 'escorpiao18', 'escorpiao20', 'escorpiao21', 'escorpiao23',
+  'libra04', 'libra12', 'libra16', 'libra17', 'libra21', 'libra23', 'libra25']);
 
 /** Projétil próprio de algumas cartas (senão vale o do elemento do signo). */
-const TIPO: Record<string, string> = { aries06: 'flecha', aries09: 'ar', escorpiao11: 'flecha', escorpiao23: 'flecha' };
+const TIPO: Record<string, string> = { aries06: 'flecha', aries09: 'ar', escorpiao11: 'flecha', escorpiao23: 'flecha',
+  libra06: 'flecha', libra13: 'flecha', libra17: 'flecha', libra24: 'flecha' };
 
 export function isRanged(cid: string): boolean {
   const c = card(cid);
@@ -52,7 +54,7 @@ export function shotsOf(events: GameEvent[]): Shot[] {
  * Centro de um elemento em coordenadas do #app, já com a perspectiva da arena aplicada
  * (usa a posição real na tela e desfaz o giro do modo deitado, se ele estiver ligado).
  */
-function center(el: HTMLElement, root: HTMLElement, up = 0): { x: number; y: number } {
+export function center(el: HTMLElement, root: HTMLElement, up = 0): { x: number; y: number } {
   const r = el.getBoundingClientRect();
   const X = (r.left + r.right) / 2, Y = (r.top + r.bottom) / 2;
   if (document.body.classList.contains('rot')) {

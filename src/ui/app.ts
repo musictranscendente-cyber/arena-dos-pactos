@@ -9,6 +9,7 @@ import {
 } from '../engine';
 import { ATK_MS, endHtml, galleryHtml, gameHtml, startHtml, type View } from './desenho';
 import { toggleRot, tryLandscape } from './orientacao';
+import { efeitosDeMagia, MAGIA_MS } from './efeitoMagia';
 import { precarregarVisiveis } from './precarga';
 import { launch, shotsOf } from './projetil';
 
@@ -18,7 +19,7 @@ const randomSeed = () => Math.floor(Math.random() * 2 ** 31);
 
 /** Pausa depois de cada tipo de quadro da Batalha (mesmos tempos do protótipo). */
 const PAUSE: Record<Frame['kind'], number> = {
-  tick: 0, reveal: 450, spells: 450, spell: 650, arrival: 550, battle: 450, row: 0, 'step-start': ATK_MS.start, step: ATK_MS.strike, end: 700,
+  tick: 0, reveal: 450, spells: 450, spell: MAGIA_MS, arrival: 550, battle: 450, row: 0, 'step-start': ATK_MS.start, step: ATK_MS.strike, end: 700,
 };
 
 interface Match {
@@ -105,6 +106,7 @@ async function battle(): Promise<void> {
     const msg = frameMsg(f);
     if (msg) m.msg = msg;
     render();
+    efeitosDeMagia(app(), f.events);
     showFx(f.events);
     // ataque à distância: o projétil sai no meio do avanço e chega junto com o dano do próximo quadro
     const next = frames[i + 1];

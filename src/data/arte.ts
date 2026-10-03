@@ -2,6 +2,7 @@
 // gerados por ferramentas/video_para_sprite.py (ou à mão, para imagens paradas).
 import arteJson from './arte.json';
 import animJson from './anim.json';
+import magiaJson from './magia.json';
 
 /**
  * Imagens paradas (public/art/<signo>/<id>-parado.webp e -ataque.webp).
@@ -51,9 +52,21 @@ const PORTE_EXTRA: Record<string, number> = {
   escorpiao12: 1.08, // escorpião gigante
   escorpiao19: 1.1, // hidra
   escorpiao21: 1.05, // basilisco
+  libra03: 0.9, // pombinha
+  libra09: 0.95, // cisne
+  libra15: 1.08, // urso guardião
+  libra18: 1.08, // grifo
+  libra21: 1.05, // templo vivo
 };
 
 export function porte(cid: string, custo: number, raridade: string): number {
   const base = PORTE_CUSTO[Math.max(0, Math.min(8, custo))] * (raridade === 'l' ? 1.04 : 1);
   return Math.round(base * (PORTE_EXTRA[cid] ?? 1) * 1000) / 1000;
+}
+
+/** Magias com animação de efeito (public/art/<signo>/<id>-magia-anim.webp): número de quadros. */
+export const MAGIA = magiaJson as Record<string, number>;
+
+export function magiaUrl(cid: string, race: string): string {
+  return `art/${race}/${cid}-magia-anim.webp`;
 }

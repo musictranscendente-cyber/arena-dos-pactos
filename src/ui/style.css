@@ -400,3 +400,13 @@ body:not(.land) .board{flex:0 0 auto;height:min(54vh,44vw)}
 .card.spell .cart .art{object-fit:cover;padding:0}
 .shot.veneno i{width:17px;height:17px;background:radial-gradient(circle at 60% 40%,#fff 0,#e8b8ff 25%,#a64dff 60%,#5a1a9e);box-shadow:0 0 12px #b56cff,0 0 22px #7a3fa6;--tc:#d7a6ffcc}
 .boom.veneno{background:radial-gradient(circle,#fff 0,#e0b3ff 30%,#9b4dff 55%,transparent 72%)}
+
+/* efeito de magia sobre o alvo */
+.magia-fx{position:absolute;z-index:35;width:120px;height:120px;margin:-60px 0 0 -60px;overflow:hidden;pointer-events:none;border-radius:50%;
+  animation:magia-in var(--t) ease-out forwards}
+.magia-fx.grande{width:190px;height:190px;margin:-95px 0 0 -95px}
+.land .magia-fx{width:96px;height:96px;margin:-48px 0 0 -48px}
+.land .magia-fx.grande{width:150px;height:150px;margin:-75px 0 0 -75px}
+.magia-fx img{display:block;height:100%;width:calc(var(--n) * 100%);max-width:none;animation:spr var(--t) steps(var(--n)) forwards}
+@keyframes magia-in{0%{opacity:0;transform:scale(.5)}12%{opacity:1;transform:scale(1.05)}85%{opacity:1;transform:scale(1)}100%{opacity:0;transform:scale(1.1)}}
+@media (prefers-reduced-motion:reduce){.magia-fx img{animation:none}}
