@@ -13,7 +13,8 @@ const LANCA = new Set(['virgem25', 'aquario25', 'aries09', 'aries06', 'aries04',
   'peixes01', 'peixes04', 'peixes05', 'peixes06', 'peixes07', 'peixes08', 'peixes10', 'peixes11', 'peixes13', 'peixes14',
   'peixes15', 'peixes16', 'peixes17', 'peixes18', 'peixes19', 'peixes20', 'peixes22', 'peixes23', 'peixes24',
   'gemeos01', 'gemeos03', 'gemeos04', 'gemeos05', 'gemeos07', 'gemeos08', 'gemeos10', 'gemeos11', 'gemeos12', 'gemeos14',
-  'gemeos17', 'gemeos18', 'gemeos20', 'gemeos23', 'gemeos24']);
+  'gemeos17', 'gemeos18', 'gemeos20', 'gemeos23', 'gemeos24',
+  'leao01', 'leao04', 'leao08', 'leao10', 'leao11', 'leao12', 'leao17', 'leao18', 'leao19', 'leao21', 'leao22', 'leao24', 'leao25']);
 
 /** Projétil próprio de algumas cartas (senão vale o do elemento do signo). */
 const TIPO: Record<string, string> = { aries06: 'flecha', aries09: 'ar', escorpiao11: 'flecha', escorpiao23: 'flecha',
