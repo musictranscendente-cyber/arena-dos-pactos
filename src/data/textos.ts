@@ -70,7 +70,7 @@ export const T = {
   investida: '💨 Investida!',
   ataque: 'ataque',
   aoEntrar: 'Ao entrar em campo:',
-  rodadaFaixa: (n: number) => `Rodada ${n}`,
+  rodada: 'Rodada',
   vida: 'vida',
   semHabilidade: 'Sem habilidade especial.',
   investidaMsg: (nome: string, dono: string) => `${nome} (${dono}) entrou com Investida e já ataca!`,

@@ -374,9 +374,12 @@ function zoomAtual(m: Match): Zoom | null {
 function faixaRodada(n: number): void {
   const f = document.createElement('div');
   f.className = 'faixa-rodada';
-  f.innerHTML = `<span>${T.rodadaFaixa(n)}</span>`;
+  // roda do zodíaco dourada girando, estrelas em volta e o número da rodada no meio
+  f.innerHTML = '<i class="fr-roda"></i><i class="fr-brilho"></i>'
+    + Array.from({ length: 10 }, (_, k) => `<b class="fr-estrela" style="--a:${k * 36}deg;--d:${(k % 3) * 80}ms"></b>`).join('')
+    + `<span class="fr-txt"><small>${T.rodada}</small>${n}</span>`;
   app().appendChild(f);
-  setTimeout(() => f.remove(), 1700);
+  setTimeout(() => f.remove(), 1900);
 }
 
 /* ---------- toques ---------- */
