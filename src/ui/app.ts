@@ -34,6 +34,10 @@ interface Match {
   /** Quem acabou de atacar: fica na pose de golpe enquanto o dano aparece, depois recua. */
   striking: Target[] | null;
   aiRng: Rng;
+  /** Estado no começo do planejamento: as jogadas só valem de vez quando o jogador toca em Batalha. */
+  base: GameState;
+  /** Jogadas feitas nesta rodada; bi = posição da carta na mão do começo da rodada. */
+  plan: { bi: number; a: Action }[];
 }
 
 let M: Match | null = null;
@@ -50,7 +54,7 @@ function startMatch(sign: Signo): void {
   const foe = foes[Math.floor(Math.random() * foes.length)];
   const seed = randomSeed();
   const { state } = newGame({ pSign: sign, eSign: foe, seed, record: false });
-  M = { g: state, shown: state, sel: null, busy: false, msg: '', active: null, striking: null, aiRng: new Rng(seed ^ 0x5bd1e995) };
+  M = { g: state, shown: state, sel: null, busy: false, msg: '', active: null, striking: null, aiRng: new Rng(seed ^ 0x5bd1e995), base: state, plan: [] };
   beginPlanning([]);
 }
 
@@ -58,7 +62,8 @@ function startMatch(sign: Signo): void {
 function beginPlanning(tickEvents: GameEvent[]): void {
   const m = M!;
   if (m.g.phase === 'plan') m.g = planTurn(m.g, 'e', m.aiRng).state;
-  m.shown = m.g;
+  m.shown = m.base = m.g;
+  m.plan = [];
   m.busy = false;
   m.sel = null;
   m.active = null;
@@ -70,6 +75,36 @@ function beginPlanning(tickEvents: GameEvent[]): void {
   render();
 }
 
+/** Cartas da mão do começo da rodada que ainda não foram usadas (na ordem em que aparecem na mão). */
+function livres(m: Match): number[] {
+  const usadas = new Set(m.plan.map(x => x.bi));
+  return m.base.p.hand.map((_, i) => i).filter(i => !usadas.has(i));
+}
+
+/** Refaz as jogadas da rodada a partir do começo (depois de tirar uma delas). */
+function refazer(m: Match): void {
+  let s = m.base;
+  const feitas: Match['plan'] = [];
+  const usadas = new Set<number>();
+  for (const x of m.plan) {
+    const hand = m.base.p.hand.map((_, i) => i).filter(i => !usadas.has(i)).indexOf(x.bi);
+    const r = applyAction(s, 'p', { ...x.a, hand });
+    if (!r.ok) continue; // ficou sem mana (ex.: a Corrente saiu): a jogada cai
+    s = r.state;
+    usadas.add(x.bi);
+    feitas.push(x);
+  }
+  m.plan = feitas;
+  m.g = m.shown = s;
+}
+
+/** Tira uma jogada da rodada; a carta volta para a mão. Devolve a posição dela na mão agora. */
+function desfazer(m: Match, k: number): number {
+  const [x] = m.plan.splice(k, 1);
+  refazer(m);
+  return livres(m).indexOf(x.bi);
+}
+
 /** Aplica a jogada do jogador no motor; se for inválida, mostra a dica. */
 function act(a: Action, okMsg: string, failMsg?: string): void {
   const m = M!;
@@ -78,6 +113,7 @@ function act(a: Action, okMsg: string, failMsg?: string): void {
     if (failMsg) { m.msg = failMsg; render(); }
     return;
   }
+  m.plan.push({ bi: livres(m)[a.hand], a });
   m.g = m.shown = r.state;
   m.sel = null;
   m.msg = okMsg;
@@ -158,33 +194,58 @@ function fxText(e: GameEvent): [string, string, string] | null {
     case 'UnitHealed': return [cell(e.side, e.l, e.d), `+${e.amount}`, 'heal'];
     case 'UnitReturnedToHand': return [cell(e.side, e.l, e.d), '🫧 volta', 'sh'];
     case 'UnitPlaced': return e.token ? [cell(e.side, e.l, e.d), 'Eco!', 'heal'] : null;
-    case 'HeroDamaged': return [`hero-${e.side}`, `-${e.amount}`, 'dmg'];
+    case 'HeroDamaged': return [`hero-${e.side}`, `-${e.amount}`, 'dmg heroi'];
     case 'HeroHealed': return [`hero-${e.side}`, `+${e.amount}`, 'heal'];
   }
   return null;
 }
 
+/** Tempo da animação de morte (ms); igual ao CSS (.unit.morrendo). */
+const MORTE_MS = 1400;
+/** Criaturas morrendo: continuam na tela até a animação acabar, mesmo se a tela for redesenhada. */
+let morrendo: { id: string; el: HTMLElement; t0: number }[] = [];
+
 /** Guarda o desenho das criaturas que morrem neste quadro (o novo estado já não tem elas). */
-function capturarMortos(events: GameEvent[]): [string, HTMLElement][] {
-  const out: [string, HTMLElement][] = [];
+function capturarMortos(events: GameEvent[]): { id: string; el: HTMLElement }[] {
+  const out: { id: string; el: HTMLElement }[] = [];
   for (const e of events) {
     if (e.t !== 'UnitDied') continue;
     const id = `c-${e.side}-${e.l}-${e.d}`;
-    const u = document.getElementById(id)?.querySelector<HTMLElement>('.unit');
-    if (u) out.push([id, u]);
+    const el = document.getElementById(id)?.querySelector<HTMLElement>('.unit');
+    if (el) out.push({ id, el });
   }
   return out;
 }
 
-/** Depois de redesenhar, põe as criaturas mortas de volta só para sumirem aos poucos (fade out). */
-function soltarMortos(mortos: [string, HTMLElement][]): void {
-  for (const [id, u] of mortos) {
-    const cell = document.getElementById(id);
-    if (!cell) continue;
-    u.classList.add('morrendo');
-    cell.appendChild(u);
-    setTimeout(() => u.remove(), 900);
+/** Depois de redesenhar, põe as criaturas mortas de volta para a animação de morte. */
+function soltarMortos(novos: { id: string; el: HTMLElement }[]): void {
+  const t0 = Date.now();
+  for (const x of novos) {
+    x.el.classList.add('morrendo');
+    x.el.insertAdjacentHTML('beforeend', '<span class="morte-onda"></span><span class="morte-nuvem"></span><span class="morte-alma"></span>');
+    morrendo.push({ ...x, t0 });
   }
+  reporMortos();
+}
+
+/** Recoloca as que ainda estão morrendo (a tela foi redesenhada), continuando do ponto em que estavam. */
+function reporMortos(): void {
+  const agora = Date.now();
+  morrendo = morrendo.filter(x => agora - x.t0 < MORTE_MS);
+  for (const x of morrendo) {
+    const cell = document.getElementById(x.id);
+    if (!cell || cell.querySelector('.unit:not(.morrendo)')) continue; // a casa já tem outra criatura
+    x.el.style.setProperty('--md', `-${agora - x.t0}ms`);
+    if (x.el.parentElement !== cell) cell.appendChild(x.el);
+  }
+}
+
+/** Golpe no herói: a tela pisca em vermelho do lado dele. */
+function golpeNoHeroi(side: Side, amount: number): void {
+  const v = document.createElement('div');
+  v.className = `vinheta ${side}${amount >= 5 ? ' forte' : ''}`;
+  app().appendChild(v);
+  setTimeout(() => v.remove(), 800);
 }
 
 /** Tremida rápida em quem levou dano. */
@@ -200,12 +261,20 @@ function showFx(events: GameEvent[]): void {
     if (!fx) continue;
     const el = document.getElementById(fx[0]);
     if (!el) continue;
-    if (fx[2] === 'dmg') shake(el.closest<HTMLElement>('.hcard') ?? el);
+    if (fx[2].startsWith('dmg')) {
+      shake(el.closest<HTMLElement>('.hcard') ?? el);
+      // impacto bem visível onde o golpe acertou
+      const imp = document.createElement('span');
+      imp.className = 'impacto';
+      el.appendChild(imp);
+      setTimeout(() => imp.remove(), 500);
+      if (e.t === 'HeroDamaged') golpeNoHeroi(e.side, e.amount);
+    }
     const s = document.createElement('span');
     s.className = 'fx ' + fx[2];
     s.textContent = fx[1];
     el.appendChild(s);
-    setTimeout(() => s.remove(), 1000);
+    setTimeout(() => s.remove(), 1100);
   }
 }
 
@@ -223,8 +292,10 @@ function render(): void {
   const v: View = {
     s: M.shown, sel: M.sel, msg: M.msg, active: M.active, striking: M.striking,
     canAct: !M.busy && M.g.phase === 'plan',
+    canUndo: !M.busy && M.g.phase === 'plan' && M.plan.length > 0,
   };
   root.innerHTML = gameHtml(v) + (M.g.phase === 'over' && !M.busy ? endHtml(M.g) : '');
+  reporMortos();
   const h2 = root.querySelector('.hand');
   if (h2) h2.scrollLeft = sl;
 }
@@ -267,6 +338,21 @@ function onClick(ev: Event): void {
 
   if (a === 'cell') {
     const side = t.dataset.side as Side, l = Number(t.dataset.l), d = Number(t.dataset.d);
+    // criatura invocada nesta rodada: tocar nela devolve para a mão (para trocar de casa ou de criatura)
+    const selUnit = m.sel === null || card(m.g.p.hand[m.sel].cid).type === 'unit';
+    const k = side === 'p' && selUnit ? m.plan.findIndex(x => x.a.t === 'summon' && x.a.l === l && x.a.d === d) : -1;
+    if (k >= 0) {
+      const selBi = m.sel === null ? null : livres(m)[m.sel];
+      const nome = name(m.g.p.board[l][d]!.cid);
+      const i = desfazer(m, k);
+      if (selBi === null) {
+        m.sel = i;
+        m.msg = T.voltouMao(nome);
+        render();
+        return;
+      }
+      m.sel = livres(m).indexOf(selBi); // troca: a carta escolhida entra no lugar
+    }
     if (m.sel === null) {
       const u = m.g[side].board[l][d];
       if (u && !(side === 'e' && u.hidden)) {
@@ -276,9 +362,9 @@ function onClick(ev: Event): void {
       }
       return;
     }
-    const h = P.hand[m.sel];
+    const h = m.g.p.hand[m.sel];
     const c = card(h.cid);
-    if (costOf(P, h.cid) > P.mana) { m.msg = T.manaInsuficiente(c.name); render(); return; }
+    if (costOf(m.g.p, h.cid) > m.g.p.mana) { m.msg = T.manaInsuficiente(c.name); render(); return; }
     const action: Action = c.type === 'unit'
       ? { t: 'summon', hand: m.sel, l, d }
       : { t: 'spell', hand: m.sel, tg: { side, l, d } };
@@ -290,6 +376,16 @@ function onClick(ev: Event): void {
     if (m.sel === null || P.recharged) return;
     const c = card(P.hand[m.sel].cid);
     act({ t: 'burn', hand: m.sel }, T.queimada(c.name));
+    return;
+  }
+
+  if (a === 'undo') {
+    if (!m.plan.length) return;
+    const x = m.plan[m.plan.length - 1];
+    desfazer(m, m.plan.length - 1);
+    m.sel = null;
+    m.msg = T.desfeito(name(m.base.p.hand[x.bi].cid));
+    render();
     return;
   }
 

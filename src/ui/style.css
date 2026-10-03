@@ -138,6 +138,8 @@ b{font-weight:800}
 .btn.go:not(:disabled){animation:glow 1.6s ease-in-out infinite}
 @keyframes glow{50%{box-shadow:inset 0 2px 0 #fff8,inset 0 -4px 0 #a8460a,0 0 0 2px #5a2400,0 5px 0 #5a2400,0 8px 16px #000a,0 0 22px #ffb84d}}
 .btn.go .ico{margin-right:6px;font-size:18px;vertical-align:2px}
+.acts-lin{display:flex;gap:5px}.acts-lin .btn.rc{flex:1;min-width:0}
+.btn.un{flex:0 0 auto;padding:4px 10px;font-size:20px;background:linear-gradient(180deg,#5d7bb0,#34507f);box-shadow:inset 0 2px 0 #fff5,inset 0 -3px 0 #1d2f55,0 0 0 2px #121d38,0 3px 0 #121d38}
 .btn.rc{background:linear-gradient(180deg,#6a5aa8,#43357a);box-shadow:inset 0 2px 0 #fff5,inset 0 -3px 0 #2a1f55,0 0 0 2px #1b1338,0 3px 0 #1b1338}
 .btn:focus-visible,.card:focus-visible{outline:3px solid #fff;outline-offset:2px}
 
@@ -195,10 +197,49 @@ b{font-weight:800}
 
 /* números flutuantes */
 .fx{position:absolute;left:50%;top:18%;transform:translateX(-50%);font-weight:800;font-size:22px;color:#fff;text-shadow:0 2px 0 #000,0 0 6px #000;pointer-events:none;animation:rise .95s ease-out forwards;z-index:6;white-space:nowrap}
-.fx.heal{color:#9bf08f}.fx.dmg{color:#ff7a6a}.fx.sh{color:#9fd3ff}
-.unit.morrendo{pointer-events:none;animation:morrer .85s ease-in forwards}
+.fx.heal{color:#9bf08f}.fx.sh{color:#9fd3ff}
+/* dano: número grande, branco com contorno vermelho, que "explode" e sobe */
+.fx.dmg{font-size:34px;font-weight:900;color:#fff;top:4%;z-index:40;-webkit-text-stroke:2px #b3000f;paint-order:stroke fill;
+  text-shadow:0 3px 0 #5a0008,0 0 10px #ff2a2a,0 0 18px #ff2a2a88;animation:dano 1.05s cubic-bezier(.2,1.4,.4,1) forwards}
+.fx.dmg.heroi{font-size:42px;top:105%}
+@keyframes dano{0%{opacity:0;transform:translate(-50%,10px) scale(.3)}15%{opacity:1;transform:translate(-50%,-4px) scale(1.55)}30%{transform:translate(-50%,-6px) scale(1.1)}75%{opacity:1;transform:translate(-50%,-16px) scale(1.1)}100%{opacity:0;transform:translate(-50%,-30px) scale(1)}}
+.land .fx.dmg{font-size:28px}.land .fx.dmg.heroi{font-size:34px}
+/* impacto: estrela de golpe sobre quem apanhou */
+.impacto{position:absolute;left:50%;top:42%;width:90%;aspect-ratio:1;max-width:110px;transform:translate(-50%,-50%) scale(.2);pointer-events:none;z-index:39;
+  background:radial-gradient(circle,#fff 0 14%,#ffe066 22%,#ff6a2a 40%,#ff2a2a00 62%);
+  clip-path:polygon(50% 0,61% 33%,96% 20%,70% 48%,100% 62%,64% 66%,74% 100%,50% 74%,26% 100%,36% 66%,0 62%,30% 48%,4% 20%,39% 33%);
+  animation:impacto .45s ease-out forwards}
+@keyframes impacto{0%{opacity:1;transform:translate(-50%,-50%) scale(.2) rotate(0)}40%{opacity:1;transform:translate(-50%,-50%) scale(1.1) rotate(12deg)}100%{opacity:0;transform:translate(-50%,-50%) scale(1.3) rotate(20deg)}}
+.heart .impacto{width:150%;max-width:none;top:50%}
+/* quem apanhou pisca em vermelho */
+.cell.hit .unit .fig{animation:ferido .45s ease-out}
+@keyframes ferido{0%,100%{filter:none}25%{filter:brightness(2.2) sepia(1) saturate(6) hue-rotate(-45deg)}55%{filter:brightness(1.4) sepia(1) saturate(4) hue-rotate(-45deg)}}
+.hcard.hit{animation:hit-heroi .5s ease-out}
+.hcard.hit .heart{animation:coracao .5s ease-out}
+@keyframes hit-heroi{0%,100%{transform:none}15%{transform:translate(-8px,3px)}30%{transform:translate(8px,-3px)}45%{transform:translate(-6px,2px)}60%{transform:translate(5px,-1px)}80%{transform:translate(-2px,0)}}
+@keyframes coracao{0%,100%{transform:none;filter:none}25%{transform:scale(1.35);filter:brightness(1.8) drop-shadow(0 0 10px #ff2a2a)}}
+/* golpe direto no herói: a borda da tela do lado dele pisca em vermelho */
+.vinheta{position:absolute;inset:0;pointer-events:none;z-index:60;animation:vinheta .8s ease-out forwards}
+.vinheta.p{background:radial-gradient(ellipse 70% 100% at 0% 10%,#ff1a1acc,#ff1a1a55 45%,transparent 72%)}
+.vinheta.e{background:radial-gradient(ellipse 70% 100% at 100% 10%,#ff1a1acc,#ff1a1a55 45%,transparent 72%)}
+.vinheta.forte{box-shadow:inset 0 0 60px #ff1a1aaa}
+@keyframes vinheta{0%{opacity:0}12%{opacity:1}45%{opacity:.8}100%{opacity:0}}
+/* morte: clarão branco, fica cinza, encolhe e afunda; onda de choque, fumaça e uma alminha subindo */
+.unit.morrendo{pointer-events:none;z-index:30}
+.unit.morrendo .fig{animation:morrer 1.4s ease-in forwards !important;animation-delay:var(--md,0s) !important}
+.unit.morrendo .aura{animation:somir 1.4s ease-in forwards;animation-delay:var(--md,0s)}
 .unit.morrendo .a,.unit.morrendo .h,.unit.morrendo .kws,.unit.morrendo .shd,.unit.morrendo .pnd{display:none}
-@keyframes morrer{0%{opacity:1;filter:none}35%{opacity:.85;filter:brightness(1.8) saturate(.4)}100%{opacity:0;filter:brightness(1.4) saturate(0) blur(2px);transform:translateY(-10%) scale(.92)}}
+@keyframes morrer{0%{opacity:1;filter:none}10%{opacity:1;filter:brightness(3) saturate(0) drop-shadow(0 0 12px #fff)}25%{opacity:1;filter:grayscale(1) brightness(1.3)}55%{opacity:.8;filter:grayscale(1) brightness(.8) blur(1px)}100%{opacity:0;filter:grayscale(1) brightness(.5) blur(4px)}}
+@keyframes somir{to{opacity:0}}
+.morte-onda,.morte-nuvem,.morte-alma{position:absolute;left:50%;pointer-events:none;animation-delay:var(--md,0s)}
+.morte-onda{top:55%;width:40%;aspect-ratio:1;border-radius:50%;border:4px solid #fff;box-shadow:0 0 12px #fff,inset 0 0 10px #fff;opacity:0;transform:translate(-50%,-50%);animation:onda .7s ease-out forwards}
+@keyframes onda{0%{opacity:1;transform:translate(-50%,-50%) scale(.3)}100%{opacity:0;transform:translate(-50%,-50%) scale(2.6)}}
+.morte-nuvem{bottom:8%;width:95%;height:55%;transform:translateX(-50%);opacity:0;
+  background:radial-gradient(circle at 30% 60%,#e8e8f0 0 18%,transparent 19%),radial-gradient(circle at 55% 45%,#f4f4fa 0 22%,transparent 23%),radial-gradient(circle at 75% 65%,#d8d8e4 0 17%,transparent 18%),radial-gradient(circle at 45% 75%,#cfcfdc 0 20%,transparent 21%);
+  filter:drop-shadow(0 0 4px #0006);animation:nuvem 1.4s ease-out forwards}
+@keyframes nuvem{0%{opacity:0;transform:translateX(-50%) scale(.3)}25%{opacity:1;transform:translateX(-50%) scale(1)}100%{opacity:0;transform:translate(-50%,-30%) scale(1.35)}}
+.morte-alma{top:40%;width:26px;height:34px;margin-left:-13px;border-radius:50% 50% 45% 45%;background:radial-gradient(circle at 50% 35%,#fff,#d6ecffcc 55%,#9fd3ff00 72%);opacity:0;animation:alma 1.4s ease-out forwards}
+@keyframes alma{0%,20%{opacity:0;transform:translateY(0) scale(.6)}40%{opacity:1}100%{opacity:0;transform:translateY(-140%) scale(1.1)}}
 @keyframes rise{from{opacity:1;transform:translate(-50%,0) scale(1.25)}to{opacity:0;transform:translate(-50%,-30px) scale(1)}}
 
 /* ---------- telas (menu, galeria, fim) ---------- */
@@ -288,7 +329,8 @@ body.rot.land #app{height:auto}
   body:not(.land) .acts{flex:1}
 }
 @media (prefers-reduced-motion:reduce){
-  .fx,.unit.morrendo{animation:fade .9s forwards}
+  .fx,.fx.dmg{animation:fade .9s forwards}
+  .impacto,.vinheta,.morte-onda,.morte-alma{display:none}
   @keyframes fade{to{opacity:0}}
   .card.sel{transform:none}
   .cell.atk .unit,.cell.strike .unit,.hit,.cell.ok,.btn.go:not(:disabled),.fig.has-art .art.parado,.unit .fig .emo,.unit .fig{animation:none}
@@ -405,9 +447,12 @@ body:not(.land) .board{flex:0 0 auto;height:min(54vh,44vw)}
 /* efeito de magia sobre o alvo */
 .magia-fx{position:absolute;z-index:35;width:120px;height:120px;margin:-60px 0 0 -60px;overflow:hidden;pointer-events:none;border-radius:50%;
   animation:magia-in var(--t) ease-out forwards}
-.magia-fx.grande{width:190px;height:190px;margin:-95px 0 0 -95px}
 .land .magia-fx{width:96px;height:96px;margin:-48px 0 0 -48px}
-.land .magia-fx.grande{width:150px;height:150px;margin:-75px 0 0 -75px}
 .magia-fx img{display:block;height:100%;width:calc(var(--n) * 100%);max-width:none;animation:spr var(--t) steps(var(--n)) forwards}
 @keyframes magia-in{0%{opacity:0;transform:scale(.5)}12%{opacity:1;transform:scale(1.05)}85%{opacity:1;transform:scale(1)}100%{opacity:0;transform:scale(1.1)}}
 @media (prefers-reduced-motion:reduce){.magia-fx img{animation:none}}
+.magia-gen{position:absolute;z-index:35;width:110px;height:110px;margin:-55px 0 0 -55px;border-radius:50%;pointer-events:none;
+  background:radial-gradient(circle,#fff 0 10%,color-mix(in srgb,var(--c) 70%,#fff) 25%,color-mix(in srgb,var(--c) 60%,transparent) 50%,transparent 70%);
+  box-shadow:0 0 0 3px color-mix(in srgb,var(--c) 60%,#fff),0 0 24px var(--c);animation:magia-gen .9s ease-out forwards}
+.land .magia-gen{width:88px;height:88px;margin:-44px 0 0 -44px}
+@keyframes magia-gen{0%{opacity:0;transform:scale(.2) rotate(0)}30%{opacity:1;transform:scale(1) rotate(40deg)}100%{opacity:0;transform:scale(1.4) rotate(90deg)}}

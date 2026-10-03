@@ -17,6 +17,8 @@ export interface View {
   msg: string;
   active: Target[] | null;
   striking: Target[] | null;
+  /** Há jogadas nesta rodada que podem ser desfeitas. */
+  canUndo?: boolean;
 }
 
 function artOrEmoji(c: Card, cid?: string): string {
@@ -147,7 +149,8 @@ function manaHtml(v: View): string {
 
 function actsHtml(v: View): string {
   const P = v.s.p;
-  return `<div class="acts"><button class="btn rc" data-act="recharge" ${v.canAct && v.sel !== null && !P.recharged ? '' : 'disabled'}>${T.queimar}</button>`
+  return `<div class="acts"><div class="acts-lin"><button class="btn un" data-act="undo" ${v.canUndo ? '' : 'disabled'} title="${T.desfazer}">↩</button>`
+    + `<button class="btn rc" data-act="recharge" ${v.canAct && v.sel !== null && !P.recharged ? '' : 'disabled'}>${T.queimar}</button></div>`
     + `<button class="btn go" data-act="punch" ${v.canAct ? '' : 'disabled'}><span class="ico">⚔️</span>${T.batalha}</button></div>`;
 }
 
