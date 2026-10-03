@@ -4,18 +4,21 @@ import { RACES } from '../data/signos';
 import type { GameEvent, Side } from '../engine';
 
 /** Criaturas sem Distância cuja arte lança algo (o golpe sai de longe). */
-const LANCA = new Set(['virgem25', 'peixes25', 'aquario25', 'aries09', 'aries06', 'aries04',
+const LANCA = new Set(['virgem25', 'aquario25', 'aries09', 'aries06', 'aries04',
   'escorpiao02', 'escorpiao04', 'escorpiao07', 'escorpiao10', 'escorpiao11', 'escorpiao13', 'escorpiao16',
   'escorpiao17', 'escorpiao18', 'escorpiao20', 'escorpiao21', 'escorpiao23',
   'libra04', 'libra12', 'libra16', 'libra17', 'libra21', 'libra23', 'libra25',
   'sagitario02', 'sagitario04', 'sagitario11', 'sagitario13', 'sagitario17', 'sagitario23',
-  'touro03', 'touro04', 'touro09', 'touro18', 'touro23', 'touro24']);
+  'touro03', 'touro04', 'touro09', 'touro18', 'touro23', 'touro24',
+  'peixes01', 'peixes04', 'peixes05', 'peixes06', 'peixes07', 'peixes08', 'peixes10', 'peixes11', 'peixes13', 'peixes14',
+  'peixes15', 'peixes16', 'peixes17', 'peixes18', 'peixes19', 'peixes20', 'peixes22', 'peixes23', 'peixes24']);
 
 /** Projétil próprio de algumas cartas (senão vale o do elemento do signo). */
 const TIPO: Record<string, string> = { aries06: 'flecha', aries09: 'ar', escorpiao11: 'flecha', escorpiao23: 'flecha',
   libra06: 'flecha', libra13: 'flecha', libra17: 'flecha', libra24: 'flecha',
   sagitario01: 'fogo', sagitario03: 'ar', sagitario04: 'ar', sagitario08: 'fogo', sagitario10: 'fogo', sagitario11: 'ar',
-  sagitario13: 'terra', sagitario14: 'fogo', sagitario23: 'terra', sagitario24: 'ar', touro04: 'fogo' };
+  sagitario13: 'terra', sagitario14: 'fogo', sagitario23: 'terra', sagitario24: 'ar', touro04: 'fogo',
+  peixes05: 'ar', peixes06: 'veneno', peixes08: 'fogo', peixes13: 'veneno', peixes17: 'fogo', peixes18: 'ar', peixes19: 'veneno' };
 
 export function isRanged(cid: string): boolean {
   const c = card(cid);

@@ -59,6 +59,7 @@ const PORTE_EXTRA: Record<string, number> = {
   libra21: 1.05, // templo vivo
   sagitario03: 0.9, // falcão abre as asas
   sagitario21: 0.9, // cometa: a cauda é comprida
+  peixes03: 0.82, peixes06: 0.85, peixes12: 0.9, peixes17: 0.9, // peixes compridos: o corpo deitado ocupa a largura toda
 };
 
 export function porte(cid: string, custo: number, raridade: string): number {

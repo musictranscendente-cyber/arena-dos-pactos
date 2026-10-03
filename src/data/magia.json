@@ -14,6 +14,18 @@
  "libras3": 16,
  "libras4": 16,
  "libras5": 16,
+ "peixess1": {
+  "n": 16,
+  "livre": true
+ },
+ "peixess2": {
+  "n": 16,
+  "livre": true
+ },
+ "peixess4": {
+  "n": 16,
+  "livre": true
+ },
  "sagitarios1": 16,
  "sagitarios2": 16,
  "sagitarios3": 16,
