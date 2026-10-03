@@ -83,7 +83,7 @@ export function escalaCampo(s: number): number {
  * Centro visível de cada personagem animado (ferramentas/centros.py): [ox, oy] em alturas do quadro,
  * medidos a partir da âncora do corpo (ox) e dos pés (oy). Usado para pôr o personagem bem no meio da casa.
  */
-export const CENTRO = centroJson as Record<string, [number, number]>;
+export const CENTRO = centroJson as unknown as Record<string, [number, number]>;
 
 /**
  * Magias com animação de efeito (public/art/<signo>/<id>-magia-anim.webp): número de quadros.
