@@ -18,5 +18,21 @@
  "sagitarios2": 16,
  "sagitarios3": 16,
  "sagitarios4": 16,
- "sagitarios5": 16
+ "sagitarios5": 16,
+ "touros1": {
+  "n": 16,
+  "livre": true
+ },
+ "touros3": {
+  "n": 16,
+  "livre": true
+ },
+ "touros4": {
+  "n": 16,
+  "livre": true
+ },
+ "touros5": {
+  "n": 16,
+  "livre": true
+ }
 }

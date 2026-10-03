@@ -448,6 +448,9 @@ body:not(.land) .board{flex:0 0 auto;height:min(54vh,44vw)}
 .magia-fx{position:absolute;z-index:35;width:120px;height:120px;margin:-60px 0 0 -60px;overflow:hidden;pointer-events:none;border-radius:50%;
   animation:magia-in var(--t) ease-out forwards}
 .land .magia-fx{width:96px;height:96px;margin:-48px 0 0 -48px}
+/* efeito recortado (fundo verde/magenta): solto sobre a arena, sem o círculo */
+.magia-fx.livre{width:150px;height:150px;margin:-75px 0 0 -75px;border-radius:0;-webkit-mask-image:none;mask-image:none;filter:drop-shadow(0 0 6px #fff6)}
+.land .magia-fx.livre{width:124px;height:124px;margin:-62px 0 0 -62px}
 .magia-fx img{display:block;height:100%;width:calc(var(--n) * 100%);max-width:none;animation:spr var(--t) steps(var(--n)) forwards}
 @keyframes magia-in{0%{opacity:0;transform:scale(.5)}12%{opacity:1;transform:scale(1.05)}85%{opacity:1;transform:scale(1)}100%{opacity:0;transform:scale(1.1)}}
 @media (prefers-reduced-motion:reduce){.magia-fx img{animation:none}}

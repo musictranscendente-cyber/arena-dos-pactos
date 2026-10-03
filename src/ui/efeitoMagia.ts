@@ -1,6 +1,6 @@
 // Efeito visual de magia na Batalha: a animação da magia toca sobre o alvo (criatura, fileira ou herói).
 import { card } from '../data/cards';
-import { MAGIA, magiaUrl } from '../data/arte';
+import { MAGIA, MAGIA_LIVRE, magiaUrl } from '../data/arte';
 import { RACES } from '../data/signos';
 import type { GameEvent, Side } from '../engine';
 import { pronta } from './precarga';
@@ -39,7 +39,7 @@ export function efeitosDeMagia(root: HTMLElement, events: GameEvent[]): void {
         const p = center(el, root);
         const fx = document.createElement('div');
         if (comArte) {
-          fx.className = 'magia-fx';
+          fx.className = MAGIA_LIVRE.has(e.cid) ? 'magia-fx livre' : 'magia-fx';
           fx.style.cssText = `left:${p.x}px;top:${p.y}px;--n:${MAGIA[e.cid]};--t:${MAGIA_MS - i * ONDA_MS}ms`;
           fx.innerHTML = `<img src="${url}" alt="">`;
         } else {

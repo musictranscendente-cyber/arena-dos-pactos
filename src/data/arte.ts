@@ -77,8 +77,15 @@ export function escalaCampo(s: number): number {
   return h <= LIVRE ? s : (LIVRE + (h - LIVRE) * AMORTECE) / 1.28;
 }
 
-/** Magias com animação de efeito (public/art/<signo>/<id>-magia-anim.webp): número de quadros. */
-export const MAGIA = magiaJson as Record<string, number>;
+/**
+ * Magias com animação de efeito (public/art/<signo>/<id>-magia-anim.webp): número de quadros.
+ * No json: um número (ilustração com cenário, vira um clarão redondo) ou { n, livre } (efeito com
+ * o fundo recortado, aparece solto sobre a arena).
+ */
+const magiaDados = magiaJson as Record<string, number | { n: number; livre?: boolean }>;
+export const MAGIA: Record<string, number> = Object.fromEntries(
+  Object.entries(magiaDados).map(([k, v]) => [k, typeof v === 'number' ? v : v.n]));
+export const MAGIA_LIVRE = new Set(Object.keys(magiaDados).filter(k => typeof magiaDados[k] === 'object'));
 
 export function magiaUrl(cid: string, race: string): string {
   return `art/${race}/${cid}-magia-anim.webp`;
