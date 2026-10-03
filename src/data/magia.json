@@ -1,4 +1,24 @@
 {
+ "aquarios1": {
+  "n": 16,
+  "livre": true
+ },
+ "aquarios2": {
+  "n": 16,
+  "livre": true
+ },
+ "aquarios3": {
+  "n": 16,
+  "livre": true
+ },
+ "aquarios4": {
+  "n": 16,
+  "livre": true
+ },
+ "aquarios5": {
+  "n": 16,
+  "livre": true
+ },
  "ariess1": 16,
  "ariess2": 16,
  "ariess3": 16,
