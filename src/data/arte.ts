@@ -64,6 +64,17 @@ export function porte(cid: string, custo: number, raridade: string): number {
   return Math.round(base * (PORTE_EXTRA[cid] ?? 1) * 1000) / 1000;
 }
 
+/**
+ * Tamanho final da figura no campo (fator --s), a partir de normalização × porte.
+ * A figura tem 1,28 × s da altura da casa; acima de LIVRE o crescimento é amortecido,
+ * para os grandes se destacarem sem cobrir a casa de cima.
+ */
+const LIVRE = 0.85, AMORTECE = 0.38;
+export function escalaCampo(s: number): number {
+  const h = 1.28 * s;
+  return h <= LIVRE ? s : (LIVRE + (h - LIVRE) * AMORTECE) / 1.28;
+}
+
 /** Magias com animação de efeito (public/art/<signo>/<id>-magia-anim.webp): número de quadros. */
 export const MAGIA = magiaJson as Record<string, number>;
 

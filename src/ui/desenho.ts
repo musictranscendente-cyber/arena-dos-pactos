@@ -1,6 +1,6 @@
 // Funções que montam o HTML de cada parte da tela (sem estado próprio).
 import { card, cardsOfSign, CARDS } from '../data/cards';
-import { ANIM, animUrl, ARTE, artUrl, porte, type Tira } from '../data/arte';
+import { ANIM, animUrl, ARTE, artUrl, escalaCampo, porte, type Tira } from '../data/arte';
 import { RARITY } from '../data/raridades';
 import type { Card, Signo } from '../data/schema';
 import { currentSign, ORDER, RACES } from '../data/signos';
@@ -45,7 +45,7 @@ function figHtml(c: Card, cid: string, cell: { atk: boolean; strike: boolean }, 
   const an = ANIM[cid];
   if (an) {
     const base = an.idle.h;
-    const sz = `--s:${(an.s ?? 1) * porte(cid, c.cost, c.r)}`;
+    const sz = `--s:${escalaCampo((an.s ?? 1) * porte(cid, c.cost, c.r))}`;
     const urlAtk = animUrl(cid, c.race, 'ataque');
     // só troca para o golpe se a imagem dele já carregou; senão continua respirando
     if ((!cell.atk && !cell.strike) || !pronta(urlAtk)) {
@@ -67,7 +67,7 @@ function figHtml(c: Card, cid: string, cell: { atk: boolean; strike: boolean }, 
   if (cell.atk || cell.strike) {
     h += `<img class="art ataque ${cell.strike ? '' : 'late'}" src="${artUrl(cid, c.race, 'ataque')}" style="--rw:${ar[1]};--dx:${(ar[1] - ar[0]) / 2}" alt="">`;
   }
-  return `<span class="fig has-art" style="${idlePhase(uid)};--s:${(ar[2] ?? 1) * porte(cid, c.cost, c.r)}">${h}</span>`;
+  return `<span class="fig has-art" style="${idlePhase(uid)};--s:${escalaCampo((ar[2] ?? 1) * porte(cid, c.cost, c.r))}">${h}</span>`;
 }
 
 const HEART_MAX = 30;

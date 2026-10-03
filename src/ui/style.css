@@ -196,9 +196,10 @@ b{font-weight:800}
 /* números flutuantes */
 .fx{position:absolute;left:50%;top:18%;transform:translateX(-50%);font-weight:800;font-size:22px;color:#fff;text-shadow:0 2px 0 #000,0 0 6px #000;pointer-events:none;animation:rise .95s ease-out forwards;z-index:6;white-space:nowrap}
 .fx.heal{color:#9bf08f}.fx.dmg{color:#ff7a6a}.fx.sh{color:#9fd3ff}
-.fx.die{font-size:30px;animation:poof .9s ease-out forwards}
+.unit.morrendo{pointer-events:none;animation:morrer .85s ease-in forwards}
+.unit.morrendo .a,.unit.morrendo .h,.unit.morrendo .kws,.unit.morrendo .shd,.unit.morrendo .pnd{display:none}
+@keyframes morrer{0%{opacity:1;filter:none}35%{opacity:.85;filter:brightness(1.8) saturate(.4)}100%{opacity:0;filter:brightness(1.4) saturate(0) blur(2px);transform:translateY(-10%) scale(.92)}}
 @keyframes rise{from{opacity:1;transform:translate(-50%,0) scale(1.25)}to{opacity:0;transform:translate(-50%,-30px) scale(1)}}
-@keyframes poof{0%{opacity:0;transform:translate(-50%,10px) scale(.6)}30%{opacity:1;transform:translate(-50%,0) scale(1.2)}100%{opacity:0;transform:translate(-50%,-22px) scale(1.4)}}
 
 /* ---------- telas (menu, galeria, fim) ---------- */
 .ov{position:fixed;inset:0;background:radial-gradient(ellipse at center,#140f3399,#0a0718dd);display:grid;place-items:center;padding:20px;z-index:20;overflow:auto}
@@ -287,7 +288,7 @@ body.rot.land #app{height:auto}
   body:not(.land) .acts{flex:1}
 }
 @media (prefers-reduced-motion:reduce){
-  .fx,.fx.die{animation:fade .9s forwards}
+  .fx,.unit.morrendo{animation:fade .9s forwards}
   @keyframes fade{to{opacity:0}}
   .card.sel{transform:none}
   .cell.atk .unit,.cell.strike .unit,.hit,.cell.ok,.btn.go:not(:disabled),.fig.has-art .art.parado,.unit .fig .emo,.unit .fig{animation:none}

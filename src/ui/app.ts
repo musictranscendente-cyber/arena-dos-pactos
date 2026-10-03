@@ -105,7 +105,9 @@ async function battle(): Promise<void> {
     m.active = f.active ?? null;
     const msg = frameMsg(f);
     if (msg) m.msg = msg;
+    const mortos = capturarMortos(f.events);
     render();
+    soltarMortos(mortos);
     efeitosDeMagia(app(), f.events);
     showFx(f.events);
     // ataque à distância: o projétil sai no meio do avanço e chega junto com o dano do próximo quadro
@@ -121,7 +123,9 @@ async function battle(): Promise<void> {
   m.g = state;
   const tick = frames.find(f => f.kind === 'tick');
   if (state.phase === 'over') { m.shown = state; m.busy = false; render(); return; }
+  const mortos = capturarMortos(tick?.events ?? []);
   beginPlanning(tick?.events ?? []);
+  soltarMortos(mortos);
   if (tick) showFx(tick.events);
 }
 
@@ -154,11 +158,33 @@ function fxText(e: GameEvent): [string, string, string] | null {
     case 'UnitHealed': return [cell(e.side, e.l, e.d), `+${e.amount}`, 'heal'];
     case 'UnitReturnedToHand': return [cell(e.side, e.l, e.d), '🫧 volta', 'sh'];
     case 'UnitPlaced': return e.token ? [cell(e.side, e.l, e.d), 'Eco!', 'heal'] : null;
-    case 'UnitDied': return [cell(e.side, e.l, e.d), '💀', 'die'];
     case 'HeroDamaged': return [`hero-${e.side}`, `-${e.amount}`, 'dmg'];
     case 'HeroHealed': return [`hero-${e.side}`, `+${e.amount}`, 'heal'];
   }
   return null;
+}
+
+/** Guarda o desenho das criaturas que morrem neste quadro (o novo estado já não tem elas). */
+function capturarMortos(events: GameEvent[]): [string, HTMLElement][] {
+  const out: [string, HTMLElement][] = [];
+  for (const e of events) {
+    if (e.t !== 'UnitDied') continue;
+    const id = `c-${e.side}-${e.l}-${e.d}`;
+    const u = document.getElementById(id)?.querySelector<HTMLElement>('.unit');
+    if (u) out.push([id, u]);
+  }
+  return out;
+}
+
+/** Depois de redesenhar, põe as criaturas mortas de volta só para sumirem aos poucos (fade out). */
+function soltarMortos(mortos: [string, HTMLElement][]): void {
+  for (const [id, u] of mortos) {
+    const cell = document.getElementById(id);
+    if (!cell) continue;
+    u.classList.add('morrendo');
+    cell.appendChild(u);
+    setTimeout(() => u.remove(), 900);
+  }
 }
 
 /** Tremida rápida em quem levou dano. */
@@ -174,7 +200,7 @@ function showFx(events: GameEvent[]): void {
     if (!fx) continue;
     const el = document.getElementById(fx[0]);
     if (!el) continue;
-    if (fx[2] === 'dmg' || fx[2] === 'die') shake(el.closest<HTMLElement>('.hcard') ?? el);
+    if (fx[2] === 'dmg') shake(el.closest<HTMLElement>('.hcard') ?? el);
     const s = document.createElement('span');
     s.className = 'fx ' + fx[2];
     s.textContent = fx[1];
