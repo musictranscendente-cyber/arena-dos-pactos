@@ -652,3 +652,13 @@ body:not(.land) .board{flex:0 0 auto;height:min(54vh,44vw)}
 .btn.desiste{display:flex;align-items:center;justify-content:center;gap:6px}
 .btn.desiste svg{width:20px;height:20px;overflow:visible}
 .btn.desiste .pano{transform-origin:4px 4px;animation:tremula 1.6s ease-in-out infinite}
+
+/* ícone do perfil maior (no futuro vira avatar personalizado); margem negativa para o topo não crescer */
+.medal{width:70px;height:70px;margin:-8px 0}
+.medal span{font-size:40px}
+.land .medal{width:54px;height:54px;margin:-7px 0}
+.land .medal span{font-size:30px}
+/* desistir: com um respiro embaixo do ícone do perfil, centralizado nele */
+.flagbtn{left:35px;translate:-50% 0;top:calc(50% + 46px)}
+.flagbtn:active{translate:-50% 1px}
+.land .flagbtn{left:27px;top:calc(50% + 37px)}
