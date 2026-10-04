@@ -569,8 +569,10 @@ body:not(.land) .board{flex:0 0 auto;height:min(54vh,44vw)}
 .unit .a,.unit .h,.unit .kws{z-index:6}
 
 /* ---------- desistir ---------- */
-.vsbtns{display:flex;gap:4px}
-.flagbtn{font:inherit;background:var(--glass);color:#fff;border:1px solid var(--line);border-radius:8px;padding:1px 7px;font-size:12px;line-height:19px;cursor:pointer}
+/* bandeira de desistir: logo abaixo da medalha do jogador */
+.flagbtn{position:absolute;left:26px;top:calc(50% + 30px);translate:-50% 0;z-index:3;font:inherit;background:var(--glass);color:#fff;border:1px solid var(--line);
+  border-radius:8px;padding:0 6px;font-size:12px;line-height:20px;cursor:pointer}
+.land .flagbtn{left:19px;top:calc(50% + 22px);font-size:11px;line-height:18px;padding:0 5px}
 
 /* ---------- fim de partida: o lado de quem perdeu desce, treme e racha ---------- */
 .racha{position:absolute;inset:4%;background:url('./img/racha.svg') center/100% 100% no-repeat;opacity:0;pointer-events:none;z-index:1;

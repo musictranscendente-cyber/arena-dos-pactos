@@ -189,14 +189,14 @@ function heroCard(s: GameState, side: Side): string {
   const extra = side === 'e' ? `<span class="gem" title="Mana">${H.max}</span>` : '';
   return `<div class="hcard ${side === 'p' ? 'mine' : 'theirs'}" style="--rc:${r.c}">`
     + `<div class="medal"><span>${r.g}</span></div>`
+    + (side === 'p' && s.phase === 'plan' ? `<button class="flagbtn" data-act="desistir" aria-label="${T.desistir}" title="${T.desistir}">🏳️</button>` : '')
     + `<div class="hinfo"><div class="hname">${name}</div><div class="hpbar${pct <= 30 ? ' low' : ''}"><i style="width:${pct}%"></i></div><div class="hsub">${sub}${extra}</div></div>`
     + `<div class="heart" id="hero-${side}">${hp}</div></div>`;
 }
 
 function hudHtml(s: GameState): string {
-  const flag = s.phase === 'plan' ? `<button class="flagbtn" data-act="desistir" aria-label="${T.desistir}" title="${T.desistir}">🏳️</button>` : '';
   return `<div class="hud">${heroCard(s, 'p')}`
-    + `<div class="vs"><span class="vsbtns"><button class="rotbtn" data-act="rot" aria-label="${T.alternarDeitado}">⟳</button>${flag}</span><span class="vsb">VS</span><span class="rd">${T.rodadaN(s.round)}<button class="infobtn" data-act="info" aria-label="${T.info}">i</button></span></div>`
+    + `<div class="vs"><button class="rotbtn" data-act="rot" aria-label="${T.alternarDeitado}">⟳</button><span class="vsb">VS</span><span class="rd">${T.rodadaN(s.round)}<button class="infobtn" data-act="info" aria-label="${T.info}">i</button></span></div>`
     + `${heroCard(s, 'e')}</div>`;
 }
 
