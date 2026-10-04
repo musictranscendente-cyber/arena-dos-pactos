@@ -149,7 +149,7 @@ function cellHtml(v: View, side: Side, l: number, d: number): string {
     const c = card(u.cid);
     const atk = effAtk(s[side].board, l, u);
     const esc = escalaFig(c, u.cid);
-    // habilidades e estados em fichas pequenas embaixo da criatura, entre o ataque e a vida
+    // habilidades e estados em fichas pequenas no canto de cima da casa, longe dos pés da criatura
     const fichas = [
       ...(u.shield ? ['<i class="f-escudo" title="Escudo">🛡️</i>'] : []),
       ...u.kw.filter(k => k !== 'escudo').map(k => `<i title="${KW[k].n}">${KW[k].i}</i>`),
@@ -190,10 +190,15 @@ function heroCard(s: GameState, side: Side): string {
   const extra = side === 'e' ? `<span class="gem" title="Mana">${H.max}</span>` : '';
   return `<div class="hcard ${side === 'p' ? 'mine' : 'theirs'}" style="--rc:${r.c}">`
     + `<div class="medal"><span>${r.g}</span></div>`
-    + (side === 'p' && s.phase === 'plan' ? `<button class="flagbtn" data-act="desistir" aria-label="${T.desistir}" title="${T.desistir}">🏳️</button>` : '')
+    + (side === 'p' && s.phase === 'plan' ? `<button class="flagbtn" data-act="desistir" aria-label="${T.desistir}" title="${T.desistir}">${BANDEIRA}<span>${T.desistirCurto}</span></button>` : '')
     + `<div class="hinfo"><div class="hname">${name}</div><div class="hpbar${pct <= 30 ? ' low' : ''}"><i style="width:${pct}%"></i></div><div class="hsub">${sub}${extra}</div></div>`
     + `<div class="heart" id="hero-${side}">${hp}</div></div>`;
 }
+
+/** Bandeira branca (desistir): mastro dourado e pano que tremula. */
+const BANDEIRA = '<svg viewBox="0 0 20 20" aria-hidden="true"><rect x="2.2" y="1.5" width="1.8" height="17" rx=".9" fill="#e9c77a" stroke="#4a2c0a" stroke-width=".6"/>'
+  + '<circle cx="3.1" cy="1.6" r="1.4" fill="#ffe08a" stroke="#4a2c0a" stroke-width=".5"/>'
+  + '<path class="pano" d="M4 3.2 C8 1.6 11 5 17.5 3.4 L17.5 11.4 C11 13 8 9.6 4 11.2 Z" fill="#fff" stroke="#2a1d3d" stroke-width=".8" stroke-linejoin="round"/></svg>';
 
 function hudHtml(s: GameState): string {
   return `<div class="hud">${heroCard(s, 'p')}`
@@ -294,7 +299,7 @@ export function startHtml(now: Date): string {
 /** Pergunta antes de desistir, para não sair da batalha por um toque sem querer. */
 export function desistirHtml(): string {
   return `<div class="ov"><div class="panel"><h2>${T.desistirPergunta}</h2><p>${T.desistirAviso}</p>`
-    + `<div class="acts2"><button class="btn rc" data-act="desistir-sim">${T.desistirSim}</button><button class="btn go" data-act="desistir-nao">${T.desistirNao}</button></div></div></div>`;
+    + `<div class="acts2"><button class="btn rc desiste" data-act="desistir-sim">${BANDEIRA}${T.desistirCurto}</button><button class="btn go" data-act="desistir-nao">${T.desistirNao}</button></div></div></div>`;
 }
 
 export function endHtml(s: GameState): string {

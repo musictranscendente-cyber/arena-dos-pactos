@@ -569,10 +569,19 @@ body:not(.land) .board{flex:0 0 auto;height:min(54vh,44vw)}
 .unit .a,.unit .h,.unit .kws{z-index:6}
 
 /* ---------- desistir ---------- */
-/* bandeira de desistir: logo abaixo da medalha do jogador */
-.flagbtn{position:absolute;left:26px;top:calc(50% + 30px);translate:-50% 0;z-index:3;font:inherit;background:var(--glass);color:#fff;border:1px solid var(--line);
-  border-radius:8px;padding:0 6px;font-size:12px;line-height:20px;cursor:pointer}
-.land .flagbtn{left:19px;top:calc(50% + 22px);font-size:11px;line-height:18px;padding:0 5px}
+/* desistir: plaquinha com bandeira branca tremulando, logo abaixo da medalha do jogador */
+.flagbtn{position:absolute;left:0;top:calc(50% + 31px);z-index:3;cursor:pointer;
+  display:flex;align-items:center;gap:4px;padding:3px 9px 3px 6px;border-radius:999px;font:inherit;font-size:11px;font-weight:800;letter-spacing:.3px;color:#fff3d6;
+  background:linear-gradient(180deg,#5b2a6e,#2e1440);border:1.5px solid #e9c77a;
+  box-shadow:0 0 0 1.5px #4a2c0a,0 3px 6px #0009,inset 0 1px 0 #ffffff33;text-shadow:0 1px 0 #0008;white-space:nowrap}
+.flagbtn svg{width:17px;height:17px;flex:0 0 auto;overflow:visible}
+.flagbtn .pano{transform-origin:4px 4px;animation:tremula 1.6s ease-in-out infinite}
+@keyframes tremula{0%,100%{transform:skewY(0) scaleX(1)}50%{transform:skewY(-7deg) scaleX(.92)}}
+.flagbtn:hover,.flagbtn:focus-visible{background:linear-gradient(180deg,#8a3a52,#4a1a30);border-color:#ffe08a}
+.flagbtn:active{translate:0 1px}
+.land .flagbtn{left:0;top:calc(50% + 23px);font-size:10px;padding:2px 7px 2px 5px}
+.land .flagbtn svg{width:14px;height:14px}
+@media (prefers-reduced-motion:reduce){.flagbtn .pano{animation:none}}
 
 /* ---------- fim de partida: o lado de quem perdeu desce, treme e racha ---------- */
 .racha{position:absolute;inset:4%;background:url('./img/racha.svg') center/100% 100% no-repeat;opacity:0;pointer-events:none;z-index:1;
@@ -636,3 +645,10 @@ body:not(.land) .board{flex:0 0 auto;height:min(54vh,44vw)}
 .zoom .z-rar{display:flex;align-items:center;justify-content:center;gap:5px}
 .zoom .z-rar .gema{position:relative;top:auto;left:auto;translate:none}
 @media (prefers-reduced-motion:reduce){.card.r-l,.r-l .gema i{animation:none}}
+
+/* habilidades no canto de cima à esquerda da casa: a criatura fica no meio e não cobre os ícones */
+.kws{top:8%;left:5px;bottom:auto;transform:none;flex-wrap:wrap;max-width:46%;gap:1px}
+.land .kws{top:7%;left:4px}
+.btn.desiste{display:flex;align-items:center;justify-content:center;gap:6px}
+.btn.desiste svg{width:20px;height:20px;overflow:visible}
+.btn.desiste .pano{transform-origin:4px 4px;animation:tremula 1.6s ease-in-out infinite}
