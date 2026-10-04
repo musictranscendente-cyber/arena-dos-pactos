@@ -23,6 +23,10 @@ export interface View {
   zoom?: Zoom | null;
   /** Mostrar a mensagem de ajuda (só quando o jogador toca no ícone de informação). */
   info?: boolean;
+  /** Fim de partida: o lado de quem perdeu afunda, treme e racha ('anim'); depois fica parado assim ('fixo'). */
+  fim?: 'anim' | 'fixo' | null;
+  /** Perguntando se o jogador quer mesmo desistir. */
+  confirmaDesistir?: boolean;
 }
 
 export interface Zoom {
@@ -165,8 +169,11 @@ function cellHtml(v: View, side: Side, l: number, d: number): string {
 function boardHtml(v: View): string {
   const { s } = v;
   const pr = RACES[s.p.sign], er = RACES[s.e.sign];
-  let h = `<div class="board" style="--prc:${pr.c};--erc:${er.c}"><div class="plat mine" data-g="${pr.g}\uFE0E" style="--rc:${pr.c}"></div>`
-    + `<div class="chasm"></div><div class="plat theirs" data-g="${er.g}\uFE0E" style="--rc:${er.c}"></div>`;
+  // quem perdeu: o lado dele desce, treme e racha (empate: os dois)
+  const caiu = (side: Side) => s.phase === 'over' && v.fim && (s.result === 'draw' || (s.result !== null && s.result !== side));
+  const fim = (['p', 'e'] as const).filter(caiu).map(x => ` desaba-${x}`).join('') + (v.fim === 'fixo' ? ' desabado' : '');
+  let h = `<div class="board${fim}" style="--prc:${pr.c};--erc:${er.c}"><div class="plat mine" data-g="${pr.g}\uFE0E" style="--rc:${pr.c}"><i class="racha"></i></div>`
+    + `<div class="chasm"></div><div class="plat theirs" data-g="${er.g}\uFE0E" style="--rc:${er.c}"><i class="racha"></i></div>`;
   for (let l = 0; l < 3; l++) {
     for (let d = 0; d < 3; d++) h += cellHtml(v, 'p', l, d) + cellHtml(v, 'e', l, d);
   }
@@ -187,8 +194,9 @@ function heroCard(s: GameState, side: Side): string {
 }
 
 function hudHtml(s: GameState): string {
+  const flag = s.phase === 'plan' ? `<button class="flagbtn" data-act="desistir" aria-label="${T.desistir}" title="${T.desistir}">🏳️</button>` : '';
   return `<div class="hud">${heroCard(s, 'p')}`
-    + `<div class="vs"><button class="rotbtn" data-act="rot" aria-label="${T.alternarDeitado}">⟳</button><span class="vsb">VS</span><span class="rd">${T.rodadaN(s.round)}<button class="infobtn" data-act="info" aria-label="${T.info}">i</button></span></div>`
+    + `<div class="vs"><span class="vsbtns"><button class="rotbtn" data-act="rot" aria-label="${T.alternarDeitado}">⟳</button>${flag}</span><span class="vsb">VS</span><span class="rd">${T.rodadaN(s.round)}<button class="infobtn" data-act="info" aria-label="${T.info}">i</button></span></div>`
     + `${heroCard(s, 'e')}</div>`;
 }
 
@@ -270,9 +278,16 @@ export function startHtml(now: Date): string {
   </div></div>`;
 }
 
+/** Pergunta antes de desistir, para não sair da batalha por um toque sem querer. */
+export function desistirHtml(): string {
+  return `<div class="ov"><div class="panel"><h2>${T.desistirPergunta}</h2><p>${T.desistirAviso}</p>`
+    + `<div class="acts2"><button class="btn rc" data-act="desistir-sim">${T.desistirSim}</button><button class="btn go" data-act="desistir-nao">${T.desistirNao}</button></div></div></div>`;
+}
+
 export function endHtml(s: GameState): string {
   const t = s.result === 'p' ? T.vitoria : s.result === 'draw' ? T.empate : T.derrota;
-  const p = s.result === 'p' ? T.venceu(RACES[s.p.sign].n, RACES[s.e.sign].n)
+  const p = s.surrendered === 'p' ? T.voceDesistiu : s.surrendered === 'e' ? T.rivalDesistiu
+    : s.result === 'p' ? T.venceu(RACES[s.p.sign].n, RACES[s.e.sign].n)
     : s.result === 'draw' ? T.caíramJuntos : T.rivalVenceu(RACES[s.e.sign].n);
   return `<div class="ov"><div class="panel"><h2>${t}</h2><p>${p}</p><p>${T.rodadasJogadas(s.round)}</p>`
     + `<div class="acts2"><button class="btn go" data-act="again">${T.revanche}</button><button class="btn rc" data-act="menu">${T.trocarSigno}</button></div></div></div>`;

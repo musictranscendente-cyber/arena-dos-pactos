@@ -4,10 +4,10 @@ import type { Signo } from '../data/schema';
 import { ORDER } from '../data/signos';
 import { cardText, T } from '../data/textos';
 import {
-  applyAction, costOf, effAtk, newGame, planTurn, resolveBattle, Rng,
+  applyAction, costOf, effAtk, newGame, planTurn, resolveBattle, Rng, surrender,
   type Action, type Frame, type GameEvent, type GameState, type Side, type Target,
 } from '../engine';
-import { ATK_MS, endHtml, galleryHtml, gameHtml, startHtml, type View, type Zoom } from './desenho';
+import { ATK_MS, desistirHtml, endHtml, galleryHtml, gameHtml, startHtml, type View, type Zoom } from './desenho';
 import { toggleRot, tryLandscape } from './orientacao';
 import { efeitoGeral, efeitosDeMagia, EXTRA_GERAL_MS, MAGIA_MS } from './efeitoMagia';
 import { precarregarVisiveis } from './precarga';
@@ -38,6 +38,10 @@ interface Match {
   base: GameState;
   /** Jogadas feitas nesta rodada; bi = posição da carta na mão do começo da rodada. */
   plan: { bi: number; a: Action }[];
+  /** Fim de partida: 'caindo' enquanto o lado de quem perdeu desaba; 'pronto' quando aparece o resultado. */
+  fim?: 'caindo' | 'pronto';
+  /** Perguntando se o jogador quer desistir. */
+  confirma?: boolean;
   /** Criatura do tabuleiro aberta grande para ver os detalhes. */
   inspect: Target | null;
 }
@@ -183,7 +187,7 @@ async function battle(): Promise<void> {
   m.striking = null;
   m.g = state;
   const tick = frames.find(f => f.kind === 'tick');
-  if (state.phase === 'over') { m.shown = state; m.busy = false; render(); return; }
+  if (state.phase === 'over') { m.shown = state; m.busy = false; fimDeJogo(m); return; }
   const mortos = capturarMortos(tick?.events ?? []);
   beginPlanning(tick?.events ?? []);
   soltarMortos(mortos);
@@ -227,6 +231,8 @@ function fxText(e: GameEvent): [string, string, string] | null {
 
 /** Tempo da animação de morte (ms); igual ao CSS (.unit.morrendo). */
 const MORTE_MS = 1400;
+/** Tempo do lado de quem perdeu desabando antes de aparecer o resultado. */
+const DESABA_MS = 2200;
 /** Criaturas morrendo: continuam na tela até a animação acabar, mesmo se a tela for redesenhada. */
 let morrendo: { id: string; el: HTMLElement; t0: number }[] = [];
 
@@ -347,8 +353,9 @@ function render(): void {
     canUndo: !M.busy && M.g.phase === 'plan' && M.plan.length > 0,
     zoom: zoomAtual(M),
     info: infoAberta,
+    fim: M.g.phase !== 'over' || M.busy ? null : M.fim === 'pronto' ? 'fixo' : 'anim',
   };
-  root.innerHTML = gameHtml(v) + (M.g.phase === 'over' && !M.busy ? endHtml(M.g) : '');
+  root.innerHTML = gameHtml(v) + (M.confirma ? desistirHtml() : '') + (M.g.phase === 'over' && M.fim === 'pronto' ? endHtml(M.g) : '');
   reporMortos();
   const h2 = root.querySelector('.hand');
   if (h2) h2.scrollLeft = sl;
@@ -372,6 +379,13 @@ function zoomAtual(m: Match): Zoom | null {
     return { cid: u.cid, atk: effAtk(m.g[side].board, l, u), hp: u.hp, lado: side === 'p' ? 'e' : 'p' };
   }
   return null;
+}
+
+/** Fim de partida: primeiro o lado de quem perdeu desce, treme e racha; depois aparece o resultado. */
+function fimDeJogo(m: Match): void {
+  m.fim = 'caindo';
+  render();
+  setTimeout(() => { if (M === m) { m.fim = 'pronto'; render(); } }, DESABA_MS);
 }
 
 /** Faixa grande "Rodada N" atravessando a tela no começo de cada rodada. */
@@ -407,6 +421,15 @@ function onClick(ev: Event): void {
   if (a === 'pick') { void tryLandscape(); startMatch(t.dataset.r as Signo); return; }
   if (a === 'again' && M) { startMatch(M.g.p.sign); return; }
   if (a === 'menu') { M = null; render(); return; }
+  if (a === 'desistir' && M && !M.busy && M.g.phase === 'plan') { M.confirma = true; M.sel = null; M.inspect = null; render(); return; }
+  if (a === 'desistir-nao' && M) { M.confirma = false; render(); return; }
+  if (a === 'desistir-sim' && M && M.confirma) {
+    M.confirma = false;
+    // as jogadas ainda não confirmadas desta rodada não contam: desiste a partir do começo do planejamento
+    const r = surrender(M.base, 'p');
+    if (r.ok) { M.g = M.shown = r.state; M.msg = T.voceDesistiu; fimDeJogo(M); }
+    return;
+  }
 
   const m = M;
   if (!m || m.busy || m.g.phase !== 'plan') return;

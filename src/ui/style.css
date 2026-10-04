@@ -567,3 +567,39 @@ body:not(.land) .board{flex:0 0 auto;height:min(54vh,44vw)}
 
 /* ataque, vida e habilidades sempre na frente da criatura */
 .unit .a,.unit .h,.unit .kws{z-index:6}
+
+/* ---------- desistir ---------- */
+.vsbtns{display:flex;gap:4px}
+.flagbtn{font:inherit;background:var(--glass);color:#fff;border:1px solid var(--line);border-radius:8px;padding:1px 7px;font-size:12px;line-height:19px;cursor:pointer}
+
+/* ---------- fim de partida: o lado de quem perdeu desce, treme e racha ---------- */
+.racha{position:absolute;inset:4%;background:url('./img/racha.svg') center/100% 100% no-repeat;opacity:0;pointer-events:none;z-index:1;
+  filter:drop-shadow(0 0 3px #ff9a4a88)}
+.board.desaba-p .plat.mine,.board.desaba-p .cell.mine,
+.board.desaba-e .plat.theirs,.board.desaba-e .cell.theirs{animation:desaba 1.9s cubic-bezier(.3,0,.6,1) forwards}
+.board.desaba-p .plat.mine .racha,.board.desaba-e .plat.theirs .racha{animation:racha 1.9s ease-out forwards}
+/* cada laje também racha, por baixo da criatura */
+.board.desaba-p .cell.mine,.board.desaba-e .cell.theirs{background-image:url('./img/racha.svg'),url('./img/laje.webp');background-size:0 0,100% 100%;background-position:center;background-repeat:no-repeat}
+.board.desaba-p .cell.mine:nth-child(odd),.board.desaba-e .cell.theirs:nth-child(odd){animation-delay:.08s}
+.board.desaba-p .cell.mine:nth-child(4n),.board.desaba-e .cell.theirs:nth-child(4n+1){background-image:url('./img/racha2.svg'),url('./img/laje.webp')}
+.board.desaba-p .cell.mine{animation-name:desaba,laje-racha}.board.desaba-e .cell.theirs{animation-name:desaba,laje-racha}
+.board.desaba-p .cell.mine .unit,.board.desaba-e .cell.theirs .unit{animation:apaga 1.9s ease-in forwards}
+/* depois que o resultado aparece, fica parado no estado final (sem repetir a animação) */
+.board.desabado.desaba-p .plat.mine,.board.desabado.desaba-p .cell.mine,
+.board.desabado.desaba-e .plat.theirs,.board.desabado.desaba-e .cell.theirs{animation:none;translate:0 22px;filter:brightness(.62) saturate(.7)}
+.board.desabado.desaba-p .cell.mine,.board.desabado.desaba-e .cell.theirs{background-size:100% 100%,100% 100%}
+.board.desabado .racha{animation:none}
+.board.desabado.desaba-p .plat.mine .racha,.board.desabado.desaba-e .plat.theirs .racha{opacity:1}
+.board.desabado.desaba-p .cell.mine .unit,.board.desabado.desaba-e .cell.theirs .unit{animation:none;opacity:.45;filter:grayscale(.7)}
+@keyframes desaba{
+  0%{translate:0 0;filter:none}
+  8%{translate:-5px 1px}16%{translate:5px -1px}24%{translate:-6px 2px}32%{translate:6px 0}
+  40%{translate:-4px 3px}48%{translate:4px 4px}56%{translate:-2px 6px}
+  70%{translate:0 14px;filter:brightness(.8) saturate(.85)}
+  85%{translate:0 24px}
+  100%{translate:0 22px;filter:brightness(.62) saturate(.7)}}
+@keyframes racha{0%,20%{opacity:0;clip-path:circle(0 at 52% 48%)}60%{opacity:1}100%{opacity:1;clip-path:circle(75% at 52% 48%)}}
+@keyframes laje-racha{0%,25%{background-size:0 0,100% 100%}55%,100%{background-size:100% 100%,100% 100%}}
+@keyframes apaga{0%,40%{opacity:1;filter:none}100%{opacity:.45;filter:grayscale(.7)}}
+@media (prefers-reduced-motion:reduce){
+  .board.desaba-p .plat.mine,.board.desaba-p .cell.mine,.board.desaba-e .plat.theirs,.board.desaba-e .cell.theirs{animation-duration:.01s}}

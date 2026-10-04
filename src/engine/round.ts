@@ -27,6 +27,18 @@ export function newGame(opts: NewGameOptions): { state: GameState; frames: Frame
   return { state: ctx.s, frames: ctx.frames };
 }
 
+/** Desistir: quem desiste perde na hora (só durante o planejamento). */
+export function surrender(state: GameState, side: Side): ActionResult {
+  if (state.phase !== 'plan') return { ok: false, reason: 'fase' };
+  const s = structuredClone(state);
+  const ctx = new Ctx(s, false);
+  s.phase = 'over';
+  s.result = side === 'p' ? 'e' : 'p';
+  s.surrendered = side;
+  ctx.emit({ t: 'GameOver', result: s.result, surrendered: side });
+  return { ok: true, state: s, events: ctx.flush() };
+}
+
 /** Início de rodada de um lado: mana, Ascensão/Cura, Veneno, compra. */
 function tickSide(ctx: Ctx, side: Side): void {
   const P = ctx.s[side];

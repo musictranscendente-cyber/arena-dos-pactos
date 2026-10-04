@@ -121,6 +121,13 @@ export const T = {
   caíramJuntos: 'Os dois heróis caíram juntos.',
   rodadasJogadas: (n: number) => `Rodadas jogadas: ${n}`,
   revanche: 'Revanche',
+  desistir: 'Desistir da batalha',
+  desistirPergunta: 'Desistir?',
+  desistirAviso: 'Se desistir, você perde esta batalha.',
+  desistirSim: '🏳️ Desistir',
+  desistirNao: 'Continuar lutando',
+  voceDesistiu: 'Você desistiu da batalha.',
+  rivalDesistiu: 'O rival desistiu da batalha.',
   trocarSigno: 'Trocar signo',
   alternarDeitado: 'Alternar modo deitado',
 };

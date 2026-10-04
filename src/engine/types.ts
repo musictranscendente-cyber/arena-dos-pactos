@@ -66,6 +66,8 @@ export interface GameState {
   round: number;
   phase: Phase;
   result: Result | null;
+  /** Lado que desistiu da batalha (se a partida acabou assim). */
+  surrendered?: Side;
   /** Estado do gerador aleatório com semente. */
   rng: number;
   /** Contador de ids (criaturas e cartas na mão). */
@@ -101,7 +103,7 @@ export type GameEvent =
   | { t: 'UnitReturnedToHand'; side: Side; l: number; d: number; cid: string }
   | { t: 'HeroDamaged'; side: Side; amount: number }
   | { t: 'HeroHealed'; side: Side; amount: number }
-  | { t: 'GameOver'; result: Result };
+  | { t: 'GameOver'; result: Result; surrendered?: Side };
 
 /** Um "quadro" da Batalha: os eventos que aconteceram juntos e como ficou a mesa depois. */
 export interface Frame {

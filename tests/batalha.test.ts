@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { resolveBattle } from '../src/engine/battle';
-import { applyAction, isValidTarget, newGame } from '../src/engine/round';
+import { applyAction, isValidTarget, newGame, surrender } from '../src/engine/round';
 import { planTurn } from '../src/engine/ai/simples';
 import { Rng } from '../src/engine/rng';
 import { HAND_MAX, HERO_HP, MAX_MANA, type GameEvent } from '../src/engine/types';
@@ -231,5 +231,19 @@ describe('IA', () => {
     const a = play(), b = play();
     expect(a.phase).toBe('over');
     expect(a).toEqual(b);
+  });
+});
+
+describe('Desistir', () => {
+  it('quem desiste perde na hora e o estado original não muda', () => {
+    const s = blank();
+    const r = surrender(s, 'p');
+    if (!r.ok) throw new Error();
+    expect(r.state.phase).toBe('over');
+    expect(r.state.result).toBe('e');
+    expect(r.state.surrendered).toBe('p');
+    expect(r.events).toContainEqual({ t: 'GameOver', result: 'e', surrendered: 'p' });
+    expect(s.phase).toBe('plan');
+    expect(surrender(r.state, 'e').ok).toBe(false);
   });
 });
