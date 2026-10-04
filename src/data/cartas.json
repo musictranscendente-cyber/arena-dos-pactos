@@ -58,7 +58,7 @@
   "race": "aries",
   "type": "unit",
   "cost": 2,
-  "atk": 3,
+  "atk": 2,
   "hp": 1,
   "kw": [
    "investida"
@@ -86,8 +86,8 @@
   "race": "aries",
   "type": "unit",
   "cost": 2,
-  "atk": 2,
-  "hp": 2,
+  "atk": 1,
+  "hp": 1,
   "kw": [
    "investida"
   ],
@@ -100,7 +100,7 @@
   "race": "aries",
   "type": "unit",
   "cost": 2,
-  "atk": 3,
+  "atk": 2,
   "hp": 1,
   "kw": [
    "investida"
@@ -129,7 +129,7 @@
   "type": "unit",
   "cost": 3,
   "atk": 3,
-  "hp": 3,
+  "hp": 1,
   "kw": [
    "investida"
   ],
@@ -154,8 +154,8 @@
   "race": "aries",
   "type": "unit",
   "cost": 3,
-  "atk": 3,
-  "hp": 3,
+  "atk": 2,
+  "hp": 2,
   "kw": [
    "investida"
   ],
@@ -182,8 +182,8 @@
   "race": "aries",
   "type": "unit",
   "cost": 3,
-  "atk": 4,
-  "hp": 2,
+  "atk": 3,
+  "hp": 1,
   "kw": [
    "investida"
   ],
@@ -211,7 +211,7 @@
   "type": "unit",
   "cost": 4,
   "atk": 4,
-  "hp": 4,
+  "hp": 2,
   "kw": [
    "investida"
   ],
@@ -236,8 +236,8 @@
   "race": "aries",
   "type": "unit",
   "cost": 4,
-  "atk": 4,
-  "hp": 4,
+  "atk": 3,
+  "hp": 3,
   "kw": [
    "investida"
   ],
@@ -264,8 +264,8 @@
   "race": "aries",
   "type": "unit",
   "cost": 5,
-  "atk": 6,
-  "hp": 3,
+  "atk": 5,
+  "hp": 2,
   "kw": [
    "investida"
   ],
@@ -292,8 +292,8 @@
   "race": "aries",
   "type": "unit",
   "cost": 6,
-  "atk": 7,
-  "hp": 5,
+  "atk": 6,
+  "hp": 4,
   "kw": [
    "investida"
   ],
@@ -318,8 +318,8 @@
   "race": "aries",
   "type": "unit",
   "cost": 7,
-  "atk": 8,
-  "hp": 7,
+  "atk": 7,
+  "hp": 6,
   "kw": [
    "investida",
    "escudo"
@@ -333,8 +333,8 @@
   "race": "aries",
   "type": "unit",
   "cost": 8,
-  "atk": 10,
-  "hp": 7,
+  "atk": 9,
+  "hp": 6,
   "kw": [
    "investida",
    "perfurar"
@@ -406,7 +406,7 @@
   "type": "unit",
   "cost": 1,
   "atk": 1,
-  "hp": 1,
+  "hp": 3,
   "kw": [
    "furia"
   ],
@@ -434,7 +434,7 @@
   "type": "unit",
   "cost": 1,
   "atk": 1,
-  "hp": 1,
+  "hp": 3,
   "kw": [
    "furia"
   ],
@@ -459,8 +459,8 @@
   "race": "touro",
   "type": "unit",
   "cost": 2,
-  "atk": 2,
-  "hp": 2,
+  "atk": 3,
+  "hp": 3,
   "kw": [
    "furia"
   ],
@@ -487,8 +487,8 @@
   "race": "touro",
   "type": "unit",
   "cost": 2,
-  "atk": 1,
-  "hp": 3,
+  "atk": 2,
+  "hp": 4,
   "kw": [
    "furia"
   ],
@@ -501,8 +501,8 @@
   "race": "touro",
   "type": "unit",
   "cost": 2,
-  "atk": 2,
-  "hp": 2,
+  "atk": 3,
+  "hp": 3,
   "kw": [
    "furia"
   ],
@@ -529,8 +529,8 @@
   "race": "touro",
   "type": "unit",
   "cost": 3,
-  "atk": 2,
-  "hp": 4,
+  "atk": 3,
+  "hp": 5,
   "kw": [
    "furia"
   ],
@@ -556,7 +556,7 @@
   "type": "unit",
   "cost": 3,
   "atk": 2,
-  "hp": 4,
+  "hp": 6,
   "kw": [
    "furia"
   ],
@@ -584,7 +584,7 @@
   "type": "unit",
   "cost": 3,
   "atk": 3,
-  "hp": 3,
+  "hp": 5,
   "kw": [
    "furia"
   ],
@@ -612,7 +612,7 @@
   "type": "unit",
   "cost": 4,
   "atk": 3,
-  "hp": 5,
+  "hp": 7,
   "kw": [
    "furia"
   ],
@@ -637,8 +637,8 @@
   "race": "touro",
   "type": "unit",
   "cost": 4,
-  "atk": 2,
-  "hp": 6,
+  "atk": 3,
+  "hp": 7,
   "kw": [
    "furia"
   ],
@@ -666,7 +666,7 @@
   "type": "unit",
   "cost": 5,
   "atk": 4,
-  "hp": 5,
+  "hp": 7,
   "kw": [
    "furia"
   ],
@@ -693,8 +693,8 @@
   "race": "touro",
   "type": "unit",
   "cost": 6,
-  "atk": 4,
-  "hp": 8,
+  "atk": 5,
+  "hp": 9,
   "kw": [
    "furia"
   ],
@@ -720,7 +720,7 @@
   "type": "unit",
   "cost": 7,
   "atk": 5,
-  "hp": 10,
+  "hp": 12,
   "kw": [
    "furia",
    "vampirico"
@@ -734,8 +734,8 @@
   "race": "touro",
   "type": "unit",
   "cost": 8,
-  "atk": 6,
-  "hp": 11,
+  "atk": 7,
+  "hp": 12,
   "kw": [
    "furia",
    "escudo"
@@ -818,7 +818,7 @@
   "type": "unit",
   "cost": 1,
   "atk": 2,
-  "hp": 1,
+  "hp": 2,
   "kw": [
    "distancia"
   ],
@@ -868,7 +868,7 @@
   "type": "unit",
   "cost": 2,
   "atk": 1,
-  "hp": 3,
+  "hp": 1,
   "kw": [
    "reflexo"
   ],
@@ -882,7 +882,7 @@
   "type": "unit",
   "cost": 2,
   "atk": 1,
-  "hp": 2,
+  "hp": 1,
   "kw": [],
   "e": "🤹",
   "on": "twin",
@@ -905,8 +905,8 @@
   "race": "gemeos",
   "type": "unit",
   "cost": 2,
-  "atk": 1,
-  "hp": 3,
+  "atk": 2,
+  "hp": 4,
   "kw": [
    "distancia"
   ],
@@ -919,8 +919,8 @@
   "race": "gemeos",
   "type": "unit",
   "cost": 3,
-  "atk": 2,
-  "hp": 3,
+  "atk": 1,
+  "hp": 2,
   "kw": [],
   "e": "🪞",
   "on": "twin",
@@ -943,8 +943,8 @@
   "race": "gemeos",
   "type": "unit",
   "cost": 3,
-  "atk": 2,
-  "hp": 3,
+  "atk": 1,
+  "hp": 2,
   "kw": [],
   "e": "📜",
   "on": "twin",
@@ -955,8 +955,8 @@
   "race": "gemeos",
   "type": "unit",
   "cost": 3,
-  "atk": 3,
-  "hp": 3,
+  "atk": 2,
+  "hp": 2,
   "kw": [
    "reflexo"
   ],
@@ -969,8 +969,8 @@
   "race": "gemeos",
   "type": "unit",
   "cost": 3,
-  "atk": 3,
-  "hp": 2,
+  "atk": 2,
+  "hp": 1,
   "kw": [],
   "e": "🌬️",
   "on": "twin",
@@ -981,8 +981,8 @@
   "race": "gemeos",
   "type": "unit",
   "cost": 4,
-  "atk": 3,
-  "hp": 5,
+  "atk": 4,
+  "hp": 6,
   "kw": [
    "distancia"
   ],
@@ -995,8 +995,8 @@
   "race": "gemeos",
   "type": "unit",
   "cost": 4,
-  "atk": 3,
-  "hp": 4,
+  "atk": 2,
+  "hp": 3,
   "kw": [],
   "e": "🤸",
   "on": "twin",
@@ -1019,7 +1019,7 @@
   "race": "gemeos",
   "type": "unit",
   "cost": 4,
-  "atk": 3,
+  "atk": 1,
   "hp": 4,
   "kw": [],
   "e": "🃏",
@@ -1031,8 +1031,8 @@
   "race": "gemeos",
   "type": "unit",
   "cost": 5,
-  "atk": 5,
-  "hp": 5,
+  "atk": 4,
+  "hp": 4,
   "kw": [
    "reflexo"
   ],
@@ -1045,8 +1045,8 @@
   "race": "gemeos",
   "type": "unit",
   "cost": 5,
-  "atk": 5,
-  "hp": 4,
+  "atk": 4,
+  "hp": 3,
   "kw": [],
   "e": "🌪️",
   "on": "twin",
@@ -1057,8 +1057,8 @@
   "race": "gemeos",
   "type": "unit",
   "cost": 5,
-  "atk": 4,
-  "hp": 6,
+  "atk": 5,
+  "hp": 7,
   "kw": [
    "distancia"
   ],
@@ -1071,8 +1071,8 @@
   "race": "gemeos",
   "type": "unit",
   "cost": 6,
-  "atk": 5,
-  "hp": 6,
+  "atk": 4,
+  "hp": 5,
   "kw": [],
   "e": "🦅",
   "on": "twin",
@@ -1095,8 +1095,8 @@
   "race": "gemeos",
   "type": "unit",
   "cost": 7,
-  "atk": 6,
-  "hp": 8,
+  "atk": 4,
+  "hp": 6,
   "kw": [
    "reflexo"
   ],
@@ -1110,7 +1110,7 @@
   "type": "unit",
   "cost": 8,
   "atk": 7,
-  "hp": 9,
+  "hp": 8,
   "kw": [
    "distancia"
   ],
@@ -1302,8 +1302,8 @@
   "race": "cancer",
   "type": "unit",
   "cost": 3,
-  "atk": 3,
-  "hp": 3,
+  "atk": 2,
+  "hp": 4,
   "kw": [
    "carapaca"
   ],
@@ -1357,7 +1357,7 @@
   "type": "unit",
   "cost": 3,
   "atk": 3,
-  "hp": 3,
+  "hp": 2,
   "kw": [
    "carapaca"
   ],
@@ -1384,7 +1384,7 @@
   "race": "cancer",
   "type": "unit",
   "cost": 4,
-  "atk": 4,
+  "atk": 3,
   "hp": 4,
   "kw": [
    "carapaca"
@@ -1411,7 +1411,7 @@
   "type": "unit",
   "cost": 4,
   "atk": 3,
-  "hp": 5,
+  "hp": 4,
   "kw": [
    "carapaca"
   ],
@@ -1438,7 +1438,7 @@
   "race": "cancer",
   "type": "unit",
   "cost": 5,
-  "atk": 5,
+  "atk": 4,
   "hp": 4,
   "kw": [
    "carapaca"
@@ -1467,7 +1467,7 @@
   "type": "unit",
   "cost": 6,
   "atk": 5,
-  "hp": 7,
+  "hp": 6,
   "kw": [
    "carapaca"
   ],
@@ -1493,7 +1493,7 @@
   "type": "unit",
   "cost": 7,
   "atk": 6,
-  "hp": 9,
+  "hp": 8,
   "kw": [
    "carapaca",
    "vampirico"
@@ -1507,8 +1507,8 @@
   "race": "cancer",
   "type": "unit",
   "cost": 8,
-  "atk": 8,
-  "hp": 9,
+  "atk": 7,
+  "hp": 10,
   "kw": [
    "carapaca",
    "escudo"
@@ -1578,8 +1578,8 @@
   "race": "leao",
   "type": "unit",
   "cost": 1,
-  "atk": 1,
-  "hp": 1,
+  "atk": 2,
+  "hp": 2,
   "kw": [
    "lideranca"
   ],
@@ -1606,8 +1606,8 @@
   "race": "leao",
   "type": "unit",
   "cost": 1,
-  "atk": 1,
-  "hp": 1,
+  "atk": 2,
+  "hp": 2,
   "kw": [
    "lideranca"
   ],
@@ -1632,8 +1632,8 @@
   "race": "leao",
   "type": "unit",
   "cost": 2,
-  "atk": 3,
-  "hp": 1,
+  "atk": 4,
+  "hp": 2,
   "kw": [
    "lideranca"
   ],
@@ -1660,7 +1660,7 @@
   "race": "leao",
   "type": "unit",
   "cost": 2,
-  "atk": 2,
+  "atk": 4,
   "hp": 2,
   "kw": [
    "lideranca"
@@ -1674,8 +1674,8 @@
   "race": "leao",
   "type": "unit",
   "cost": 2,
-  "atk": 3,
-  "hp": 1,
+  "atk": 4,
+  "hp": 2,
   "kw": [
    "lideranca"
   ],
@@ -1702,7 +1702,7 @@
   "race": "leao",
   "type": "unit",
   "cost": 3,
-  "atk": 3,
+  "atk": 5,
   "hp": 3,
   "kw": [
    "lideranca"
@@ -1728,8 +1728,8 @@
   "race": "leao",
   "type": "unit",
   "cost": 3,
-  "atk": 3,
-  "hp": 3,
+  "atk": 4,
+  "hp": 4,
   "kw": [
    "lideranca"
   ],
@@ -1756,8 +1756,8 @@
   "race": "leao",
   "type": "unit",
   "cost": 3,
-  "atk": 4,
-  "hp": 2,
+  "atk": 5,
+  "hp": 3,
   "kw": [
    "lideranca"
   ],
@@ -1784,7 +1784,7 @@
   "race": "leao",
   "type": "unit",
   "cost": 4,
-  "atk": 4,
+  "atk": 6,
   "hp": 4,
   "kw": [
    "lideranca"
@@ -1810,8 +1810,8 @@
   "race": "leao",
   "type": "unit",
   "cost": 4,
-  "atk": 4,
-  "hp": 4,
+  "atk": 5,
+  "hp": 5,
   "kw": [
    "lideranca"
   ],
@@ -1838,8 +1838,8 @@
   "race": "leao",
   "type": "unit",
   "cost": 5,
-  "atk": 6,
-  "hp": 3,
+  "atk": 7,
+  "hp": 4,
   "kw": [
    "lideranca"
   ],
@@ -1866,8 +1866,8 @@
   "race": "leao",
   "type": "unit",
   "cost": 6,
-  "atk": 7,
-  "hp": 5,
+  "atk": 8,
+  "hp": 6,
   "kw": [
    "lideranca"
   ],
@@ -1892,8 +1892,8 @@
   "race": "leao",
   "type": "unit",
   "cost": 7,
-  "atk": 8,
-  "hp": 7,
+  "atk": 9,
+  "hp": 8,
   "kw": [
    "lideranca",
    "escudo"
@@ -1907,8 +1907,8 @@
   "race": "leao",
   "type": "unit",
   "cost": 8,
-  "atk": 10,
-  "hp": 7,
+  "atk": 11,
+  "hp": 8,
   "kw": [
    "lideranca",
    "perfurar"
@@ -1980,7 +1980,7 @@
   "type": "unit",
   "cost": 1,
   "atk": 1,
-  "hp": 1,
+  "hp": 2,
   "kw": [
    "cura"
   ],
@@ -2008,7 +2008,7 @@
   "type": "unit",
   "cost": 1,
   "atk": 1,
-  "hp": 1,
+  "hp": 2,
   "kw": [
    "cura"
   ],
@@ -2033,7 +2033,7 @@
   "race": "virgem",
   "type": "unit",
   "cost": 2,
-  "atk": 2,
+  "atk": 3,
   "hp": 2,
   "kw": [
    "cura"
@@ -2048,7 +2048,7 @@
   "type": "unit",
   "cost": 2,
   "atk": 1,
-  "hp": 3,
+  "hp": 1,
   "kw": [
    "reflexo"
   ],
@@ -2061,7 +2061,7 @@
   "race": "virgem",
   "type": "unit",
   "cost": 2,
-  "atk": 1,
+  "atk": 2,
   "hp": 3,
   "kw": [
    "cura"
@@ -2075,7 +2075,7 @@
   "race": "virgem",
   "type": "unit",
   "cost": 2,
-  "atk": 2,
+  "atk": 3,
   "hp": 2,
   "kw": [
    "cura"
@@ -2103,7 +2103,7 @@
   "race": "virgem",
   "type": "unit",
   "cost": 3,
-  "atk": 2,
+  "atk": 3,
   "hp": 4,
   "kw": [
    "cura"
@@ -2130,7 +2130,7 @@
   "type": "unit",
   "cost": 3,
   "atk": 2,
-  "hp": 4,
+  "hp": 5,
   "kw": [
    "cura"
   ],
@@ -2144,7 +2144,7 @@
   "type": "unit",
   "cost": 3,
   "atk": 2,
-  "hp": 4,
+  "hp": 2,
   "kw": [
    "reflexo"
   ],
@@ -2158,7 +2158,7 @@
   "type": "unit",
   "cost": 3,
   "atk": 3,
-  "hp": 3,
+  "hp": 4,
   "kw": [
    "cura"
   ],
@@ -2186,7 +2186,7 @@
   "type": "unit",
   "cost": 4,
   "atk": 3,
-  "hp": 5,
+  "hp": 6,
   "kw": [
    "cura"
   ],
@@ -2211,7 +2211,7 @@
   "race": "virgem",
   "type": "unit",
   "cost": 4,
-  "atk": 2,
+  "atk": 3,
   "hp": 6,
   "kw": [
    "cura"
@@ -2225,8 +2225,8 @@
   "race": "virgem",
   "type": "unit",
   "cost": 5,
-  "atk": 4,
-  "hp": 6,
+  "atk": 3,
+  "hp": 5,
   "kw": [
    "reflexo"
   ],
@@ -2240,7 +2240,7 @@
   "type": "unit",
   "cost": 5,
   "atk": 4,
-  "hp": 5,
+  "hp": 6,
   "kw": [
    "cura"
   ],
@@ -2267,7 +2267,7 @@
   "race": "virgem",
   "type": "unit",
   "cost": 6,
-  "atk": 4,
+  "atk": 5,
   "hp": 8,
   "kw": [
    "cura"
@@ -2308,7 +2308,7 @@
   "race": "virgem",
   "type": "unit",
   "cost": 8,
-  "atk": 6,
+  "atk": 7,
   "hp": 11,
   "kw": [
    "cura",
@@ -2434,7 +2434,7 @@
   "type": "unit",
   "cost": 2,
   "atk": 2,
-  "hp": 2,
+  "hp": 1,
   "kw": [
    "reflexo"
   ],
@@ -2447,8 +2447,8 @@
   "race": "libra",
   "type": "unit",
   "cost": 2,
-  "atk": 1,
-  "hp": 3,
+  "atk": 2,
+  "hp": 4,
   "kw": [
    "distancia"
   ],
@@ -2461,8 +2461,8 @@
   "race": "libra",
   "type": "unit",
   "cost": 2,
-  "atk": 2,
-  "hp": 2,
+  "atk": 1,
+  "hp": 1,
   "kw": [
    "reflexo"
   ],
@@ -2476,7 +2476,7 @@
   "type": "unit",
   "cost": 2,
   "atk": 2,
-  "hp": 2,
+  "hp": 1,
   "kw": [
    "reflexo"
   ],
@@ -2503,8 +2503,8 @@
   "race": "libra",
   "type": "unit",
   "cost": 3,
-  "atk": 3,
-  "hp": 3,
+  "atk": 2,
+  "hp": 2,
   "kw": [
    "reflexo"
   ],
@@ -2529,8 +2529,8 @@
   "race": "libra",
   "type": "unit",
   "cost": 3,
-  "atk": 2,
-  "hp": 4,
+  "atk": 1,
+  "hp": 3,
   "kw": [
    "reflexo"
   ],
@@ -2544,7 +2544,7 @@
   "type": "unit",
   "cost": 3,
   "atk": 3,
-  "hp": 3,
+  "hp": 5,
   "kw": [
    "distancia"
   ],
@@ -2558,7 +2558,7 @@
   "type": "unit",
   "cost": 3,
   "atk": 3,
-  "hp": 3,
+  "hp": 1,
   "kw": [
    "reflexo"
   ],
@@ -2585,8 +2585,8 @@
   "race": "libra",
   "type": "unit",
   "cost": 4,
-  "atk": 4,
-  "hp": 4,
+  "atk": 3,
+  "hp": 3,
   "kw": [
    "reflexo"
   ],
@@ -2611,8 +2611,8 @@
   "race": "libra",
   "type": "unit",
   "cost": 4,
-  "atk": 3,
-  "hp": 5,
+  "atk": 2,
+  "hp": 4,
   "kw": [
    "reflexo"
   ],
@@ -2626,7 +2626,7 @@
   "type": "unit",
   "cost": 5,
   "atk": 5,
-  "hp": 5,
+  "hp": 7,
   "kw": [
    "distancia"
   ],
@@ -2639,8 +2639,8 @@
   "race": "libra",
   "type": "unit",
   "cost": 5,
-  "atk": 5,
-  "hp": 4,
+  "atk": 4,
+  "hp": 3,
   "kw": [
    "reflexo"
   ],
@@ -2667,8 +2667,8 @@
   "race": "libra",
   "type": "unit",
   "cost": 6,
-  "atk": 6,
-  "hp": 6,
+  "atk": 5,
+  "hp": 5,
   "kw": [
    "reflexo"
   ],
@@ -2708,8 +2708,8 @@
   "race": "libra",
   "type": "unit",
   "cost": 8,
-  "atk": 8,
-  "hp": 9,
+  "atk": 7,
+  "hp": 8,
   "kw": [
    "reflexo",
    "escudo"
@@ -2833,8 +2833,8 @@
   "race": "escorpiao",
   "type": "unit",
   "cost": 2,
-  "atk": 2,
-  "hp": 2,
+  "atk": 3,
+  "hp": 1,
   "kw": [
    "veneno"
   ],
@@ -2875,8 +2875,8 @@
   "race": "escorpiao",
   "type": "unit",
   "cost": 2,
-  "atk": 2,
-  "hp": 2,
+  "atk": 3,
+  "hp": 1,
   "kw": [
    "veneno"
   ],
@@ -2957,8 +2957,8 @@
   "race": "escorpiao",
   "type": "unit",
   "cost": 3,
-  "atk": 3,
-  "hp": 3,
+  "atk": 4,
+  "hp": 2,
   "kw": [
    "veneno"
   ],
@@ -3067,8 +3067,8 @@
   "race": "escorpiao",
   "type": "unit",
   "cost": 6,
-  "atk": 5,
-  "hp": 7,
+  "atk": 6,
+  "hp": 6,
   "kw": [
    "veneno"
   ],
@@ -3178,8 +3178,8 @@
   "race": "sagitario",
   "type": "unit",
   "cost": 1,
-  "atk": 1,
-  "hp": 1,
+  "atk": 2,
+  "hp": 2,
   "kw": [
    "distancia"
   ],
@@ -3207,7 +3207,7 @@
   "type": "unit",
   "cost": 1,
   "atk": 1,
-  "hp": 1,
+  "hp": 3,
   "kw": [
    "distancia"
   ],
@@ -3232,8 +3232,8 @@
   "race": "sagitario",
   "type": "unit",
   "cost": 2,
-  "atk": 3,
-  "hp": 1,
+  "atk": 4,
+  "hp": 2,
   "kw": [
    "distancia"
   ],
@@ -3246,8 +3246,8 @@
   "race": "sagitario",
   "type": "unit",
   "cost": 2,
-  "atk": 2,
-  "hp": 2,
+  "atk": 1,
+  "hp": 1,
   "kw": [
    "investida"
   ],
@@ -3260,8 +3260,8 @@
   "race": "sagitario",
   "type": "unit",
   "cost": 2,
-  "atk": 2,
-  "hp": 2,
+  "atk": 3,
+  "hp": 3,
   "kw": [
    "distancia"
   ],
@@ -3274,8 +3274,8 @@
   "race": "sagitario",
   "type": "unit",
   "cost": 2,
-  "atk": 3,
-  "hp": 1,
+  "atk": 4,
+  "hp": 2,
   "kw": [
    "distancia"
   ],
@@ -3302,8 +3302,8 @@
   "race": "sagitario",
   "type": "unit",
   "cost": 3,
-  "atk": 3,
-  "hp": 3,
+  "atk": 4,
+  "hp": 4,
   "kw": [
    "distancia"
   ],
@@ -3328,8 +3328,8 @@
   "race": "sagitario",
   "type": "unit",
   "cost": 3,
-  "atk": 3,
-  "hp": 3,
+  "atk": 4,
+  "hp": 4,
   "kw": [
    "distancia"
   ],
@@ -3343,7 +3343,7 @@
   "type": "unit",
   "cost": 3,
   "atk": 3,
-  "hp": 3,
+  "hp": 1,
   "kw": [
    "investida"
   ],
@@ -3356,8 +3356,8 @@
   "race": "sagitario",
   "type": "unit",
   "cost": 3,
-  "atk": 4,
-  "hp": 2,
+  "atk": 5,
+  "hp": 3,
   "kw": [
    "distancia"
   ],
@@ -3384,8 +3384,8 @@
   "race": "sagitario",
   "type": "unit",
   "cost": 4,
-  "atk": 4,
-  "hp": 4,
+  "atk": 5,
+  "hp": 5,
   "kw": [
    "distancia"
   ],
@@ -3410,8 +3410,8 @@
   "race": "sagitario",
   "type": "unit",
   "cost": 4,
-  "atk": 4,
-  "hp": 4,
+  "atk": 5,
+  "hp": 5,
   "kw": [
    "distancia"
   ],
@@ -3424,8 +3424,8 @@
   "race": "sagitario",
   "type": "unit",
   "cost": 5,
-  "atk": 6,
-  "hp": 4,
+  "atk": 5,
+  "hp": 3,
   "kw": [
    "investida"
   ],
@@ -3438,8 +3438,8 @@
   "race": "sagitario",
   "type": "unit",
   "cost": 5,
-  "atk": 6,
-  "hp": 3,
+  "atk": 7,
+  "hp": 4,
   "kw": [
    "distancia"
   ],
@@ -3466,8 +3466,8 @@
   "race": "sagitario",
   "type": "unit",
   "cost": 6,
-  "atk": 7,
-  "hp": 5,
+  "atk": 8,
+  "hp": 6,
   "kw": [
    "distancia"
   ],
@@ -3508,7 +3508,7 @@
   "type": "unit",
   "cost": 8,
   "atk": 10,
-  "hp": 7,
+  "hp": 9,
   "kw": [
    "distancia",
    "perfurar"
@@ -3633,7 +3633,7 @@
   "type": "unit",
   "cost": 2,
   "atk": 2,
-  "hp": 1,
+  "hp": 2,
   "kw": [
    "ascensao"
   ],
@@ -3647,7 +3647,7 @@
   "type": "unit",
   "cost": 2,
   "atk": 1,
-  "hp": 3,
+  "hp": 5,
   "kw": [
    "furia"
   ],
@@ -3675,7 +3675,7 @@
   "type": "unit",
   "cost": 2,
   "atk": 2,
-  "hp": 1,
+  "hp": 2,
   "kw": [
    "ascensao"
   ],
@@ -3703,7 +3703,7 @@
   "type": "unit",
   "cost": 3,
   "atk": 2,
-  "hp": 3,
+  "hp": 4,
   "kw": [
    "ascensao"
   ],
@@ -3742,8 +3742,8 @@
   "race": "capricornio",
   "type": "unit",
   "cost": 3,
-  "atk": 2,
-  "hp": 4,
+  "atk": 3,
+  "hp": 5,
   "kw": [
    "furia"
   ],
@@ -3756,8 +3756,8 @@
   "race": "capricornio",
   "type": "unit",
   "cost": 3,
-  "atk": 2,
-  "hp": 3,
+  "atk": 3,
+  "hp": 2,
   "kw": [
    "ascensao"
   ],
@@ -3811,7 +3811,7 @@
   "type": "unit",
   "cost": 4,
   "atk": 2,
-  "hp": 5,
+  "hp": 6,
   "kw": [
    "ascensao"
   ],
@@ -3825,7 +3825,7 @@
   "type": "unit",
   "cost": 5,
   "atk": 4,
-  "hp": 6,
+  "hp": 8,
   "kw": [
    "furia"
   ],
@@ -3838,8 +3838,8 @@
   "race": "capricornio",
   "type": "unit",
   "cost": 5,
-  "atk": 3,
-  "hp": 5,
+  "atk": 4,
+  "hp": 4,
   "kw": [
    "ascensao"
   ],
@@ -3867,7 +3867,7 @@
   "type": "unit",
   "cost": 6,
   "atk": 4,
-  "hp": 7,
+  "hp": 8,
   "kw": [
    "ascensao"
   ],
@@ -3892,8 +3892,8 @@
   "race": "capricornio",
   "type": "unit",
   "cost": 7,
-  "atk": 4,
-  "hp": 10,
+  "atk": 5,
+  "hp": 11,
   "kw": [
    "ascensao",
    "furia"
@@ -3994,7 +3994,7 @@
   "type": "unit",
   "cost": 1,
   "atk": 2,
-  "hp": 1,
+  "hp": 2,
   "kw": [
    "distancia"
   ],
@@ -4089,8 +4089,8 @@
   "race": "aquario",
   "type": "unit",
   "cost": 2,
-  "atk": 1,
-  "hp": 3,
+  "atk": 2,
+  "hp": 4,
   "kw": [
    "distancia"
   ],
@@ -4104,7 +4104,7 @@
   "type": "unit",
   "cost": 3,
   "atk": 3,
-  "hp": 3,
+  "hp": 2,
   "kw": [
    "corrente"
   ],
@@ -4158,7 +4158,7 @@
   "type": "unit",
   "cost": 3,
   "atk": 3,
-  "hp": 3,
+  "hp": 2,
   "kw": [
    "corrente"
   ],
@@ -4171,8 +4171,8 @@
   "race": "aquario",
   "type": "unit",
   "cost": 4,
-  "atk": 3,
-  "hp": 5,
+  "atk": 4,
+  "hp": 6,
   "kw": [
    "distancia"
   ],
@@ -4185,7 +4185,7 @@
   "race": "aquario",
   "type": "unit",
   "cost": 4,
-  "atk": 4,
+  "atk": 3,
   "hp": 4,
   "kw": [
    "corrente"
@@ -4212,7 +4212,7 @@
   "type": "unit",
   "cost": 4,
   "atk": 3,
-  "hp": 5,
+  "hp": 4,
   "kw": [
    "corrente"
   ],
@@ -4253,8 +4253,8 @@
   "race": "aquario",
   "type": "unit",
   "cost": 5,
-  "atk": 4,
-  "hp": 6,
+  "atk": 5,
+  "hp": 7,
   "kw": [
    "distancia"
   ],
@@ -4267,7 +4267,7 @@
   "race": "aquario",
   "type": "unit",
   "cost": 6,
-  "atk": 6,
+  "atk": 5,
   "hp": 6,
   "kw": [
    "corrente"
@@ -4294,7 +4294,7 @@
   "type": "unit",
   "cost": 7,
   "atk": 6,
-  "hp": 9,
+  "hp": 8,
   "kw": [
    "corrente",
    "escudo"
@@ -4309,7 +4309,7 @@
   "type": "unit",
   "cost": 8,
   "atk": 8,
-  "hp": 9,
+  "hp": 10,
   "kw": [
    "corrente",
    "distancia"
@@ -4322,10 +4322,10 @@
   "name": "Raio Celeste",
   "race": "aquario",
   "type": "spell",
-  "cost": 2,
+  "cost": 3,
   "sp": "dmg",
   "e": "⚡",
-  "r": "c",
+  "r": "r",
   "kw": [],
   "v": 3
  },
@@ -4434,7 +4434,7 @@
   "type": "unit",
   "cost": 2,
   "atk": 2,
-  "hp": 2,
+  "hp": 1,
   "kw": [
    "ilusao"
   ],
@@ -4461,8 +4461,8 @@
   "race": "peixes",
   "type": "unit",
   "cost": 2,
-  "atk": 2,
-  "hp": 2,
+  "atk": 1,
+  "hp": 1,
   "kw": [
    "ilusao"
   ],
@@ -4476,7 +4476,7 @@
   "type": "unit",
   "cost": 2,
   "atk": 2,
-  "hp": 2,
+  "hp": 1,
   "kw": [
    "ilusao"
   ],
@@ -4503,8 +4503,8 @@
   "race": "peixes",
   "type": "unit",
   "cost": 3,
-  "atk": 3,
-  "hp": 3,
+  "atk": 2,
+  "hp": 2,
   "kw": [
    "ilusao"
   ],
@@ -4529,8 +4529,8 @@
   "race": "peixes",
   "type": "unit",
   "cost": 3,
-  "atk": 2,
-  "hp": 4,
+  "atk": 1,
+  "hp": 3,
   "kw": [
    "ilusao"
   ],
@@ -4558,7 +4558,7 @@
   "type": "unit",
   "cost": 3,
   "atk": 3,
-  "hp": 3,
+  "hp": 1,
   "kw": [
    "ilusao"
   ],
@@ -4585,8 +4585,8 @@
   "race": "peixes",
   "type": "unit",
   "cost": 4,
-  "atk": 4,
-  "hp": 4,
+  "atk": 3,
+  "hp": 3,
   "kw": [
    "ilusao"
   ],
@@ -4611,8 +4611,8 @@
   "race": "peixes",
   "type": "unit",
   "cost": 4,
-  "atk": 3,
-  "hp": 5,
+  "atk": 2,
+  "hp": 4,
   "kw": [
    "ilusao"
   ],
@@ -4625,8 +4625,8 @@
   "race": "peixes",
   "type": "unit",
   "cost": 5,
-  "atk": 4,
-  "hp": 6,
+  "atk": 5,
+  "hp": 5,
   "kw": [
    "veneno"
   ],
@@ -4639,8 +4639,8 @@
   "race": "peixes",
   "type": "unit",
   "cost": 5,
-  "atk": 5,
-  "hp": 4,
+  "atk": 4,
+  "hp": 3,
   "kw": [
    "ilusao"
   ],
@@ -4668,7 +4668,7 @@
   "type": "unit",
   "cost": 6,
   "atk": 5,
-  "hp": 7,
+  "hp": 5,
   "kw": [
    "ilusao"
   ],
@@ -4694,7 +4694,7 @@
   "type": "unit",
   "cost": 7,
   "atk": 6,
-  "hp": 9,
+  "hp": 8,
   "kw": [
    "ilusao",
    "veneno"
@@ -4708,8 +4708,8 @@
   "race": "peixes",
   "type": "unit",
   "cost": 8,
-  "atk": 8,
-  "hp": 9,
+  "atk": 7,
+  "hp": 8,
   "kw": [
    "ilusao",
    "vampirico"

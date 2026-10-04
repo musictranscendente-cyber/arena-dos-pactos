@@ -121,6 +121,7 @@ export const T = {
   caíramJuntos: 'Os dois heróis caíram juntos.',
   rodadasJogadas: (n: number) => `Rodadas jogadas: ${n}`,
   revanche: 'Revanche',
+  elemento: 'Elemento',
   desistir: 'Desistir da batalha',
   desistirPergunta: 'Desistir?',
   desistirAviso: 'Se desistir, você perde esta batalha.',

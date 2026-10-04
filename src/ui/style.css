@@ -605,3 +605,34 @@ body:not(.land) .board{flex:0 0 auto;height:min(54vh,44vw)}
 @keyframes apaga{0%,40%{opacity:1;filter:none}100%{opacity:.45;filter:grayscale(.7)}}
 @media (prefers-reduced-motion:reduce){
   .board.desaba-p .plat.mine,.board.desaba-p .cell.mine,.board.desaba-e .plat.theirs,.board.desaba-e .cell.theirs{animation-duration:.01s}}
+
+/* ---------- raridade e elemento bem visíveis na carta ---------- */
+/* moldura mais grossa e brilhante conforme a raridade */
+.card.r-c{box-shadow:0 0 0 2px var(--rr),0 0 0 4px #2a1d3d,0 6px 10px #0009}
+.card.r-r{box-shadow:0 0 0 3px var(--rr),0 0 0 5px #10284a,0 6px 10px #0009,0 0 10px #4f9be877}
+.card.r-e{box-shadow:0 0 0 3px var(--rr),0 0 0 5px #2a1046,0 6px 10px #0009,0 0 14px #b57cf0aa}
+.card.r-l{box-shadow:0 0 0 3px var(--rr),0 0 0 5px #4a2c0a,0 6px 10px #0009,0 0 18px #f2b93bcc;animation:lendaria 2.4s ease-in-out infinite}
+@keyframes lendaria{50%{box-shadow:0 0 0 3px #ffe08a,0 0 0 5px #4a2c0a,0 6px 10px #0009,0 0 26px #ffd25aee}}
+.card.sel{animation:none}
+/* gema da raridade, encaixada embaixo da arte */
+.gema{position:absolute;z-index:2;top:-8px;left:50%;translate:-50% 0;width:16px;height:16px;display:grid;place-items:center}
+.gema i{width:12px;height:12px;rotate:45deg;border-radius:2px;
+  background:linear-gradient(135deg,#fff 0,color-mix(in srgb,var(--rr) 70%,#fff) 25%,var(--rr) 55%,color-mix(in srgb,var(--rr) 55%,#000) 100%);
+  box-shadow:0 0 0 1.5px #1a1230,0 0 0 2.5px #f6d78b,0 1px 3px #000a}
+.r-e .gema i{box-shadow:0 0 0 1.5px #1a1230,0 0 0 2.5px #f6d78b,0 0 8px #c08cffcc}
+.r-l .gema i{box-shadow:0 0 0 1.5px #1a1230,0 0 0 2.5px #fff2c2,0 0 10px #ffd25a;animation:gema-brilho 1.6s ease-in-out infinite}
+@keyframes gema-brilho{50%{filter:brightness(1.45)}}
+/* medalhão do elemento no canto de cima à direita */
+.elem{position:absolute;top:-8px;right:-7px;width:24px;height:24px;border-radius:50%;display:grid;place-items:center;font-size:13px;line-height:1;z-index:2;
+  background:radial-gradient(circle at 35% 30%,color-mix(in srgb,var(--ec) 35%,#fff),var(--ec) 55%,color-mix(in srgb,var(--ec) 55%,#000));
+  box-shadow:0 0 0 2px #f6d78b,0 0 0 3px #4a2c0a,0 2px 4px #0008}
+.el-fogo{--ec:#e2512b}.el-terra{--ec:#7a6a3a}.el-ar{--ec:#3d93c9}.el-agua{--ec:#2f7fd6}
+.land .elem{width:19px;height:19px;font-size:10.5px;top:-6px;right:-5px}
+.land .gema{top:-6px;width:13px;height:13px}.land .gema i{width:9px;height:9px}
+/* o signo continua na arte, mas embaixo à direita, longe do medalhão */
+.cart .sg{top:auto;bottom:1px}
+/* carta aberta grande */
+.zoom .elem{top:-10px;right:-10px;width:32px;height:32px;font-size:17px}
+.zoom .z-rar{display:flex;align-items:center;justify-content:center;gap:5px}
+.zoom .z-rar .gema{position:relative;top:auto;left:auto;translate:none}
+@media (prefers-reduced-motion:reduce){.card.r-l,.r-l .gema i{animation:none}}

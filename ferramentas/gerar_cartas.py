@@ -22,13 +22,21 @@ SIGNS={
 'capricornio':('Terra','ascensao',['escudo','furia'],"""Cabrito da Montanha|🐐;Mineiro|⛏️;Marmota|🐿️;Aprendiz Monge|🧒;Escalador|🧗;Bode Teimoso|🐐;Guardião do Pico|🛡️;Águia das Rochas|🦅;Ferreira Anã|⚒️;Ermitão do Pico|🏔️;Golem de Gelo|🧊;Monge da Montanha|🧘;Íbex Real|🐐;Pastor das Alturas|🧑‍🌾;Yeti|🦍;Mestre Escalador|🧗;Sentinela Glacial|❄️;Cabra-Peixe Ancestral|🐟;Bode Ancestral|🦬;Gigante de Gelo|🧊;Abade da Montanha|⛪;Dragão da Montanha|🐉;Colosso Glacial|❄️;Patriarca do Pico|🏔️;Capricórnio, a Cabra-Marinha|🐐""",
  [('Muralha de Pedra','🧱',1,'shield',0),('Resiliência','⛰️',2,'buff',(1,3)),('Pedrada','🪨',2,'dmg',3),('Escalada','🧗',3,'buff',(2,2)),('Avalanche','❄️',5,'lane',3)]),
 'aquario':('Ar','corrente',['distancia','escudo'],"""Sílfide da Brisa|🧚;Gota Viva|💧;Pássaro do Trovão|🐦;Estudante Arcano|📘;Portador da Ânfora|🏺;Mago do Vento|🌬️;Inventor|⚙️;Fada da Chuva|🌧️;Cometa Pequeno|☄️;Arauto da Tempestade|⛈️;Elemental de Água|💧;Astrônomo|🔭;Arcanista|📖;Golem Mecânico|🤖;Mestre dos Ventos|🌪️;Elemental do Raio|⚡;Sábio Excêntrico|🧪;Corvo Elétrico|🐦‍⬛;Ganimedes, o Copeiro|🏺;Tempestade Viva|🌩️;Oráculo Celeste|🔮;Arquimago do Céu|🧙;Dragão da Tempestade|🐉;Avatar do Trovão|⚡;Aquário, o Portador Celeste|🏺""",
- [('Raio Celeste','⚡',2,'dmg',3),('Bênção das Águas','✨',2,'buff',(2,2)),('Inspiração','💡',2,'draw',2),('Vendaval','🌪️',3,'lane',2),('Tempestade','⛈️',5,'lane',3)]),
+ [('Raio Celeste','⚡',3,'dmg',3),('Bênção das Águas','✨',2,'buff',(2,2)),('Inspiração','💡',2,'draw',2),('Vendaval','🌪️',3,'lane',2),('Tempestade','⛈️',5,'lane',3)]),
 'peixes':('Água','ilusao',['vampirico','veneno'],"""Peixe Sonhador|🐟;Medusa Pálida|🪼;Peixinho Listrado|🐠;Bolha Mágica|🫧;Sereia Cantora|🧜‍♀️;Golfinho Místico|🐬;Baiacu|🐡;Pescador de Sonhos|🎣;Espírito da Névoa|🌫️;Oráculo das Marés|🔮;Tritão Místico|🧜;Raia Fantasma|🐟;Sonâmbulo|😴;Coral Vivo|🪸;Baleia Lunar|🐳;Sereia Feiticeira|🧜‍♀️;Peixe Dourado|🐠;Polvo Ilusionista|🐙;Leviatã Jovem|🐋;Sacerdote dos Sonhos|💤;Guardião do Abismo|🌊;Leviatã dos Sonhos|🐋;Dragão Marinho|🐉;Rainha do Oceano|👑;Peixes, os Gêmeos do Mar|🐟""",
  [('Névoa','🌫️',1,'shield',0),('Maré Curativa','💧',1,'heal',4),('Afogar','🌊',2,'dmg',3),('Sonho Profundo','💤',2,'draw',2),('Redemoinho','🌀',3,'lane',2)]),
 }
 ELON={'Fogo':'face1','Terra':'heal2','Ar':'draw','Água':'volley'}
 RATIO={'Fogo':0.56,'Terra':0.36,'Ar':0.46,'Água':0.45}
-KWC={'ascensao':2}
+# "Preço" de cada habilidade no orçamento da criatura (quanto mais forte a habilidade, menos ataque/vida sobra).
+# Valores ajustados com o simulador (npm run sim) para cada signo vencer entre 45% e 55%.
+KWC={'investida':2.53,'furia':-0.68,'carapaca':1.5,'lideranca':-1.28,'cura':-0.35,'reflexo':2.55,'veneno':0.53,
+     'distancia':-0.6,'ascensao':1.5,'corrente':1.5,'ilusao':2.54}  # as demais (escudo, perfurar, vampírico) custam 1
+# Preço dos efeitos de chegada (⭐).
+ONC={'twin':4.49}  # os demais custam 1
+import os
+if os.environ.get('GEN_PARAMS'):  # usado pelo ajuste automático
+    _p=json.loads(os.environ['GEN_PARAMS']); KWC=_p.get('kwc',KWC); ONC=_p.get('onc',ONC); RATIO.update(_p.get('ratio',{}))
 P_IDX={0,2,4,6,7,9,11,13,15,17,19,21,23,24}; S0={1,8,14,20,24}; S1={5,12,18,23}; ON_IDX={3,10,16,22,19}
 def rar(c): return 'c' if c<=2 else 'r' if c<=4 else 'e' if c<=6 else 'l'
 out={}
@@ -44,10 +52,10 @@ for sg,(el,P,S,names,spells) in SIGNS.items():
         if i in S1: kw.append(S[1])
         if i in ON_IDX and on is None: on=ELON[el]
         kw=list(dict.fromkeys(kw))
-        b=2*c+1 + (2 if i>=23 else 0) - sum(KWC.get(k,1) for k in kw) - (2 if on=='twin' else 1 if on else 0)
+        b=2*c+1 + (2 if i>=23 else 0) - sum(KWC.get(k,1) for k in kw) - (ONC.get(on,1) if on else 0)
         b=max(2,b)
         var=[0,0.6,-0.6][i%3]
-        a=max(1,round(b*RATIO[el]+var)); h=max(1,b-a)
+        a=max(1,round(b*RATIO[el]+var)); h=max(1,round(b-a))
         out[f'{sg}{i+1:02d}']=dict(name=n,race=sg,type='unit',cost=c,atk=a,hp=h,kw=kw,e=e,on=on,r=rar(c) if i<23 else 'l')
     for j,(n,e,c,sp,v) in enumerate(spells):
         d=dict(name=n,race=sg,type='spell',cost=c,sp=sp,e=e,r=rar(c),kw=[])

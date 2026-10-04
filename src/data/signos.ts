@@ -13,6 +13,14 @@ export interface InfoSigno {
 
 export const ORDER: readonly Signo[] = SIGNOS;
 
+/** Elementos: ícone e classe de cor usados nas cartas. */
+export const ELEMENTO: Record<InfoSigno['el'], { i: string; k: string }> = {
+  Fogo: { i: '🔥', k: 'fogo' },
+  Terra: { i: '⛰️', k: 'terra' },
+  Ar: { i: '🌪️', k: 'ar' },
+  Água: { i: '💧', k: 'agua' },
+};
+
 export const RACES: Record<Signo, InfoSigno> = {
   aries: { n: 'Áries', g: '♈', el: 'Fogo', c: '#d6452f', m: 'Investida', dt: [3, 21] },
   touro: { n: 'Touro', g: '♉', el: 'Terra', c: '#6f8f2e', m: 'Fúria', dt: [4, 20] },

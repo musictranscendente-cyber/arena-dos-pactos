@@ -3,7 +3,7 @@ import { card, cardsOfSign, CARDS } from '../data/cards';
 import { ANIM, animUrl, ARTE, artUrl, CENTRO, escalaCampo, porte, type Tira } from '../data/arte';
 import { RARITY } from '../data/raridades';
 import type { Card, Signo } from '../data/schema';
-import { currentSign, ORDER, RACES } from '../data/signos';
+import { currentSign, ELEMENTO, ORDER, RACES } from '../data/signos';
 import { cardText, KW, T } from '../data/textos';
 import { pronta } from './precarga';
 import { isRanged } from './projetil';
@@ -56,8 +56,9 @@ function zoomHtml(z: Zoom): string {
   }
   return `<div class="zoom lado-${z.lado} r-${c.r}" style="--rc:${r.c};--rr:${RARITY[c.r].col}" aria-live="polite">`
     + `<div class="z-topo"><span class="cost">${z.cost ?? c.cost}</span><span class="z-nome">${c.name}</span></div>`
+    + elemHtml(c)
     + `<div class="z-arte">${img}<span class="z-sg">${r.g}</span></div>`
-    + `<div class="z-rar">${RARITY[c.r].n} · ${r.n}</div>${corpo}</div>`;
+    + `<div class="z-rar">${gemaHtml(c)}${RARITY[c.r].n} · ${ELEMENTO[r.el].i} ${r.el}</div>${corpo}</div>`;
 }
 
 function artOrEmoji(c: Card, cid?: string): string {
@@ -219,7 +220,19 @@ export function cardHtml(c: Card, cost: number, attrs = '', cls = '', cid?: stri
     ? `<span class="ck">${c.kw.map(k => KW[k].i).join('')}${c.on ? '⭐' : ''}</span><span class="st"><b class="a">${c.atk}</b><b class="h">${c.hp}</b></span>`
     : `<span class="sp">${cardText(c)}</span>`;
   return `<div class="card ${c.type === 'spell' ? 'spell' : ''} r-${c.r} ${cls}" style="--rc:${RACES[c.race].c};--rr:${RARITY[c.r].col}" ${attrs}><span class="cost">${cost}</span>`
-    + `<span class="cart">${artOrEmoji(c, cid)}<span class="sg">${RACES[c.race].g}</span></span><span class="cn">${c.name}</span>${body}</div>`;
+    + elemHtml(c)
+    + `<span class="cart">${artOrEmoji(c, cid)}<span class="sg">${RACES[c.race].g}</span></span>${gemaHtml(c)}<span class="cn">${c.name}</span>${body}</div>`;
+}
+
+/** Medalhão do elemento no canto de cima da carta. */
+function elemHtml(c: Card): string {
+  const el = RACES[c.race].el, E = ELEMENTO[el];
+  return `<span class="elem el-${E.k}" title="${T.elemento}: ${el}" aria-label="${T.elemento}: ${el}">${E.i}</span>`;
+}
+
+/** Gema da raridade, entre a arte e o nome (cinza, azul, roxa, dourada). */
+function gemaHtml(c: Card): string {
+  return `<span class="gema" title="${RARITY[c.r].n}" aria-label="${RARITY[c.r].n}"><i></i></span>`;
 }
 
 function handHtml(v: View): string {
