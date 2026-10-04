@@ -676,3 +676,5 @@ body:not(.land) .board{flex:0 0 auto;height:min(54vh,44vw)}
 .land .maorival{right:27px;top:calc(50% + 35px);padding:1px 7px 1px 5px}
 .land .maorival .verso{width:10px;height:14px}
 .land .maorival b{font-size:13px;margin-left:9px}
+/* janelas (resultado, desistir, galeria) sempre por cima da mão e dos botões */
+.ov{z-index:100}
