@@ -186,10 +186,11 @@ function heroCard(s: GameState, side: Side): string {
   const hp = Math.max(0, H.hp);
   const pct = Math.min(100, (hp / HEART_MAX) * 100);
   const name = side === 'p' ? T.voce : T.rivalDe(r.n);
-  const sub = side === 'p' ? T.deck(H.deck.length) : T.maoDeck(H.hand.length, H.deck.length);
+  const sub = T.deck(H.deck.length);
   const extra = side === 'e' ? `<span class="gem" title="Mana">${H.max}</span>` : '';
   return `<div class="hcard ${side === 'p' ? 'mine' : 'theirs'}" style="--rc:${r.c}">`
     + `<div class="medal"><span>${r.g}</span></div>`
+    + (side === 'e' ? `<span class="maorival" title="${T.cartasNaMao(H.hand.length)}" aria-label="${T.cartasNaMao(H.hand.length)}"><i class="verso"></i><i class="verso"></i><b>${H.hand.length}</b></span>` : '')
     + (side === 'p' && s.phase === 'plan' ? `<button class="flagbtn" data-act="desistir" aria-label="${T.desistir}" title="${T.desistir}">${BANDEIRA}<span>${T.desistirCurto}</span></button>` : '')
     + `<div class="hinfo"><div class="hname">${name}</div><div class="hpbar${pct <= 30 ? ' low' : ''}"><i style="width:${pct}%"></i></div><div class="hsub">${sub}${extra}</div></div>`
     + `<div class="heart" id="hero-${side}">${hp}</div></div>`;

@@ -662,3 +662,17 @@ body:not(.land) .board{flex:0 0 auto;height:min(54vh,44vw)}
 .flagbtn{left:35px;translate:-50% 0;top:calc(50% + 46px)}
 .flagbtn:active{translate:-50% 1px}
 .land .flagbtn{left:27px;top:calc(50% + 37px)}
+
+/* cartas na mão do rival: leque de versos com o número, logo abaixo do ícone dele */
+.maorival{position:absolute;right:35px;translate:50% 0;top:calc(50% + 44px);z-index:3;display:flex;align-items:center;
+  padding:2px 9px 2px 6px;border-radius:999px;background:linear-gradient(180deg,#5b2a6e,#2e1440);border:1.5px solid #e9c77a;
+  box-shadow:0 0 0 1.5px #4a2c0a,0 3px 6px #0009;pointer-events:auto}
+.maorival .verso{width:12px;height:17px;border-radius:2.5px;margin-right:-6px;
+  background:radial-gradient(circle at 50% 50%,#ffe08a 0 2px,transparent 2.5px),linear-gradient(160deg,#6a4bd0,#2a1a6a);
+  box-shadow:0 0 0 1.2px #e9c77a,0 1px 2px #0008}
+.maorival .verso:first-child{rotate:-14deg;translate:0 1px}
+.maorival .verso + .verso{rotate:8deg}
+.maorival b{margin-left:10px;font-size:15px;font-weight:800;color:#fff3d6;line-height:1;text-shadow:0 1px 0 #0008}
+.land .maorival{right:27px;top:calc(50% + 35px);padding:1px 7px 1px 5px}
+.land .maorival .verso{width:10px;height:14px}
+.land .maorival b{font-size:13px;margin-left:9px}
