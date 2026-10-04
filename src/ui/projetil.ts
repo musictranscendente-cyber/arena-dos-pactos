@@ -17,7 +17,8 @@ const LANCA = new Set(['virgem25', 'aquario25', 'aries09', 'aries06', 'aries04',
   'leao01', 'leao04', 'leao08', 'leao10', 'leao11', 'leao12', 'leao17', 'leao18', 'leao19', 'leao21', 'leao22', 'leao24', 'leao25',
   'cancer04', 'cancer10', 'cancer11', 'cancer12', 'cancer13', 'cancer14', 'cancer16', 'cancer17', 'cancer18', 'cancer19', 'cancer21', 'cancer23', 'cancer24', 'cancer25',
   'virgem02', 'virgem03', 'virgem04', 'virgem06', 'virgem10', 'virgem11', 'virgem12', 'virgem15', 'virgem16', 'virgem17', 'virgem18', 'virgem19', 'virgem21', 'virgem23', 'virgem24',
-  'aquario01', 'aquario02', 'aquario03', 'aquario04', 'aquario05', 'aquario06', 'aquario07', 'aquario08', 'aquario09', 'aquario10', 'aquario11', 'aquario12', 'aquario13', 'aquario15', 'aquario16', 'aquario17', 'aquario19', 'aquario20', 'aquario21', 'aquario22', 'aquario23', 'aquario24']);
+  'aquario01', 'aquario02', 'aquario03', 'aquario04', 'aquario05', 'aquario06', 'aquario07', 'aquario08', 'aquario09', 'aquario10', 'aquario11', 'aquario12', 'aquario13', 'aquario15', 'aquario16', 'aquario17', 'aquario19', 'aquario20', 'aquario21', 'aquario22', 'aquario23', 'aquario24',
+  'capricornio03', 'capricornio04', 'capricornio05', 'capricornio10', 'capricornio12', 'capricornio15', 'capricornio16', 'capricornio17', 'capricornio18', 'capricornio21', 'capricornio22', 'capricornio23', 'capricornio24', 'capricornio25']);
 
 /** Projétil próprio de algumas cartas (senão vale o do elemento do signo). */
 const TIPO: Record<string, string> = { aries06: 'flecha', aries09: 'ar', escorpiao11: 'flecha', escorpiao23: 'flecha',
@@ -29,7 +30,8 @@ const TIPO: Record<string, string> = { aries06: 'flecha', aries09: 'ar', escorpi
   gemeos10: 'fogo', gemeos11: 'ar', gemeos12: 'ar', gemeos14: 'ar', gemeos15: 'fogo', gemeos17: 'ar', gemeos18: 'ar',
   gemeos20: 'ar', gemeos21: 'fogo', gemeos23: 'fogo', gemeos24: 'fogo', gemeos25: 'fogo',
   cancer10: 'ar', cancer11: 'ar', cancer12: 'fogo', cancer17: 'ar', cancer24: 'fogo', cancer25: 'ar', virgem02: 'fogo', virgem03: 'veneno', virgem18: 'fogo', virgem21: 'fogo', virgem23: 'fogo', virgem24: 'fogo', virgem25: 'fogo',
-  aquario10: 'fogo', aquario16: 'fogo', aquario17: 'fogo', aquario20: 'fogo', aquario21: 'fogo', aquario23: 'fogo', aquario24: 'fogo', aquario05: 'agua', aquario08: 'agua', aquario19: 'agua', aquario25: 'agua' };
+  aquario10: 'fogo', aquario16: 'fogo', aquario17: 'fogo', aquario20: 'fogo', aquario21: 'fogo', aquario23: 'fogo', aquario24: 'fogo', aquario05: 'agua', aquario08: 'agua', aquario19: 'agua', aquario25: 'agua',
+  capricornio03: 'agua', capricornio04: 'fogo', capricornio10: 'fogo', capricornio12: 'fogo', capricornio15: 'agua', capricornio17: 'agua', capricornio18: 'agua', capricornio21: 'ar', capricornio22: 'agua', capricornio23: 'agua', capricornio25: 'agua' };
 
 export function isRanged(cid: string): boolean {
   const c = card(cid);
