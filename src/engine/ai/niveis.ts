@@ -78,21 +78,69 @@ function visao(s: GameState, side: Side): GameState {
   return v;
 }
 
+/** Refaz as jogadas de um plano a partir do estado inicial (com uma ação trocada). Null se alguma não valer mais. */
+function refazer(state: GameState, side: Side, actions: Action[]): Plano | null {
+  let s = state;
+  for (const a of actions) {
+    const r = applyAction(s, side, a);
+    if (!r.ok) return null;
+    s = r.state;
+  }
+  return { state: s, actions };
+}
+
+/** Variações de um plano: cada criatura invocada tentada em todas as outras casas vazias. */
+function vizinhos(state: GameState, side: Side, p: Plano): Plano[] {
+  const out: Plano[] = [];
+  p.actions.forEach((a, k) => {
+    if (a.t !== 'summon') return;
+    for (let l = 0; l < 3; l++) for (let d = 0; d < 3; d++) {
+      if (l === a.l && d === a.d) continue;
+      const acts = p.actions.slice();
+      acts[k] = { ...a, l, d };
+      const r = refazer(state, side, acts);
+      if (r) out.push(r);
+    }
+  });
+  return out;
+}
+
+/** Rodada seguinte imaginada: os dois jogam a jogada "normal" e a Batalha acontece. */
+function maisUmaRodada(s: GameState, side: Side, seed: number): GameState {
+  if (s.phase !== 'plan') return s;
+  let x = planTurn(s, opp(side), new Rng(seed)).state;
+  x = planTurn(x, side, new Rng(seed ^ 0x2c1b3c6d)).state;
+  return resolveBattle(x, { record: false }).state;
+}
+
 function planoDificil(state: GameState, side: Side, rng: Rng): Plano {
   const candidatos: Plano[] = [];
   // a jogada "normal" com sorteios diferentes de casa
-  for (let k = 0; k < 4; k++) candidatos.push(planTurn(state, side, new Rng(rng.int(2 ** 31))));
+  for (let k = 0; k < 6; k++) candidatos.push(planTurn(state, side, new Rng(rng.int(2 ** 31))));
   // variações: ordens e casas sorteadas, gastando a mana toda ou guardando cartas
-  for (let k = 0; k < 16; k++) candidatos.push(planoSorteado(state, side, new Rng(rng.int(2 ** 31)), k < 11 ? 0 : 0.35, k % 3 === 0));
+  for (let k = 0; k < 40; k++) candidatos.push(planoSorteado(state, side, new Rng(rng.int(2 ** 31)), k < 28 ? 0 : 0.35, k % 3 === 0));
   candidatos.push({ state, actions: [] });
-  let melhor = candidatos[0], mn = -Infinity;
-  const resposta = rng.int(2 ** 31);
-  for (const c of candidatos) {
-    // imagina o rival respondendo com a jogada "normal" (ele também não vê as invocações secretas da IA)
+
+  // respostas imaginadas do rival (ele também não vê as invocações secretas da IA)
+  const seeds = [rng.int(2 ** 31), rng.int(2 ** 31), rng.int(2 ** 31)];
+  const futuro = rng.int(2 ** 31);
+  const avaliar = (c: Plano, fundo: boolean): number => {
     const v = visao(c.state, side);
-    const comResposta = planTurn(v, opp(side), new Rng(resposta)).state;
-    const n = nota(resolveBattle(comResposta, { record: false }).state, side) * 0.6
-      + nota(resolveBattle(v, { record: false }).state, side) * 0.4;
+    const finais: GameState[] = [resolveBattle(v, { record: false }).state];
+    for (const sd of seeds) finais.push(resolveBattle(planTurn(v, opp(side), new Rng(sd)).state, { record: false }).state);
+    // avaliação funda: também olha a rodada seguinte (quem ganha a troca a longo prazo)
+    const notas = finais.map(f => (fundo ? nota(f, side) * 0.5 + nota(maisUmaRodada(f, side, futuro), side) * 0.5 : nota(f, side)));
+    const media = notas.reduce((t, n) => t + n, 0) / notas.length;
+    return media * 0.75 + Math.min(...notas) * 0.25;
+  };
+
+  // 1ª peneira rápida; os melhores ganham avaliação funda e ajuste de casas
+  const rapidos = candidatos.map(c => ({ c, n: avaliar(c, false) })).sort((a, b) => b.n - a.n);
+  let finalistas = rapidos.slice(0, 6).map(x => x.c);
+  for (const f of finalistas.slice(0, 2)) finalistas = finalistas.concat(vizinhos(state, side, f));
+  let melhor = finalistas[0], mn = -Infinity;
+  for (const c of finalistas) {
+    const n = avaliar(c, true);
     if (n > mn) { mn = n; melhor = c; }
   }
   return melhor;

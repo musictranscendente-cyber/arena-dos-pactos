@@ -73,7 +73,7 @@ export const T = {
   nivelDesc: {
     facil: 'O rival joga sem muito plano. Bom para aprender.',
     normal: 'O rival joga as melhores cartas que pode e escolhe bem a fileira.',
-    dificil: 'O rival testa várias jogadas e escolhe a melhor. Prepare-se!',
+    dificil: 'O rival usa um deck com as cartas mais fortes, testa dezenas de jogadas e pensa uma rodada à frente. Prepare-se!',
   } as Record<string, string>,
   seuDeck: 'Seu deck',
   trocar: 'Trocar',

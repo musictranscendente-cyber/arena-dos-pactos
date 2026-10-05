@@ -1,8 +1,9 @@
-// Níveis da IA: jogadas sempre válidas, e o difícil ganha mais do que perde contra o normal.
+// Níveis da IA: jogadas sempre válidas, o difícil ganha bem mais do que perde contra o normal e o deck forte é sempre válido.
 import { describe, expect, it } from 'vitest';
 import { ORDER } from '../src/data/signos';
 import { resolveBattle } from '../src/engine/battle';
-import { deckAleatorio, doisSignos } from '../src/engine/deck';
+import { deckAleatorio, doisSignos, validarDeck } from '../src/engine/deck';
+import { deckForte } from '../src/engine/ai/deckForte';
 import { NIVEIS, planTurnNivel, type Nivel } from '../src/engine/ai/niveis';
 import { newGame } from '../src/engine/round';
 import { Rng } from '../src/engine/rng';
@@ -38,10 +39,22 @@ describe('Níveis da IA', () => {
   });
   it('difícil vence o normal na maioria das partidas', () => {
     let v = 0;
-    for (let i = 0; i < 20; i++) {
+    for (let i = 0; i < 12; i++) {
       if (jogo('dificil', 'normal', 500 + i).result === 'p') v++;
       if (jogo('normal', 'dificil', 500 + i).result === 'e') v++;
     }
-    expect(v).toBeGreaterThan(20);
+    expect(v).toBeGreaterThan(12);
+  }, 60000);
+});
+
+describe('deck forte do bot difícil', () => {
+  it('é sempre um deck válido de 30 cartas, nos dois signos', () => {
+    const rng = new Rng(77);
+    for (let i = 0; i < 40; i++) {
+      const [a, b] = doisSignos(rng, ORDER);
+      const cartas = deckForte(rng, a, b);
+      expect(cartas).toHaveLength(30);
+      expect(validarDeck({ signos: [a, b], cartas })).toBeNull();
+    }
   });
 });

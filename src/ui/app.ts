@@ -4,7 +4,7 @@ import type { Signo } from '../data/schema';
 import { ORDER } from '../data/signos';
 import { cardText, T } from '../data/textos';
 import {
-  applyAction, costOf, deckAleatorio, doisSignos, DECK_SIZE, effAtk, newGame, resolveBattle, Rng, surrender,
+  applyAction, costOf, deckAleatorio, deckForte, doisSignos, DECK_SIZE, effAtk, newGame, resolveBattle, Rng, surrender,
   maxCopias, planTurnNivel, type DeckMontado, type Nivel,
   type Action, type Frame, type GameEvent, type GameState, type Side, type Target,
 } from '../engine';
@@ -92,11 +92,12 @@ function startMatch(cfg: Modo): void {
     const foe = foes[Math.floor(Math.random() * foes.length)];
     state = newGame({ pSign: cfg.sign, eSign: foe, seed, record: false }).state;
   } else {
-    // Partida Rápida: o seu deck contra um bot com 2 signos e 30 cartas sorteadas
+    // Partida Rápida: o seu deck contra um bot com 2 signos e 30 cartas (sorteadas; no difícil, as mais fortes)
     const rng = new Rng(seed ^ 0x2545f491);
     const [ea, eb] = doisSignos(rng, ORDER);
     const [pa, pb] = cfg.deck.signos;
-    state = newGame({ pSign: pa, pSign2: pb, pDeck: cfg.deck.cartas, eSign: ea, eSign2: eb, eDeck: deckAleatorio(rng, ea, eb), seed, record: false }).state;
+    const eDeck = cfg.nivel === 'dificil' ? deckForte(rng, ea, eb) : deckAleatorio(rng, ea, eb);
+    state = newGame({ pSign: pa, pSign2: pb, pDeck: cfg.deck.cartas, eSign: ea, eSign2: eb, eDeck, seed, record: false }).state;
   }
   M = { g: state, shown: state, sel: null, busy: false, msg: '', active: null, striking: null, aiRng: new Rng(seed ^ 0x5bd1e995), base: state, plan: [], inspect: null, nivel: cfg.modo === 'rapida' ? cfg.nivel : 'normal' };
   beginPlanning([]);
