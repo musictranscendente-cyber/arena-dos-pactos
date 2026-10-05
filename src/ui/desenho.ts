@@ -232,7 +232,6 @@ function manaHtml(v: View): string {
 }
 
 function actsHtml(v: View): string {
-  const P = v.s.p;
   return `<div class="acts"><button class="btn go" data-act="punch" ${v.canAct ? '' : 'disabled'}><span class="ico">⚔️</span>${T.batalha}</button></div>`;
 }
 
