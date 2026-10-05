@@ -174,9 +174,10 @@ export function montarHtml(m: Montagem, decks: (DeckMontado | null)[], ativo: nu
   if (m.info) {
     const k = m.info, n = qtd.get(k) ?? 0, mx = maxCopias(k);
     // quantidade e botões em cima (sempre à vista); a carta grande logo abaixo
+    // tudo numa linha só (tirar · quantas no deck · colocar) para sobrar altura para a carta
     lado = `<div class="m-qtd"><button class="btn rc" data-act="mmenos" ${n ? '' : 'disabled'} aria-label="${T.tirar}">－ ${T.tirar}</button>`
+      + `<p class="m-copias" title="${RAR_NOME[CARDS[k].r]}"><small>${T.noDeck}</small><span><b>${n}</b>/${mx}</span></p>`
       + `<button class="btn go" data-act="mmais" ${n < mx && !cheio ? '' : 'disabled'} aria-label="${T.colocar}">＋ ${T.colocar}</button></div>`
-      + `<p class="m-copias">${T.noDeck}: <b>${n}</b> / ${mx} <small>(${RAR_NOME[CARDS[k].r]})</small></p>`
       + (m.msg ? `<p class="m-dica">${m.msg}</p>` : '')
       + `<div class="m-detalhe">${zoomHtml({ cid: k, lado: 'p' })}</div>`;
   }
