@@ -10,6 +10,8 @@ export const MAX_MANA = 9;
 export const HAND_MAX = 8;
 export const START_HAND = 3;
 export const DECK_EMPTY_DMG = 2;
+/** Cartas num deck (de um signo só ou montado com 2 signos). */
+export const DECK_SIZE = 30;
 
 export interface Unit {
   uid: number;
@@ -47,6 +49,8 @@ export interface QueuedSpell { cid: string; tg: Target }
 
 export interface PlayerState {
   sign: Signo;
+  /** Segundo signo, quando o deck foi montado com 2 signos. */
+  sign2?: Signo;
   hp: number;
   max: number;
   mana: number;

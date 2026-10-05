@@ -4,7 +4,8 @@ import type { Signo } from '../data/schema';
 import { ORDER } from '../data/signos';
 import { cardText, T } from '../data/textos';
 import {
-  applyAction, costOf, effAtk, newGame, planTurn, resolveBattle, Rng, surrender,
+  applyAction, costOf, deckAleatorio, doisSignos, DECK_SIZE, effAtk, newGame, planTurn, resolveBattle, Rng, surrender,
+  type DeckMontado,
   type Action, type Frame, type GameEvent, type GameState, type Side, type Target,
 } from '../engine';
 import { ATK_MS, desistirHtml, endHtml, galleryHtml, gameHtml, startHtml, type View, type Zoom } from './desenho';
@@ -12,6 +13,8 @@ import { toggleRot, tryLandscape } from './orientacao';
 import { efeitoGeral, efeitosDeMagia, EXTRA_GERAL_MS, MAGIA_MS } from './efeitoMagia';
 import { precarregarVisiveis } from './precarga';
 import { launch, shotsOf } from './projetil';
+import { avisoHtml, hubHtml, montarHtml, regrasHtml, semDeckHtml, type Montagem } from './menu';
+import { lerDeck, salvarDeck } from '../services/deckSalvo';
 
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const sleep = (ms: number) => new Promise(r => setTimeout(r, reduce ? ms * 0.4 : ms));
@@ -56,6 +59,14 @@ let infoAberta = false;
 
 let M: Match | null = null;
 let gal: Signo | null = null, galSel: string | null = null;
+/** Telas fora da partida: menu de ilhas, escolha de signo (deck inteiro) e montagem de deck. */
+let tela: 'hub' | 'conhecer' | 'montar' = 'hub';
+let montagem: Montagem | null = null;
+let dialogo: 'semdeck' | 'regras' | null = null;
+let deckSalvo: DeckMontado | null = lerDeck();
+/** Como foi a última partida (para a Revanche repetir igual). */
+type Modo = { modo: 'signo'; sign: Signo } | { modo: 'rapida'; deck: DeckMontado };
+let ultimo: Modo | null = null;
 const app = () => document.getElementById('app')!;
 
 const who = (side: Side) => (side === 'p' ? T.voce : 'O rival');
@@ -63,11 +74,21 @@ const name = (cid: string) => card(cid).name;
 
 /* ---------- partida ---------- */
 
-function startMatch(sign: Signo): void {
-  const foes = ORDER.filter(k => k !== sign);
-  const foe = foes[Math.floor(Math.random() * foes.length)];
+function startMatch(cfg: Modo): void {
+  ultimo = cfg;
   const seed = randomSeed();
-  const { state } = newGame({ pSign: sign, eSign: foe, seed, record: false });
+  let state: GameState;
+  if (cfg.modo === 'signo') {
+    const foes = ORDER.filter(k => k !== cfg.sign);
+    const foe = foes[Math.floor(Math.random() * foes.length)];
+    state = newGame({ pSign: cfg.sign, eSign: foe, seed, record: false }).state;
+  } else {
+    // Partida Rápida: o seu deck contra um bot com 2 signos e 30 cartas sorteadas
+    const rng = new Rng(seed ^ 0x2545f491);
+    const [ea, eb] = doisSignos(rng, ORDER);
+    const [pa, pb] = cfg.deck.signos;
+    state = newGame({ pSign: pa, pSign2: pb, pDeck: cfg.deck.cartas, eSign: ea, eSign2: eb, eDeck: deckAleatorio(rng, ea, eb), seed, record: false }).state;
+  }
   M = { g: state, shown: state, sel: null, busy: false, msg: '', active: null, striking: null, aiRng: new Rng(seed ^ 0x5bd1e995), base: state, plan: [], inspect: null };
   beginPlanning([]);
 }
@@ -371,7 +392,11 @@ function showFx(events: GameEvent[]): void {
 function render(): void {
   const root = app();
   if (!M) {
-    root.innerHTML = gal ? galleryHtml(gal, galSel) : startHtml(new Date());
+    const dlg = dialogo === 'semdeck' ? semDeckHtml() : dialogo === 'regras' ? regrasHtml() : '';
+    root.innerHTML = gal ? galleryHtml(gal, galSel)
+      : tela === 'montar' && montagem ? montarHtml(montagem)
+      : tela === 'conhecer' ? startHtml(new Date())
+      : hubHtml(new Date(), deckSalvo) + dlg;
     return;
   }
   const hs = root.querySelector('.hand');
@@ -418,6 +443,102 @@ function fimDeJogo(m: Match): void {
   setTimeout(() => { if (M === m) { m.fim = 'pronto'; render(); } }, DESABA_MS);
 }
 
+/** Toques do menu de ilhas e da montagem de deck. Devolve true se tratou o toque. */
+function menuClick(a: string | undefined, t: HTMLElement): boolean {
+  switch (a) {
+    case 'hub': tela = 'hub'; gal = null; dialogo = null; render(); return true;
+    case 'fechar': dialogo = null; render(); return true;
+    case 'conhecer': tela = 'conhecer'; render(); return true;
+    case 'regras': dialogo = 'regras'; render(); return true;
+    case 'campanha': case 'torneio': case 'ranqueada': case 'evento': case 'missoes': emBreve(); return true;
+    case 'rapida':
+      if (deckSalvo) { void tryLandscape(); startMatch({ modo: 'rapida', deck: deckSalvo }); }
+      else { dialogo = 'semdeck'; render(); }
+      return true;
+    case 'rapida-aleatorio': {
+      dialogo = null;
+      const rng = new Rng(randomSeed());
+      const sg = doisSignos(rng, ORDER);
+      void tryLandscape();
+      startMatch({ modo: 'rapida', deck: { signos: sg, cartas: deckAleatorio(rng, sg[0], sg[1]) } });
+      return true;
+    }
+    case 'montar':
+      dialogo = null;
+      tela = 'montar';
+      montagem = deckSalvo
+        ? { passo: 2, signos: [...deckSalvo.signos], cartas: [...deckSalvo.cartas], info: null, msg: '' }
+        : { passo: 1, signos: [], cartas: [], info: null, msg: '' };
+      render();
+      return true;
+  }
+  const mg = montagem;
+  if (!mg || tela !== 'montar') return false;
+  switch (a) {
+    case 'msigno': {
+      const r = t.dataset.r as Signo;
+      if (mg.signos.includes(r)) mg.signos = mg.signos.filter(x => x !== r);
+      else if (mg.signos.length < 2) mg.signos.push(r);
+      else mg.signos = [mg.signos[1], r];
+      break;
+    }
+    case 'mseguir':
+      if (mg.signos.length !== 2) return true;
+      // trocou de signos: as cartas que não são deles saem do deck
+      mg.cartas = mg.cartas.filter(k => mg.signos.includes(card(k).race));
+      mg.passo = 2; mg.info = null; mg.msg = '';
+      break;
+    case 'mvoltar': mg.passo = 1; break;
+    case 'mcarta': {
+      const k = t.dataset.k!;
+      mg.info = k;
+      if (mg.cartas.includes(k)) mg.cartas = mg.cartas.filter(x => x !== k);
+      else if (mg.cartas.length < DECK_SIZE) mg.cartas.push(k);
+      else { mg.info = null; mg.msg = T.deckCheio; }
+      keepScroll(); return true;
+    }
+    case 'mcompletar': {
+      const [x, y] = mg.signos as [Signo, Signo];
+      mg.cartas = deckAleatorio(new Rng(randomSeed()), x, y, mg.cartas);
+      mg.info = null; mg.msg = '';
+      keepScroll(); return true;
+    }
+    case 'mlimpar': mg.cartas = []; mg.info = null; mg.msg = ''; keepScroll(); return true;
+    case 'msalvar': {
+      if (mg.cartas.length !== DECK_SIZE) return true;
+      deckSalvo = { signos: [mg.signos[0], mg.signos[1]], cartas: [...mg.cartas] };
+      const ok = salvarDeck(deckSalvo);
+      tela = 'hub';
+      render();
+      aviso(ok ? T.deckSalvo : T.deckNaoSalvo);
+      return true;
+    }
+    default: return false;
+  }
+  render();
+  return true;
+}
+
+/** Redesenha a montagem sem perder a rolagem da lista de cartas. */
+function keepScroll(): void {
+  const top = document.querySelector('.ov.montar')?.scrollTop ?? 0;
+  render();
+  const sc = document.querySelector('.ov.montar');
+  if (sc) sc.scrollTop = top;
+}
+
+function emBreve(): void { aviso(T.emBreveAviso); }
+
+/** Aviso que aparece no meio da tela e some sozinho. */
+function aviso(txt: string): void {
+  app().querySelector('.hub-aviso')?.remove();
+  const tmp = document.createElement('div');
+  tmp.innerHTML = avisoHtml(txt);
+  const el = tmp.firstElementChild as HTMLElement;
+  app().appendChild(el);
+  setTimeout(() => el.remove(), 1900);
+}
+
 /** Faixa grande "Rodada N" atravessando a tela no começo de cada rodada. */
 function faixaRodada(n: number): void {
   const f = document.createElement('div');
@@ -447,10 +568,11 @@ function onClick(ev: Event): void {
     if (sc) sc.scrollTop = top;
     return;
   }
-  if (a === 'galback') { gal = null; render(); return; }
-  if (a === 'pick') { void tryLandscape(); startMatch(t.dataset.r as Signo); return; }
-  if (a === 'again' && M) { startMatch(M.g.p.sign); return; }
-  if (a === 'menu') { M = null; render(); return; }
+  if (a === 'galback') { gal = null; tela = 'conhecer'; render(); return; }
+  if (a === 'pick') { void tryLandscape(); startMatch({ modo: 'signo', sign: t.dataset.r as Signo }); return; }
+  if (a === 'again' && M && ultimo) { startMatch(ultimo); return; }
+  if (a === 'menu') { M = null; tela = 'hub'; render(); return; }
+  if (!M && menuClick(a, t)) return;
   if (a === 'desistir' && M && !M.busy && M.g.phase === 'plan') { M.confirma = true; M.sel = null; M.inspect = null; render(); return; }
   if (a === 'desistir-nao' && M) { M.confirma = false; render(); return; }
   if (a === 'desistir-sim' && M && M.confirma) {

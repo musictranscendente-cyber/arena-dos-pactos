@@ -188,15 +188,20 @@ function boardHtml(v: View): string {
   return h + '</div>';
 }
 
+/** Nome dos signos de um lado: "Áries" ou, com deck montado, "Áries + Leão". */
+export function nomeLado(H: GameState['p']): string {
+  return H.sign2 ? `${RACES[H.sign].n} + ${RACES[H.sign2].n}` : RACES[H.sign].n;
+}
+
 function heroCard(s: GameState, side: Side): string {
   const H = s[side], r = RACES[H.sign];
   const hp = Math.max(0, H.hp);
   const pct = Math.min(100, (hp / HEART_MAX) * 100);
-  const name = side === 'p' ? T.voce : T.rivalDe(r.n);
+  const name = side === 'p' ? T.voce : T.rivalDe(nomeLado(H));
   const sub = T.deck(H.deck.length);
   const extra = side === 'e' ? `<span class="gem" title="Mana">${H.max}</span>` : '';
   return `<div class="hcard ${side === 'p' ? 'mine' : 'theirs'}" style="--rc:${r.c}">`
-    + `<div class="medal"><span>${r.g}</span></div>`
+    + `<div class="medal"><span>${r.g}</span>${H.sign2 ? `<i class="medal2" style="--rc2:${RACES[H.sign2].c}">${RACES[H.sign2].g}</i>` : ''}</div>`
     + (side === 'e' ? `<span class="maorival" title="${T.cartasNaMao(H.hand.length)}" aria-label="${T.cartasNaMao(H.hand.length)}"><i class="verso"></i><i class="verso"></i><b>${H.hand.length}</b></span>` : '')
     + (side === 'p' && s.phase === 'plan' ? `<button class="flagbtn" data-act="desistir" aria-label="${T.desistir}" title="${T.desistir}">${BANDEIRA}<span>${T.desistirCurto}</span></button>` : '')
     + `<div class="hinfo"><div class="hname">${name}</div><div class="hpbar${pct <= 30 ? ' low' : ''}"><i style="width:${pct}%"></i></div><div class="hsub">${sub}${extra}</div></div>`
@@ -293,7 +298,7 @@ export function startHtml(now: Date): string {
   }).join('');
   const legend = Object.values(KW).map(k => `<span>${k.i}</span><span>${k.n}: ${k.d}</span>`).join('') + `<span>⭐</span><span>${T.efeitoChegada}</span>`;
   return `<div class="ov"><div class="panel wide">
-    <h1>${T.titulo}</h1>
+    <div class="gtop"><h2>${T.conhecerDecks}</h2><button class="btn rc" data-act="hub">${T.voltar}</button></div>
     <p>${T.escolhaSigno}</p>
     <div class="signs">${signs}</div>
     <button class="btn rc" data-act="gal" data-r="${cur}" style="width:100%;margin-bottom:6px">${T.verCartas}</button>
@@ -313,8 +318,8 @@ export function desistirHtml(): string {
 export function endHtml(s: GameState): string {
   const t = s.result === 'p' ? T.vitoria : s.result === 'draw' ? T.empate : T.derrota;
   const p = s.surrendered === 'p' ? T.voceDesistiu : s.surrendered === 'e' ? T.rivalDesistiu
-    : s.result === 'p' ? T.venceu(RACES[s.p.sign].n, RACES[s.e.sign].n)
-    : s.result === 'draw' ? T.caíramJuntos : T.rivalVenceu(RACES[s.e.sign].n);
+    : s.result === 'p' ? T.venceu(nomeLado(s.p), nomeLado(s.e))
+    : s.result === 'draw' ? T.caíramJuntos : T.rivalVenceu(nomeLado(s.e));
   return `<div class="ov"><div class="panel"><h2>${t}</h2><p>${p}</p><p>${T.rodadasJogadas(s.round)}</p>`
-    + `<div class="acts2"><button class="btn go" data-act="again">${T.revanche}</button><button class="btn rc" data-act="menu">${T.trocarSigno}</button></div></div></div>`;
+    + `<div class="acts2"><button class="btn go" data-act="again">${T.revanche}</button><button class="btn rc" data-act="menu">${T.menuPrincipal}</button></div></div></div>`;
 }

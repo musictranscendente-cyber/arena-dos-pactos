@@ -2,6 +2,7 @@
 import { card } from '../data/cards';
 import type { Signo } from '../data/schema';
 import { Ctx } from './ctx';
+import { shuffleWith } from './rng';
 import { killUnit } from './keywords';
 import { spellCard, validSpellTarget } from './spells';
 import { buildDeck, checkOver, costOf, draw, mkPlayer, mkUnit } from './state';
@@ -13,6 +14,11 @@ export interface NewGameOptions {
   seed: number;
   /** Guarda foto do estado em cada quadro (a interface usa; o simulador desliga). */
   record?: boolean;
+  /** Decks montados (30 cartas de 2 signos). Sem isso, cada lado usa as 30 cartas do próprio signo. */
+  pDeck?: string[];
+  eDeck?: string[];
+  pSign2?: Signo;
+  eSign2?: Signo;
 }
 
 export function newGame(opts: NewGameOptions): { state: GameState; frames: Frame[] } {
@@ -20,8 +26,10 @@ export function newGame(opts: NewGameOptions): { state: GameState; frames: Frame
     round: 0, phase: 'plan', result: null, rng: opts.seed | 0, uid: 0,
   } as unknown as GameState;
   const ctx = new Ctx(s, opts.record ?? true);
-  s.p = mkPlayer(opts.pSign, buildDeck(ctx, opts.pSign));
-  s.e = mkPlayer(opts.eSign, buildDeck(ctx, opts.eSign));
+  s.p = mkPlayer(opts.pSign, opts.pDeck ? embaralhar(ctx, opts.pDeck) : buildDeck(ctx, opts.pSign));
+  s.e = mkPlayer(opts.eSign, opts.eDeck ? embaralhar(ctx, opts.eDeck) : buildDeck(ctx, opts.eSign));
+  if (opts.pSign2) s.p.sign2 = opts.pSign2;
+  if (opts.eSign2) s.e.sign2 = opts.eSign2;
   for (let i = 0; i < START_HAND; i++) { draw(ctx, 'p'); draw(ctx, 'e'); }
   startRound(ctx);
   return { state: ctx.s, frames: ctx.frames };
@@ -37,6 +45,10 @@ export function surrender(state: GameState, side: Side): ActionResult {
   s.surrendered = side;
   ctx.emit({ t: 'GameOver', result: s.result, surrendered: side });
   return { ok: true, state: s, events: ctx.flush() };
+}
+
+function embaralhar(ctx: Ctx, deck: string[]): string[] {
+  return shuffleWith([...deck], n => ctx.randInt(n));
 }
 
 /** Início de rodada de um lado: mana, Ascensão/Cura, Veneno, compra. */
