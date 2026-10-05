@@ -1,7 +1,8 @@
 import { z } from 'zod';
 
 export const SIGNOS = ['aries', 'touro', 'gemeos', 'cancer', 'leao', 'virgem', 'libra', 'escorpiao', 'sagitario', 'capricornio', 'aquario', 'peixes'] as const;
-export const KEYWORDS = ['escudo', 'perfurar', 'distancia', 'vampirico', 'veneno', 'corrente', 'furia', 'investida', 'lideranca', 'carapaca', 'cura', 'reflexo', 'ascensao', 'ilusao'] as const;
+export const KEYWORDS = ['escudo', 'perfurar', 'distancia', 'vampirico', 'veneno', 'corrente', 'furia', 'investida', 'lideranca', 'carapaca', 'cura', 'reflexo', 'ascensao', 'ilusao',
+  'arremetida', 'inabalavel', 'julgamento', 'ferrao', 'mira'] as const;
 export const CHEGADAS = ['twin', 'face1', 'heal2', 'draw', 'volley'] as const;
 export const MAGIAS = ['buff', 'shield', 'heal', 'draw', 'dmg', 'poison', 'lane', 'face'] as const;
 export const RARIDADES = ['c', 'r', 'e', 'l'] as const;

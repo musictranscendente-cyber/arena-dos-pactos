@@ -103,6 +103,7 @@ export type GameEvent =
   | { t: 'UnitReturnedToHand'; side: Side; l: number; d: number; cid: string }
   | { t: 'HeroDamaged'; side: Side; amount: number }
   | { t: 'HeroHealed'; side: Side; amount: number }
+  | { t: 'UnitPushed'; side: Side; l: number; from: number; to: number; cid: string }
   | { t: 'GameOver'; result: Result; surrendered?: Side };
 
 /** Um "quadro" da Batalha: os eventos que aconteceram juntos e como ficou a mesa depois. */

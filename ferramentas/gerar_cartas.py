@@ -26,14 +26,17 @@ SIGNS={
 'peixes':('Água','ilusao',['vampirico','veneno'],"""Peixe Sonhador|🐟;Medusa Pálida|🪼;Peixinho Listrado|🐠;Bolha Mágica|🫧;Sereia Cantora|🧜‍♀️;Golfinho Místico|🐬;Baiacu|🐡;Pescador de Sonhos|🎣;Espírito da Névoa|🌫️;Oráculo das Marés|🔮;Tritão Místico|🧜;Raia Fantasma|🐟;Sonâmbulo|😴;Coral Vivo|🪸;Baleia Lunar|🐳;Sereia Feiticeira|🧜‍♀️;Peixe Dourado|🐠;Polvo Ilusionista|🐙;Leviatã Jovem|🐋;Sacerdote dos Sonhos|💤;Guardião do Abismo|🌊;Leviatã dos Sonhos|🐋;Dragão Marinho|🐉;Rainha do Oceano|👑;Peixes, os Gêmeos do Mar|🐟""",
  [('Névoa','🌫️',1,'shield',0),('Maré Curativa','💧',1,'heal',4),('Afogar','🌊',2,'dmg',3),('Sonho Profundo','💤',2,'draw',2),('Redemoinho','🌀',3,'lane',2)]),
 }
+# Habilidade exclusiva de cada signo que dividia a principal com outro (entra em 7 das 14 criaturas principais).
+NOVA={'aries':'arremetida','touro':'inabalavel','libra':'julgamento','escorpiao':'ferrao','sagitario':'mira'}
 ELON={'Fogo':'face1','Terra':'heal2','Ar':'draw','Água':'volley'}
 RATIO={'Fogo':0.56,'Terra':0.36,'Ar':0.46,'Água':0.45}
 # "Preço" de cada habilidade no orçamento da criatura (quanto mais forte a habilidade, menos ataque/vida sobra).
 # Valores ajustados com o simulador (npm run sim) para cada signo vencer entre 45% e 55%.
-KWC={'investida':2.53,'furia':-0.68,'carapaca':1.5,'lideranca':-1.28,'cura':-0.35,'reflexo':2.55,'veneno':0.53,
-     'distancia':-0.6,'ascensao':1.5,'corrente':1.5,'ilusao':2.54}  # as demais (escudo, perfurar, vampírico) custam 1
+KWC={'investida':2.53,'furia':-0.68,'carapaca':1.63,'lideranca':-1.28,'cura':-0.35,'reflexo':2.55,'veneno':0.53,
+     'distancia':-0.6,'ascensao':1.5,'corrente':1.5,'ilusao':2.54,
+     'arremetida':-0.59,'inabalavel':-0.03,'julgamento':1.73,'ferrao':2.58,'mira':0.37}  # as demais (escudo, perfurar, vampírico) custam 1
 # Preço dos efeitos de chegada (⭐).
-ONC={'twin':4.49}  # os demais custam 1
+ONC={'twin':4.79}  # os demais custam 1
 import os
 if os.environ.get('GEN_PARAMS'):  # usado pelo ajuste automático
     _p=json.loads(os.environ['GEN_PARAMS']); KWC=_p.get('kwc',KWC); ONC=_p.get('onc',ONC); RATIO.update(_p.get('ratio',{}))
@@ -47,6 +50,7 @@ for sg,(el,P,S,names,spells) in SIGNS.items():
         c=COSTS[i]; kw=[]; on=None
         if i in P_IDX:
             if P=='twin': on='twin'
+            elif sg in NOVA and sorted(P_IDX).index(i)%2==1: kw.append(NOVA[sg])  # metade fica com a habilidade exclusiva
             else: kw.append(P)
         if i in S0: kw.append(S[0])
         if i in S1: kw.append(S[1])

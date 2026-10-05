@@ -33,9 +33,9 @@
   "type": "unit",
   "cost": 1,
   "atk": 1,
-  "hp": 1,
+  "hp": 3,
   "kw": [
-   "investida"
+   "arremetida"
   ],
   "e": "🐐",
   "on": null,
@@ -86,10 +86,10 @@
   "race": "aries",
   "type": "unit",
   "cost": 2,
-  "atk": 1,
-  "hp": 1,
+  "atk": 3,
+  "hp": 3,
   "kw": [
-   "investida"
+   "arremetida"
   ],
   "e": "🐎",
   "on": null,
@@ -128,10 +128,10 @@
   "race": "aries",
   "type": "unit",
   "cost": 3,
-  "atk": 3,
-  "hp": 1,
+  "atk": 4,
+  "hp": 4,
   "kw": [
-   "investida"
+   "arremetida"
   ],
   "e": "🐏",
   "on": null,
@@ -182,10 +182,10 @@
   "race": "aries",
   "type": "unit",
   "cost": 3,
-  "atk": 3,
-  "hp": 1,
+  "atk": 5,
+  "hp": 3,
   "kw": [
-   "investida"
+   "arremetida"
   ],
   "e": "🌋",
   "on": null,
@@ -236,10 +236,10 @@
   "race": "aries",
   "type": "unit",
   "cost": 4,
-  "atk": 3,
-  "hp": 3,
+  "atk": 5,
+  "hp": 5,
   "kw": [
-   "investida"
+   "arremetida"
   ],
   "e": "🦅",
   "on": null,
@@ -292,10 +292,10 @@
   "race": "aries",
   "type": "unit",
   "cost": 6,
-  "atk": 6,
-  "hp": 4,
+  "atk": 8,
+  "hp": 6,
   "kw": [
-   "investida"
+   "arremetida"
   ],
   "e": "🔥",
   "on": null,
@@ -333,10 +333,10 @@
   "race": "aries",
   "type": "unit",
   "cost": 8,
-  "atk": 9,
-  "hp": 6,
+  "atk": 10,
+  "hp": 9,
   "kw": [
-   "investida",
+   "arremetida",
    "perfurar"
   ],
   "e": "🐏",
@@ -434,9 +434,9 @@
   "type": "unit",
   "cost": 1,
   "atk": 1,
-  "hp": 3,
+  "hp": 2,
   "kw": [
-   "furia"
+   "inabalavel"
   ],
   "e": "🐇",
   "on": null,
@@ -488,9 +488,9 @@
   "type": "unit",
   "cost": 2,
   "atk": 2,
-  "hp": 4,
+  "hp": 3,
   "kw": [
-   "furia"
+   "inabalavel"
   ],
   "e": "🧑‍🌾",
   "on": null,
@@ -530,9 +530,9 @@
   "type": "unit",
   "cost": 3,
   "atk": 3,
-  "hp": 5,
+  "hp": 4,
   "kw": [
-   "furia"
+   "inabalavel"
   ],
   "e": "🐃",
   "on": null,
@@ -584,9 +584,9 @@
   "type": "unit",
   "cost": 3,
   "atk": 3,
-  "hp": 5,
+  "hp": 4,
   "kw": [
-   "furia"
+   "inabalavel"
   ],
   "e": "🌾",
   "on": null,
@@ -638,9 +638,9 @@
   "type": "unit",
   "cost": 4,
   "atk": 3,
-  "hp": 7,
+  "hp": 6,
   "kw": [
-   "furia"
+   "inabalavel"
   ],
   "e": "🌳",
   "on": null,
@@ -694,9 +694,9 @@
   "type": "unit",
   "cost": 6,
   "atk": 5,
-  "hp": 9,
+  "hp": 8,
   "kw": [
-   "furia"
+   "inabalavel"
   ],
   "e": "🗿",
   "on": null,
@@ -734,10 +734,10 @@
   "race": "touro",
   "type": "unit",
   "cost": 8,
-  "atk": 7,
+  "atk": 6,
   "hp": 12,
   "kw": [
-   "furia",
+   "inabalavel",
    "escudo"
   ],
   "e": "🐂",
@@ -920,7 +920,7 @@
   "type": "unit",
   "cost": 3,
   "atk": 1,
-  "hp": 2,
+  "hp": 1,
   "kw": [],
   "e": "🪞",
   "on": "twin",
@@ -944,7 +944,7 @@
   "type": "unit",
   "cost": 3,
   "atk": 1,
-  "hp": 2,
+  "hp": 1,
   "kw": [],
   "e": "📜",
   "on": "twin",
@@ -996,7 +996,7 @@
   "type": "unit",
   "cost": 4,
   "atk": 2,
-  "hp": 3,
+  "hp": 2,
   "kw": [],
   "e": "🤸",
   "on": "twin",
@@ -1020,7 +1020,7 @@
   "type": "unit",
   "cost": 4,
   "atk": 1,
-  "hp": 4,
+  "hp": 3,
   "kw": [],
   "e": "🃏",
   "on": "twin",
@@ -1045,7 +1045,7 @@
   "race": "gemeos",
   "type": "unit",
   "cost": 5,
-  "atk": 4,
+  "atk": 3,
   "hp": 3,
   "kw": [],
   "e": "🌪️",
@@ -1072,7 +1072,7 @@
   "type": "unit",
   "cost": 6,
   "atk": 4,
-  "hp": 5,
+  "hp": 4,
   "kw": [],
   "e": "🦅",
   "on": "twin",
@@ -1233,7 +1233,7 @@
   "type": "unit",
   "cost": 2,
   "atk": 2,
-  "hp": 2,
+  "hp": 1,
   "kw": [
    "carapaca"
   ],
@@ -1261,7 +1261,7 @@
   "type": "unit",
   "cost": 2,
   "atk": 2,
-  "hp": 2,
+  "hp": 1,
   "kw": [
    "carapaca"
   ],
@@ -1275,7 +1275,7 @@
   "type": "unit",
   "cost": 2,
   "atk": 2,
-  "hp": 2,
+  "hp": 1,
   "kw": [
    "carapaca"
   ],
@@ -1303,7 +1303,7 @@
   "type": "unit",
   "cost": 3,
   "atk": 2,
-  "hp": 4,
+  "hp": 3,
   "kw": [
    "carapaca"
   ],
@@ -1329,7 +1329,7 @@
   "type": "unit",
   "cost": 3,
   "atk": 2,
-  "hp": 4,
+  "hp": 3,
   "kw": [
    "carapaca"
   ],
@@ -1508,7 +1508,7 @@
   "type": "unit",
   "cost": 8,
   "atk": 7,
-  "hp": 10,
+  "hp": 9,
   "kw": [
    "carapaca",
    "escudo"
@@ -2410,7 +2410,7 @@
   "atk": 1,
   "hp": 1,
   "kw": [
-   "reflexo"
+   "julgamento"
   ],
   "e": "🕊️",
   "on": null,
@@ -2461,10 +2461,10 @@
   "race": "libra",
   "type": "unit",
   "cost": 2,
-  "atk": 1,
+  "atk": 2,
   "hp": 1,
   "kw": [
-   "reflexo"
+   "julgamento"
   ],
   "e": "📜",
   "on": null,
@@ -2504,9 +2504,9 @@
   "type": "unit",
   "cost": 3,
   "atk": 2,
-  "hp": 2,
+  "hp": 3,
   "kw": [
-   "reflexo"
+   "julgamento"
   ],
   "e": "🤝",
   "on": null,
@@ -2558,9 +2558,9 @@
   "type": "unit",
   "cost": 3,
   "atk": 3,
-  "hp": 1,
+  "hp": 2,
   "kw": [
-   "reflexo"
+   "julgamento"
   ],
   "e": "☯️",
   "on": null,
@@ -2611,10 +2611,10 @@
   "race": "libra",
   "type": "unit",
   "cost": 4,
-  "atk": 2,
+  "atk": 3,
   "hp": 4,
   "kw": [
-   "reflexo"
+   "julgamento"
   ],
   "e": "🦅",
   "on": null,
@@ -2668,9 +2668,9 @@
   "type": "unit",
   "cost": 6,
   "atk": 5,
-  "hp": 5,
+  "hp": 6,
   "kw": [
-   "reflexo"
+   "julgamento"
   ],
   "e": "😇",
   "on": null,
@@ -2709,9 +2709,9 @@
   "type": "unit",
   "cost": 8,
   "atk": 7,
-  "hp": 8,
+  "hp": 9,
   "kw": [
-   "reflexo",
+   "julgamento",
    "escudo"
   ],
   "e": "⚖️",
@@ -2810,7 +2810,7 @@
   "atk": 1,
   "hp": 1,
   "kw": [
-   "veneno"
+   "ferrao"
   ],
   "e": "🦇",
   "on": null,
@@ -2861,10 +2861,10 @@
   "race": "escorpiao",
   "type": "unit",
   "cost": 2,
-  "atk": 2,
-  "hp": 2,
+  "atk": 1,
+  "hp": 1,
   "kw": [
-   "veneno"
+   "ferrao"
   ],
   "e": "⚗️",
   "on": null,
@@ -2903,10 +2903,10 @@
   "race": "escorpiao",
   "type": "unit",
   "cost": 3,
-  "atk": 3,
-  "hp": 3,
+  "atk": 2,
+  "hp": 2,
   "kw": [
-   "veneno"
+   "ferrao"
   ],
   "e": "🐍",
   "on": null,
@@ -2957,10 +2957,10 @@
   "race": "escorpiao",
   "type": "unit",
   "cost": 3,
-  "atk": 4,
-  "hp": 2,
+  "atk": 3,
+  "hp": 1,
   "kw": [
-   "veneno"
+   "ferrao"
   ],
   "e": "🐛",
   "on": null,
@@ -3011,10 +3011,10 @@
   "race": "escorpiao",
   "type": "unit",
   "cost": 4,
-  "atk": 3,
-  "hp": 5,
+  "atk": 2,
+  "hp": 4,
   "kw": [
-   "veneno"
+   "ferrao"
   ],
   "e": "🕷️",
   "on": null,
@@ -3067,10 +3067,10 @@
   "race": "escorpiao",
   "type": "unit",
   "cost": 6,
-  "atk": 6,
-  "hp": 6,
+  "atk": 5,
+  "hp": 5,
   "kw": [
-   "veneno"
+   "ferrao"
   ],
   "e": "👑",
   "on": null,
@@ -3108,10 +3108,10 @@
   "race": "escorpiao",
   "type": "unit",
   "cost": 8,
-  "atk": 8,
-  "hp": 9,
+  "atk": 7,
+  "hp": 8,
   "kw": [
-   "veneno",
+   "ferrao",
    "vampirico"
   ],
   "e": "🦂",
@@ -3207,9 +3207,9 @@
   "type": "unit",
   "cost": 1,
   "atk": 1,
-  "hp": 3,
+  "hp": 2,
   "kw": [
-   "distancia"
+   "mira"
   ],
   "e": "🦅",
   "on": null,
@@ -3261,9 +3261,9 @@
   "type": "unit",
   "cost": 2,
   "atk": 3,
-  "hp": 3,
+  "hp": 2,
   "kw": [
-   "distancia"
+   "mira"
   ],
   "e": "🐾",
   "on": null,
@@ -3303,9 +3303,9 @@
   "type": "unit",
   "cost": 3,
   "atk": 4,
-  "hp": 4,
+  "hp": 3,
   "kw": [
-   "distancia"
+   "mira"
   ],
   "e": "🌠",
   "on": null,
@@ -3356,10 +3356,10 @@
   "race": "sagitario",
   "type": "unit",
   "cost": 3,
-  "atk": 5,
+  "atk": 4,
   "hp": 3,
   "kw": [
-   "distancia"
+   "mira"
   ],
   "e": "🪶",
   "on": null,
@@ -3410,10 +3410,10 @@
   "race": "sagitario",
   "type": "unit",
   "cost": 4,
-  "atk": 5,
+  "atk": 4,
   "hp": 5,
   "kw": [
-   "distancia"
+   "mira"
   ],
   "e": "🐴",
   "on": null,
@@ -3466,10 +3466,10 @@
   "race": "sagitario",
   "type": "unit",
   "cost": 6,
-  "atk": 8,
+  "atk": 7,
   "hp": 6,
   "kw": [
-   "distancia"
+   "mira"
   ],
   "e": "🏇",
   "on": null,
@@ -3508,9 +3508,9 @@
   "type": "unit",
   "cost": 8,
   "atk": 10,
-  "hp": 9,
+  "hp": 8,
   "kw": [
-   "distancia",
+   "mira",
    "perfurar"
   ],
   "e": "🏹",

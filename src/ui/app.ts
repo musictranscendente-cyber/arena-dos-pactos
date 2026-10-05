@@ -223,6 +223,7 @@ function fxText(e: GameEvent): [string, string, string] | null {
     case 'UnitHealed': return [cell(e.side, e.l, e.d), `+${e.amount}`, 'heal'];
     case 'UnitReturnedToHand': return [cell(e.side, e.l, e.d), '🫧 volta', 'sh'];
     case 'UnitPlaced': return e.token ? [cell(e.side, e.l, e.d), 'Eco!', 'heal'] : null;
+    case 'UnitPushed': return [cell(e.side, e.l, e.to), '🐏 empurrado!', 'sh'];
     case 'HeroDamaged': return [`hero-${e.side}`, `-${e.amount}`, 'dmg heroi'];
     case 'HeroHealed': return [`hero-${e.side}`, `+${e.amount}`, 'heal'];
   }

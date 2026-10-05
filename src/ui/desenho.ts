@@ -39,6 +39,11 @@ export interface Zoom {
 }
 
 /** Carta grande com a descrição completa: nome, arte, raridade, atributos e cada habilidade explicada. */
+/** Número acima do original da carta fica verde; abaixo, vermelho. */
+function compara(atual: number, original: number): string {
+  return atual > original ? ' up' : atual < original ? ' down' : '';
+}
+
 function zoomHtml(z: Zoom): string {
   const c = card(z.cid);
   const r = RACES[c.race];
@@ -49,7 +54,7 @@ function zoomHtml(z: Zoom): string {
   if (c.type === 'unit') {
     const habs = c.kw.map(k => `<li><b>${KW[k].i} ${KW[k].n}</b> ${KW[k].d}</li>`);
     if (c.on) habs.push(`<li><b>⭐ ${T.aoEntrar}</b> ${cardText({ ...c, kw: [] })}</li>`);
-    corpo = `<div class="z-st"><span class="z-a"><b class="a">${z.atk ?? c.atk}</b> ${T.ataque}</span><span class="z-h"><b class="h">${z.hp ?? c.hp}</b> ${T.vida}</span></div>`
+    corpo = `<div class="z-st"><span class="z-a"><b class="a${compara(z.atk ?? c.atk, c.atk)}">${z.atk ?? c.atk}</b> ${T.ataque}</span><span class="z-h"><b class="h${compara(z.hp ?? c.hp, c.hp)}">${z.hp ?? c.hp}</b> ${T.vida}</span></div>`
       + `<ul class="z-hab">${habs.length ? habs.join('') : `<li>${T.semHabilidade}</li>`}</ul>`;
   } else {
     corpo = `<p class="z-magia"><b>✨ ${T.magia}</b> ${cardText(c)}</p>`;
@@ -163,7 +168,7 @@ function cellHtml(v: View, side: Side, l: number, d: number): string {
       + (u.pending ? '<span class="pnd">⏳</span>' : '')
       + figHtml(c, u.cid, pose, u.uid)
       + (fichas.length ? `<span class="kws">${fichas.join('')}</span>` : '')
-      + `<b class="a${atk > u.atk ? ' up' : ''}">${atk}</b><b class="h">${u.hp}</b></div>`;
+      + `<b class="a${compara(atk, c.type === 'unit' ? c.atk : atk)}">${atk}</b><b class="h${compara(u.hp, c.type === 'unit' ? c.hp : u.hp)}">${u.hp}</b></div>`;
   }
   const col = side === 'p' ? 3 - d : 5 + d;
   return `<div class="${cls.join(' ')}" style="grid-row:${l + 1};grid-column:${col};--z:${l + 1}" id="c-${side}-${l}-${d}" data-act="cell" data-side="${side}" data-l="${l}" data-d="${d}">${inner}${pend ? `<span class="spell-mark">${pend}</span>` : ''}</div>`;

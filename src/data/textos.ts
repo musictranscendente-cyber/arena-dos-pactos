@@ -13,9 +13,14 @@ export const KW: Record<Keyword, { i: string; n: string; d: string }> = {
   lideranca: { i: '📣', n: 'Liderança', d: 'outros aliados na mesma linha ganham +1 de ataque.' },
   carapaca: { i: '🐚', n: 'Carapaça', d: 'todo dano recebido é reduzido em 1.' },
   cura: { i: '💚', n: 'Cura', d: 'no início da rodada, cura 2 de vida dos aliados da mesma linha.' },
-  reflexo: { i: '⚖️', n: 'Reflexo', d: 'quem atacar esta carta leva 1 de dano.' },
+  reflexo: { i: '🪞', n: 'Reflexo', d: 'quem atacar esta carta leva 1 de dano.' },
   ascensao: { i: '⛰️', n: 'Ascensão', d: 'ganha +1/+1 no início de cada rodada.' },
   ilusao: { i: '🫧', n: 'Ilusão', d: 'na primeira vez que morre, volta para a sua mão.' },
+  arremetida: { i: '🐏', n: 'Arremetida', d: 'ao atacar uma criatura, empurra ela uma casa para trás; se não houver casa vazia atrás, causa +1 de dano.' },
+  inabalavel: { i: '🗿', n: 'Inabalável', d: 'nunca recebe mais que 3 de dano de uma vez.' },
+  julgamento: { i: '⚖️', n: 'Julgamento', d: 'causa dano dobrado em quem tem mais ataque que ela.' },
+  ferrao: { i: '🦂', n: 'Ferrão Final', d: 'quando morre, causa 3 de dano na criatura que a matou.' },
+  mira: { i: '🏹', n: 'Mira Certeira', d: 'seus ataques atravessam Escudo e Carapaça.' },
 };
 
 export const ON: Record<Chegada, string> = {

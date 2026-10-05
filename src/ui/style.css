@@ -684,3 +684,16 @@ body:not(.land) .board{flex:0 0 auto;height:min(54vh,44vw)}
 .unit .fig.has-anim .spr.ataque.espera img{animation:none}
 /* a criatura já nasce na sua própria camada: criar a camada só na hora do golpe fazia a figura piscar no celular */
 .unit{will-change:transform}
+
+/* mão: espaço em cima (carta selecionada sobe, custo e gema passam da borda) e embaixo (moldura e brilho)
+   para nada ficar cortado; a área vazia deixa o toque passar para o tabuleiro */
+.bottom{bottom:0}
+.bottom .hand{padding-top:30px;padding-bottom:9px;pointer-events:none}
+.bottom .hand .card,.bottom .hand .empty{pointer-events:auto}
+.land .bottom .hand{padding-top:26px;padding-bottom:8px}
+.bottom .acts,.bottom .manaorb{margin-bottom:6px}
+
+/* ataque/vida acima do original da carta: verde; abaixo: vermelho */
+.a.up,.h.up{color:#6dff7e;filter:drop-shadow(0 0 3px #3dff5a99)}
+.a.down,.h.down{color:#ff6262;filter:drop-shadow(0 0 3px #ff2a2a88)}
+.h.up,.h.down{-webkit-text-stroke:2.5px #111;paint-order:stroke fill}
