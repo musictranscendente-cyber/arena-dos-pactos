@@ -80,7 +80,7 @@ export const ATK_MS = { start: 900, strike: 900 };
 
 function tiraHtml(src: string, t: Tira, base: number, extra: string, cls: string): string {
   return `<span class="spr ${cls}" style="--n:${t.n};--fw:${t.w / base};--fh:${t.h / base};--ax:${t.ax};--by:${t.by};${extra}">`
-    + `<img src="${src}" alt=""></span>`;
+    + `<img src="${src}" decoding="sync" alt=""></span>`;
 }
 
 /** Fator de tamanho (--s) da figura no campo, para cartas com arte; null = emoji. */
@@ -102,7 +102,9 @@ function figHtml(c: Card, cid: string, cell: { atk: boolean; strike: boolean }, 
     // só troca para o golpe se a imagem dele já carregou; senão continua respirando
     if ((!cell.atk && !cell.strike) || !pronta(urlAtk)) {
       const ph = ((Date.now() / 1000 + uid * 0.77) % 3).toFixed(2);
-      return `<span class="fig has-anim" style="${sz}">${tiraHtml(animUrl(cid, c.race, 'idle'), an.idle, base, `--pa:-${ph}s`, 'idle')}</span>`;
+      // a tira do golpe já fica na página, invisível: assim o navegador deixa ela pronta e a troca não pisca
+      const espera = pronta(urlAtk) ? tiraHtml(urlAtk, an.ataque, base, '', 'ataque espera') : '';
+      return `<span class="fig has-anim" style="${sz}">${tiraHtml(animUrl(cid, c.race, 'idle'), an.idle, base, `--pa:-${ph}s`, 'idle')}${espera}</span>`;
     }
     // o ataque continua do ponto certo quando a tela é redesenhada no quadro do golpe
     const delay = cell.strike ? -ATK_MS.start : 0;
@@ -115,9 +117,9 @@ function figHtml(c: Card, cid: string, cell: { atk: boolean; strike: boolean }, 
   const podeGolpear = pronta(artUrl(cid, c.race, 'ataque'));
   if (!podeGolpear) cell = { atk: false, strike: false };
   const mode = cell.strike ? 'gone' : cell.atk ? 'wind' : '';
-  let h = `<img class="art parado ${mode}" src="${artUrl(cid, c.race, 'parado')}" style="--rw:${ar[0]};${idlePhase(uid)}" alt="">`;
+  let h = `<img class="art parado ${mode}" decoding="sync" src="${artUrl(cid, c.race, 'parado')}" style="--rw:${ar[0]};${idlePhase(uid)}" alt="">`;
   if (cell.atk || cell.strike) {
-    h += `<img class="art ataque ${cell.strike ? '' : 'late'}" src="${artUrl(cid, c.race, 'ataque')}" style="--rw:${ar[1]};--dx:${(ar[1] - ar[0]) / 2}" alt="">`;
+    h += `<img class="art ataque ${cell.strike ? '' : 'late'}" decoding="sync" src="${artUrl(cid, c.race, 'ataque')}" style="--rw:${ar[1]};--dx:${(ar[1] - ar[0]) / 2}" alt="">`;
   }
   return `<span class="fig has-art" style="${idlePhase(uid)};--s:${escalaFig(c, cid)}">${h}</span>`;
 }

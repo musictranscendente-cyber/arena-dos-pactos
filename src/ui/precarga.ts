@@ -6,6 +6,7 @@ import { ANIM, animUrl, ARTE, artUrl, MAGIA, magiaUrl } from '../data/arte';
 
 const prontas = new Set<string>();
 const pedidas = new Set<string>();
+const guardadas: HTMLImageElement[] = [];
 
 export function precarregar(cids: Iterable<string>): void {
   for (const cid of cids) {
@@ -19,8 +20,9 @@ export function precarregar(cids: Iterable<string>): void {
       if (pedidas.has(u)) continue;
       pedidas.add(u);
       const img = new Image();
-      img.onload = () => prontas.add(u);
       img.src = u;
+      // só conta como pronta depois de decodificada; a imagem fica guardada para o navegador não descartar
+      img.decode().then(() => { prontas.add(u); guardadas.push(img); }, () => { /* imagem com erro: a criatura só respira */ });
     }
   }
 }

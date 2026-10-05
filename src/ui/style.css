@@ -678,3 +678,9 @@ body:not(.land) .board{flex:0 0 auto;height:min(54vh,44vw)}
 .land .maorival b{font-size:13px;margin-left:9px}
 /* janelas (resultado, desistir, galeria) sempre por cima da mão e dos botões */
 .ov{z-index:100}
+
+/* tira do golpe esperando, invisível e parada: já decodificada, a troca para o ataque não pisca */
+.unit .fig.has-anim .spr.ataque.espera{opacity:0;pointer-events:none}
+.unit .fig.has-anim .spr.ataque.espera img{animation:none}
+/* a criatura já nasce na sua própria camada: criar a camada só na hora do golpe fazia a figura piscar no celular */
+.unit{will-change:transform}
