@@ -10,6 +10,8 @@ export interface DeckMontado {
   signos: [Signo, Signo];
   /** As 30 cartas (ids; a mesma carta aparece uma vez para cada cópia). */
   cartas: string[];
+  /** Nome que o jogador deu ao deck. */
+  nome?: string;
 }
 
 /** Máximo de cópias da mesma carta num deck, pela raridade. */

@@ -30,7 +30,12 @@ export function lerDecks(): MeusDecks {
     const raw = localStorage.getItem(CHAVE);
     if (raw) {
       const m = JSON.parse(raw) as MeusDecks;
-      const decks = Array.from({ length: ESPACOS }, (_, i) => (valido(m?.decks?.[i]) ? m.decks[i] : null));
+      const decks = Array.from({ length: ESPACOS }, (_, i) => {
+        const d = m?.decks?.[i];
+        if (!valido(d)) return null;
+        // nome é texto livre do jogador: só aceita texto curto
+        return typeof d.nome === 'string' ? { ...d, nome: d.nome.slice(0, 22) } : { signos: d.signos, cartas: d.cartas };
+      });
       const ativo = typeof m?.ativo === 'number' && decks[m.ativo] ? m.ativo : decks.findIndex(Boolean);
       return { ativo, decks };
     }

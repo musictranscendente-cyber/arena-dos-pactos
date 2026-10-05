@@ -472,7 +472,7 @@ function menuClick(a: string | undefined, t: HTMLElement): boolean {
     case 'montar':
       dialogo = null;
       tela = 'montar';
-      montagem = { passo: 0, espaco: 0, signos: [], cartas: [], info: null, msg: '', apagar: null };
+      montagem = { passo: 0, espaco: 0, signos: [], cartas: [], info: null, msg: '', apagar: null, nome: '' };
       render();
       return true;
   }
@@ -484,8 +484,8 @@ function menuClick(a: string | undefined, t: HTMLElement): boolean {
     case 'mespaco': {
       const i = Number(t.dataset.i), d = meus.decks[i];
       mg.espaco = i; mg.info = null; mg.msg = '';
-      if (d) { mg.signos = [...d.signos]; mg.cartas = [...d.cartas]; mg.passo = 2; }
-      else { mg.signos = []; mg.cartas = []; mg.passo = 1; }
+      if (d) { mg.signos = [...d.signos]; mg.cartas = [...d.cartas]; mg.nome = d.nome ?? ''; mg.passo = 2; }
+      else { mg.signos = []; mg.cartas = []; mg.nome = ''; mg.passo = 1; }
       break;
     }
     case 'musar': meus.ativo = Number(t.dataset.i); salvarDecks(meus); break;
@@ -538,7 +538,8 @@ function menuClick(a: string | undefined, t: HTMLElement): boolean {
     case 'mlimpar': mg.cartas = []; mg.msg = ''; keepScroll(); return true;
     case 'msalvar': {
       if (mg.cartas.length !== DECK_SIZE) return true;
-      meus.decks[mg.espaco] = { signos: [mg.signos[0], mg.signos[1]], cartas: [...mg.cartas] };
+      const nome = mg.nome.trim().slice(0, 22);
+      meus.decks[mg.espaco] = { signos: [mg.signos[0], mg.signos[1]], cartas: [...mg.cartas], ...(nome ? { nome } : {}) };
       if (meus.ativo < 0) meus.ativo = mg.espaco;
       const ok = salvarDecks(meus);
       mg.passo = 0;
@@ -554,9 +555,10 @@ function menuClick(a: string | undefined, t: HTMLElement): boolean {
 
 /** Redesenha a montagem sem perder a rolagem da lista de cartas. */
 function keepScroll(): void {
-  const top = document.querySelector('.ov.montar')?.scrollTop ?? 0;
+  const lista = () => document.querySelector('.m-corpo .ggrid') ?? document.querySelector('.ov.montar');
+  const top = lista()?.scrollTop ?? 0;
   render();
-  const sc = document.querySelector('.ov.montar');
+  const sc = lista();
   if (sc) sc.scrollTop = top;
 }
 
@@ -704,6 +706,11 @@ function hintFor(cid: string): string {
 
 export function startApp(): void {
   app().addEventListener('click', onClick);
+  // nome do deck: guarda enquanto digita, sem redesenhar (o teclado não fecha)
+  app().addEventListener('input', e => {
+    const t = e.target as HTMLInputElement;
+    if (t.id === 'm-nome' && montagem) montagem.nome = t.value;
+  });
   app().addEventListener('keydown', e => {
     if ((e.key === 'Enter' || e.key === ' ') && (e.target as HTMLElement).matches('[role="button"]')) {
       e.preventDefault();

@@ -33,8 +33,14 @@ function ilhaHtml(i: Ilha, k: number): string {
     + '</button>';
 }
 
+/** Texto do jogador dentro do HTML (nome do deck): sem tags. */
+export function esc(t: string): string {
+  return t.replace(/[&<>"']/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[ch]!);
+}
+
 /** Nome curto de um deck montado: "♈ Áries + ♌ Leão". */
 export function nomeDeckMontado(d: DeckMontado): string {
+  if (d.nome?.trim()) return esc(d.nome.trim());
   return d.signos.map(s => `${RACES[s].g} ${RACES[s].n}`).join(' + ');
 }
 
@@ -93,6 +99,8 @@ export interface Montagem {
   msg: string;
   /** Espaço esperando confirmar para apagar. */
   apagar: number | null;
+  /** Nome do deck (vazio = usa os signos). */
+  nome: string;
 }
 
 const RAR_NOME: Record<string, string> = { c: 'Comum', r: 'Rara', e: 'Épica', l: 'Lendária' };
@@ -113,7 +121,8 @@ function meusDecksHtml(m: Montagem, decks: (DeckMontado | null)[], ativo: number
     return `<div class="m-slot${em ? ' ativo' : ''}" style="--rc:${RACES[a].c};--rc2:${RACES[b].c}">`
       + `<b class="m-slot-n">${T.deckN(i + 1)}${em ? ` <em>${T.emUso}</em>` : ''}</b>`
       + `<span class="m-slot-sg"><i>${RACES[a].g}</i><i class="b">${RACES[b].g}</i></span>`
-      + `<span class="m-slot-nome">${RACES[a].n} + ${RACES[b].n}</span>`
+      + `<span class="m-slot-nome">${nomeDeckMontado(d)}</span>`
+      + (d.nome?.trim() ? `<span class="m-slot-sub">${RACES[a].n} + ${RACES[b].n}</span>` : '')
       + `<span class="m-slot-bts">`
       + (em ? `<button class="btn rc" disabled>✓ ${T.emUso}</button>` : `<button class="btn go" data-act="musar" data-i="${i}">${T.usarDeck}</button>`)
       + `<button class="btn rc" data-act="mespaco" data-i="${i}">${T.editar}</button>`
@@ -159,19 +168,22 @@ export function montarHtml(m: Montagem, decks: (DeckMontado | null)[], ativo: nu
   let lado = `<p class="m-dica">${m.msg || T.toqueParaVer}</p>`;
   if (m.info) {
     const k = m.info, n = qtd.get(k) ?? 0, mx = maxCopias(k);
-    lado = `<div class="m-detalhe">${zoomHtml({ cid: k, lado: 'p' })}</div>`
-      + `<p class="m-copias">${T.noDeck}: <b>${n}</b> / ${mx} <small>(${RAR_NOME[CARDS[k].r]})</small></p>`
-      + `<div class="m-qtd"><button class="btn rc" data-act="mmenos" ${n ? '' : 'disabled'} aria-label="${T.tirar}">－ ${T.tirar}</button>`
+    // quantidade e botões em cima (sempre à vista); a carta grande logo abaixo
+    lado = `<div class="m-qtd"><button class="btn rc" data-act="mmenos" ${n ? '' : 'disabled'} aria-label="${T.tirar}">－ ${T.tirar}</button>`
       + `<button class="btn go" data-act="mmais" ${n < mx && !cheio ? '' : 'disabled'} aria-label="${T.colocar}">＋ ${T.colocar}</button></div>`
-      + (m.msg ? `<p class="m-dica">${m.msg}</p>` : '');
+      + `<p class="m-copias">${T.noDeck}: <b>${n}</b> / ${mx} <small>(${RAR_NOME[CARDS[k].r]})</small></p>`
+      + (m.msg ? `<p class="m-dica">${m.msg}</p>` : '')
+      + `<div class="m-detalhe">${zoomHtml({ cid: k, lado: 'p' })}</div>`;
   }
-  return `<div class="ov montar gal"><div class="panel wide">`
-    + `<div class="gtop"><h2>${T.deckN(m.espaco + 1)}: <span style="color:${RACES[a].c}">${RACES[a].g}</span> + <span style="color:${RACES[b].c}">${RACES[b].g}</span> <small>${RACES[a].n} + ${RACES[b].n}</small></h2>`
+  return `<div class="ov montar gal"><div class="panel wide"><div class="m-fixo">`
+    + `<div class="gtop"><div class="m-titulo"><span class="m-sg"><i style="--rc:${RACES[a].c}">${RACES[a].g}</i><i style="--rc:${RACES[b].c}">${RACES[b].g}</i></span>`
+    + `<label class="m-nome"><small>${T.deckN(m.espaco + 1)} · ${T.nomeDoDeck}</small>`
+    + `<input id="m-nome" type="text" maxlength="22" autocomplete="off" spellcheck="false" value="${esc(m.nome)}" placeholder="${RACES[a].n} + ${RACES[b].n}"></label></div>`
     + `<span class="m-topo-bts"><button class="btn rc" data-act="mvoltar">${T.trocarSignos}</button>${fechaHtml()}</span></div>`
     + `<div class="m-barra"><div class="m-conta${cheio ? ' cheio' : ''}"><b>${m.cartas.length}</b>/${DECK_SIZE}<small>${RACES[a].g} ${deA} · ${RACES[b].g} ${m.cartas.length - deA}</small></div>`
     + `<div class="m-curva" aria-label="${T.curvaMana}">${barras}</div>`
     + `<div class="m-bts"><button class="btn rc" data-act="mcompletar" ${cheio ? 'disabled' : ''}>${T.completar}</button>`
     + `<button class="btn rc" data-act="mlimpar" ${m.cartas.length ? '' : 'disabled'}>${T.limpar}</button>`
-    + `<button class="btn go" data-act="msalvar" ${cheio ? '' : 'disabled'}>${T.salvarDeck}</button></div></div>`
+    + `<button class="btn go" data-act="msalvar" ${cheio ? '' : 'disabled'}>${T.salvarDeck}</button></div></div></div>`
     + `<div class="m-corpo"><div class="m-lado">${lado}</div><div class="ggrid">${cards}</div></div></div></div>`;
 }

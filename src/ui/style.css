@@ -847,5 +847,30 @@ body:not(.land) .board{flex:0 0 auto;height:min(54vh,44vw)}
 .m-qtd{display:flex;gap:6px}.m-qtd .btn{flex:1;min-height:36px;padding:0 6px;font-size:14px}
 .m-dica{margin:4px 0;font-size:13px;color:#e6dbff;line-height:1.35;background:#ffffff10;border-radius:10px;padding:8px}
 .montar .ggrid{margin-top:0}
-@media (max-width:620px){.m-slots{grid-template-columns:1fr}.m-corpo{grid-template-columns:1fr}.m-lado{position:static}}
+@media (max-width:620px){body:not(.rot) .m-slots{grid-template-columns:1fr}body:not(.rot) .m-corpo{grid-template-columns:1fr}body:not(.rot) .m-lado{position:static}}
 .m-qtd .btn.go,.m-slot .btn.go{font-family:inherit;font-weight:800;letter-spacing:0}
+
+/* montar deck (escolher cartas): topo e painel da carta parados; só a lista de cartas rola */
+.ov.montar.gal{overflow:hidden;padding:12px}
+.ov.montar.gal .panel{height:100%;max-height:100%;display:flex;flex-direction:column;overflow:hidden;padding-bottom:10px}
+.m-fixo{flex:0 0 auto;padding-bottom:6px;border-bottom:1px solid #ffffff1a}
+.m-corpo{flex:1;min-height:0;margin-top:8px}
+.m-corpo .ggrid{height:100%;overflow:auto;overscroll-behavior:contain;padding-right:6px;align-content:start}
+.m-corpo .m-lado{position:static;max-height:100%;overflow:auto}
+.m-titulo{display:flex;align-items:center;gap:10px;min-width:0;flex:1}
+.m-sg{display:flex;flex:0 0 auto}
+.m-sg i{font-style:normal;width:40px;height:40px;border-radius:50%;display:grid;place-items:center;font-size:22px;color:#fff;
+  background:radial-gradient(circle,var(--rc),color-mix(in srgb,var(--rc) 50%,#000));box-shadow:0 0 0 2px var(--gold),0 0 0 3px #4a2c0a}
+.m-sg i + i{margin-left:-8px}
+.m-nome{display:flex;flex-direction:column;min-width:0;flex:1;max-width:340px}
+.m-nome small{font-size:11px;color:#c9bde6;margin-bottom:2px}
+.m-nome input{font:inherit;font-family:'Grenze Gotisch',Georgia,serif;font-size:24px;color:#ffe9a8;background:#0f0a26;border:1.5px solid #6a5aa0;border-radius:10px;
+  padding:3px 10px;width:100%;min-width:0;outline:none}
+.m-nome input:focus{border-color:var(--gold);box-shadow:0 0 0 2px #f2b93b55}
+.m-nome input::placeholder{color:#8a7fb0}
+.m-slot-sub{font-size:12px;color:#c9bde6;margin-top:-4px}
+.land .ov.montar.gal .m-curva{height:36px}
+.land .m-nome input{font-size:20px}
+/* tela estreita de verdade (sem girar): uma coluna e a página inteira rola */
+@media (max-width:620px){body:not(.rot) .ov.montar.gal .panel{height:auto;max-height:none;overflow:visible}body:not(.rot) .ov.montar.gal{overflow:auto}body:not(.rot) .m-corpo .ggrid{height:auto;overflow:visible}}
+.m-qtd .btn{white-space:nowrap}

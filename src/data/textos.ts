@@ -80,6 +80,7 @@ export const T = {
   salvarDeck: 'Salvar deck',
   toqueParaVer: 'Toque numa carta para ver todos os detalhes e colocar no deck.',
   sair: 'Sair',
+  nomeDoDeck: 'nome do deck (toque para mudar)',
   meusDecks: 'Meus Decks',
   meusDecksAjuda: 'Você pode ter até 3 decks. O deck "em uso" é o que vai para a Partida Rápida.',
   deckN: (n: number) => `Deck ${n}`,
