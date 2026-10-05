@@ -1,6 +1,6 @@
 // O botão "Batalha!": Revelação → magias de suporte → magias de dano → chegadas → enfrentamento por fileira.
 import { Ctx } from './ctx';
-import { attack, damageUnit } from './keywords';
+import { attack, damageUnit, resolverFerroes } from './keywords';
 import { startRound } from './round';
 import { castSpell, isSupport, spellCard } from './spells';
 import { checkOver, draw, findUnit, healHero, hitHero, mkUnit, unitsInOrder } from './state';
@@ -48,6 +48,7 @@ function runBattle(ctx: Ctx): void {
       arrive(ctx, side, l, d, u);
       if (checkOver(ctx)) return void ctx.beat('end');
       ctx.beat('arrival');
+      if (ferroes(ctx)) return;
     }
   }
 
@@ -70,10 +71,20 @@ function runBattle(ctx: Ctx): void {
       if (ee) attack(ctx, 'e', ee.l, ee.d, ee.u);
       if (checkOver(ctx)) return void ctx.beat('end');
       ctx.beat('step');
+      if (ferroes(ctx)) return;
     }
   }
 
   startRound(ctx);
+}
+
+/** Ferrão Final depois do golpe, num quadro próprio. Devolve true se a partida acabou. */
+function ferroes(ctx: Ctx): boolean {
+  if (!ctx.ferroes.length) return false;
+  resolverFerroes(ctx);
+  if (checkOver(ctx)) { ctx.beat('end'); return true; }
+  ctx.beat('ferrao');
+  return false;
 }
 
 function alive(s: GameState, side: Side, u: Unit | undefined): { l: number; d: number; u: Unit } | null {

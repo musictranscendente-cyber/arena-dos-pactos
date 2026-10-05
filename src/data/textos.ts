@@ -79,6 +79,8 @@ export const T = {
   rodada: 'Rodada',
   vida: 'vida',
   semHabilidade: 'Sem habilidade especial.',
+  ferrao: 'Ferrão Final!',
+  ferraoMsg: (nome: string, dono: string) => `${nome} (${dono}) morreu e crava o Ferrão Final em quem a matou!`,
   investidaMsg: (nome: string, dono: string) => `${nome} (${dono}) entrou com Investida e já ataca!`,
   efeito: {
     cura: (lado: 'p' | 'e', n: number) => lado === 'p' ? `Você recuperou ${n} de vida` : `O rival recuperou ${n} de vida`,

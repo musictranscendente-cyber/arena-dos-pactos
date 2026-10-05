@@ -18,8 +18,13 @@ const sleep = (ms: number) => new Promise(r => setTimeout(r, reduce ? ms * 0.4 :
 const randomSeed = () => Math.floor(Math.random() * 2 ** 31);
 
 /** Pausa depois de cada tipo de quadro da Batalha (mesmos tempos do protótipo). */
+/** Ferrão Final: espera depois do golpe, tempo da animação do ferrão e pausa depois do dano. */
+const FERRAO_ESPERA_MS = 450;
+const FERRAO_ANIM_MS = 900;
+const FERRAO_MS = 700;
+
 const PAUSE: Record<Frame['kind'], number> = {
-  tick: 0, reveal: 450, spells: 450, spell: MAGIA_MS, arrival: 550, battle: 450, row: 0, 'step-start': ATK_MS.start, step: ATK_MS.strike, end: 700,
+  tick: 0, reveal: 450, spells: 450, spell: MAGIA_MS, arrival: 550, battle: 450, row: 0, 'step-start': ATK_MS.start, step: ATK_MS.strike, ferrao: FERRAO_MS, end: 700,
 };
 
 interface Match {
@@ -160,6 +165,16 @@ async function battle(): Promise<void> {
       for (const sh of shotsOf(f.events)) launch(app(), sh, t * 0.5, t * 0.48);
       await sleep(PAUSE['step-start']);
     }
+    // Ferrão Final: uma pausa depois do golpe, o escorpião aparece onde morreu e lança o ferrão; só então o dano
+    if (f.kind === 'ferrao') {
+      m.active = null;
+      m.striking = null;
+      for (const e of f.events) if (e.t === 'Sting') { m.msg = T.ferraoMsg(name(e.cid), e.from.side === 'p' ? 'seu' : 'do rival'); }
+      render();
+      await sleep(FERRAO_ESPERA_MS);
+      for (const e of f.events) if (e.t === 'Sting') animaFerrao(e);
+      await sleep(FERRAO_ANIM_MS);
+    }
     m.shown = f.state;
     m.striking = f.kind === 'step' || inv ? m.active : null;
     m.active = f.active ?? null;
@@ -284,6 +299,20 @@ function golpeNoHeroi(side: Side, amount: number): void {
 const REFORCO_MS = 550;
 
 /** Aviso grande em cima de quem entrou com Investida. */
+/** Ferrão Final: escorpião fantasma surge onde a criatura morreu, com o aviso, e o ferrão voa até quem a matou. */
+function animaFerrao(e: Extract<GameEvent, { t: 'Sting' }>): void {
+  const de = `c-${e.from.side}-${e.from.l}-${e.from.d}`, para = `c-${e.side}-${e.l}-${e.d}`;
+  const cell = document.getElementById(de);
+  if (!cell) return;
+  const g = document.createElement('span');
+  g.className = 'ferrao-fantasma';
+  g.innerHTML = `<i>🦂</i><b>${T.ferrao}</b>`;
+  cell.appendChild(g);
+  setTimeout(() => g.remove(), FERRAO_ANIM_MS + 500);
+  const t = FERRAO_ANIM_MS * (reduce ? 0.4 : 1);
+  launch(app(), { from: de, to: para, kind: 'ferrao', color: '#b56cff' }, t * 0.45, t * 0.5);
+}
+
 function avisoInvestida(id: string): void {
   const cell = document.getElementById(id);
   if (!cell) return;

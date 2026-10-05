@@ -1,9 +1,11 @@
 import { nextFloat } from './rng';
-import type { Frame, GameEvent, GameState, Target } from './types';
+import type { Frame, GameEvent, GameState, Side, Target, Unit } from './types';
 
 /** Contexto de uma resolução: o estado (já clonado) + o gravador de quadros/eventos. */
 export class Ctx {
   frames: Frame[] = [];
+  /** Ferrões Finais esperando para ferir quem matou (resolvem num quadro próprio, depois do golpe). */
+  ferroes: { side: Side; src: Unit; from: Target; cid: string }[] = [];
   private cur: GameEvent[] = [];
 
   constructor(public s: GameState, private record = true) {}

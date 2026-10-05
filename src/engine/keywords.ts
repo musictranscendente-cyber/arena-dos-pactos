@@ -53,14 +53,21 @@ export function damageUnit(ctx: Ctx, side: Side, l: number, d: number, amt: numb
   ctx.emit({ t: 'Damage', side, l, d, amount: amt, poisoned, fury });
   if (u.hp <= 0) {
     killUnit(ctx, side, l, d, u);
-    // Ferrão Final: quem matou (com um ataque) leva 3 de dano, se ainda estiver em campo.
-    if (u.kw.includes('ferrao') && src) {
-      const o = opp(side);
-      const pos = findUnit(ctx.s[o].board, src);
-      if (pos) damageUnit(ctx, o, pos.l, pos.d, FERRAO_DANO);
-    }
+    // Ferrão Final: quem matou (com um ataque) vai levar 3 de dano logo depois do golpe (resolverFerroes).
+    if (u.kw.includes('ferrao') && src) ctx.ferroes.push({ side: opp(side), src, from: { side, l, d }, cid: u.cid });
   }
   return { dealt: Math.min(amt, before), overflow: Math.max(0, amt - before) };
+}
+
+/** Ferrão Final: cada criatura que matou um escorpião leva 3 de dano, se ainda estiver em campo. */
+export function resolverFerroes(ctx: Ctx): void {
+  while (ctx.ferroes.length) {
+    const f = ctx.ferroes.shift()!;
+    const pos = findUnit(ctx.s[f.side].board, f.src);
+    if (!pos) continue;
+    ctx.emit({ t: 'Sting', side: f.side, l: pos.l, d: pos.d, from: f.from, cid: f.cid });
+    damageUnit(ctx, f.side, pos.l, pos.d, FERRAO_DANO);
+  }
 }
 
 /** Ataque efetivo = ataque + 1 por aliado com Liderança na mesma fileira (exceto ele mesmo). */

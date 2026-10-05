@@ -1,6 +1,7 @@
 // Habilidades exclusivas de Áries, Touro, Libra, Escorpião e Sagitário.
 import { describe, expect, it } from 'vitest';
-import { attack, damageUnit } from '../src/engine/keywords';
+import { attack, damageUnit, resolverFerroes } from '../src/engine/keywords';
+import { resolveBattle } from '../src/engine/battle';
 import { blank, ctxOf, ofType, put } from './ajuda';
 
 describe('🐏 Arremetida', () => {
@@ -91,6 +92,7 @@ describe('🦂 Ferrão Final', () => {
     const a = put(s, 'p', 0, 0, { atk: 5, hp: 4 });
     put(s, 'e', 0, 0, { hp: 2, kw: ['ferrao'] });
     attack(ctx, 'p', 0, 0, a);
+    resolverFerroes(ctx);
     expect(s.e.board[0][0]).toBeNull();
     expect(a.hp).toBe(1);
   });
@@ -99,6 +101,7 @@ describe('🦂 Ferrão Final', () => {
     const a = put(s, 'p', 0, 0, { atk: 5, hp: 3 });
     put(s, 'e', 0, 0, { hp: 2, kw: ['ferrao'] });
     attack(ctx, 'p', 0, 0, a);
+    resolverFerroes(ctx);
     expect(s.p.board[0][0]).toBeNull();
   });
   it('magia (sem criatura de origem) não ativa o ferrão', () => {
@@ -106,13 +109,29 @@ describe('🦂 Ferrão Final', () => {
     put(s, 'e', 0, 0, { hp: 2, kw: ['ferrao'] });
     const vizinho = put(s, 'p', 0, 0, { hp: 3 });
     damageUnit(ctx, 'e', 0, 0, 5);
+    resolverFerroes(ctx);
     expect(vizinho.hp).toBe(3);
+  });
+  it('na Batalha, o ferrão vem num quadro próprio, depois do golpe', () => {
+    const s = blank();
+    const a = put(s, 'p', 0, 0, { atk: 5, hp: 9 });
+    put(s, 'e', 0, 0, { atk: 0, hp: 2, kw: ['ferrao'] });
+    const { frames, state } = resolveBattle(s);
+    const i = frames.findIndex(f => f.kind === 'ferrao');
+    expect(i).toBeGreaterThan(0);
+    expect(frames[i - 1].kind).toBe('step');
+    // no quadro do golpe o atacante ainda está inteiro; o dano do ferrão só aparece no quadro seguinte
+    expect(frames[i - 1].state!.p.board[0][0]!.hp).toBe(9);
+    expect(frames[i].events.map(e => e.t)).toEqual(['Sting', 'Damage']);
+    expect(frames[i].state!.p.board[0][0]!.hp).toBe(6);
+    expect(state.p.board[0][0]?.uid).toBe(a.uid);
   });
   it('dano que não mata não ativa', () => {
     const s = blank(); const ctx = ctxOf(s);
     const a = put(s, 'p', 0, 0, { atk: 1, hp: 4 });
     put(s, 'e', 0, 0, { hp: 5, kw: ['ferrao'] });
     attack(ctx, 'p', 0, 0, a);
+    resolverFerroes(ctx);
     expect(a.hp).toBe(4);
   });
 });

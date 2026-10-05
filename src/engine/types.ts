@@ -103,12 +103,13 @@ export type GameEvent =
   | { t: 'UnitReturnedToHand'; side: Side; l: number; d: number; cid: string }
   | { t: 'HeroDamaged'; side: Side; amount: number }
   | { t: 'HeroHealed'; side: Side; amount: number }
+  | { t: 'Sting'; side: Side; l: number; d: number; from: Target; cid: string }
   | { t: 'UnitPushed'; side: Side; l: number; from: number; to: number; cid: string }
   | { t: 'GameOver'; result: Result; surrendered?: Side };
 
 /** Um "quadro" da Batalha: os eventos que aconteceram juntos e como ficou a mesa depois. */
 export interface Frame {
-  kind: 'tick' | 'reveal' | 'spells' | 'spell' | 'arrival' | 'battle' | 'row' | 'step-start' | 'step' | 'end';
+  kind: 'tick' | 'reveal' | 'spells' | 'spell' | 'arrival' | 'battle' | 'row' | 'step-start' | 'step' | 'ferrao' | 'end';
   events: GameEvent[];
   /** Criaturas atacando neste passo (para destacar). */
   active?: Target[];
