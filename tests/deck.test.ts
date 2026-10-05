@@ -2,7 +2,7 @@
 import { describe, expect, it } from 'vitest';
 import { cardsOfSign, CARDS } from '../src/data/cards';
 import { ORDER } from '../src/data/signos';
-import { cartasDisponiveis, deckAleatorio, doisSignos, validarDeck } from '../src/engine/deck';
+import { cartasDisponiveis, COPIAS, deckAleatorio, doisSignos, maxCopias, validarDeck } from '../src/engine/deck';
 import { newGame } from '../src/engine/round';
 import { Rng } from '../src/engine/rng';
 import { DECK_SIZE } from '../src/engine/types';
@@ -16,11 +16,40 @@ describe('Montar deck', () => {
   it('deck válido: 30 cartas diferentes dos 2 signos', () => {
     expect(validarDeck({ signos: ['aries', 'leao'], cartas: ok15 })).toBeNull();
   });
-  it('recusa signos iguais, tamanho errado, carta repetida ou de outro signo', () => {
+  it('recusa signos iguais, tamanho errado ou carta de outro signo', () => {
     expect(validarDeck({ signos: ['aries', 'aries'], cartas: ok15 })).toBe('signos');
     expect(validarDeck({ signos: ['aries', 'leao'], cartas: ok15.slice(1) })).toBe('tamanho');
-    expect(validarDeck({ signos: ['aries', 'leao'], cartas: [...ok15.slice(1), ok15[0 + 2]] })).toBe('repetida');
     expect(validarDeck({ signos: ['aries', 'leao'], cartas: [...ok15.slice(1), cardsOfSign('touro')[0]] })).toBe('signo');
+  });
+  it('cópias pela raridade: comum 4, rara 3, épica 2, lendária 1', () => {
+    expect(COPIAS).toEqual({ c: 4, r: 3, e: 2, l: 1 });
+    const porR = (r: string) => cartasDisponiveis('aries', 'leao').find(c => CARDS[c].r === r)!;
+    const com = (cid: string, n: number) => {
+      const resto = cartasDisponiveis('aries', 'leao').filter(c => c !== cid && CARDS[c].r !== 'l').slice(0, DECK_SIZE - n);
+      return { signos: ['aries', 'leao'] as ['aries', 'leao'], cartas: [...Array(n).fill(cid), ...resto] };
+    };
+    expect(validarDeck(com(porR('c'), 4))).toBeNull();
+    expect(validarDeck(com(porR('c'), 5))).toBe('copias');
+    expect(validarDeck(com(porR('r'), 3))).toBeNull();
+    expect(validarDeck(com(porR('r'), 4))).toBe('copias');
+    expect(validarDeck(com(porR('e'), 2))).toBeNull();
+    expect(validarDeck(com(porR('e'), 3))).toBe('copias');
+    expect(validarDeck(com(porR('l'), 1))).toBeNull();
+    expect(validarDeck(com(porR('l'), 2))).toBe('copias');
+    expect(maxCopias(porR('l'))).toBe(1);
+  });
+  it('completar mantém as cópias já escolhidas', () => {
+    const c = cardsOfSign('aries').find(x => CARDS[x].r === 'c')!;
+    const cartas = deckAleatorio(new Rng(2), 'aries', 'leao', [c, c, c]);
+    expect(cartas.filter(x => x === c)).toHaveLength(3);
+    expect(validarDeck({ signos: ['aries', 'leao'], cartas })).toBeNull();
+  });
+  it('partida com cópias repetidas: cada cópia vira uma carta na mão/deck', () => {
+    const c = cardsOfSign('aries').find(x => CARDS[x].r === 'c')!;
+    const cartas = deckAleatorio(new Rng(2), 'aries', 'leao', [c, c, c, c]);
+    const { state } = newGame({ pSign: 'aries', pSign2: 'leao', pDeck: cartas, eSign: 'touro', seed: 3, record: false });
+    const todas = [...state.p.deck, ...state.p.hand.map(h => h.cid)];
+    expect(todas.filter(x => x === c)).toHaveLength(4);
   });
 });
 

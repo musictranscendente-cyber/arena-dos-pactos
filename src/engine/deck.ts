@@ -1,14 +1,27 @@
-// Decks montados: 30 cartas escolhidas entre os 2 signos do jogador (1 cópia de cada).
+// Decks montados: 30 cartas escolhidas entre os 2 signos do jogador.
+// Cópias da mesma carta: comum até 4, rara até 3, épica até 2, lendária 1.
 import { CARDS, cardsOfSign } from '../data/cards';
-import type { Signo } from '../data/schema';
+import type { Raridade, Signo } from '../data/schema';
 import { Rng, shuffleWith } from './rng';
 import { DECK_SIZE } from './types';
 
 export interface DeckMontado {
   /** Os 2 signos escolhidos (o primeiro dá a cor e o símbolo do herói). */
   signos: [Signo, Signo];
-  /** As 30 cartas (ids). */
+  /** As 30 cartas (ids; a mesma carta aparece uma vez para cada cópia). */
   cartas: string[];
+}
+
+/** Máximo de cópias da mesma carta num deck, pela raridade. */
+export const COPIAS: Record<Raridade, number> = { c: 4, r: 3, e: 2, l: 1 };
+
+export const maxCopias = (cid: string): number => COPIAS[CARDS[cid].r];
+
+/** Quantas cópias de cada carta há na lista. */
+export function contarCopias(cartas: readonly string[]): Map<string, number> {
+  const m = new Map<string, number>();
+  for (const c of cartas) m.set(c, (m.get(c) ?? 0) + 1);
+  return m;
 }
 
 /** Cartas que podem entrar num deck desses 2 signos. */
@@ -21,31 +34,33 @@ export function validarDeck(d: DeckMontado): string | null {
   const [a, b] = d.signos;
   if (a === b) return 'signos';
   if (d.cartas.length !== DECK_SIZE) return 'tamanho';
-  if (new Set(d.cartas).size !== d.cartas.length) return 'repetida';
   const ok = new Set(cartasDisponiveis(a, b));
   if (d.cartas.some(c => !ok.has(c))) return 'signo';
+  for (const [c, n] of contarCopias(d.cartas)) if (n > maxCopias(c)) return 'copias';
   return null;
 }
 
 /**
- * Deck combinado aleatório (bots e "completar"): parte das cartas de cada signo, com a curva de mana parecida
- * com a de um deck de um signo só (sorteia dentro de cada faixa de custo).
+ * Deck combinado aleatório (bots e "completar"): mantém as cartas de `base` e completa com cartas diferentes,
+ * com a curva de mana parecida com a de um deck de um signo só (sorteia dentro de cada faixa de custo).
  */
 export function deckAleatorio(rng: Rng, a: Signo, b: Signo, base: string[] = []): string[] {
-  const escolhidas = new Set(base.filter(c => cartasDisponiveis(a, b).includes(c)));
-  const resto = shuffleWith(cartasDisponiveis(a, b).filter(c => !escolhidas.has(c)), n => rng.int(n));
-  // faixas de custo, na proporção de um deck normal (metade de cada signo)
+  const ok = new Set(cartasDisponiveis(a, b));
+  const deck = base.filter(c => ok.has(c)).slice(0, DECK_SIZE);
+  const usadas = new Set(deck);
+  const resto = shuffleWith(cartasDisponiveis(a, b).filter(c => !usadas.has(c)), n => rng.int(n));
+  // faixas de custo, na proporção de um deck normal
   const faixa = (c: string) => Math.min(4, Math.floor(CARDS[c].cost / 2));
   const alvo = [0, 0, 0, 0, 0];
   for (const c of cardsOfSign(a)) alvo[faixa(c)]++;
   const tem = [0, 0, 0, 0, 0];
-  for (const c of escolhidas) tem[faixa(c)]++;
+  for (const c of deck) tem[faixa(c)]++;
   for (const c of resto) {
-    if (escolhidas.size >= DECK_SIZE) break;
-    if (tem[faixa(c)] < alvo[faixa(c)]) { escolhidas.add(c); tem[faixa(c)]++; }
+    if (deck.length >= DECK_SIZE) break;
+    if (tem[faixa(c)] < alvo[faixa(c)]) { deck.push(c); tem[faixa(c)]++; usadas.add(c); }
   }
-  for (const c of resto) { if (escolhidas.size >= DECK_SIZE) break; escolhidas.add(c); }
-  return [...escolhidas].slice(0, DECK_SIZE);
+  for (const c of resto) { if (deck.length >= DECK_SIZE) break; if (!usadas.has(c)) { deck.push(c); usadas.add(c); } }
+  return deck;
 }
 
 /** Dois signos diferentes sorteados. */

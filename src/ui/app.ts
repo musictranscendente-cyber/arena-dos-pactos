@@ -5,7 +5,7 @@ import { ORDER } from '../data/signos';
 import { cardText, T } from '../data/textos';
 import {
   applyAction, costOf, deckAleatorio, doisSignos, DECK_SIZE, effAtk, newGame, planTurn, resolveBattle, Rng, surrender,
-  type DeckMontado,
+  maxCopias, type DeckMontado,
   type Action, type Frame, type GameEvent, type GameState, type Side, type Target,
 } from '../engine';
 import { ATK_MS, desistirHtml, endHtml, galleryHtml, gameHtml, startHtml, type View, type Zoom } from './desenho';
@@ -14,7 +14,10 @@ import { efeitoGeral, efeitosDeMagia, EXTRA_GERAL_MS, MAGIA_MS } from './efeitoM
 import { precarregarVisiveis } from './precarga';
 import { launch, shotsOf } from './projetil';
 import { avisoHtml, hubHtml, montarHtml, regrasHtml, semDeckHtml, type Montagem } from './menu';
-import { lerDeck, salvarDeck } from '../services/deckSalvo';
+import { deckAtivo, lerDecks, salvarDecks } from '../services/deckSalvo';
+
+/** Nome da raridade em minúsculas, para os avisos. */
+const RARIDADE_NOME: Record<string, string> = { c: 'comum', r: 'rara', e: 'épica', l: 'lendária' };
 
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const sleep = (ms: number) => new Promise(r => setTimeout(r, reduce ? ms * 0.4 : ms));
@@ -63,7 +66,8 @@ let gal: Signo | null = null, galSel: string | null = null;
 let tela: 'hub' | 'conhecer' | 'montar' = 'hub';
 let montagem: Montagem | null = null;
 let dialogo: 'semdeck' | 'regras' | null = null;
-let deckSalvo: DeckMontado | null = lerDeck();
+/** Os 3 espaços de deck e qual está em uso. */
+const meus = lerDecks();
 /** Como foi a última partida (para a Revanche repetir igual). */
 type Modo = { modo: 'signo'; sign: Signo } | { modo: 'rapida'; deck: DeckMontado };
 let ultimo: Modo | null = null;
@@ -394,9 +398,9 @@ function render(): void {
   if (!M) {
     const dlg = dialogo === 'semdeck' ? semDeckHtml() : dialogo === 'regras' ? regrasHtml() : '';
     root.innerHTML = gal ? galleryHtml(gal, galSel)
-      : tela === 'montar' && montagem ? montarHtml(montagem)
+      : tela === 'montar' && montagem ? montarHtml(montagem, meus.decks, meus.ativo)
       : tela === 'conhecer' ? startHtml(new Date())
-      : hubHtml(new Date(), deckSalvo) + dlg;
+      : hubHtml(new Date(), deckAtivo(meus)) + dlg;
     return;
   }
   const hs = root.querySelector('.hand');
@@ -451,10 +455,12 @@ function menuClick(a: string | undefined, t: HTMLElement): boolean {
     case 'conhecer': tela = 'conhecer'; render(); return true;
     case 'regras': dialogo = 'regras'; render(); return true;
     case 'campanha': case 'torneio': case 'ranqueada': case 'evento': case 'missoes': emBreve(); return true;
-    case 'rapida':
-      if (deckSalvo) { void tryLandscape(); startMatch({ modo: 'rapida', deck: deckSalvo }); }
+    case 'rapida': {
+      const d = deckAtivo(meus);
+      if (d) { void tryLandscape(); startMatch({ modo: 'rapida', deck: d }); }
       else { dialogo = 'semdeck'; render(); }
       return true;
+    }
     case 'rapida-aleatorio': {
       dialogo = null;
       const rng = new Rng(randomSeed());
@@ -466,15 +472,32 @@ function menuClick(a: string | undefined, t: HTMLElement): boolean {
     case 'montar':
       dialogo = null;
       tela = 'montar';
-      montagem = deckSalvo
-        ? { passo: 2, signos: [...deckSalvo.signos], cartas: [...deckSalvo.cartas], info: null, msg: '' }
-        : { passo: 1, signos: [], cartas: [], info: null, msg: '' };
+      montagem = { passo: 0, espaco: 0, signos: [], cartas: [], info: null, msg: '', apagar: null };
       render();
       return true;
   }
   const mg = montagem;
   if (!mg || tela !== 'montar') return false;
+  if (a !== 'mapagar') mg.apagar = null;
   switch (a) {
+    case 'mdecks': mg.passo = 0; break;
+    case 'mespaco': {
+      const i = Number(t.dataset.i), d = meus.decks[i];
+      mg.espaco = i; mg.info = null; mg.msg = '';
+      if (d) { mg.signos = [...d.signos]; mg.cartas = [...d.cartas]; mg.passo = 2; }
+      else { mg.signos = []; mg.cartas = []; mg.passo = 1; }
+      break;
+    }
+    case 'musar': meus.ativo = Number(t.dataset.i); salvarDecks(meus); break;
+    case 'mapagar': {
+      const i = Number(t.dataset.i);
+      if (mg.apagar !== i) { mg.apagar = i; break; }
+      meus.decks[i] = null;
+      if (meus.ativo === i) meus.ativo = meus.decks.findIndex(Boolean);
+      salvarDecks(meus);
+      mg.apagar = null;
+      break;
+    }
     case 'msigno': {
       const r = t.dataset.r as Signo;
       if (mg.signos.includes(r)) mg.signos = mg.signos.filter(x => x !== r);
@@ -489,26 +512,36 @@ function menuClick(a: string | undefined, t: HTMLElement): boolean {
       mg.passo = 2; mg.info = null; mg.msg = '';
       break;
     case 'mvoltar': mg.passo = 1; break;
-    case 'mcarta': {
-      const k = t.dataset.k!;
-      mg.info = k;
-      if (mg.cartas.includes(k)) mg.cartas = mg.cartas.filter(x => x !== k);
-      else if (mg.cartas.length < DECK_SIZE) mg.cartas.push(k);
-      else { mg.info = null; mg.msg = T.deckCheio; }
+    // tocar numa carta abre ela no painel; os botões do painel colocam e tiram cópias
+    case 'mcarta': mg.info = t.dataset.k!; mg.msg = ''; keepScroll(); return true;
+    case 'mmais': {
+      const k = mg.info;
+      if (!k) return true;
+      const n = mg.cartas.filter(x => x === k).length, mx = maxCopias(k);
+      if (mg.cartas.length >= DECK_SIZE) mg.msg = T.deckCheio;
+      else if (n >= mx) mg.msg = T.limiteCopias(mx, RARIDADE_NOME[card(k).r]);
+      else { mg.cartas.push(k); mg.msg = ''; }
+      keepScroll(); return true;
+    }
+    case 'mmenos': {
+      const k = mg.info, i = k ? mg.cartas.lastIndexOf(k) : -1;
+      if (i >= 0) mg.cartas.splice(i, 1);
+      mg.msg = '';
       keepScroll(); return true;
     }
     case 'mcompletar': {
       const [x, y] = mg.signos as [Signo, Signo];
       mg.cartas = deckAleatorio(new Rng(randomSeed()), x, y, mg.cartas);
-      mg.info = null; mg.msg = '';
+      mg.msg = '';
       keepScroll(); return true;
     }
-    case 'mlimpar': mg.cartas = []; mg.info = null; mg.msg = ''; keepScroll(); return true;
+    case 'mlimpar': mg.cartas = []; mg.msg = ''; keepScroll(); return true;
     case 'msalvar': {
       if (mg.cartas.length !== DECK_SIZE) return true;
-      deckSalvo = { signos: [mg.signos[0], mg.signos[1]], cartas: [...mg.cartas] };
-      const ok = salvarDeck(deckSalvo);
-      tela = 'hub';
+      meus.decks[mg.espaco] = { signos: [mg.signos[0], mg.signos[1]], cartas: [...mg.cartas] };
+      if (meus.ativo < 0) meus.ativo = mg.espaco;
+      const ok = salvarDecks(meus);
+      mg.passo = 0;
       render();
       aviso(ok ? T.deckSalvo : T.deckNaoSalvo);
       return true;

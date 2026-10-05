@@ -3,9 +3,9 @@ import { CARDS } from '../data/cards';
 import { ARTE, artUrl } from '../data/arte';
 import type { Signo } from '../data/schema';
 import { currentSign, ORDER, RACES } from '../data/signos';
-import { cardText, T } from '../data/textos';
-import { cartasDisponiveis, DECK_SIZE, type DeckMontado } from '../engine';
-import { cardHtml } from './desenho';
+import { T } from '../data/textos';
+import { cartasDisponiveis, contarCopias, DECK_SIZE, maxCopias, type DeckMontado } from '../engine';
+import { cardHtml, zoomHtml } from './desenho';
 
 /** Criatura de pé numa ilha (arte parada); `vira` espelha para ela olhar para a esquerda. */
 function criatura(cid: string, cls = '', vira = false): string {
@@ -82,14 +82,51 @@ export function regrasHtml(): string {
 }
 
 export interface Montagem {
-  passo: 1 | 2;
+  /** 0 = meus decks (3 espaços); 1 = escolher os 2 signos; 2 = escolher as cartas. */
+  passo: 0 | 1 | 2;
+  /** Espaço (0..2) que está sendo editado. */
+  espaco: number;
   signos: Signo[];
   cartas: string[];
+  /** Carta aberta no painel de detalhes. */
   info: string | null;
   msg: string;
+  /** Espaço esperando confirmar para apagar. */
+  apagar: number | null;
 }
 
-export function montarHtml(m: Montagem): string {
+const RAR_NOME: Record<string, string> = { c: 'Comum', r: 'Rara', e: 'Épica', l: 'Lendária' };
+
+function fechaHtml(): string {
+  return `<button class="m-fecha" data-act="hub" aria-label="${T.sair}" title="${T.sair}">✕</button>`;
+}
+
+/** Lista dos 3 espaços de deck: editar, usar (o deck da Partida Rápida) ou apagar. */
+function meusDecksHtml(m: Montagem, decks: (DeckMontado | null)[], ativo: number): string {
+  const slots = decks.map((d, i) => {
+    if (!d) {
+      return `<div class="m-slot vazio"><b class="m-slot-n">${T.deckN(i + 1)}</b><span class="m-slot-vazio">${T.espacoVazio}</span>`
+        + `<button class="btn go" data-act="mespaco" data-i="${i}">＋ ${T.novoDeck}</button></div>`;
+    }
+    const [a, b] = d.signos;
+    const em = i === ativo;
+    return `<div class="m-slot${em ? ' ativo' : ''}" style="--rc:${RACES[a].c};--rc2:${RACES[b].c}">`
+      + `<b class="m-slot-n">${T.deckN(i + 1)}${em ? ` <em>${T.emUso}</em>` : ''}</b>`
+      + `<span class="m-slot-sg"><i>${RACES[a].g}</i><i class="b">${RACES[b].g}</i></span>`
+      + `<span class="m-slot-nome">${RACES[a].n} + ${RACES[b].n}</span>`
+      + `<span class="m-slot-bts">`
+      + (em ? `<button class="btn rc" disabled>✓ ${T.emUso}</button>` : `<button class="btn go" data-act="musar" data-i="${i}">${T.usarDeck}</button>`)
+      + `<button class="btn rc" data-act="mespaco" data-i="${i}">${T.editar}</button>`
+      + `<button class="btn rc apaga" data-act="mapagar" data-i="${i}">${m.apagar === i ? T.confirmarApagar : '🗑️'}</button>`
+      + '</span></div>';
+  }).join('');
+  return `<div class="ov montar"><div class="panel wide">`
+    + `<div class="gtop"><h2>${T.meusDecks}</h2>${fechaHtml()}</div>`
+    + `<p>${T.meusDecksAjuda}</p><div class="m-slots">${slots}</div></div></div>`;
+}
+
+export function montarHtml(m: Montagem, decks: (DeckMontado | null)[], ativo: number): string {
+  if (m.passo === 0) return meusDecksHtml(m, decks, ativo);
   if (m.passo === 1) {
     const signs = ORDER.map(k => {
       const r = RACES[k], on = m.signos.includes(k);
@@ -98,33 +135,43 @@ export function montarHtml(m: Montagem): string {
         + `<span class="g"><span>${r.g}</span></span><span class="sn">${r.n}</span><span class="sm">${r.el}, ${r.m}</span></button>`;
     }).join('');
     return `<div class="ov montar"><div class="panel wide">`
-      + `<div class="gtop"><h2>${T.montarDeck}</h2><button class="btn rc" data-act="hub">${T.voltar}</button></div>`
+      + `<div class="gtop"><h2>${T.deckN(m.espaco + 1)}: ${T.escolhaOsSignos}</h2><span class="m-topo-bts"><button class="btn rc" data-act="mdecks">${T.voltar}</button>${fechaHtml()}</span></div>`
       + `<p>${T.escolha2Signos} <b>${m.signos.length}/2</b></p><div class="signs">${signs}</div>`
       + `<button class="btn go" data-act="mseguir" ${m.signos.length === 2 ? '' : 'disabled'} style="width:100%">${T.escolherCartas}</button>`
       + '</div></div>';
   }
   const [a, b] = m.signos as [Signo, Signo];
   const lista = cartasDisponiveis(a, b).sort((x, y) => CARDS[x].cost - CARDS[y].cost || (CARDS[x].race === a ? 0 : 1) - (CARDS[y].race === a ? 0 : 1));
-  const dentro = new Set(m.cartas);
-  const cards = lista.map(k => cardHtml(CARDS[k], CARDS[k].cost, `data-act="mcarta" data-k="${k}" tabindex="0" role="button" aria-pressed="${dentro.has(k)}"`, dentro.has(k) ? 'no-deck' : 'fora-deck', k)).join('');
+  const qtd = contarCopias(m.cartas);
+  const cards = lista.map(k => {
+    const n = qtd.get(k) ?? 0;
+    const cls = [n ? 'no-deck' : 'fora-deck', m.info === k ? 'sel' : ''].join(' ');
+    return cardHtml(CARDS[k], CARDS[k].cost, `data-act="mcarta" data-k="${k}" data-n="${n}" tabindex="0" role="button" aria-label="${CARDS[k].name}: ${n}"`, cls, k);
+  }).join('');
   // curva de mana do deck: quantas cartas de cada custo (7+ juntas)
   const curva = [0, 0, 0, 0, 0, 0, 0, 0];
   for (const k of m.cartas) curva[Math.min(7, CARDS[k].cost)]++;
   const max = Math.max(1, ...curva);
   const barras = curva.map((n, i) => `<span class="cv"><i style="height:${(n / max) * 100}%"></i><b>${n}</b><small>${i === 7 ? '7+' : i}</small></span>`).join('');
   const deA = m.cartas.filter(k => CARDS[k].race === a).length;
-  const sel = m.info ? CARDS[m.info] : null;
-  const info = sel
-    ? `<b>${sel.name}</b>${sel.type === 'unit' ? ` (${sel.atk}/${sel.hp})` : ` (${T.magia})`}: ${cardText(sel)}`
-    : m.msg || T.toqueParaAdicionar;
   const cheio = m.cartas.length === DECK_SIZE;
+  // painel da carta aberta: a carta grande com tudo, quantas cópias tem no deck e os botões de colocar/tirar
+  let lado = `<p class="m-dica">${m.msg || T.toqueParaVer}</p>`;
+  if (m.info) {
+    const k = m.info, n = qtd.get(k) ?? 0, mx = maxCopias(k);
+    lado = `<div class="m-detalhe">${zoomHtml({ cid: k, lado: 'p' })}</div>`
+      + `<p class="m-copias">${T.noDeck}: <b>${n}</b> / ${mx} <small>(${RAR_NOME[CARDS[k].r]})</small></p>`
+      + `<div class="m-qtd"><button class="btn rc" data-act="mmenos" ${n ? '' : 'disabled'} aria-label="${T.tirar}">－ ${T.tirar}</button>`
+      + `<button class="btn go" data-act="mmais" ${n < mx && !cheio ? '' : 'disabled'} aria-label="${T.colocar}">＋ ${T.colocar}</button></div>`
+      + (m.msg ? `<p class="m-dica">${m.msg}</p>` : '');
+  }
   return `<div class="ov montar gal"><div class="panel wide">`
-    + `<div class="gtop"><h2><span style="color:${RACES[a].c}">${RACES[a].g}</span> + <span style="color:${RACES[b].c}">${RACES[b].g}</span> <small>${RACES[a].n} + ${RACES[b].n}</small></h2>`
-    + `<button class="btn rc" data-act="mvoltar">${T.trocarSignos}</button></div>`
+    + `<div class="gtop"><h2>${T.deckN(m.espaco + 1)}: <span style="color:${RACES[a].c}">${RACES[a].g}</span> + <span style="color:${RACES[b].c}">${RACES[b].g}</span> <small>${RACES[a].n} + ${RACES[b].n}</small></h2>`
+    + `<span class="m-topo-bts"><button class="btn rc" data-act="mvoltar">${T.trocarSignos}</button>${fechaHtml()}</span></div>`
     + `<div class="m-barra"><div class="m-conta${cheio ? ' cheio' : ''}"><b>${m.cartas.length}</b>/${DECK_SIZE}<small>${RACES[a].g} ${deA} · ${RACES[b].g} ${m.cartas.length - deA}</small></div>`
     + `<div class="m-curva" aria-label="${T.curvaMana}">${barras}</div>`
     + `<div class="m-bts"><button class="btn rc" data-act="mcompletar" ${cheio ? 'disabled' : ''}>${T.completar}</button>`
     + `<button class="btn rc" data-act="mlimpar" ${m.cartas.length ? '' : 'disabled'}>${T.limpar}</button>`
     + `<button class="btn go" data-act="msalvar" ${cheio ? '' : 'disabled'}>${T.salvarDeck}</button></div></div>`
-    + `<p class="ginfo">${info}</p><div class="ggrid">${cards}</div></div></div>`;
+    + `<div class="m-corpo"><div class="m-lado">${lado}</div><div class="ggrid">${cards}</div></div></div></div>`;
 }

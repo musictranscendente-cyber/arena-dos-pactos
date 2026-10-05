@@ -44,7 +44,7 @@ function compara(atual: number, original: number): string {
   return atual > original ? ' up' : atual < original ? ' down' : '';
 }
 
-function zoomHtml(z: Zoom): string {
+export function zoomHtml(z: Zoom): string {
   const c = card(z.cid);
   const r = RACES[c.race];
   const img = ARTE[z.cid]
