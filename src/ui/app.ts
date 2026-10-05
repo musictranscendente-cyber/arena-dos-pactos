@@ -4,8 +4,8 @@ import type { Signo } from '../data/schema';
 import { ORDER } from '../data/signos';
 import { cardText, T } from '../data/textos';
 import {
-  applyAction, costOf, deckAleatorio, doisSignos, DECK_SIZE, effAtk, newGame, planTurn, resolveBattle, Rng, surrender,
-  maxCopias, type DeckMontado,
+  applyAction, costOf, deckAleatorio, doisSignos, DECK_SIZE, effAtk, newGame, resolveBattle, Rng, surrender,
+  maxCopias, planTurnNivel, type DeckMontado, type Nivel,
   type Action, type Frame, type GameEvent, type GameState, type Side, type Target,
 } from '../engine';
 import { ATK_MS, desistirHtml, endHtml, galleryHtml, gameHtml, startHtml, type View, type Zoom } from './desenho';
@@ -13,8 +13,9 @@ import { toggleRot, tryLandscape } from './orientacao';
 import { efeitoGeral, efeitosDeMagia, EXTRA_GERAL_MS, MAGIA_MS } from './efeitoMagia';
 import { precarregarVisiveis } from './precarga';
 import { launch, shotsOf } from './projetil';
-import { avisoHtml, hubHtml, montarHtml, regrasHtml, semDeckHtml, type Montagem } from './menu';
+import { avisoHtml, dificuldadeHtml, hubHtml, montarHtml, regrasHtml, type Montagem } from './menu';
 import { deckAtivo, lerDecks, salvarDecks } from '../services/deckSalvo';
+import { lerNivel, salvarNivel } from '../services/preferencias';
 
 /** Nome da raridade em minúsculas, para os avisos. */
 const RARIDADE_NOME: Record<string, string> = { c: 'comum', r: 'rara', e: 'épica', l: 'lendária' };
@@ -55,6 +56,8 @@ interface Match {
   confirma?: boolean;
   /** Criatura do tabuleiro aberta grande para ver os detalhes. */
   inspect: Target | null;
+  /** Dificuldade do bot nesta partida. */
+  nivel: Nivel;
 }
 
 /** Dica de texto aberta pelo ícone de informação (fica escondida para não poluir a tela). */
@@ -65,11 +68,13 @@ let gal: Signo | null = null, galSel: string | null = null;
 /** Telas fora da partida: menu de ilhas, escolha de signo (deck inteiro) e montagem de deck. */
 let tela: 'hub' | 'conhecer' | 'montar' = 'hub';
 let montagem: Montagem | null = null;
-let dialogo: 'semdeck' | 'regras' | null = null;
+let dialogo: 'nivel' | 'regras' | null = null;
+/** Última dificuldade escolhida na Partida Rápida. */
+let nivel: Nivel = lerNivel();
 /** Os 3 espaços de deck e qual está em uso. */
 const meus = lerDecks();
 /** Como foi a última partida (para a Revanche repetir igual). */
-type Modo = { modo: 'signo'; sign: Signo } | { modo: 'rapida'; deck: DeckMontado };
+type Modo = { modo: 'signo'; sign: Signo } | { modo: 'rapida'; deck: DeckMontado; nivel: Nivel };
 let ultimo: Modo | null = null;
 const app = () => document.getElementById('app')!;
 
@@ -93,14 +98,14 @@ function startMatch(cfg: Modo): void {
     const [pa, pb] = cfg.deck.signos;
     state = newGame({ pSign: pa, pSign2: pb, pDeck: cfg.deck.cartas, eSign: ea, eSign2: eb, eDeck: deckAleatorio(rng, ea, eb), seed, record: false }).state;
   }
-  M = { g: state, shown: state, sel: null, busy: false, msg: '', active: null, striking: null, aiRng: new Rng(seed ^ 0x5bd1e995), base: state, plan: [], inspect: null };
+  M = { g: state, shown: state, sel: null, busy: false, msg: '', active: null, striking: null, aiRng: new Rng(seed ^ 0x5bd1e995), base: state, plan: [], inspect: null, nivel: cfg.modo === 'rapida' ? cfg.nivel : 'normal' };
   beginPlanning([]);
 }
 
 /** Rival planeja em segredo e o jogador recebe a vez. */
 function beginPlanning(tickEvents: GameEvent[]): void {
   const m = M!;
-  if (m.g.phase === 'plan') m.g = planTurn(m.g, 'e', m.aiRng).state;
+  if (m.g.phase === 'plan') m.g = planTurnNivel(m.g, 'e', m.aiRng, m.nivel).state;
   m.shown = m.base = m.g;
   m.plan = [];
   m.busy = false;
@@ -396,7 +401,7 @@ function showFx(events: GameEvent[]): void {
 function render(): void {
   const root = app();
   if (!M) {
-    const dlg = dialogo === 'semdeck' ? semDeckHtml() : dialogo === 'regras' ? regrasHtml() : '';
+    const dlg = dialogo === 'nivel' ? dificuldadeHtml(deckAtivo(meus), nivel) : dialogo === 'regras' ? regrasHtml() : '';
     root.innerHTML = gal ? galleryHtml(gal, galSel)
       : tela === 'montar' && montagem ? montarHtml(montagem, meus.decks, meus.ativo)
       : tela === 'conhecer' ? startHtml(new Date())
@@ -412,6 +417,7 @@ function render(): void {
     canUndo: !M.busy && M.g.phase === 'plan' && M.plan.length > 0,
     zoom: zoomAtual(M),
     info: infoAberta,
+    nivel: ultimo?.modo === 'rapida' ? T.nivelNome[M.nivel] : undefined,
     fim: M.g.phase !== 'over' || M.busy ? null : M.fim === 'pronto' ? 'fixo' : 'anim',
   };
   root.innerHTML = gameHtml(v) + (M.confirma ? desistirHtml() : '') + (M.g.phase === 'over' && M.fim === 'pronto' ? endHtml(M.g) : '');
@@ -455,18 +461,20 @@ function menuClick(a: string | undefined, t: HTMLElement): boolean {
     case 'conhecer': tela = 'conhecer'; render(); return true;
     case 'regras': dialogo = 'regras'; render(); return true;
     case 'campanha': case 'torneio': case 'ranqueada': case 'evento': case 'missoes': emBreve(); return true;
-    case 'rapida': {
-      const d = deckAtivo(meus);
-      if (d) { void tryLandscape(); startMatch({ modo: 'rapida', deck: d }); }
-      else { dialogo = 'semdeck'; render(); }
-      return true;
-    }
-    case 'rapida-aleatorio': {
+    case 'rapida': dialogo = 'nivel'; render(); return true;
+    case 'nivel': {
+      nivel = t.dataset.n as Nivel;
+      salvarNivel(nivel);
       dialogo = null;
-      const rng = new Rng(randomSeed());
-      const sg = doisSignos(rng, ORDER);
+      // sem deck montado: joga com um deck aleatório de 2 signos
+      let d = deckAtivo(meus);
+      if (!d) {
+        const rng = new Rng(randomSeed());
+        const sg = doisSignos(rng, ORDER);
+        d = { signos: sg, cartas: deckAleatorio(rng, sg[0], sg[1]) };
+      }
       void tryLandscape();
-      startMatch({ modo: 'rapida', deck: { signos: sg, cartas: deckAleatorio(rng, sg[0], sg[1]) } });
+      startMatch({ modo: 'rapida', deck: d, nivel });
       return true;
     }
     case 'montar':

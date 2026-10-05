@@ -874,3 +874,20 @@ body:not(.land) .board{flex:0 0 auto;height:min(54vh,44vw)}
 /* tela estreita de verdade (sem girar): uma coluna e a página inteira rola */
 @media (max-width:620px){body:not(.rot) .ov.montar.gal .panel{height:auto;max-height:none;overflow:visible}body:not(.rot) .ov.montar.gal{overflow:auto}body:not(.rot) .m-corpo .ggrid{height:auto;overflow:visible}}
 .m-qtd .btn{white-space:nowrap}
+
+/* Partida Rápida: escolha da dificuldade */
+.nivel-painel .nv-deck{display:flex;align-items:center;gap:8px;flex-wrap:wrap;background:#ffffff10;border-radius:10px;padding:8px 10px}
+.btn.mini{width:auto;min-height:28px;padding:0 10px;font-size:12.5px}
+.niveis{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:8px}
+.nivel{font:inherit;color:#fff;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;padding:12px 10px 14px;border-radius:14px;
+  border:2px solid #6a5aa0;background:linear-gradient(180deg,#3a2a6e,#1c1240);box-shadow:0 4px 10px #0008;text-align:center}
+.nivel .nv-ic{font-size:34px;line-height:1;filter:drop-shadow(0 2px 2px #0008)}
+.nivel b{font-family:'Grenze Gotisch',Georgia,serif;font-size:26px;line-height:1;color:#ffe9a8}
+.nivel small{font-size:12px;color:#d9cdf5;line-height:1.25}
+.nivel.n-facil{background:linear-gradient(180deg,#2f6a4a,#163a28);border-color:#7fd69a}
+.nivel.n-normal{background:linear-gradient(180deg,#3a4a8a,#1c2450);border-color:#8fb0ff}
+.nivel.n-dificil{background:linear-gradient(180deg,#8a2f3a,#40141c);border-color:#ff8a7a}
+.nivel.ultimo{box-shadow:0 0 0 3px var(--gold),0 0 18px #f2b93b99}
+.nivel:hover,.nivel:focus-visible{filter:brightness(1.15)}
+.nv-tag{font-weight:800;color:#ffd666}
+.land .nivel b{font-size:22px}.land .nivel .nv-ic{font-size:28px}

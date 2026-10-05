@@ -4,7 +4,7 @@ import { ARTE, artUrl } from '../data/arte';
 import type { Signo } from '../data/schema';
 import { currentSign, ORDER, RACES } from '../data/signos';
 import { T } from '../data/textos';
-import { cartasDisponiveis, contarCopias, DECK_SIZE, maxCopias, type DeckMontado } from '../engine';
+import { cartasDisponiveis, contarCopias, DECK_SIZE, maxCopias, type DeckMontado, type Nivel } from '../engine';
 import { cardHtml, zoomHtml } from './desenho';
 
 /** Criatura de pé numa ilha (arte parada); `vira` espelha para ela olhar para a esquerda. */
@@ -74,12 +74,17 @@ export function avisoHtml(txt: string): string {
   return `<div class="hub-aviso" role="status">${txt}</div>`;
 }
 
-/** Partida rápida sem deck salvo: montar agora ou jogar com um deck aleatório. */
-export function semDeckHtml(): string {
-  return `<div class="ov"><div class="panel"><h2>${T.partidaRapida}</h2><p>${T.semDeckPergunta}</p>`
-    + `<div class="acts2"><button class="btn go" data-act="montar">${T.montarAgora}</button>`
-    + `<button class="btn rc" data-act="rapida-aleatorio">${T.deckAleatorioBt}</button>`
-    + `<button class="btn rc" data-act="fechar">${T.voltar}</button></div></div></div>`;
+/** Partida Rápida: escolhe a dificuldade do bot; mostra com qual deck você vai jogar. */
+export function dificuldadeHtml(deck: DeckMontado | null, ultimo: Nivel): string {
+  const nv = (n: Nivel, icone: string) => `<button class="nivel n-${n}${n === ultimo ? ' ultimo' : ''}" data-act="nivel" data-n="${n}">`
+    + `<span class="nv-ic">${icone}</span><b>${T.nivelNome[n]}</b><small>${T.nivelDesc[n]}</small></button>`;
+  const seu = deck
+    ? `<p class="nv-deck">${T.seuDeck}: <b>${nomeDeckMontado(deck)}</b> <button class="btn rc mini" data-act="montar">${T.trocar}</button></p>`
+    : `<p class="nv-deck">${T.semDeckAviso} <button class="btn rc mini" data-act="montar">${T.montarAgora}</button></p>`;
+  return `<div class="ov"><div class="panel wide nivel-painel"><div class="gtop"><h2>${T.partidaRapida}</h2>`
+    + `<button class="m-fecha" data-act="fechar" aria-label="${T.sair}">✕</button></div>`
+    + seu + `<p>${T.escolhaDificuldade}</p>`
+    + `<div class="niveis">${nv('facil', '🌱')}${nv('normal', '⚔️')}${nv('dificil', '🔥')}</div></div></div>`;
 }
 
 export function regrasHtml(): string {

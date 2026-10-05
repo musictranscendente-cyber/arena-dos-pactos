@@ -23,6 +23,8 @@ export interface View {
   zoom?: Zoom | null;
   /** Mostrar a mensagem de ajuda (só quando o jogador toca no ícone de informação). */
   info?: boolean;
+  /** Dificuldade do bot (Partida Rápida), mostrada embaixo do nome do rival. */
+  nivel?: string;
   /** Fim de partida: o lado de quem perdeu afunda, treme e racha ('anim'); depois fica parado assim ('fixo'). */
   fim?: 'anim' | 'fixo' | null;
   /** Perguntando se o jogador quer mesmo desistir. */
@@ -193,12 +195,12 @@ export function nomeLado(H: GameState['p']): string {
   return H.sign2 ? `${RACES[H.sign].n} + ${RACES[H.sign2].n}` : RACES[H.sign].n;
 }
 
-function heroCard(s: GameState, side: Side): string {
+function heroCard(s: GameState, side: Side, nivel?: string): string {
   const H = s[side], r = RACES[H.sign];
   const hp = Math.max(0, H.hp);
   const pct = Math.min(100, (hp / HEART_MAX) * 100);
   const name = side === 'p' ? T.voce : T.rivalDe(nomeLado(H));
-  const sub = T.deck(H.deck.length);
+  const sub = T.deck(H.deck.length) + (side === 'e' && nivel ? ` · <b class="nv-tag">${nivel}</b>` : '');
   const extra = side === 'e' ? `<span class="gem" title="Mana">${H.max}</span>` : '';
   return `<div class="hcard ${side === 'p' ? 'mine' : 'theirs'}" style="--rc:${r.c}">`
     + `<div class="medal"><span>${r.g}</span>${H.sign2 ? `<i class="medal2" style="--rc2:${RACES[H.sign2].c}">${RACES[H.sign2].g}</i>` : ''}</div>`
@@ -213,10 +215,10 @@ const BANDEIRA = '<svg viewBox="0 0 20 20" aria-hidden="true"><rect x="2.2" y="1
   + '<circle cx="3.1" cy="1.6" r="1.4" fill="#ffe08a" stroke="#4a2c0a" stroke-width=".5"/>'
   + '<path class="pano" d="M4 3.2 C8 1.6 11 5 17.5 3.4 L17.5 11.4 C11 13 8 9.6 4 11.2 Z" fill="#fff" stroke="#2a1d3d" stroke-width=".8" stroke-linejoin="round"/></svg>';
 
-function hudHtml(s: GameState): string {
+function hudHtml(s: GameState, nivel?: string): string {
   return `<div class="hud">${heroCard(s, 'p')}`
     + `<div class="vs"><button class="rotbtn" data-act="rot" aria-label="${T.alternarDeitado}">⟳</button><span class="vsb">VS</span><span class="rd">${T.rodadaN(s.round)}<button class="infobtn" data-act="info" aria-label="${T.info}">i</button></span></div>`
-    + `${heroCard(s, 'e')}</div>`;
+    + `${heroCard(s, 'e', nivel)}</div>`;
 }
 
 function manaHtml(v: View): string {
@@ -266,7 +268,7 @@ function handHtml(v: View): string {
 }
 
 export function gameHtml(v: View): string {
-  return hudHtml(v.s)
+  return hudHtml(v.s, v.nivel)
     + `<div class="table">${boardHtml(v)}<div class="mid${v.info ? ' aberta' : ''}" aria-live="polite">${v.msg}</div></div>`
     + `<div class="bottom">${manaHtml(v)}${handHtml(v)}${actsHtml(v)}</div>`
     + (v.zoom ? zoomHtml(v.zoom) : '');
