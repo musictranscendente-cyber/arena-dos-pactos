@@ -416,6 +416,7 @@ function render(): void {
     canAct: !M.busy && M.g.phase === 'plan',
     canUndo: !M.busy && M.g.phase === 'plan' && M.plan.length > 0,
     zoom: zoomAtual(M),
+    usar: usarAtual(M),
     info: infoAberta,
     nivel: ultimo?.modo === 'rapida' ? T.nivelNome[M.nivel] : undefined,
     fim: M.g.phase !== 'over' || M.busy ? null : M.fim === 'pronto' ? 'fixo' : 'anim',
@@ -424,6 +425,14 @@ function render(): void {
   reporMortos();
   const h2 = root.querySelector('.hand');
   if (h2) h2.scrollLeft = sl;
+}
+
+/** Botão de confirmar a magia sem alvo selecionada (só se der para pagar). */
+function usarAtual(m: Match): string | null {
+  if (m.busy || m.g.phase !== 'plan' || m.sel === null) return null;
+  const h = m.g.p.hand[m.sel];
+  if (!h || !alvoAutomatico(h.cid) || costOf(m.g.p, h.cid) > m.g.p.mana) return null;
+  return card(h.cid).name;
 }
 
 /** Carta aberta grande: a selecionada na mão, ou a criatura tocada no tabuleiro. */
@@ -680,6 +689,16 @@ function onClick(ev: Event): void {
     return;
   }
 
+  if (a === 'usar') {
+    if (m.sel === null) return;
+    const h = P.hand[m.sel], tg = alvoAutomatico(h.cid);
+    if (!tg) return;
+    const c = card(h.cid);
+    if (costOf(P, h.cid) > P.mana) { m.msg = T.manaInsuficiente(c.name); render(); return; }
+    act({ t: 'spell', hand: m.sel, tg }, T.magiaPreparada(c.name));
+    return;
+  }
+
   if (a === 'recharge') {
     if (m.sel === null || P.recharged) return;
     const c = card(P.hand[m.sel].cid);
@@ -700,6 +719,15 @@ function onClick(ev: Event): void {
   if (a === 'punch') void battle();
 }
 
+/** Magias sem escolha de casa (curar/comprar/dano no herói): o alvo é fixo e só falta confirmar. */
+function alvoAutomatico(cid: string): Target | null {
+  const c = card(cid);
+  if (c.type !== 'spell') return null;
+  if (c.sp === 'heal' || c.sp === 'draw') return { side: 'p', l: 0, d: 0 };
+  if (c.sp === 'face') return { side: 'e', l: 0, d: 0 };
+  return null;
+}
+
 function hintFor(cid: string): string {
   const c = card(cid);
   if (c.type === 'unit') return T.hint.unit;
@@ -707,8 +735,7 @@ function hintFor(cid: string): string {
     case 'dmg': case 'poison': return T.hint.inimiga;
     case 'buff': case 'shield': return T.hint.sua;
     case 'lane': return T.hint.lane;
-    case 'face': return T.hint.face;
-    default: return T.hint.propria;
+    default: return alvoAutomatico(cid) ? T.hint.semAlvo : T.hint.propria;
   }
 }
 

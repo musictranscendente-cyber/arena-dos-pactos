@@ -21,6 +21,8 @@ export interface View {
   canUndo?: boolean;
   /** Carta aberta grande no meio de uma das metades da arena, para ler os detalhes. */
   zoom?: Zoom | null;
+  /** Magia sem escolha de casa selecionada: nome dela para o botão de confirmar. */
+  usar?: string | null;
   /** Mostrar a mensagem de ajuda (só quando o jogador toca no ícone de informação). */
   info?: boolean;
   /** Dificuldade do bot (Partida Rápida), mostrada embaixo do nome do rival. */
@@ -267,11 +269,18 @@ function handHtml(v: View): string {
   }).join('') + '</div>';
 }
 
+/** Carta aberta; se for magia sem alvo, com o botão de confirmar logo embaixo dela. */
+function zoomComUsar(v: View): string {
+  const z = zoomHtml(v.zoom!);
+  if (!v.usar) return z;
+  return z.slice(0, -'</div>'.length) + `<button class="btn go usar-magia" data-act="usar">${T.usarMagia(v.usar)}</button></div>`;
+}
+
 export function gameHtml(v: View): string {
   return hudHtml(v.s, v.nivel)
     + `<div class="table">${boardHtml(v)}<div class="mid${v.info ? ' aberta' : ''}" aria-live="polite">${v.msg}</div></div>`
     + `<div class="bottom">${manaHtml(v)}${handHtml(v)}${actsHtml(v)}</div>`
-    + (v.zoom ? zoomHtml(v.zoom) : '');
+    + (v.zoom ? zoomComUsar(v) : '');
 }
 
 export function galleryHtml(sign: Signo, selected: string | null): string {

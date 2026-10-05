@@ -927,3 +927,9 @@ body.rot .ov.montar.gal .m-curva{height:28px}body.rot .m-bts .btn{min-height:30p
 body.rot .m-corpo{margin-top:5px}
 body.rot .ov.montar.gal .m-detalhe .z-nome{font-size:14px}body.rot .ov.montar.gal .m-detalhe .z-hab{font-size:10px}
 }
+
+/* magia sem alvo (curar, comprar, dano no herói): fica selecionada esperando o toque em "Usar" */
+.zoom .btn.usar-magia{display:block;width:100%;margin-top:7px;pointer-events:auto;min-height:38px;padding:0 8px;
+  font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;animation:usar-pulsa 1.2s ease-in-out infinite}
+@keyframes usar-pulsa{50%{box-shadow:0 0 0 3px #ffe08a,0 0 22px #ffcf4d}}
+@media (prefers-reduced-motion:reduce){.zoom .btn.usar-magia{animation:none}}
