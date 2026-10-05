@@ -233,9 +233,14 @@ function manaHtml(v: View): string {
 
 function actsHtml(v: View): string {
   const P = v.s.p;
-  return `<div class="acts"><div class="acts-lin"><button class="btn un" data-act="undo" ${v.canUndo ? '' : 'disabled'} title="${T.desfazer}">↩</button>`
-    + `<button class="btn rc" data-act="recharge" ${v.canAct && v.sel !== null && !P.recharged ? '' : 'disabled'}>${T.queimar}</button></div>`
-    + `<button class="btn go" data-act="punch" ${v.canAct ? '' : 'disabled'}><span class="ico">⚔️</span>${T.batalha}</button></div>`;
+  return `<div class="acts"><button class="btn go" data-act="punch" ${v.canAct ? '' : 'disabled'}><span class="ico">⚔️</span>${T.batalha}</button></div>`;
+}
+
+/** Voltar e queimar: logo à direita da mana. */
+function actsEsqHtml(v: View): string {
+  const P = v.s.p;
+  return `<div class="acts-esq"><button class="btn rc" data-act="recharge" ${v.canAct && v.sel !== null && !P.recharged ? '' : 'disabled'}>${T.queimar}</button>`
+    + `<button class="btn un" data-act="undo" ${v.canUndo ? '' : 'disabled'} title="${T.desfazer}">↩</button></div>`;
 }
 
 export function cardHtml(c: Card, cost: number, attrs = '', cls = '', cid?: string): string {
@@ -283,7 +288,7 @@ function preparadasHtml(v: View): string {
 export function gameHtml(v: View): string {
   return hudHtml(v.s, v.nivel)
     + `<div class="table">${boardHtml(v)}<div class="mid${v.info ? ' aberta' : ''}" aria-live="polite">${v.msg}</div>${preparadasHtml(v)}</div>`
-    + `<div class="bottom">${manaHtml(v)}${handHtml(v)}${actsHtml(v)}</div>`
+    + `<div class="bottom">${manaHtml(v)}${actsEsqHtml(v)}${handHtml(v)}${actsHtml(v)}</div>`
     + (v.zoom ? zoomHtml(v.zoom) : '');
 }
 

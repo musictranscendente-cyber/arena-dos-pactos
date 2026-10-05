@@ -936,3 +936,11 @@ body.rot .ov.montar.gal .m-detalhe .z-nome{font-size:14px}body.rot .ov.montar.ga
 .prep-e{width:44px;height:38px;display:grid;place-items:center;font-size:24px;line-height:1}
 .prep-e img{max-width:44px;max-height:38px;object-fit:contain}
 .prep-n{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;max-width:100%}
+
+/* voltar e queimar ao lado direito da mana (Batalha fica sozinha à direita) */
+.acts-esq{flex:0 0 auto;display:flex;flex-direction:column;gap:6px;width:84px;margin-bottom:6px}
+.acts-esq .btn{width:100%;min-height:38px;padding:4px 6px}
+.acts-esq .btn.rc{font-size:13px;line-height:1.1}
+.acts-esq .btn.un{font-size:18px}
+.acts{width:132px}
+.land .acts{width:116px}.land .acts-esq{width:76px}.land .acts-esq .btn{min-height:34px}
