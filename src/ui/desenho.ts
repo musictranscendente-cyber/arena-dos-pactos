@@ -21,8 +21,8 @@ export interface View {
   canUndo?: boolean;
   /** Carta aberta grande no meio de uma das metades da arena, para ler os detalhes. */
   zoom?: Zoom | null;
-  /** Magia sem escolha de casa selecionada: nome dela para o botão de confirmar. */
-  usar?: string | null;
+  /** Magias sem alvo já preparadas (k = posição na lista de jogadas, para devolver à mão). */
+  preparadas?: { cid: string; k: number }[];
   /** Mostrar a mensagem de ajuda (só quando o jogador toca no ícone de informação). */
   info?: boolean;
   /** Dificuldade do bot (Partida Rápida), mostrada embaixo do nome do rival. */
@@ -152,6 +152,7 @@ function cellHtml(v: View, side: Side, l: number, d: number): string {
   const pend = s.p.queue
     .filter(q => {
       const c = card(q.cid);
+      if (c.type === 'spell' && ['heal', 'draw', 'face'].includes(c.sp)) return false; // ficam no canto (preparadas)
       return q.tg.side === side && q.tg.l === l && ((c.type === 'spell' && c.sp === 'lane') || q.tg.d === d);
     })
     .map(q => card(q.cid).e).join('');
@@ -269,18 +270,21 @@ function handHtml(v: View): string {
   }).join('') + '</div>';
 }
 
-/** Carta aberta; se for magia sem alvo, com o botão de confirmar logo embaixo dela. */
-function zoomComUsar(v: View): string {
-  const z = zoomHtml(v.zoom!);
-  if (!v.usar) return z;
-  return z.slice(0, -'</div>'.length) + `<button class="btn go usar-magia" data-act="usar">${T.usarMagia(v.usar)}</button></div>`;
+/** Magias sem alvo preparadas: cartinhas paradas no canto do seu lado, até a Batalha (tocar devolve à mão). */
+function preparadasHtml(v: View): string {
+  if (!v.preparadas?.length) return '';
+  return `<div class="preparadas">${v.preparadas.map(({ cid, k }) => {
+    const c = card(cid);
+    return `<button class="prep" data-act="desprep" data-k="${k}" title="${T.tocarParaVoltar}" style="--rc:${RACES[c.race].c}">`
+      + `<span class="prep-e">${artOrEmoji(c, cid)}</span><span class="prep-n">${c.name}</span></button>`;
+  }).join('')}</div>`;
 }
 
 export function gameHtml(v: View): string {
   return hudHtml(v.s, v.nivel)
-    + `<div class="table">${boardHtml(v)}<div class="mid${v.info ? ' aberta' : ''}" aria-live="polite">${v.msg}</div></div>`
+    + `<div class="table">${boardHtml(v)}<div class="mid${v.info ? ' aberta' : ''}" aria-live="polite">${v.msg}</div>${preparadasHtml(v)}</div>`
     + `<div class="bottom">${manaHtml(v)}${handHtml(v)}${actsHtml(v)}</div>`
-    + (v.zoom ? zoomComUsar(v) : '');
+    + (v.zoom ? zoomHtml(v.zoom) : '');
 }
 
 export function galleryHtml(sign: Signo, selected: string | null): string {

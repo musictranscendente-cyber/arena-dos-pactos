@@ -417,7 +417,7 @@ function render(): void {
     canAct: !M.busy && M.g.phase === 'plan',
     canUndo: !M.busy && M.g.phase === 'plan' && M.plan.length > 0,
     zoom: zoomAtual(M),
-    usar: usarAtual(M),
+    preparadas: preparadasAtual(M),
     info: infoAberta,
     nivel: ultimo?.modo === 'rapida' ? T.nivelNome[M.nivel] : undefined,
     fim: M.g.phase !== 'over' || M.busy ? null : M.fim === 'pronto' ? 'fixo' : 'anim',
@@ -428,12 +428,13 @@ function render(): void {
   if (h2) h2.scrollLeft = sl;
 }
 
-/** Botão de confirmar a magia sem alvo selecionada (só se der para pagar). */
-function usarAtual(m: Match): string | null {
-  if (m.busy || m.g.phase !== 'plan' || m.sel === null) return null;
-  const h = m.g.p.hand[m.sel];
-  if (!h || !alvoAutomatico(h.cid) || costOf(m.g.p, h.cid) > m.g.p.mana) return null;
-  return card(h.cid).name;
+/** Magias sem alvo já preparadas nesta rodada (aparecem paradas ao lado do campo até a Batalha). */
+function preparadasAtual(m: Match): { cid: string; k: number }[] {
+  if (m.busy || m.g.phase !== 'plan') return [];
+  return m.plan.flatMap((x, k) => {
+    const cid = m.base.p.hand[x.bi]?.cid;
+    return x.a.t === 'spell' && cid && alvoAutomatico(cid) ? [{ cid, k }] : [];
+  });
 }
 
 /** Carta aberta grande: a selecionada na mão, ou a criatura tocada no tabuleiro. */
@@ -643,6 +644,13 @@ function onClick(ev: Event): void {
 
   if (a === 'hand') {
     const i = Number(t.dataset.i);
+    // magia sem escolha de casa (curar, comprar, dano no herói): já fica preparada, sem tocar no campo
+    const auto = alvoAutomatico(P.hand[i].cid);
+    if (auto && costOf(P, P.hand[i].cid) <= P.mana) {
+      const c = card(P.hand[i].cid);
+      act({ t: 'spell', hand: i, tg: auto }, T.magiaPreparada(c.name) + ' ' + T.tocarParaVoltar);
+      return;
+    }
     m.sel = m.sel === i ? null : i;
     if (m.sel !== null) {
       const c = card(P.hand[i].cid);
@@ -690,13 +698,14 @@ function onClick(ev: Event): void {
     return;
   }
 
-  if (a === 'usar') {
-    if (m.sel === null) return;
-    const h = P.hand[m.sel], tg = alvoAutomatico(h.cid);
-    if (!tg) return;
-    const c = card(h.cid);
-    if (costOf(P, h.cid) > P.mana) { m.msg = T.manaInsuficiente(c.name); render(); return; }
-    act({ t: 'spell', hand: m.sel, tg }, T.magiaPreparada(c.name));
+  if (a === 'desprep') {
+    const k = Number(t.dataset.k);
+    const x = m.plan[k];
+    if (!x) return;
+    desfazer(m, k);
+    m.sel = null;
+    m.msg = T.voltouMao(name(m.base.p.hand[x.bi].cid));
+    render();
     return;
   }
 
@@ -720,7 +729,7 @@ function onClick(ev: Event): void {
   if (a === 'punch') void battle();
 }
 
-/** Magias sem escolha de casa (curar/comprar/dano no herói): o alvo é fixo e só falta confirmar. */
+/** Magias sem escolha de casa (curar/comprar/dano no herói): o alvo é fixo, então ela é preparada direto da mão. */
 function alvoAutomatico(cid: string): Target | null {
   const c = card(cid);
   if (c.type !== 'spell') return null;
@@ -736,7 +745,7 @@ function hintFor(cid: string): string {
     case 'dmg': case 'poison': return T.hint.inimiga;
     case 'buff': case 'shield': return T.hint.sua;
     case 'lane': return T.hint.lane;
-    default: return alvoAutomatico(cid) ? T.hint.semAlvo : T.hint.propria;
+    default: return T.hint.propria;
   }
 }
 
