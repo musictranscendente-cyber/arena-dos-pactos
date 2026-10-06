@@ -19,6 +19,8 @@ export interface View {
   striking: Target[] | null;
   /** Há jogadas nesta rodada que podem ser desfeitas. */
   canUndo?: boolean;
+  /** Botão Queimar ativo (carta selecionada, ou uma única magia preparada). */
+  canBurn?: boolean;
   /** Carta aberta grande no meio de uma das metades da arena, para ler os detalhes. */
   zoom?: Zoom | null;
   /** Magias sem alvo já preparadas (k = posição na lista de jogadas, para devolver à mão). */
@@ -237,8 +239,7 @@ function actsHtml(v: View): string {
 
 /** Voltar e queimar: logo à direita da mana. */
 function actsEsqHtml(v: View): string {
-  const P = v.s.p;
-  return `<div class="acts-esq"><button class="btn rc" data-act="recharge" ${v.canAct && v.sel !== null && !P.recharged ? '' : 'disabled'}>${T.queimar}</button>`
+  return `<div class="acts-esq"><button class="btn rc" data-act="recharge" ${v.canBurn ? '' : 'disabled'}>${T.queimar}</button>`
     + `<button class="btn un" data-act="undo" ${v.canUndo ? '' : 'disabled'} title="${T.desfazer}">↩</button></div>`;
 }
 

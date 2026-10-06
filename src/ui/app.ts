@@ -416,6 +416,7 @@ function render(): void {
     s: M.shown, sel: M.sel, msg: M.msg, active: M.active, striking: M.striking,
     canAct: !M.busy && M.g.phase === 'plan',
     canUndo: !M.busy && M.g.phase === 'plan' && M.plan.length > 0,
+    canBurn: !M.busy && M.g.phase === 'plan' && !M.g.p.recharged && (M.sel !== null || preparadasAtual(M).length === 1),
     zoom: zoomAtual(M),
     preparadas: preparadasAtual(M),
     info: infoAberta,
@@ -702,16 +703,22 @@ function onClick(ev: Event): void {
     const k = Number(t.dataset.k);
     const x = m.plan[k];
     if (!x) return;
-    desfazer(m, k);
-    m.sel = null;
-    m.msg = T.voltouMao(name(m.base.p.hand[x.bi].cid));
+    // volta para a mão já selecionada (como a criatura): dá para queimar ou tocar de novo para preparar
+    m.sel = desfazer(m, k);
+    m.msg = T.voltouMaoQueimar(name(m.base.p.hand[x.bi].cid));
     render();
     return;
   }
 
   if (a === 'recharge') {
-    if (m.sel === null || P.recharged) return;
-    const c = card(P.hand[m.sel].cid);
+    if (P.recharged) return;
+    // nada selecionado e só uma magia preparada: queima ela (volta para a mão e é queimada)
+    if (m.sel === null) {
+      const prep = preparadasAtual(m);
+      if (prep.length !== 1) return;
+      m.sel = desfazer(m, prep[0].k);
+    }
+    const c = card(m.g.p.hand[m.sel].cid);
     act({ t: 'burn', hand: m.sel }, T.queimada(c.name));
     return;
   }
