@@ -50,13 +50,14 @@ describe('campanha', () => {
     p = vencerFase(p, 'aries', 3, 30, new Rng(9)).p;
     expect(totalCopias(p, 'aries25')).toBe(antes); // lendária só uma vez
   });
-  it('dificuldade sobe: chefe tem 40 de vida e cartas de nível maior nos mundos finais', () => {
+  it('dificuldade depende só da fase (igual em todo mundo): começa fácil, chefe no difícil', () => {
     expect(fase('aries', 10).vidaRival).toBe(VIDA_CHEFE);
-    expect(fase('aries', 1).nivelIA).toBe('facil');
-    expect(fase('peixes', 10).nivelCartas).toBe(5);
-    const d = deckDaFase(fase('peixes', 1), new Rng(1));
+    expect(fase('escorpiao', 1).nivelIA).toBe('facil');
+    expect(fase('peixes', 1)).toEqual({ ...fase('aries', 1), signo: 'peixes' });
+    expect(fase('peixes', 10).nivelIA).toBe('dificil');
+    const d = deckDaFase(fase('peixes', 7), new Rng(1));
     expect(d).toHaveLength(30);
-    expect(d.every(c => nivelDe(c) === 4)).toBe(true);
+    expect(d.every(c => nivelDe(c) === 2)).toBe(true);
   });
   it('herói com vida maior (chefe) não perde vida ao ser curado', () => {
     const { state } = newGame({ pSign: 'aries', eSign: 'leao', seed: 1, record: false, eHp: 40 });

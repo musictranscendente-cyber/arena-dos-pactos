@@ -1,6 +1,6 @@
 // Campanha: 12 mundos (os signos, na ordem do zodíaco) com 10 fases cada.
 // Cada fase enfrenta o deck do signo do mundo; a dificuldade sobe a cada fase e a cada mundo.
-// Fase 5 = guardião (deck mais forte); fase 10 = chefe (o próprio signo, com 40 de vida).
+// Fase 5 = guardião (deck mais forte); fase 10 = chefe (o próprio signo, com mais vida).
 import { CARDS, cardsOfSign, comNivel } from '../data/cards';
 import { ORDER } from '../data/signos';
 import type { Signo } from '../data/schema';
@@ -11,7 +11,7 @@ import { cartaDaRaridade, darCartas, sortearCarta, type Progresso } from './prog
 
 export const FASES = 10;
 export const MUNDOS: readonly Signo[] = ORDER;
-export const VIDA_CHEFE = 40;
+export const VIDA_CHEFE = 30;
 
 export const chave = (signo: Signo, fase: number) => `${signo}-${fase}`;
 const chaveLenda = (signo: Signo) => `${signo}-lenda`;
@@ -52,29 +52,42 @@ export interface Fase {
   nivelIA: Nivel;
   /** Nível das cartas do rival. */
   nivelCartas: number;
+  /** Rival usa as cartas mais fortes do signo (com cópias). */
+  forte: boolean;
   vidaRival: number;
 }
 
+/**
+ * Dificuldade de cada fase (igual em todos os mundos, já que todos ficam liberados):
+ * IA, nível das cartas do rival, se o rival usa o deck "forte" (as melhores cartas) e a vida dele.
+ * Calibrada com o simulador (src/sim/campanha.ts) para começar fácil e subir aos poucos.
+ */
+export const DIFICULDADE: readonly { ia: Nivel; nv: number; forte: boolean; vida: number }[] = [
+  { ia: 'facil', nv: 1, forte: false, vida: 20 },
+  { ia: 'facil', nv: 1, forte: false, vida: 25 },
+  { ia: 'facil', nv: 1, forte: false, vida: 30 },
+  { ia: 'normal', nv: 1, forte: false, vida: 20 },
+  { ia: 'normal', nv: 1, forte: false, vida: 30 }, // guardião
+  { ia: 'normal', nv: 1, forte: false, vida: 30 },
+  { ia: 'normal', nv: 2, forte: false, vida: 25 },
+  { ia: 'normal', nv: 2, forte: false, vida: 30 },
+  { ia: 'normal', nv: 2, forte: false, vida: 35 },
+  { ia: 'dificil', nv: 1, forte: false, vida: 30 }, // chefe
+]
+
 export function fase(signo: Signo, n: number): Fase {
-  const m = MUNDOS.indexOf(signo);
   const tipo: TipoFase = n === FASES ? 'chefe' : n === 5 ? 'guardiao' : 'normal';
-  // IA: as primeiras fases são fáceis; dos mundos do meio em diante já começa no normal
-  const nivelIA: Nivel = tipo === 'chefe' ? 'dificil'
-    : n <= 3 ? (m >= 4 ? 'normal' : 'facil')
-    : n <= 7 ? (m >= 8 ? 'dificil' : 'normal')
-    : 'dificil';
-  // cartas do rival sobem de nível a cada 3 mundos; guardião +1 e chefe +1 (até o 5)
-  const nivelCartas = Math.min(5, 1 + Math.floor(m / 3) + (tipo === 'normal' ? 0 : 1));
+  const d = DIFICULDADE[Math.max(1, Math.min(FASES, n)) - 1];
   const cartas = cardsOfSign(signo);
   const rival = tipo === 'chefe' ? CARDS[`${signo}25`]?.name ?? signo
     : tipo === 'guardiao' ? CARDS[cartas[22]]?.name ?? signo
     : '';
-  return { signo, fase: n, tipo, rival, nivelIA, nivelCartas, vidaRival: tipo === 'chefe' ? VIDA_CHEFE : 30 };
+  return { signo, fase: n, tipo, rival, nivelIA: d.ia, nivelCartas: d.nv, forte: d.forte, vidaRival: d.vida };
 }
 
 /** Deck do rival da fase, já com o nível das cartas. Fases normais: as 30 do signo; guardião e chefe: as mais fortes. */
 export function deckDaFase(f: Fase, rng: Rng): string[] {
-  const base = f.tipo === 'normal' ? cardsOfSign(f.signo) : deckForte(rng, f.signo, f.signo);
+  const base = f.forte ? deckForte(rng, f.signo, f.signo) : cardsOfSign(f.signo);
   return base.map(c => comNivel(c, f.nivelCartas));
 }
 

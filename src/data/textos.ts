@@ -213,6 +213,7 @@ export const T = {
   fundir: (de: number, custo: number) => `Fundir 2× Nv${de} → Nv${de + 1} (${custo} ✨)`,
   fundiu: (nome: string, nv: number) => `${nome} subiu para o nível ${nv}! ✨`,
   semPoeira: 'Poeira Estelar insuficiente.',
+  precisaCopias: 'Para fundir, junte 2 cópias desta carta no mesmo nível. Consiga cópias na campanha, nos pacotes e nas missões.',
   fusaoAjuda: 'Junte 2 cartas iguais do mesmo nível para criar 1 do nível seguinte (até o 5). Cada nível deixa a carta mais forte.',
   bonusNivel: 'Bônus: Nv2 +1 vida · Nv3 +1 ataque · Nv4 +1 vida · Nv5 +1/+1 e moldura dourada. Magias: +1 de efeito no Nv3 e no Nv5.',
   pacoteEstelar: 'Pacote Estelar',

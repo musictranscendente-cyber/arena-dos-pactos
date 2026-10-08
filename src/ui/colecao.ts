@@ -58,7 +58,7 @@ export function colecaoHtml(p: Progresso, t: TelaColecao): string {
     lado = (t.msg ? `<p class="m-dica">${t.msg}</p>` : '')
       + `<p class="c-tem">${n ? T.naColecao(n) : T.naoTem}</p>`
       + (n ? `<div class="c-nvs" aria-label="${T.copiasPorNivel}">${linhas}</div>` : '')
-      + fusoes
+      + (fusoes || (n ? `<p class="m-dica">${T.precisaCopias}</p>` : ''))
       + `<div class="m-detalhe">${zoomHtml({ cid: comNivel(k, nv), lado: 'p' })}</div>`;
   }
   return `<div class="ov montar gal colecao"><div class="panel wide"><div class="m-fixo">`
