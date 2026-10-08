@@ -8,7 +8,7 @@ import {
   maxCopias, planTurnNivel, type DeckMontado, type Nivel,
   type Action, type Frame, type GameEvent, type GameState, type Side, type Target,
 } from '../engine';
-import { ATK_MS, desistirHtml, endHtml, galleryHtml, gameHtml, startHtml, type View, type Zoom } from './desenho';
+import { ATK_MS, desistirHtml, endHtml, galleryHtml, gameHtml, startHtml, zoomHtml, type View, type Zoom } from './desenho';
 import { toggleRot, tryLandscape } from './orientacao';
 import { efeitoGeral, efeitosDeMagia, EXTRA_GERAL_MS, MAGIA_MS } from './efeitoMagia';
 import { precarregarVisiveis } from './precarga';
@@ -54,6 +54,8 @@ interface Match {
   fim?: 'caindo' | 'pronto';
   /** Perguntando se o jogador quer desistir. */
   confirma?: boolean;
+  /** Desistiu no meio da animação da Batalha: a animação para. */
+  abortado?: boolean;
   /** Criatura do tabuleiro aberta grande para ver os detalhes. */
   inspect: Target | null;
   /** Dificuldade do bot nesta partida. */
@@ -181,7 +183,7 @@ async function battle(): Promise<void> {
     if (f.kind === 'reveal' && f.events.every(e => e.t !== 'Reveal' || e.side === 'p')) { m.shown = f.state; continue; }
     if (f.kind === 'reveal' && !revealed) {
       revealed = true;
-      m.msg = T.revela; render(); await sleep(600);
+      m.msg = T.revela; render(); await sleep(600); if (m.abortado) return;
     }
     if (f.kind === 'tick') break; // nova rodada: tratada abaixo
     // Investida: a criatura acabou de entrar e já ataca — mostra o avanço antes do golpe, com o aviso
@@ -194,7 +196,7 @@ async function battle(): Promise<void> {
       avisoInvestida(`c-${inv.side}-${inv.l}-${inv.d}`);
       const t = PAUSE['step-start'] * (reduce ? 0.4 : 1);
       for (const sh of shotsOf(f.events)) launch(app(), sh, t * 0.5, t * 0.48);
-      await sleep(PAUSE['step-start']);
+      await sleep(PAUSE['step-start']); if (m.abortado) return;
     }
     // Ferrão Final: uma pausa depois do golpe, o escorpião aparece onde morreu e lança o ferrão; só então o dano
     if (f.kind === 'ferrao') {
@@ -202,9 +204,9 @@ async function battle(): Promise<void> {
       m.striking = null;
       for (const e of f.events) if (e.t === 'Sting') { m.msg = T.ferraoMsg(name(e.cid), e.from.side === 'p' ? 'seu' : 'do rival'); }
       render();
-      await sleep(FERRAO_ESPERA_MS);
+      await sleep(FERRAO_ESPERA_MS); if (m.abortado) return;
       for (const e of f.events) if (e.t === 'Sting') animaFerrao(e);
-      await sleep(FERRAO_ANIM_MS);
+      await sleep(FERRAO_ANIM_MS); if (m.abortado) return;
     }
     m.shown = f.state;
     m.striking = f.kind === 'step' || inv ? m.active : null;
@@ -227,13 +229,14 @@ async function battle(): Promise<void> {
     }
     const pausa = inv ? PAUSE.step
       : PAUSE[f.kind] + (f.kind === 'spell' && efeitoGeral(f.events) ? EXTRA_GERAL_MS : 0) + (reforco.length ? REFORCO_MS : 0);
-    await sleep(pausa);
+    await sleep(pausa); if (m.abortado) return;
   }
   m.active = null;
   m.striking = null;
+  m.inspect = null;
   m.g = state;
   const tick = frames.find(f => f.kind === 'tick');
-  if (state.phase === 'over') { m.shown = state; m.busy = false; fimDeJogo(m); return; }
+  if (state.phase === 'over') { m.shown = state; m.busy = false; m.confirma = false; fimDeJogo(m); return; }
   const mortos = capturarMortos(tick?.events ?? []);
   beginPlanning(tick?.events ?? []);
   soltarMortos(mortos);
@@ -438,9 +441,18 @@ function preparadasAtual(m: Match): { cid: string; k: number }[] {
   });
 }
 
-/** Carta aberta grande: a selecionada na mão, ou a criatura tocada no tabuleiro. */
+/** Troca só a carta aberta grande (sem redesenhar a tela toda). */
+function atualizarZoom(m: Match): void {
+  const root = app();
+  root.querySelector(':scope > .zoom')?.remove();
+  const z = zoomAtual(m);
+  if (z) root.insertAdjacentHTML('beforeend', zoomHtml(z));
+}
+
+/** Carta aberta grande: a selecionada na mão, ou a criatura tocada no tabuleiro (também durante a Batalha). */
 function zoomAtual(m: Match): Zoom | null {
-  if (m.busy || m.g.phase !== 'plan') return null;
+  if (m.busy) return zoomCriatura(m, m.shown);
+  if (m.g.phase !== 'plan') return null;
   if (m.sel !== null) {
     const h = m.g.p.hand[m.sel];
     if (!h) return null;
@@ -449,13 +461,15 @@ function zoomAtual(m: Match): Zoom | null {
     const miraInimigo = c.type === 'spell' && ['dmg', 'poison', 'lane', 'face'].includes(c.sp);
     return { cid: h.cid, cost: costOf(m.g.p, h.cid), lado: miraInimigo ? 'p' : 'e' };
   }
-  if (m.inspect) {
-    const { side, l, d } = m.inspect;
-    const u = m.g[side].board[l][d];
-    if (!u || (side === 'e' && u.hidden)) return null;
-    return { cid: u.cid, atk: effAtk(m.g[side].board, l, u), hp: u.hp, lado: side === 'p' ? 'e' : 'p' };
-  }
-  return null;
+  return zoomCriatura(m, m.g);
+}
+
+function zoomCriatura(m: Match, s: GameState): Zoom | null {
+  if (!m.inspect) return null;
+  const { side, l, d } = m.inspect;
+  const u = s[side].board[l][d];
+  if (!u || (side === 'e' && u.hidden)) return null;
+  return { cid: u.cid, atk: effAtk(s[side].board, l, u), hp: u.hp, lado: side === 'p' ? 'e' : 'p' };
 }
 
 /** Fim de partida: primeiro o lado de quem perdeu desce, treme e racha; depois aparece o resultado. */
@@ -628,17 +642,28 @@ function onClick(ev: Event): void {
   if (a === 'again' && M && ultimo) { startMatch(ultimo); return; }
   if (a === 'menu') { M = null; tela = 'hub'; render(); return; }
   if (!M && menuClick(a, t)) return;
-  if (a === 'desistir' && M && !M.busy && M.g.phase === 'plan') { M.confirma = true; M.sel = null; M.inspect = null; render(); return; }
+  // dá para desistir também durante a animação da Batalha
+  if (a === 'desistir' && M && M.g.phase === 'plan' && M.fim === undefined) { M.confirma = true; M.sel = null; M.inspect = null; render(); return; }
   if (a === 'desistir-nao' && M) { M.confirma = false; render(); return; }
   if (a === 'desistir-sim' && M && M.confirma) {
     M.confirma = false;
-    // as jogadas ainda não confirmadas desta rodada não contam: desiste a partir do começo do planejamento
+    // no meio da Batalha: a animação para na hora
+    if (M.busy) { M.abortado = true; M.busy = false; M.active = M.striking = null; M.inspect = null; }
+    // as jogadas ainda não confirmadas desta rodada (e a Batalha em andamento) não contam: desiste a partir do começo do planejamento
     const r = surrender(M.base, 'p');
     if (r.ok) { M.g = M.shown = r.state; M.msg = T.voceDesistiu; fimDeJogo(M); }
     return;
   }
 
   const m = M;
+  // durante a Batalha: tocar numa criatura abre os detalhes dela (sem redesenhar a arena, a animação segue)
+  if (m && m.busy && a === 'cell') {
+    const side = t.dataset.side as Side, l = Number(t.dataset.l), d = Number(t.dataset.d);
+    const mesma = m.inspect && m.inspect.side === side && m.inspect.l === l && m.inspect.d === d;
+    m.inspect = mesma ? null : { side, l, d };
+    atualizarZoom(m);
+    return;
+  }
   if (!m || m.busy || m.g.phase !== 'plan') return;
   const P = m.g.p;
   if (a !== 'cell') m.inspect = null;

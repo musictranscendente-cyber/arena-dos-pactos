@@ -210,7 +210,7 @@ function heroCard(s: GameState, side: Side, nivel?: string): string {
   return `<div class="hcard ${side === 'p' ? 'mine' : 'theirs'}" style="--rc:${r.c}">`
     + `<div class="medal"><span>${r.g}</span>${H.sign2 ? `<i class="medal2" style="--rc2:${RACES[H.sign2].c}">${RACES[H.sign2].g}</i>` : ''}</div>`
     + (side === 'e' ? `<span class="maorival" title="${T.cartasNaMao(H.hand.length)}" aria-label="${T.cartasNaMao(H.hand.length)}"><i class="verso"></i><i class="verso"></i><b>${H.hand.length}</b></span>` : '')
-    + (side === 'p' && s.phase === 'plan' ? `<button class="flagbtn" data-act="desistir" aria-label="${T.desistir}" title="${T.desistir}">${BANDEIRA}<span>${T.desistirCurto}</span></button>` : '')
+    + (side === 'p' && s.phase !== 'over' ? `<button class="flagbtn" data-act="desistir" aria-label="${T.desistir}" title="${T.desistir}">${BANDEIRA}<span>${T.desistirCurto}</span></button>` : '')
     + `<div class="hinfo"><div class="hname">${name}</div><div class="hpbar${pct <= 30 ? ' low' : ''}"><i style="width:${pct}%"></i></div><div class="hsub">${sub}${extra}</div></div>`
     + `<div class="heart" id="hero-${side}">${hp}</div></div>`;
 }
