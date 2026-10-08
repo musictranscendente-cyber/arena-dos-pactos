@@ -22,7 +22,7 @@ import {
   abrirPacote, completarDeck, copiasParaDeck, deckComNiveis, diaDe, escolherInicial, faltando, fundir, podeFundir, premioRapida, type Progresso,
 } from '../meta/progresso';
 import { campanhaHtml, type TelaCampanha } from './campanha';
-import { deckDaFase, fase as dadosFase, FASES, faseLiberada, mundoAtual, MUNDOS, vencerFase } from '../meta/campanha';
+import { deckDaFase, fase as dadosFase, FASES, faseLiberada, mundoAtual, vencerFase } from '../meta/campanha';
 import { abrirBau, BAU_POEIRA, coletar, coletarLogin, garantirDia, loginDisponivel, registrar, trocar, type Contagem } from '../meta/missoes';
 import { missoesHtml, temColeta } from './missoes';
 import { colecaoHtml, inicialHtml, pacotesHtml, revelarHtml, type TelaColecao } from './colecao';
@@ -609,14 +609,12 @@ function premioDaPartida(m: Match): string | undefined {
     if (m.g.result !== 'p') return undefined;
     const { signo, fase: n } = ultimo;
     const r = vencerFase(prog, signo, n, m.g.p.hp, new Rng(randomSeed()));
-    const novoMundo = n === FASES && r.primeira && MUNDOS[MUNDOS.indexOf(signo) + 1];
     mudarProgresso(r.p);
     const partes = ['⭐'.repeat(r.estrelas), `+${r.poeira} ✨`];
     if (r.gemas) partes.push(`+${r.gemas} 💎`);
     if (r.cartas.length) {
       partes.push(r.cartas.map(c => card(c).name).join(', '));
-      m.revelaDepois = revelarHtml(r.lenda ? T.lendaGanha(card(`${signo}25`).name) : T.cartasGanhas, r.cartas, r.novas,
-        novoMundo ? T.novoMundo(RACES[novoMundo].n) : '');
+      m.revelaDepois = revelarHtml(r.lenda ? T.lendaGanha(card(`${signo}25`).name) : T.cartasGanhas, r.cartas, r.novas);
     }
     return partes.join(' · ');
   }
@@ -946,9 +944,6 @@ function onClick(ev: Event): void {
     if (a === 'proxfase' && u.fase < FASES) {
       const d = deckPronto();
       if (d) { startMatch({ modo: 'campanha', deck: d, signo: u.signo, fase: u.fase + 1 }); telaCamp.fase = u.fase + 1; }
-    } else if (u.fase === FASES) {
-      // venceu o chefe: o mapa abre no mundo seguinte
-      abrirCampanha();
     }
     render();
     return;

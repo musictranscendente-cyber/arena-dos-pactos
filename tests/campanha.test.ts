@@ -11,10 +11,11 @@ import { healHero } from '../src/engine/state';
 import { Ctx } from '../src/engine/ctx';
 
 describe('campanha', () => {
-  it('começa só com a fase 1 de Áries liberada', () => {
+  it('todos os mundos liberados; dentro do mundo, uma fase libera a próxima', () => {
     const p = novoProgresso();
     expect(mundoLiberado(p, 'aries')).toBe(true);
-    expect(mundoLiberado(p, 'touro')).toBe(false);
+    expect(mundoLiberado(p, 'peixes')).toBe(true);
+    expect(faseLiberada(p, 'peixes', 1)).toBe(true);
     expect(faseLiberada(p, 'aries', 1)).toBe(true);
     expect(faseLiberada(p, 'aries', 2)).toBe(false);
     expect(mundoAtual(p)).toBe('aries');
@@ -40,10 +41,9 @@ describe('campanha', () => {
     r = vencerFase(r.p, 'aries', 1, 5, new Rng(3));
     expect(r.p.campanha['aries-1']).toBe(3);
   });
-  it('vencer o chefe libera o próximo mundo e dá épica + gemas; 3 estrelas em tudo dá a lendária', () => {
+  it('vencer o chefe dá épica + gemas; 3 estrelas em tudo dá a lendária', () => {
     let p = novoProgresso();
     for (let n = 1; n <= FASES; n++) p = vencerFase(p, 'aries', n, 30, new Rng(n)).p;
-    expect(mundoLiberado(p, 'touro')).toBe(true);
     expect(p.gemas).toBe(5);
     expect(totalCopias(p, 'aries25')).toBeGreaterThanOrEqual(1);
     const antes = totalCopias(p, 'aries25');

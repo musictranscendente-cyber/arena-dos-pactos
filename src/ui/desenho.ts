@@ -70,7 +70,7 @@ export function zoomHtml(z: Zoom): string {
     + `<div class="z-topo"><span class="cost">${z.cost ?? c.cost}</span><span class="z-nome">${c.name}</span></div>`
     + elemHtml(c)
     + `<div class="z-arte">${img}<span class="z-sg">${r.g}</span></div>`
-    + `<div class="z-rar">${gemaHtml(c)}${RARITY[c.r].n} · ${ELEMENTO[r.el].i} ${r.el}${nivelDe(z.cid) > 1 ? ` · <span class="z-nv">${T.nivelN(nivelDe(z.cid))} ${'★'.repeat(nivelDe(z.cid))}</span>` : ''}</div>${corpo}</div>`;
+    + `<div class="z-rar">${gemaHtml(c)}${RARITY[c.r].n} · ${ELEMENTO[r.el].i} ${r.el}${z.cid !== 'eco' ? ` · <span class="z-nv">${T.nivelN(nivelDe(z.cid))} ${'★'.repeat(nivelDe(z.cid))}</span>` : ''}</div>${corpo}</div>`;
 }
 
 function artOrEmoji(c: Card, cid?: string): string {
@@ -251,12 +251,12 @@ export function cardHtml(c: Card, cost: number, attrs = '', cls = '', cid?: stri
   return `<div class="card ${c.type === 'spell' ? 'spell' : ''} r-${c.r}${cid && nivelDe(cid) >= 5 ? ' nivel5' : ''} ${cls}" style="--rc:${RACES[c.race].c};--rr:${RARITY[c.r].col}" ${attrs}><span class="cost">${cost}</span>`
     + elemHtml(c)
     + `<span class="cart">${artOrEmoji(c, cid)}<span class="sg">${RACES[c.race].g}</span></span>${gemaHtml(c)}<span class="cn">${c.name}</span>${body}`
-    + (cid ? estrelasHtml(nivelDe(cid)) : '') + '</div>';
+    + (cid && cid !== 'eco' ? estrelasHtml(nivelDe(cid)) : '') + '</div>';
 }
 
 /** Estrelinhas do nível da carta (só a partir do nível 2). */
 export function estrelasHtml(nv: number): string {
-  return nv > 1 ? `<span class="nv${nv >= 5 ? ' nv5' : ''}" title="${T.nivelN(nv)}" aria-label="${T.nivelN(nv)}">${'★'.repeat(nv)}</span>` : '';
+  return `<span class="nv nv-${nv}" title="${T.nivelN(nv)}" aria-label="${T.nivelN(nv)}"><b>Nv${nv}</b>${'★'.repeat(nv)}</span>`;
 }
 
 /** Medalhão do elemento no canto de cima da carta. */

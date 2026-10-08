@@ -20,10 +20,9 @@ export function estrelas(p: Progresso, signo: Signo, fase: number): number {
   return p.campanha[chave(signo, fase)] ?? 0;
 }
 
-/** Mundo liberado: o primeiro sempre; os outros depois de vencer o chefe do anterior. */
+/** Todos os mundos ficam liberados: o jogador escolhe de qual signo quer ganhar cartas. */
 export function mundoLiberado(p: Progresso, signo: Signo): boolean {
-  const i = MUNDOS.indexOf(signo);
-  return i <= 0 || estrelas(p, MUNDOS[i - 1], FASES) > 0;
+  return !!p && MUNDOS.includes(signo);
 }
 
 /** Fase liberada: a 1ª do mundo liberado; as outras depois de vencer a anterior. */
@@ -35,9 +34,10 @@ export function faseLiberada(p: Progresso, signo: Signo, fase: number): boolean 
 export const estrelasDoMundo = (p: Progresso, signo: Signo) =>
   Array.from({ length: FASES }, (_, i) => estrelas(p, signo, i + 1)).reduce((t, n) => t + n, 0);
 
-/** Primeiro mundo ainda não terminado (para abrir o mapa nele). */
+/** Mundo em que o mapa abre: o do signo inicial do jogador (ou o primeiro ainda não terminado). */
 export function mundoAtual(p: Progresso): Signo {
-  for (const s of MUNDOS) if (mundoLiberado(p, s) && estrelas(p, s, FASES) === 0) return s;
+  if (p.inicial && estrelas(p, p.inicial, FASES) === 0) return p.inicial;
+  for (const s of MUNDOS) if (estrelas(p, s, FASES) === 0) return s;
   return MUNDOS[MUNDOS.length - 1];
 }
 
