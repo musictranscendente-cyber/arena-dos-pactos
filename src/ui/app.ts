@@ -13,7 +13,7 @@ import { toggleRot, tryLandscape } from './orientacao';
 import { efeitoGeral, efeitosDeMagia, EXTRA_GERAL_MS, MAGIA_MS } from './efeitoMagia';
 import { precarregarVisiveis } from './precarga';
 import { launch, shotsOf } from './projetil';
-import { alternarSom, desbloquear, iconeSom, prefsSom, tocar, type Efeito } from './som';
+import { alternarSom, desbloquear, iconeSom, prefsSom, tocar, trilha, type Efeito } from './som';
 import { reverTutorial, tutorialEntendi, tutorialFimDePartida, tutorialHtml, tutorialNovaPartida, tutorialPular } from './tutorial';
 import { avisoHtml, dificuldadeHtml, hubHtml, montarHtml, regrasHtml, type Montagem } from './menu';
 import { deckAtivo, lerDecks, salvarDecks } from '../services/deckSalvo';
@@ -496,6 +496,7 @@ function somHtml(): string {
 
 function render(): void {
   const root = app();
+  trilha(M ? 'batalha' : 'menu');
   if (!M) {
     emDia();
     const dlg = dialogo === 'nivel' ? dificuldadeHtml(deckAtivo(meus), nivel) : dialogo === 'regras' ? regrasHtml(prog.teste)

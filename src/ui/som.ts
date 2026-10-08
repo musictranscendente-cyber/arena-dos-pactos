@@ -73,14 +73,18 @@ export function desbloquear(): void {
     fx.connect(comp);
     musica = ctx.createGain();
     musica.gain.value = 0;
-    musica.connect(comp);
+    musica.connect(ctx.destination);
     document.addEventListener('visibilitychange', () => {
       if (!ctx) return;
-      if (document.hidden) void ctx.suspend(); else void ctx.resume();
+      if (document.hidden) { void ctx.suspend(); for (const f of faixas.values()) f.el.pause(); }
+      else { void ctx.resume(); tocarTrilha(); }
     });
     aplicar();
   }
   if (ctx.state === 'suspended' && !document.hidden) void ctx.resume();
+  // celular: a música só começa depois de um toque; se ainda não tocou, tenta de novo
+  const f = faixas.get(atual);
+  if (prefs.musica && f?.el.paused) tocarTrilha();
 }
 
 function aplicar(): void {
@@ -88,8 +92,8 @@ function aplicar(): void {
   const t = ctx.currentTime;
   fx.gain.setTargetAtTime(prefs.efeitos ? 0.6 : 0, t, 0.02);
   fxEco!.gain.setTargetAtTime(prefs.efeitos ? 1 : 0, t, 0.02);
-  musica.gain.setTargetAtTime(prefs.musica ? 0.22 : 0, t, 0.4);
-  if (prefs.musica) iniciarMusica();
+  musica.gain.setTargetAtTime(prefs.musica ? 0.5 : 0, t, 0.4);
+  tocarTrilha();
 }
 
 /** Resposta de uma sala (ruído que some aos poucos, estéreo): dá o "ar" de ambiente real. */
@@ -321,69 +325,53 @@ export function tocar(e: Efeito): void {
   }
 }
 
-/* ---------- música ambiente ---------- */
-// Acordes lentos (Lá menor, Fá, Dó, Sol) em pads suaves, com notas de sino (estilo celesta) por cima.
+/* ---------- música (arquivos em public/audio) ---------- */
+// Uma trilha calma para os menus e outra para a batalha; ao trocar de tela, uma some e a outra entra devagar.
 
-const ACORDES = [[57, 60, 64], [53, 57, 60], [48, 55, 64], [55, 59, 62]];
-const PENTA = [69, 72, 74, 76, 79, 81, 84];
-const COMPASSO = 5.2; // segundos por acorde
-let musicaTimer: number | null = null;
-let proximo = 0;
-let passo = 0;
+export type Trilha = 'menu' | 'batalha';
+const ARQUIVO: Record<Trilha, string> = { menu: 'audio/menu.mp3', batalha: 'audio/batalha.mp3' };
+const faixas = new Map<Trilha, { el: HTMLAudioElement; g: GainNode }>();
+let atual: Trilha = 'menu';
 
-function iniciarMusica(): void {
-  if (musicaTimer !== null || !ctx) return;
-  proximo = ctx.currentTime + 0.1;
-  musicaTimer = window.setInterval(agendar, 400);
-  agendar();
+/** Escolhe a trilha da tela atual (o app chama a cada desenho; só faz algo quando muda). */
+export function trilha(q: Trilha): void {
+  if (q === atual) return;
+  atual = q;
+  tocarTrilha();
 }
 
-function agendar(): void {
+function faixa(q: Trilha): { el: HTMLAudioElement; g: GainNode } | null {
+  if (!ctx || !musica) return null;
+  let f = faixas.get(q);
+  if (!f) {
+    const el = new Audio(ARQUIVO[q]);
+    el.loop = true;
+    el.preload = 'auto';
+    const g = ctx.createGain();
+    g.gain.value = 0;
+    try { ctx.createMediaElementSource(el).connect(g).connect(musica); } catch { return null; }
+    f = { el, g };
+    faixas.set(q, f);
+  }
+  return f;
+}
+
+function tocarTrilha(): void {
   if (!ctx || !musica) return;
-  if (!prefs.musica) { if (musicaTimer !== null) { clearInterval(musicaTimer); musicaTimer = null; } return; }
-  while (proximo < ctx.currentTime + 1.5) {
-    const ac = ACORDES[passo % ACORDES.length];
-    for (const n of ac) pad(nota(n), proximo, COMPASSO);
-    pad(nota(ac[0] - 12), proximo, COMPASSO, 0.6);
-    const k = 3 + (passo % 3);
-    for (let i = 0; i < k; i++) {
-      const n = PENTA[(passo * 3 + i * 2 + (i % 2)) % PENTA.length];
-      celesta(nota(n), proximo + 0.4 + i * (COMPASSO / (k + 0.5)));
+  const t = ctx.currentTime;
+  for (const q of ['menu', 'batalha'] as Trilha[]) {
+    const ligada = prefs.musica && q === atual;
+    const f = ligada ? faixa(q) : faixas.get(q);
+    if (!f) continue;
+    if (ligada) {
+      // a batalha sempre começa do início; o menu continua de onde parou
+      if (f.el.paused) { if (q === 'batalha') f.el.currentTime = 0; void f.el.play().catch(() => { /* aguarda o próximo toque */ }); }
+      f.g.gain.cancelScheduledValues(t);
+      f.g.gain.setTargetAtTime(1, t, 0.5);
+    } else {
+      f.g.gain.cancelScheduledValues(t);
+      f.g.gain.setTargetAtTime(0, t, 0.4);
+      setTimeout(() => { if (!(prefs.musica && atual === q)) f.el.pause(); }, 2200);
     }
-    proximo += COMPASSO;
-    passo++;
   }
-}
-
-function pad(f: number, ini: number, dur: number, vol = 1): void {
-  const c = ctx!;
-  const filt = c.createBiquadFilter(), g = c.createGain();
-  filt.type = 'lowpass'; filt.frequency.value = 1100; filt.Q.value = 0.5;
-  // 3 vozes levemente desafinadas = coro suave
-  for (const det of [-7, 0, 7]) {
-    const o = c.createOscillator();
-    o.type = det === 0 ? 'triangle' : 'sine';
-    o.frequency.value = f;
-    o.detune.value = det;
-    o.connect(filt);
-    o.start(ini); o.stop(ini + dur + 1);
-  }
-  g.gain.setValueAtTime(0.0001, ini);
-  g.gain.linearRampToValueAtTime(0.05 * vol, ini + 1.5);
-  g.gain.linearRampToValueAtTime(0.04 * vol, ini + dur - 0.6);
-  g.gain.linearRampToValueAtTime(0.0001, ini + dur + 0.9);
-  filt.connect(g);
-  g.connect(musica!);
-  const w = c.createGain(); w.gain.value = 0.5;
-  g.connect(w).connect(eco!);
-}
-
-function celesta(f: number, ini: number): void {
-  const c = ctx!;
-  const g = c.createGain();
-  g.gain.value = 1;
-  g.connect(musica!);
-  const w = c.createGain(); w.gain.value = 0.8;
-  g.connect(w).connect(eco!);
-  sino(ini, f, SINO, 1.6, 0.05, g);
 }
