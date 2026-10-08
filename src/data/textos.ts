@@ -52,7 +52,7 @@ export function cardText(c: Card): string {
 }
 
 export const T = {
-  titulo: 'Arena dos Pactos',
+  titulo: 'Cosmic Clash',
   invocador: 'Invocador',
   semDeck: 'Nenhum deck montado',
   emBreve: 'Em breve',
@@ -62,7 +62,7 @@ export const T = {
   conhecerSub: 'Jogue com um signo inteiro',
   torneio: 'Torneio',
   montarDeck: 'Montar Deck',
-  montarSub: '2 signos, 30 cartas',
+  montarSub: '1 ou 2 signos, 30 cartas',
   partidaRapida: 'Partida Rápida',
   rapidaSub: 'Seu deck contra um bot',
   ranqueada: 'Ranqueada',
@@ -210,7 +210,7 @@ export const T = {
   naColecao: (n: number) => `Na coleção: ${n}`,
   naoTem: 'Você ainda não tem esta carta.',
   copiasPorNivel: 'Cópias por nível',
-  fundir: (de: number, custo: number) => `Fundir 2× Nv${de} → Nv${de + 1} (${custo} ✨)`,
+  fundir: (de: number, custo: number) => `Fundir Nv${de}→Nv${de + 1} · ${custo}✨`,
   fundiu: (nome: string, nv: number) => `${nome} subiu para o nível ${nv}! ✨`,
   semPoeira: 'Poeira Estelar insuficiente.',
   filtroNivel: 'Nível',
@@ -291,7 +291,7 @@ export const T = {
     compartilhar: () => 'Compartilhe o jogo com alguém',
   } as Record<string, (n: number) => string>,
   compartilharBt: '📤 Compartilhar',
-  compartilharTitulo: 'Arena dos Pactos',
+  compartilharTitulo: 'Cosmic Clash',
   compartilharTexto: 'Joga comigo! Card game dos 12 signos do zodíaco, partidas rápidas no celular:',
   linkCopiado: 'Link copiado! Cole no WhatsApp ou onde quiser.',
   cartaComum: '1 carta comum',

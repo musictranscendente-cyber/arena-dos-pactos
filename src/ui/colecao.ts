@@ -89,7 +89,7 @@ export function colecaoHtml(p: Progresso, t: TelaColecao): string {
     // tudo compacto em cima (cópias e fundir), para a carta grande caber inteira embaixo
     lado = (t.msg ? `<p class="m-dica">${t.msg}</p>` : '')
       + `<div class="c-resumo"><b>${n ? T.naColecao(n) : T.naoTem}</b>${linhas}</div>`
-      + fusoes
+      + (fusoes ? `<div class="c-fusoes">${fusoes}</div>` : '')
       + `<div class="m-detalhe">${zoomHtml({ cid: comNivel(k, nv), lado: 'p' })}</div>`;
   }
   const ajuda = t.ajuda ? `<div class="c-ajuda" data-act="cajuda"><p><b>${T.comoFundir}</b></p><p>${T.fusaoAjuda}</p><p>${T.bonusNivel}</p><p>${T.precisaCopias}</p></div>` : '';
