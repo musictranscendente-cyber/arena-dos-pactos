@@ -1040,3 +1040,41 @@ body.rot .ov.montar.gal .m-detalhe .z-nome{font-size:14px}body.rot .ov.montar.ga
 .hub-nome .moedas b{font:inherit;font-weight:900;font-size:13px;color:#fff;text-shadow:none}
 .hub-nome .moedas span{font-size:12px;padding:0 7px}
 .rv-c .card{height:132px;flex:none}
+
+/* ---------- campanha ---------- */
+.cp-mundo{display:inline-flex;flex-direction:column;align-items:center;line-height:1;padding:3px 6px;height:auto;min-height:34px}
+.cp-mundo small{font-size:9px;color:#ffe08a;margin-top:1px}
+.cp-mundo.bloq{opacity:.6}
+.cp-corpo{display:grid;grid-template-columns:1fr minmax(220px,36%);gap:12px}
+.cp-mapa{position:relative;min-height:0;height:100%;border-radius:14px;overflow:hidden;
+  background:radial-gradient(ellipse at 50% 50%,color-mix(in srgb,var(--rc) 30%,#1b1338),#0f0a26 80%);border:1.5px solid #ffffff1f}
+.cp-mapa::before{content:'';position:absolute;left:10%;right:10%;top:30%;bottom:26%;border:3px dashed #ffffff30;border-left:none;border-radius:0 60px 60px 0}
+.cp-fase{position:absolute;translate:-50% -50%;width:52px;height:52px;border-radius:50%;cursor:pointer;font:inherit;color:#fff;display:grid;place-items:center;padding:0;
+  background:radial-gradient(circle at 35% 30%,color-mix(in srgb,var(--rc) 70%,#fff3),color-mix(in srgb,var(--rc) 45%,#000));border:3px solid #e9c77a;box-shadow:0 4px 10px #000a;z-index:2}
+.cp-fase b{font-size:18px;font-weight:900;text-shadow:0 2px 2px #000;position:relative;z-index:2}
+.cp-fase.t-guardiao{width:62px;height:62px}
+.cp-fase.t-chefe{width:76px;height:76px;border-color:#ffd34d;box-shadow:0 0 18px #ffcf4d99,0 4px 10px #000a}
+.cp-fase .cp-fig{position:absolute;bottom:38%;left:50%;translate:-50% 0;height:150%;width:auto;filter:drop-shadow(0 3px 3px #000a);z-index:1;pointer-events:none}
+.cp-fase.t-guardiao .cp-fig,.cp-fase.t-chefe .cp-fig{height:140%}
+.cp-fase.bloq{filter:grayscale(.9) brightness(.55);cursor:default}
+.cp-fase.livre:not(.feita){animation:cp-pulsa 1.4s ease-in-out infinite}
+@keyframes cp-pulsa{50%{box-shadow:0 0 0 4px #ffd57a,0 0 22px #ffcf4d}}
+.cp-fase.sel{outline:3px solid #fff;outline-offset:3px}
+.cp-fase .cp-est{position:absolute;bottom:-14px;left:50%;translate:-50% 0;white-space:nowrap}
+.cp-est i{font-style:normal;color:#5a5070;font-size:13px;text-shadow:0 1px 1px #000}
+.cp-est i.on{color:#ffd34d}
+.cp-det{overflow:auto;min-height:0;background:#ffffff0d;border-radius:14px;padding:10px 12px}
+.cp-det h3{margin:0 0 6px;font-family:'Grenze Gotisch',Georgia,serif;font-size:21px;color:var(--gold);line-height:1.1}
+.cp-det p{margin:5px 0;font-size:13px;line-height:1.3}
+.cp-info{display:flex;flex-wrap:wrap;gap:4px 10px}
+.cp-melhor .cp-est i{font-size:22px}
+.cp-crit{color:#c9bde6;font-size:11.5px !important}
+.cp-lenda{background:#ffcf4d1f;border-radius:8px;padding:5px 8px}
+.btn.cp-lutar{width:100%;margin-top:6px}
+@media (max-width:620px){body:not(.rot) .cp-corpo{grid-template-columns:1fr}body:not(.rot) .cp-mapa{height:240px}}
+@media (prefers-reduced-motion:reduce){.cp-fase{animation:none !important}}
+.cp-fase .cp-fig{height:105%;bottom:62%}
+.cp-fase.t-guardiao .cp-fig,.cp-fase.t-chefe .cp-fig{height:105%}
+.cp-fase.t-chefe{width:66px;height:66px}
+.cp-fase.t-guardiao{width:58px;height:58px}
+.cp-fase{width:46px;height:46px}

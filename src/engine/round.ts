@@ -19,6 +19,8 @@ export interface NewGameOptions {
   eDeck?: string[];
   pSign2?: Signo;
   eSign2?: Signo;
+  /** Vida inicial (e máxima) do herói rival, se não for 30 (chefe da campanha). */
+  eHp?: number;
 }
 
 export function newGame(opts: NewGameOptions): { state: GameState; frames: Frame[] } {
@@ -30,6 +32,7 @@ export function newGame(opts: NewGameOptions): { state: GameState; frames: Frame
   s.e = mkPlayer(opts.eSign, opts.eDeck ? embaralhar(ctx, opts.eDeck) : buildDeck(ctx, opts.eSign));
   if (opts.pSign2) s.p.sign2 = opts.pSign2;
   if (opts.eSign2) s.e.sign2 = opts.eSign2;
+  if (opts.eHp && opts.eHp > 0) s.e.hp = s.e.hpMax = opts.eHp;
   for (let i = 0; i < START_HAND; i++) { draw(ctx, 'p'); draw(ctx, 'e'); }
   startRound(ctx);
   return { state: ctx.s, frames: ctx.frames };

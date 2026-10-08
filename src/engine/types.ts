@@ -52,6 +52,8 @@ export interface PlayerState {
   /** Segundo signo, quando o deck foi montado com 2 signos. */
   sign2?: Signo;
   hp: number;
+  /** Vida máxima do herói, quando diferente de 30 (chefe da campanha). */
+  hpMax?: number;
   max: number;
   mana: number;
   deck: string[];

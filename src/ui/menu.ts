@@ -11,7 +11,7 @@ import { moedasHtml } from './colecao';
 import { copiasParaDeck, melhorNivel, totalCopias, type Progresso } from '../meta/progresso';
 
 /** Criatura de pé numa ilha (arte parada); `vira` espelha para ela olhar para a esquerda. */
-function criatura(cid: string, cls = '', vira = false): string {
+export function criatura(cid: string, cls = '', vira = false): string {
   const c = CARDS[cid];
   if (!c || !ARTE[cid]) return '';
   return `<img class="ilha-fig ${cls}${vira ? ' vira' : ''}" src="${artUrl(cid, c.race, 'parado')}" alt="" draggable="false">`;
@@ -51,7 +51,7 @@ export function hubHtml(now: Date, deck: DeckMontado | null, prog: Progresso): s
   const tem = currentSign(now);
   const avatar = deck ? deck.signos[0] : tem;
   const ilhas: Ilha[] = [
-    { act: 'campanha', nome: T.campanha, x: 38, y: 39, w: .8, breve: true, figs: criatura('capricornio25') + criatura('capricornio22', 'peq', true) },
+    { act: 'campanha', nome: T.campanha, sub: T.campSub, x: 38, y: 39, w: .8, figs: criatura('capricornio25') + criatura('capricornio22', 'peq', true) },
     { act: 'torneio', nome: T.torneio, x: 67, y: 34, w: .72, breve: true, figs: criatura('sagitario25') },
     { act: 'conhecer', nome: T.conhecerDecks, sub: T.conhecerSub, x: 14, y: 47, w: .8, figs: criatura('peixes25') + criatura('gemeos25', 'peq', true) },
     { act: 'ranqueada', nome: T.ranqueada, x: 85, y: 58, w: .85, breve: true, figs: criatura('touro25') + criatura('escorpiao25', '', true) },

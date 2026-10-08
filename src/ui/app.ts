@@ -21,6 +21,8 @@ import { lerProgresso, salvarProgresso } from '../services/progresso';
 import {
   abrirPacote, completarDeck, copiasParaDeck, deckComNiveis, diaDe, escolherInicial, faltando, fundir, podeFundir, premioRapida, type Progresso,
 } from '../meta/progresso';
+import { campanhaHtml, type TelaCampanha } from './campanha';
+import { deckDaFase, fase as dadosFase, FASES, faseLiberada, mundoAtual, MUNDOS, vencerFase } from '../meta/campanha';
 import { colecaoHtml, inicialHtml, pacotesHtml, revelarHtml, type TelaColecao } from './colecao';
 import { lerNivel, salvarNivel } from '../services/preferencias';
 
@@ -69,6 +71,8 @@ interface Match {
   nivel: Nivel;
   /** Prêmio ganho no fim (mostrado na tela de resultado). */
   premio?: string;
+  /** Cartas ganhas para mostrar ao sair da partida. */
+  revelaDepois?: string;
 }
 
 /** Dica de texto aberta pelo ícone de informação (fica escondida para não poluir a tela). */
@@ -77,7 +81,8 @@ let infoAberta = false;
 let M: Match | null = null;
 let gal: Signo | null = null, galSel: string | null = null;
 /** Telas fora da partida: menu de ilhas, escolha de signo (deck inteiro) e montagem de deck. */
-let tela: 'hub' | 'conhecer' | 'montar' | 'colecao' | 'pacotes' = 'hub';
+let tela: 'hub' | 'conhecer' | 'montar' | 'colecao' | 'pacotes' | 'campanha' = 'hub';
+let telaCamp: TelaCampanha = { signo: 'aries', fase: 1 };
 /** Progresso do jogador (moedas, coleção, campanha, missões), salvo no aparelho. */
 let prog: Progresso = lerProgresso();
 function mudarProgresso(p: Progresso): void { prog = p; salvarProgresso(p); }
@@ -91,7 +96,7 @@ let nivel: Nivel = lerNivel();
 /** Os 3 espaços de deck e qual está em uso. */
 const meus = lerDecks();
 /** Como foi a última partida (para a Revanche repetir igual). */
-type Modo = { modo: 'signo'; sign: Signo } | { modo: 'rapida'; deck: DeckMontado; nivel: Nivel };
+type Modo = { modo: 'signo'; sign: Signo } | { modo: 'rapida'; deck: DeckMontado; nivel: Nivel } | { modo: 'campanha'; deck: DeckMontado; signo: Signo; fase: number };
 let ultimo: Modo | null = null;
 const app = () => document.getElementById('app')!;
 
@@ -109,6 +114,14 @@ function startMatch(cfg: Modo): void {
     const foes = ORDER.filter(k => k !== cfg.sign);
     const foe = foes[Math.floor(Math.random() * foes.length)];
     state = newGame({ pSign: cfg.sign, eSign: foe, seed, record: false }).state;
+  } else if (cfg.modo === 'campanha') {
+    const f = dadosFase(cfg.signo, cfg.fase);
+    const rng = new Rng(seed ^ 0x6c8e9cf5);
+    const [pa, pb] = cfg.deck.signos;
+    state = newGame({
+      pSign: pa, pSign2: pb === pa ? undefined : pb, pDeck: deckComNiveis(prog, cfg.deck.cartas),
+      eSign: cfg.signo, eDeck: deckDaFase(f, rng), eHp: f.vidaRival, seed, record: false,
+    }).state;
   } else {
     // Partida Rápida: o seu deck contra um bot com 2 signos e 30 cartas (sorteadas; no difícil, as mais fortes)
     const rng = new Rng(seed ^ 0x2545f491);
@@ -118,7 +131,7 @@ function startMatch(cfg: Modo): void {
     // cada cópia entra com o nível que o jogador tem dela (as de nível maior primeiro)
     state = newGame({ pSign: pa, pSign2: pb === pa ? undefined : pb, pDeck: deckComNiveis(prog, cfg.deck.cartas), eSign: ea, eSign2: eb, eDeck, seed, record: false }).state;
   }
-  M = { g: state, shown: state, sel: null, busy: false, msg: '', active: null, striking: null, aiRng: new Rng(seed ^ 0x5bd1e995), base: state, plan: [], inspect: null, nivel: cfg.modo === 'rapida' ? cfg.nivel : 'normal' };
+  M = { g: state, shown: state, sel: null, busy: false, msg: '', active: null, striking: null, aiRng: new Rng(seed ^ 0x5bd1e995), base: state, plan: [], inspect: null, nivel: cfg.modo === 'rapida' ? cfg.nivel : cfg.modo === 'campanha' ? dadosFase(cfg.signo, cfg.fase).nivelIA : 'normal' };
   beginPlanning([]);
 }
 
@@ -468,6 +481,7 @@ function render(): void {
       : tela === 'montar' && montagem ? montarHtml(montagem, meus.decks, meus.ativo, prog)
       : tela === 'conhecer' ? startHtml(new Date())
       : tela === 'colecao' ? colecaoHtml(prog, telaColecao)
+      : tela === 'campanha' ? campanhaHtml(prog, telaCamp, deckAtivo(meus))
       : tela === 'pacotes' ? hubHtml(new Date(), deckAtivo(meus), prog) + pacotesHtml(prog)
       : hubHtml(new Date(), deckAtivo(meus), prog) + dlg + (prog.inicial ? '' : inicialHtml());
     root.insertAdjacentHTML('beforeend', somHtml() + (revela ?? ''));
@@ -484,18 +498,26 @@ function render(): void {
     zoom: zoomAtual(M),
     preparadas: preparadasAtual(M),
     info: infoAberta,
-    nivel: ultimo?.modo === 'rapida' ? T.nivelNome[M.nivel] : undefined,
+    nivel: ultimo?.modo === 'rapida' ? T.nivelNome[M.nivel] : ultimo?.modo === 'campanha' ? `${T.faseN(ultimo.fase)}/${FASES}` : undefined,
     fim: M.g.phase !== 'over' || M.busy ? null : M.fim === 'pronto' ? 'fixo' : 'anim',
   };
   const tut = M.confirma || M.g.phase === 'over' ? { html: '' }
     : tutorialHtml({ rodada: M.g.round, ocupado: M.busy, selecionou: M.sel !== null, jogou: M.plan.length > 0,
       podeInvocar: M.g.p.hand.some(h => card(h.cid).type === 'unit' && costOf(M!.g.p, h.cid) <= M!.g.p.mana) });
-  root.innerHTML = gameHtml(v) + tut.html + (M.confirma ? desistirHtml() : '') + (M.g.phase === 'over' && M.fim === 'pronto' ? endHtml(M.g, M.premio) : '');
-  root.insertAdjacentHTML('beforeend', somHtml());
+  root.innerHTML = gameHtml(v) + tut.html + (M.confirma ? desistirHtml() : '') + (M.g.phase === 'over' && M.fim === 'pronto' ? endHtml(M.g, M.premio, botoesFim(M)) : '');
+  root.insertAdjacentHTML('beforeend', somHtml() + (revela ?? ''));
   if (tut.alvo) root.querySelectorAll(tut.alvo).forEach(el => el.classList.add('tut-alvo'));
   reporMortos();
   const h2 = root.querySelector('.hand');
   if (h2) h2.scrollLeft = sl;
+}
+
+/** Botões da tela final na campanha: próxima fase (se venceu) ou tentar de novo, e voltar ao mapa. */
+function botoesFim(m: Match): string | undefined {
+  if (ultimo?.modo !== 'campanha') return undefined;
+  const prox = m.g.result === 'p' && ultimo.fase < FASES;
+  return (prox ? `<button class="btn go" data-act="proxfase">${T.proximaFase}</button>` : `<button class="btn go" data-act="again">${m.g.result === 'p' ? T.revanche : T.tentarDeNovo}</button>`)
+    + `<button class="btn rc" data-act="mapa">${T.mapa}</button>`;
 }
 
 /** Magias sem alvo já preparadas nesta rodada (aparecem paradas ao lado do campo até a Batalha). */
@@ -550,6 +572,21 @@ function fimDeJogo(m: Match): void {
 
 /** Prêmio do fim da partida (Partida Rápida: Poeira; desistir não dá prêmio). Devolve o texto para a tela final. */
 function premiar(m: Match): string | undefined {
+  if (ultimo?.modo === 'campanha') {
+    if (m.g.result !== 'p') return undefined;
+    const { signo, fase: n } = ultimo;
+    const r = vencerFase(prog, signo, n, m.g.p.hp, new Rng(randomSeed()));
+    const novoMundo = n === FASES && r.primeira && MUNDOS[MUNDOS.indexOf(signo) + 1];
+    mudarProgresso(r.p);
+    const partes = ['⭐'.repeat(r.estrelas), `+${r.poeira} ✨`];
+    if (r.gemas) partes.push(`+${r.gemas} 💎`);
+    if (r.cartas.length) {
+      partes.push(r.cartas.map(c => card(c).name).join(', '));
+      m.revelaDepois = revelarHtml(r.lenda ? T.lendaGanha(card(`${signo}25`).name) : T.cartasGanhas, r.cartas, r.novas,
+        novoMundo ? T.novoMundo(RACES[novoMundo].n) : '');
+    }
+    return partes.join(' · ');
+  }
   if (ultimo?.modo !== 'rapida' || m.g.surrendered === 'p') return undefined;
   const r = premioRapida(prog, m.g.result === 'p', diaDe(new Date()));
   mudarProgresso(r.p);
@@ -563,31 +600,31 @@ function menuClick(a: string | undefined, t: HTMLElement): boolean {
     case 'fechar': dialogo = null; render(); return true;
     case 'conhecer': tela = 'conhecer'; render(); return true;
     case 'regras': dialogo = 'regras'; render(); return true;
-    case 'campanha': case 'torneio': case 'ranqueada': case 'evento': case 'missoes': emBreve(); return true;
+    case 'torneio': case 'ranqueada': case 'evento': case 'missoes': emBreve(); return true;
     case 'rapida': dialogo = 'nivel'; render(); return true;
     case 'nivel': {
       nivel = t.dataset.n as Nivel;
       salvarNivel(nivel);
       dialogo = null;
       // sem deck montado: joga com um deck aleatório de 2 signos
-      let d = deckAtivo(meus);
-      if (!d && prog.teste) {
-        const rng = new Rng(randomSeed());
-        const sg = doisSignos(rng, ORDER);
-        d = { signos: sg, cartas: deckAleatorio(rng, sg[0], sg[1]) };
-      }
-      // sem deck, ou com cartas que o jogador não tem (fundiu, ou deck antigo): vai ajustar na Montagem
-      const falta = d ? faltando(prog, d.cartas) : [];
-      if (!d || falta.length) {
-        abrirMontagem();
-        if (falta.length) aviso(T.faltamCartas(falta.length));
-        return true;
-      }
+      const d = deckPronto();
+      if (!d) return true;
       void tryLandscape();
       startMatch({ modo: 'rapida', deck: d, nivel });
       return true;
     }
     case 'montar': abrirMontagem(); return true;
+    case 'campanha': abrirCampanha(); return true;
+    case 'cmundo': telaCamp = { signo: t.dataset.r as Signo, fase: 1 }; ultimaFaseLivre(); render(); return true;
+    case 'cfase': telaCamp = { ...telaCamp, fase: Number(t.dataset.n) }; render(); return true;
+    case 'clutar': {
+      if (!faseLiberada(prog, telaCamp.signo, telaCamp.fase)) return true;
+      const d = deckPronto();
+      if (!d) return true;
+      void tryLandscape();
+      startMatch({ modo: 'campanha', deck: d, signo: telaCamp.signo, fase: telaCamp.fase });
+      return true;
+    }
     case 'colecao': tela = 'colecao'; telaColecao = { filtro: prog.inicial ?? 'todas', sel: null, msg: '' }; render(); return true;
     case 'pacotes': tela = 'pacotes'; render(); return true;
     case 'inicial': {
@@ -636,7 +673,6 @@ function menuClick(a: string | undefined, t: HTMLElement): boolean {
       render();
       return true;
     }
-    case 'rv-ok': revela = null; render(); return true;
   }
   const mg = montagem;
   if (!mg || tela !== 'montar') return false;
@@ -717,6 +753,39 @@ function menuClick(a: string | undefined, t: HTMLElement): boolean {
 }
 
 /** Redesenha a montagem sem perder a rolagem da lista de cartas. */
+/** O deck em uso, se der para jogar com ele; senão abre a Montagem com o aviso e devolve null. */
+function deckPronto(): DeckMontado | null {
+  let d = deckAtivo(meus);
+  if (!d && prog.teste) {
+    const rng = new Rng(randomSeed());
+    const sg = doisSignos(rng, ORDER);
+    d = { signos: sg, cartas: deckAleatorio(rng, sg[0], sg[1]) };
+  }
+  // sem deck, ou com cartas que o jogador não tem (fundiu, ou deck antigo): vai ajustar na Montagem
+  const falta = d ? faltando(prog, d.cartas) : [];
+  if (!d || falta.length) {
+    abrirMontagem();
+    if (falta.length) aviso(T.faltamCartas(falta.length));
+    return null;
+  }
+  return d;
+}
+
+function abrirCampanha(): void {
+  dialogo = null;
+  tela = 'campanha';
+  telaCamp = { signo: mundoAtual(prog), fase: 1 };
+  ultimaFaseLivre();
+  render();
+}
+
+/** No mapa, já deixa escolhida a próxima fase a jogar do mundo. */
+function ultimaFaseLivre(): void {
+  let n = 1;
+  for (let i = 1; i <= FASES; i++) if (faseLiberada(prog, telaCamp.signo, i)) n = i;
+  telaCamp.fase = n;
+}
+
 function abrirMontagem(): void {
   dialogo = null;
   tela = 'montar';
@@ -765,6 +834,7 @@ function onClick(ev: Event): void {
   desbloquear();
   if (a === 'som') { somAberto = !somAberto; tocar('clique'); render(); return; }
   if (a === 'som-musica' || a === 'som-efeitos') { alternarSom(a === 'som-musica' ? 'musica' : 'efeitos'); tocar('clique'); render(); return; }
+  if (a === 'rv-ok') { revela = null; render(); return; }
   if (a === 'tut-ok') { tutorialEntendi(); tocar('clique'); render(); return; }
   if (a === 'tut-pular') { tutorialPular(); tocar('clique'); render(); return; }
   if (a === 'rever-tut') { reverTutorial(); dialogo = null; render(); aviso(T.tutorialVolta); return; }
@@ -783,7 +853,23 @@ function onClick(ev: Event): void {
   }
   if (a === 'galback') { gal = null; tela = 'conhecer'; render(); return; }
   if (a === 'pick') { void tryLandscape(); startMatch({ modo: 'signo', sign: t.dataset.r as Signo }); return; }
-  if (a === 'again' && M && ultimo) { startMatch(ultimo); return; }
+  if (a === 'again' && M && ultimo) { revela = M.revelaDepois ?? null; startMatch(ultimo); render(); return; }
+  if ((a === 'mapa' || a === 'proxfase') && M && ultimo?.modo === 'campanha') {
+    const u = ultimo;
+    revela = M.revelaDepois ?? null;
+    M = null;
+    tela = 'campanha';
+    telaCamp = { signo: u.signo, fase: u.fase };
+    if (a === 'proxfase' && u.fase < FASES) {
+      const d = deckPronto();
+      if (d) { startMatch({ modo: 'campanha', deck: d, signo: u.signo, fase: u.fase + 1 }); telaCamp.fase = u.fase + 1; }
+    } else if (u.fase === FASES) {
+      // venceu o chefe: o mapa abre no mundo seguinte
+      abrirCampanha();
+    }
+    render();
+    return;
+  }
   if (a === 'menu') { M = null; tela = 'hub'; render(); return; }
   if (!M && menuClick(a, t)) return;
   // dá para desistir também durante a animação da Batalha

@@ -48,7 +48,7 @@ export function hitHero(ctx: Ctx, side: Side, amount: number): void {
 
 export function healHero(ctx: Ctx, side: Side, amount: number): void {
   const P = ctx.s[side];
-  P.hp = Math.min(HERO_HP, P.hp + amount);
+  P.hp = Math.min(P.hpMax ?? HERO_HP, P.hp + amount);
   ctx.emit({ t: 'HeroHealed', side, amount });
 }
 
