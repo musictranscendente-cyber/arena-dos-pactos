@@ -8,6 +8,6 @@ export { effAtk } from './keywords';
 export { needsUnit, isSupport, SUPPORT } from './spells';
 export { Rng } from './rng';
 export { planTurn } from './ai/simples';
-export { cartasDisponiveis, contarCopias, COPIAS, deckAleatorio, doisSignos, maxCopias, validarDeck, type DeckMontado } from './deck';
+export { cartasDisponiveis, contarCopias, COPIAS, deckAleatorio, doisSignos, maxCopias, umSigno, validarDeck, type DeckMontado } from './deck';
 export { NIVEIS, planTurnNivel, type Nivel } from './ai/niveis';
 export { deckForte } from './ai/deckForte';

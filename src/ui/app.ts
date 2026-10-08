@@ -1,7 +1,7 @@
 // Controla as telas e a partida contra a IA. Toda regra vem do motor; aqui só desenha e anima.
-import { card } from '../data/cards';
+import { card, cardsOfSign } from '../data/cards';
 import type { Signo } from '../data/schema';
-import { ORDER } from '../data/signos';
+import { ORDER, RACES } from '../data/signos';
 import { cardText, T } from '../data/textos';
 import {
   applyAction, costOf, deckAleatorio, deckForte, doisSignos, DECK_SIZE, effAtk, newGame, resolveBattle, Rng, surrender,
@@ -17,6 +17,11 @@ import { alternarSom, desbloquear, iconeSom, prefsSom, tocar, type Efeito } from
 import { reverTutorial, tutorialEntendi, tutorialFimDePartida, tutorialHtml, tutorialNovaPartida, tutorialPular } from './tutorial';
 import { avisoHtml, dificuldadeHtml, hubHtml, montarHtml, regrasHtml, type Montagem } from './menu';
 import { deckAtivo, lerDecks, salvarDecks } from '../services/deckSalvo';
+import { lerProgresso, salvarProgresso } from '../services/progresso';
+import {
+  abrirPacote, completarDeck, copiasParaDeck, deckComNiveis, diaDe, escolherInicial, faltando, fundir, podeFundir, premioRapida, type Progresso,
+} from '../meta/progresso';
+import { colecaoHtml, inicialHtml, pacotesHtml, revelarHtml, type TelaColecao } from './colecao';
 import { lerNivel, salvarNivel } from '../services/preferencias';
 
 /** Nome da raridade em minúsculas, para os avisos. */
@@ -62,6 +67,8 @@ interface Match {
   inspect: Target | null;
   /** Dificuldade do bot nesta partida. */
   nivel: Nivel;
+  /** Prêmio ganho no fim (mostrado na tela de resultado). */
+  premio?: string;
 }
 
 /** Dica de texto aberta pelo ícone de informação (fica escondida para não poluir a tela). */
@@ -70,7 +77,13 @@ let infoAberta = false;
 let M: Match | null = null;
 let gal: Signo | null = null, galSel: string | null = null;
 /** Telas fora da partida: menu de ilhas, escolha de signo (deck inteiro) e montagem de deck. */
-let tela: 'hub' | 'conhecer' | 'montar' = 'hub';
+let tela: 'hub' | 'conhecer' | 'montar' | 'colecao' | 'pacotes' = 'hub';
+/** Progresso do jogador (moedas, coleção, campanha, missões), salvo no aparelho. */
+let prog: Progresso = lerProgresso();
+function mudarProgresso(p: Progresso): void { prog = p; salvarProgresso(p); }
+let telaColecao: TelaColecao = { filtro: 'todas', sel: null, msg: '' };
+/** Cartas recebidas mostradas por cima de tudo (pacote, prêmio). */
+let revela: string | null = null;
 let montagem: Montagem | null = null;
 let dialogo: 'nivel' | 'regras' | null = null;
 /** Última dificuldade escolhida na Partida Rápida. */
@@ -102,7 +115,8 @@ function startMatch(cfg: Modo): void {
     const [ea, eb] = doisSignos(rng, ORDER);
     const [pa, pb] = cfg.deck.signos;
     const eDeck = cfg.nivel === 'dificil' ? deckForte(rng, ea, eb) : deckAleatorio(rng, ea, eb);
-    state = newGame({ pSign: pa, pSign2: pb, pDeck: cfg.deck.cartas, eSign: ea, eSign2: eb, eDeck, seed, record: false }).state;
+    // cada cópia entra com o nível que o jogador tem dela (as de nível maior primeiro)
+    state = newGame({ pSign: pa, pSign2: pb === pa ? undefined : pb, pDeck: deckComNiveis(prog, cfg.deck.cartas), eSign: ea, eSign2: eb, eDeck, seed, record: false }).state;
   }
   M = { g: state, shown: state, sel: null, busy: false, msg: '', active: null, striking: null, aiRng: new Rng(seed ^ 0x5bd1e995), base: state, plan: [], inspect: null, nivel: cfg.modo === 'rapida' ? cfg.nivel : 'normal' };
   beginPlanning([]);
@@ -449,12 +463,14 @@ function somHtml(): string {
 function render(): void {
   const root = app();
   if (!M) {
-    const dlg = dialogo === 'nivel' ? dificuldadeHtml(deckAtivo(meus), nivel) : dialogo === 'regras' ? regrasHtml() : '';
+    const dlg = dialogo === 'nivel' ? dificuldadeHtml(deckAtivo(meus), nivel) : dialogo === 'regras' ? regrasHtml(prog.teste) : '';
     root.innerHTML = gal ? galleryHtml(gal, galSel)
-      : tela === 'montar' && montagem ? montarHtml(montagem, meus.decks, meus.ativo)
+      : tela === 'montar' && montagem ? montarHtml(montagem, meus.decks, meus.ativo, prog)
       : tela === 'conhecer' ? startHtml(new Date())
-      : hubHtml(new Date(), deckAtivo(meus)) + dlg;
-    root.insertAdjacentHTML('beforeend', somHtml());
+      : tela === 'colecao' ? colecaoHtml(prog, telaColecao)
+      : tela === 'pacotes' ? hubHtml(new Date(), deckAtivo(meus), prog) + pacotesHtml(prog)
+      : hubHtml(new Date(), deckAtivo(meus), prog) + dlg + (prog.inicial ? '' : inicialHtml());
+    root.insertAdjacentHTML('beforeend', somHtml() + (revela ?? ''));
     return;
   }
   const hs = root.querySelector('.hand');
@@ -474,7 +490,7 @@ function render(): void {
   const tut = M.confirma || M.g.phase === 'over' ? { html: '' }
     : tutorialHtml({ rodada: M.g.round, ocupado: M.busy, selecionou: M.sel !== null, jogou: M.plan.length > 0,
       podeInvocar: M.g.p.hand.some(h => card(h.cid).type === 'unit' && costOf(M!.g.p, h.cid) <= M!.g.p.mana) });
-  root.innerHTML = gameHtml(v) + tut.html + (M.confirma ? desistirHtml() : '') + (M.g.phase === 'over' && M.fim === 'pronto' ? endHtml(M.g) : '');
+  root.innerHTML = gameHtml(v) + tut.html + (M.confirma ? desistirHtml() : '') + (M.g.phase === 'over' && M.fim === 'pronto' ? endHtml(M.g, M.premio) : '');
   root.insertAdjacentHTML('beforeend', somHtml());
   if (tut.alvo) root.querySelectorAll(tut.alvo).forEach(el => el.classList.add('tut-alvo'));
   reporMortos();
@@ -525,10 +541,19 @@ function zoomCriatura(m: Match, s: GameState): Zoom | null {
 /** Fim de partida: primeiro o lado de quem perdeu desce, treme e racha; depois aparece o resultado. */
 function fimDeJogo(m: Match): void {
   m.fim = 'caindo';
+  m.premio = premiar(m);
   tutorialFimDePartida();
   tocar(m.g.result === 'p' ? 'vitoria' : 'derrota');
   render();
   setTimeout(() => { if (M === m) { m.fim = 'pronto'; render(); } }, DESABA_MS);
+}
+
+/** Prêmio do fim da partida (Partida Rápida: Poeira; desistir não dá prêmio). Devolve o texto para a tela final. */
+function premiar(m: Match): string | undefined {
+  if (ultimo?.modo !== 'rapida' || m.g.surrendered === 'p') return undefined;
+  const r = premioRapida(prog, m.g.result === 'p', diaDe(new Date()));
+  mudarProgresso(r.p);
+  return r.poeira ? `+${r.poeira} ✨` : T.limiteRapida;
 }
 
 /** Toques do menu de ilhas e da montagem de deck. Devolve true se tratou o toque. */
@@ -546,21 +571,72 @@ function menuClick(a: string | undefined, t: HTMLElement): boolean {
       dialogo = null;
       // sem deck montado: joga com um deck aleatório de 2 signos
       let d = deckAtivo(meus);
-      if (!d) {
+      if (!d && prog.teste) {
         const rng = new Rng(randomSeed());
         const sg = doisSignos(rng, ORDER);
         d = { signos: sg, cartas: deckAleatorio(rng, sg[0], sg[1]) };
+      }
+      // sem deck, ou com cartas que o jogador não tem (fundiu, ou deck antigo): vai ajustar na Montagem
+      const falta = d ? faltando(prog, d.cartas) : [];
+      if (!d || falta.length) {
+        abrirMontagem();
+        if (falta.length) aviso(T.faltamCartas(falta.length));
+        return true;
       }
       void tryLandscape();
       startMatch({ modo: 'rapida', deck: d, nivel });
       return true;
     }
-    case 'montar':
-      dialogo = null;
-      tela = 'montar';
-      montagem = { passo: 0, espaco: 0, signos: [], cartas: [], info: null, msg: '', apagar: null, nome: '' };
+    case 'montar': abrirMontagem(); return true;
+    case 'colecao': tela = 'colecao'; telaColecao = { filtro: prog.inicial ?? 'todas', sel: null, msg: '' }; render(); return true;
+    case 'pacotes': tela = 'pacotes'; render(); return true;
+    case 'inicial': {
+      const s = t.dataset.r as Signo;
+      if (prog.inicial) return true;
+      mudarProgresso(escolherInicial(prog, s));
+      // primeiro deck pronto: as 30 cartas do signo escolhido
+      const vago = meus.decks.findIndex(x => !x);
+      if (vago >= 0) {
+        meus.decks[vago] = { signos: [s, s], cartas: cardsOfSign(s) };
+        if (meus.ativo < 0 || faltando(prog, deckAtivo(meus)?.cartas ?? []).length) meus.ativo = vago;
+        salvarDecks(meus);
+      }
+      tocar('vitoria');
+      render();
+      aviso(T.bemVindoSigno(RACES[s].n));
+      return true;
+    }
+    case 'teste':
+      mudarProgresso({ ...prog, teste: !prog.teste });
+      render();
+      aviso(prog.teste ? T.modoTesteLigado : T.modoTesteDesligado);
+      return true;
+    case 'teste-poeira': if (prog.teste) { mudarProgresso({ ...prog, poeira: prog.poeira + 1000 }); render(); } return true;
+    case 'cfiltro': telaColecao = { ...telaColecao, filtro: t.dataset.r as Signo | 'todas', sel: null, msg: '' }; render(); return true;
+    case 'ccarta': telaColecao = { ...telaColecao, sel: t.dataset.k!, msg: '' }; keepScroll(); return true;
+    case 'cfundir': {
+      const k = telaColecao.sel, nv = Number(t.dataset.nv);
+      if (!k) return true;
+      const motivo = podeFundir(prog, k, nv);
+      if (motivo === 'poeira') telaColecao.msg = T.semPoeira;
+      else if (!motivo) {
+        mudarProgresso(fundir(prog, k, nv));
+        telaColecao.msg = T.fundiu(card(k).name, nv + 1);
+        tocar('buff');
+      }
+      keepScroll();
+      return true;
+    }
+    case 'pabrir': {
+      const r = abrirPacote(prog, new Rng(randomSeed()));
+      if (!r) return true;
+      mudarProgresso(r.p);
+      revela = revelarHtml(T.pacoteEstelar, r.cartas, r.novas);
+      tocar('magia');
       render();
       return true;
+    }
+    case 'rv-ok': revela = null; render(); return true;
   }
   const mg = montagem;
   if (!mg || tela !== 'montar') return false;
@@ -592,7 +668,7 @@ function menuClick(a: string | undefined, t: HTMLElement): boolean {
       break;
     }
     case 'mseguir':
-      if (mg.signos.length !== 2) return true;
+      if (!mg.signos.length) return true;
       // trocou de signos: as cartas que não são deles saem do deck
       mg.cartas = mg.cartas.filter(k => mg.signos.includes(card(k).race));
       mg.passo = 2; mg.info = null; mg.msg = '';
@@ -603,9 +679,10 @@ function menuClick(a: string | undefined, t: HTMLElement): boolean {
     case 'mmais': {
       const k = mg.info;
       if (!k) return true;
-      const n = mg.cartas.filter(x => x === k).length, mx = maxCopias(k);
+      const n = mg.cartas.filter(x => x === k).length, mx = copiasParaDeck(prog, k);
       if (mg.cartas.length >= DECK_SIZE) mg.msg = T.deckCheio;
-      else if (n >= mx) mg.msg = T.limiteCopias(mx, RARIDADE_NOME[card(k).r]);
+      else if (mx === 0) mg.msg = T.semCopias(0);
+      else if (n >= mx) mg.msg = mx < maxCopias(k) ? T.semCopias(mx) : T.limiteCopias(mx, RARIDADE_NOME[card(k).r]);
       else { mg.cartas.push(k); mg.msg = ''; }
       keepScroll(); return true;
     }
@@ -616,8 +693,8 @@ function menuClick(a: string | undefined, t: HTMLElement): boolean {
       keepScroll(); return true;
     }
     case 'mcompletar': {
-      const [x, y] = mg.signos as [Signo, Signo];
-      mg.cartas = deckAleatorio(new Rng(randomSeed()), x, y, mg.cartas);
+      const x = mg.signos[0], y = mg.signos[1] ?? x;
+      mg.cartas = completarDeck(prog, x, y, mg.cartas, new Rng(randomSeed()));
       mg.msg = '';
       keepScroll(); return true;
     }
@@ -625,7 +702,7 @@ function menuClick(a: string | undefined, t: HTMLElement): boolean {
     case 'msalvar': {
       if (mg.cartas.length !== DECK_SIZE) return true;
       const nome = mg.nome.trim().slice(0, 22);
-      meus.decks[mg.espaco] = { signos: [mg.signos[0], mg.signos[1]], cartas: [...mg.cartas], ...(nome ? { nome } : {}) };
+      meus.decks[mg.espaco] = { signos: [mg.signos[0], mg.signos[1] ?? mg.signos[0]], cartas: [...mg.cartas], ...(nome ? { nome } : {}) };
       if (meus.ativo < 0) meus.ativo = mg.espaco;
       const ok = salvarDecks(meus);
       mg.passo = 0;
@@ -640,6 +717,13 @@ function menuClick(a: string | undefined, t: HTMLElement): boolean {
 }
 
 /** Redesenha a montagem sem perder a rolagem da lista de cartas. */
+function abrirMontagem(): void {
+  dialogo = null;
+  tela = 'montar';
+  montagem = { passo: 0, espaco: 0, signos: [], cartas: [], info: null, msg: '', apagar: null, nome: '' };
+  render();
+}
+
 function keepScroll(): void {
   const lista = () => document.querySelector('.m-corpo .ggrid') ?? document.querySelector('.ov.montar');
   const top = lista()?.scrollTop ?? 0;

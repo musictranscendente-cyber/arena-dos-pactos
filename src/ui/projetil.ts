@@ -1,5 +1,5 @@
 // Projéteis: quem ataca de longe lança algo que voa até o alvo (flecha, bola de fogo, água...).
-import { card } from '../data/cards';
+import { baseCid, card } from '../data/cards';
 import { RACES } from '../data/signos';
 import type { GameEvent, Side } from '../engine';
 
@@ -35,13 +35,13 @@ const TIPO: Record<string, string> = { aries06: 'flecha', aries09: 'ar', escorpi
 
 export function isRanged(cid: string): boolean {
   const c = card(cid);
-  return c.type === 'unit' && (c.kw.includes('distancia') || LANCA.has(cid));
+  return c.type === 'unit' && (c.kw.includes('distancia') || LANCA.has(baseCid(cid)));
 }
 
 const ELEMENTO = { Fogo: 'fogo', Terra: 'terra', Ar: 'ar', 'Água': 'agua' } as const;
 
 function kindOf(cid: string): string {
-  if (TIPO[cid]) return TIPO[cid];
+  if (TIPO[baseCid(cid)]) return TIPO[baseCid(cid)];
   const race = card(cid).race;
   if (race === 'sagitario' || race === 'gemeos') return 'flecha';
   if (race === 'escorpiao') return 'veneno';

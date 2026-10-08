@@ -4,6 +4,12 @@ import arteJson from './arte.json';
 import animJson from './anim.json';
 import magiaJson from './magia.json';
 import centroJson from './centro.json';
+import { baseCid } from './cards';
+
+/** Carta com nível ('aries01*3') usa a mesma arte da carta normal. */
+function porBase<T extends object>(o: T): T {
+  return new Proxy(o, { get: (t, k) => Reflect.get(t, typeof k === 'string' ? baseCid(k) : k) });
+}
 
 /**
  * Imagens paradas (public/art/<signo>/<id>-parado.webp e -ataque.webp).
@@ -11,22 +17,22 @@ import centroJson from './centro.json';
  * tamanho, que deixa os personagens com tamanhos parecidos no tabuleiro.
  * Carta sem entrada aqui continua usando o emoji.
  */
-export const ARTE = arteJson as unknown as Record<string, readonly [parado: number, ataque: number, tamanho?: number]>;
+export const ARTE = porBase(arteJson as unknown as Record<string, readonly [parado: number, ataque: number, tamanho?: number]>);
 
 export type Pose = 'parado' | 'ataque';
 
 export function artUrl(cid: string, race: string, pose: Pose): string {
-  return `art/${race}/${cid}-${pose}.webp`;
+  return `art/${race}/${baseCid(cid)}-${pose}.webp`;
 }
 
 /** Uma tira de quadros feita de vídeo. w/h em px de um quadro; ax = centro do corpo (0..1); by = espaço abaixo dos pés (0..1). */
 export interface Tira { n: number; w: number; h: number; ax: number; by: number }
 
 /** Cartas com animação quadro a quadro (public/art/<signo>/<id>-idle-anim.webp e -ataque-anim.webp). */
-export const ANIM = animJson as Record<string, { idle: Tira; ataque: Tira; s?: number }>;
+export const ANIM = porBase(animJson as Record<string, { idle: Tira; ataque: Tira; s?: number }>);
 
 export function animUrl(cid: string, race: string, kind: 'idle' | 'ataque'): string {
-  return `art/${race}/${cid}-${kind}-anim.webp`;
+  return `art/${race}/${baseCid(cid)}-${kind}-anim.webp`;
 }
 
 /**
@@ -65,7 +71,7 @@ const PORTE_EXTRA: Record<string, number> = {
 
 export function porte(cid: string, custo: number, raridade: string): number {
   const base = PORTE_CUSTO[Math.max(0, Math.min(8, custo))] * (raridade === 'l' ? 1.04 : 1);
-  return Math.round(base * (PORTE_EXTRA[cid] ?? 1) * 1000) / 1000;
+  return Math.round(base * (PORTE_EXTRA[baseCid(cid)] ?? 1) * 1000) / 1000;
 }
 
 /**
@@ -83,7 +89,7 @@ export function escalaCampo(s: number): number {
  * Centro visível de cada personagem animado (ferramentas/centros.py): [ox, oy] em alturas do quadro,
  * medidos a partir da âncora do corpo (ox) e dos pés (oy). Usado para pôr o personagem bem no meio da casa.
  */
-export const CENTRO = centroJson as unknown as Record<string, [number, number]>;
+export const CENTRO = porBase(centroJson as unknown as Record<string, [number, number]>);
 
 /**
  * Magias com animação de efeito (public/art/<signo>/<id>-magia-anim.webp): número de quadros.
@@ -91,10 +97,11 @@ export const CENTRO = centroJson as unknown as Record<string, [number, number]>;
  * o fundo recortado, aparece solto sobre a arena).
  */
 const magiaDados = magiaJson as Record<string, number | { n: number; livre?: boolean }>;
-export const MAGIA: Record<string, number> = Object.fromEntries(
-  Object.entries(magiaDados).map(([k, v]) => [k, typeof v === 'number' ? v : v.n]));
-export const MAGIA_LIVRE = new Set(Object.keys(magiaDados).filter(k => typeof magiaDados[k] === 'object'));
+export const MAGIA: Record<string, number> = porBase(Object.fromEntries(
+  Object.entries(magiaDados).map(([k, v]) => [k, typeof v === 'number' ? v : v.n])));
+const livres = new Set(Object.keys(magiaDados).filter(k => typeof magiaDados[k] === 'object'));
+export const MAGIA_LIVRE = { has: (cid: string) => livres.has(baseCid(cid)) };
 
 export function magiaUrl(cid: string, race: string): string {
-  return `art/${race}/${cid}-magia-anim.webp`;
+  return `art/${race}/${baseCid(cid)}-magia-anim.webp`;
 }

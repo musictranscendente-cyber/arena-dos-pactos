@@ -1,5 +1,5 @@
 // Funções que montam o HTML de cada parte da tela (sem estado próprio).
-import { card, cardsOfSign, CARDS } from '../data/cards';
+import { card, cardsOfSign, CARDS, nivelDe } from '../data/cards';
 import { ANIM, animUrl, ARTE, artUrl, CENTRO, escalaCampo, porte, type Tira } from '../data/arte';
 import { RARITY } from '../data/raridades';
 import type { Card, Signo } from '../data/schema';
@@ -70,7 +70,7 @@ export function zoomHtml(z: Zoom): string {
     + `<div class="z-topo"><span class="cost">${z.cost ?? c.cost}</span><span class="z-nome">${c.name}</span></div>`
     + elemHtml(c)
     + `<div class="z-arte">${img}<span class="z-sg">${r.g}</span></div>`
-    + `<div class="z-rar">${gemaHtml(c)}${RARITY[c.r].n} · ${ELEMENTO[r.el].i} ${r.el}</div>${corpo}</div>`;
+    + `<div class="z-rar">${gemaHtml(c)}${RARITY[c.r].n} · ${ELEMENTO[r.el].i} ${r.el}${nivelDe(z.cid) > 1 ? ` · <span class="z-nv">${T.nivelN(nivelDe(z.cid))} ${'★'.repeat(nivelDe(z.cid))}</span>` : ''}</div>${corpo}</div>`;
 }
 
 function artOrEmoji(c: Card, cid?: string): string {
@@ -248,9 +248,15 @@ export function cardHtml(c: Card, cost: number, attrs = '', cls = '', cid?: stri
   const body = c.type === 'unit'
     ? `<span class="ck">${c.kw.map(k => KW[k].i).join('')}${c.on ? '⭐' : ''}</span><span class="st"><b class="a">${c.atk}</b><b class="h">${c.hp}</b></span>`
     : `<span class="sp">${cardText(c)}</span>`;
-  return `<div class="card ${c.type === 'spell' ? 'spell' : ''} r-${c.r} ${cls}" style="--rc:${RACES[c.race].c};--rr:${RARITY[c.r].col}" ${attrs}><span class="cost">${cost}</span>`
+  return `<div class="card ${c.type === 'spell' ? 'spell' : ''} r-${c.r}${cid && nivelDe(cid) >= 5 ? ' nivel5' : ''} ${cls}" style="--rc:${RACES[c.race].c};--rr:${RARITY[c.r].col}" ${attrs}><span class="cost">${cost}</span>`
     + elemHtml(c)
-    + `<span class="cart">${artOrEmoji(c, cid)}<span class="sg">${RACES[c.race].g}</span></span>${gemaHtml(c)}<span class="cn">${c.name}</span>${body}</div>`;
+    + `<span class="cart">${artOrEmoji(c, cid)}<span class="sg">${RACES[c.race].g}</span></span>${gemaHtml(c)}<span class="cn">${c.name}</span>${body}`
+    + (cid ? estrelasHtml(nivelDe(cid)) : '') + '</div>';
+}
+
+/** Estrelinhas do nível da carta (só a partir do nível 2). */
+export function estrelasHtml(nv: number): string {
+  return nv > 1 ? `<span class="nv${nv >= 5 ? ' nv5' : ''}" title="${T.nivelN(nv)}" aria-label="${T.nivelN(nv)}">${'★'.repeat(nv)}</span>` : '';
 }
 
 /** Medalhão do elemento no canto de cima da carta. */
@@ -336,11 +342,12 @@ export function desistirHtml(): string {
     + `<div class="acts2"><button class="btn rc desiste" data-act="desistir-sim">${BANDEIRA}${T.desistirCurto}</button><button class="btn go" data-act="desistir-nao">${T.desistirNao}</button></div></div></div>`;
 }
 
-export function endHtml(s: GameState): string {
+export function endHtml(s: GameState, premio?: string): string {
   const t = s.result === 'p' ? T.vitoria : s.result === 'draw' ? T.empate : T.derrota;
   const p = s.surrendered === 'p' ? T.voceDesistiu : s.surrendered === 'e' ? T.rivalDesistiu
     : s.result === 'p' ? T.venceu(nomeLado(s.p), nomeLado(s.e))
     : s.result === 'draw' ? T.caíramJuntos : T.rivalVenceu(nomeLado(s.e));
   return `<div class="ov"><div class="panel"><h2>${t}</h2><p>${p}</p><p>${T.rodadasJogadas(s.round)}</p>`
+    + (premio ? `<p class="fim-premio">${T.premio}: <b>${premio}</b></p>` : '')
     + `<div class="acts2"><button class="btn go" data-act="again">${T.revanche}</button><button class="btn rc" data-act="menu">${T.menuPrincipal}</button></div></div></div>`;
 }

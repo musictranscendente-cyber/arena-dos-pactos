@@ -16,8 +16,12 @@ describe('Montar deck', () => {
   it('deck válido: 30 cartas diferentes dos 2 signos', () => {
     expect(validarDeck({ signos: ['aries', 'leao'], cartas: ok15 })).toBeNull();
   });
-  it('recusa signos iguais, tamanho errado ou carta de outro signo', () => {
-    expect(validarDeck({ signos: ['aries', 'aries'], cartas: ok15 })).toBe('signos');
+  it('aceita deck de 1 signo só (os 30 do signo)', () => {
+    expect(validarDeck({ signos: ['aries', 'aries'], cartas: cardsOfSign('aries') })).toBeNull();
+    expect(cartasDisponiveis('aries', 'aries')).toHaveLength(30);
+  });
+  it('recusa tamanho errado ou carta de outro signo', () => {
+    expect(validarDeck({ signos: ['aries', 'aries'], cartas: ok15 })).toBe('signo');
     expect(validarDeck({ signos: ['aries', 'leao'], cartas: ok15.slice(1) })).toBe('tamanho');
     expect(validarDeck({ signos: ['aries', 'leao'], cartas: [...ok15.slice(1), cardsOfSign('touro')[0]] })).toBe('signo');
   });
