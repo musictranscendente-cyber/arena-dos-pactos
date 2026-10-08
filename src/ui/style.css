@@ -1160,3 +1160,48 @@ body.rot .ov.montar.gal .m-detalhe .z-nome{font-size:14px}body.rot .ov.montar.ga
 .colecao .btn.c-fundir{min-height:30px;font-size:12.5px}
 .c-fusoes{display:flex;gap:4px}
 .c-fusoes .btn.c-fundir{flex:1;min-width:0;min-height:30px;font-size:12px;padding:0 4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pacotes{max-height:96%;overflow:auto}
+.pk-h{margin:14px 0 2px;font-family:'Grenze Gotisch',Georgia,serif;font-size:22px;color:var(--gold)}
+.pk-sub{margin:0 0 8px;font-size:13px;color:#c9bde6}
+.pk-signos{display:grid;grid-template-columns:repeat(6,1fr);gap:8px}
+.pk-signo{font:inherit;color:#fff;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:1px;padding:7px 3px;border-radius:12px;
+  background:linear-gradient(180deg,color-mix(in srgb,var(--rc) 45%,#2a1f55),#1a1236);border:2px solid color-mix(in srgb,var(--rc) 70%,#e9c77a);box-shadow:0 3px 8px #0008}
+.pk-signo .pk-g{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font-size:20px;background:radial-gradient(circle,var(--rc),color-mix(in srgb,var(--rc) 50%,#000));box-shadow:0 0 0 2px var(--gold)}
+.pk-signo b{font-size:12px}
+.pk-signo small{font-size:11px;color:#ffe08a;font-weight:800}
+.pk-signo:disabled{filter:grayscale(.7) brightness(.6);cursor:default}
+.pk-signo:not(:disabled):active{transform:translateY(2px)}
+@media (max-width:620px){body:not(.rot) .pk-signos{grid-template-columns:repeat(4,1fr)}}
+.pk-arte{width:84px;height:112px;font-size:46px}
+.pacotes .pk-info h3{font-size:22px}
+.pacotes .pk-info p{margin:3px 0}
+.pacotes .pk-lista{margin-bottom:6px}
+.pacotes .btn.go{min-height:44px;font-size:20px}
+.pk-h{margin-top:8px}
+@media (min-width:700px){body:not(.rot) .pk-signos{grid-template-columns:repeat(12,1fr);gap:5px}}
+@media (min-height:700px){body.rot .pk-signos{grid-template-columns:repeat(12,1fr);gap:5px}}
+.pk-signo{padding:5px 2px}
+.pk-signo .pk-g{width:28px;height:28px;font-size:16px}
+.pk-signo b{font-size:10.5px;white-space:nowrap}
+/* tela baixa: pacotes compactos para os 12 signos aparecerem sem rolar */
+@media (max-height:430px){
+  body:not(.rot) .pacotes h2{font-size:28px;margin:0}
+  body:not(.rot) .pacotes .pk-arte{width:58px;height:78px;font-size:32px}
+  body:not(.rot) .pacotes .pk-info h3{font-size:18px}
+  body:not(.rot) .pacotes .pk-info p{font-size:12.5px}
+  body:not(.rot) .pacotes .pk-lista li{font-size:11.5px;padding:1px 7px}
+  body:not(.rot) .pacotes .btn.go{min-height:34px;font-size:16px}
+  body:not(.rot) .pk-h{font-size:18px;margin-top:4px}
+  body:not(.rot) .pk-sub{font-size:11.5px;margin-bottom:5px}
+}
+@media (max-width:430px){
+  body.rot .pacotes h2{font-size:28px;margin:0}
+  body.rot .pacotes .pk-arte{width:58px;height:78px;font-size:32px}
+  body.rot .pacotes .pk-info h3{font-size:18px}
+  body.rot .pacotes .pk-info p{font-size:12.5px}
+  body.rot .pacotes .pk-lista li{font-size:11.5px;padding:1px 7px}
+  body.rot .pacotes .btn.go{min-height:34px;font-size:16px}
+  body.rot .pk-h{font-size:18px;margin-top:4px}
+  body.rot .pk-sub{font-size:11.5px;margin-bottom:5px}
+  body.rot .pk-signos{grid-template-columns:repeat(12,1fr);gap:4px}
+}

@@ -203,10 +203,14 @@ export function darCartas(p: Progresso, cids: readonly string[]): { p: Progresso
   return { p: q, novas };
 }
 
-export function abrirPacote(p: Progresso, rng: Rng): { p: Progresso; cartas: string[]; novas: string[] } | null {
-  if (p.poeira < PRECO_PACOTE) return null;
-  const cartas = Array.from({ length: CARTAS_PACOTE }, () => sortearCarta(rng));
-  const pago = { ...p, poeira: p.poeira - PRECO_PACOTE };
+/** Pacote de um signo: as 5 cartas vêm só do deck daquele signo (mesmas chances de raridade). */
+export const PRECO_PACOTE_SIGNO = 350;
+
+export function abrirPacote(p: Progresso, rng: Rng, signo?: Signo): { p: Progresso; cartas: string[]; novas: string[] } | null {
+  const preco = signo ? PRECO_PACOTE_SIGNO : PRECO_PACOTE;
+  if (p.poeira < preco) return null;
+  const cartas = Array.from({ length: CARTAS_PACOTE }, () => sortearCarta(rng, signo));
+  const pago = { ...p, poeira: p.poeira - preco };
   const r = darCartas(pago, cartas);
   return { p: r.p, cartas, novas: r.novas };
 }

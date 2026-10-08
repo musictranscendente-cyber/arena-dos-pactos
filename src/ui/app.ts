@@ -731,10 +731,11 @@ function menuClick(a: string | undefined, t: HTMLElement): boolean {
       return true;
     }
     case 'pabrir': {
-      const r = abrirPacote(prog, new Rng(randomSeed()));
+      const sg = t.dataset.r as Signo | undefined;
+      const r = abrirPacote(prog, new Rng(randomSeed()), sg);
       if (!r) return true;
       mudarProgresso(r.p);
-      revela = revelarHtml(T.pacoteEstelar, r.cartas, r.novas);
+      revela = revelarHtml(sg ? T.pacoteDe(RACES[sg].n) : T.pacoteEstelar, r.cartas, r.novas);
       tocar('magia');
       render();
       return true;

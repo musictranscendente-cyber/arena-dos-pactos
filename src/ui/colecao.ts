@@ -5,7 +5,7 @@ import type { Raridade, Signo } from '../data/schema';
 import { ORDER, RACES } from '../data/signos';
 import { T } from '../data/textos';
 import {
-  CARTAS_PACOTE, CHANCES, copias, CUSTO_FUSAO, melhorNivel, podeFundir, PRECO_PACOTE, totalCopias, type Progresso,
+  CARTAS_PACOTE, CHANCES, copias, CUSTO_FUSAO, melhorNivel, podeFundir, PRECO_PACOTE, PRECO_PACOTE_SIGNO, totalCopias, type Progresso,
 } from '../meta/progresso';
 import { cardHtml, zoomHtml } from './desenho';
 
@@ -104,12 +104,16 @@ const NOMES_R: Record<Raridade, string> = { c: 'Comum', r: 'Rara', e: 'Épica', 
 export function pacotesHtml(p: Progresso): string {
   const chances = (Object.keys(CHANCES) as Raridade[]).map(r =>
     `<li style="--rr:${RARITY[r].col}"><b>${NOMES_R[r]}</b> ${(CHANCES[r] * 100).toFixed(0)}%</li>`).join('');
+  const signos = ORDER.map(k => `<button class="pk-signo" data-act="pabrir" data-r="${k}" style="--rc:${RACES[k].c}" ${p.poeira >= PRECO_PACOTE_SIGNO ? '' : 'disabled'}>`
+    + `<span class="pk-g">${RACES[k].g}</span><b>${RACES[k].n}</b><small>${PRECO_PACOTE_SIGNO} ✨</small></button>`).join('');
   return `<div class="ov tela-pacotes"><div class="panel wide pacotes"><div class="gtop"><h2>${T.pacotes}</h2><span class="m-topo-bts">${moedasHtml(p)}${fecha()}</span></div>`
     + `<div class="pk"><div class="pk-arte"><span>✦</span></div><div class="pk-info"><h3>${T.pacoteEstelar}</h3><p>${T.pacoteDesc(CARTAS_PACOTE)}</p>`
     + `<p class="pk-ch">${T.chances}:</p><ul class="pk-lista">${chances}</ul>`
     + `<button class="btn go" data-act="pabrir" ${p.poeira >= PRECO_PACOTE ? '' : 'disabled'}>${T.abrirPacote(PRECO_PACOTE)}</button>`
+    + '</div></div>'
+    + `<h3 class="pk-h">${T.pacotesSigno}</h3><p class="pk-sub">${T.pacotesSignoDesc(CARTAS_PACOTE)}</p><div class="pk-signos">${signos}</div>`
     + (p.poeira < PRECO_PACOTE ? `<p class="m-dica">${T.semPoeira}</p>` : '')
-    + '</div></div></div></div>';
+    + '</div></div>';
 }
 
 /** Cartas recebidas (pacote, prêmio): aparecem viradas e desviram uma a uma. */

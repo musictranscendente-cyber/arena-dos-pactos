@@ -87,3 +87,13 @@ describe('pacotes e prêmios', () => {
     expect(Object.keys(p.cartas)).toEqual(['aries01']);
   });
 });
+
+describe('pacote de signo', () => {
+  it('custa 350 e só traz cartas do signo escolhido', () => {
+    const r = abrirPacote({ ...novoProgresso(), poeira: 400 }, new Rng(4), 'peixes')!;
+    expect(r.p.poeira).toBe(50);
+    expect(r.cartas).toHaveLength(5);
+    expect(r.cartas.every(c => card(c).race === 'peixes')).toBe(true);
+    expect(abrirPacote({ ...novoProgresso(), poeira: 300 }, new Rng(4), 'peixes')).toBeNull();
+  });
+});
