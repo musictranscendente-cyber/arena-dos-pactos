@@ -25,7 +25,7 @@ import { campanhaHtml, type TelaCampanha } from './campanha';
 import { deckDaFase, fase as dadosFase, FASES, faseLiberada, mundoAtual, vencerFase } from '../meta/campanha';
 import { abrirBau, BAU_POEIRA, coletar, coletarLogin, garantirDia, loginDisponivel, registrar, trocar, type Contagem } from '../meta/missoes';
 import { missoesHtml, temColeta } from './missoes';
-import { colecaoHtml, inicialHtml, pacotesHtml, revelarHtml, type TelaColecao } from './colecao';
+import { colecaoHtml, inicialHtml, pacotesHtml, proximoFiltro, revelarHtml, type TelaColecao } from './colecao';
 import { lerNivel, salvarNivel } from '../services/preferencias';
 
 /** Nome da raridade em minúsculas, para os avisos. */
@@ -712,6 +712,10 @@ function menuClick(a: string | undefined, t: HTMLElement): boolean {
       return true;
     case 'teste-poeira': if (prog.teste) { mudarProgresso({ ...prog, poeira: prog.poeira + 1000 }); render(); } return true;
     case 'cfiltro': telaColecao = { ...telaColecao, filtro: t.dataset.r as Signo | 'todas', sel: null, msg: '' }; render(); return true;
+    case 'cnivel': telaColecao = proximoFiltro(telaColecao, 'nivel'); render(); return true;
+    case 'crar': telaColecao = proximoFiltro(telaColecao, 'rar'); render(); return true;
+    case 'ctipo': telaColecao = proximoFiltro(telaColecao, 'tipo'); render(); return true;
+    case 'cajuda': telaColecao = { ...telaColecao, ajuda: !telaColecao.ajuda }; render(); return true;
     case 'ccarta': telaColecao = { ...telaColecao, sel: t.dataset.k!, msg: '' }; keepScroll(); return true;
     case 'cfundir': {
       const k = telaColecao.sel, nv = Number(t.dataset.nv);
