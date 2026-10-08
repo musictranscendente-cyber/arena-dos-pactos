@@ -1120,3 +1120,5 @@ body.rot .ov.montar.gal .m-detalhe .z-nome{font-size:14px}body.rot .ov.montar.ga
 .ov.missoes .gtop{position:sticky;top:-12px;z-index:3;background:linear-gradient(180deg,#2a1f55,#2a1f55ee);margin:-12px -20px 4px;padding:10px 20px 6px}
 .card .nv b{font-size:9px;letter-spacing:0;margin-right:3px;color:#fff;text-shadow:none}
 .card .nv.nv-1{color:#cfc6e6;text-shadow:none}
+.regras-bts{margin:4px 0 8px}
+.regras-bts .btn{min-height:38px;font-size:14px}
