@@ -250,8 +250,8 @@ export function cardHtml(c: Card, cost: number, attrs = '', cls = '', cid?: stri
     : `<span class="sp">${cardText(c)}</span>`;
   return `<div class="card ${c.type === 'spell' ? 'spell' : ''} r-${c.r}${cid && nivelDe(cid) >= 5 ? ' nivel5' : ''} ${cls}" style="--rc:${RACES[c.race].c};--rr:${RARITY[c.r].col}" ${attrs}><span class="cost">${cost}</span>`
     + elemHtml(c)
-    + `<span class="cart">${artOrEmoji(c, cid)}<span class="sg">${RACES[c.race].g}</span></span>${gemaHtml(c)}<span class="cn">${c.name}</span>${body}`
-    + (cid && cid !== 'eco' ? estrelasHtml(nivelDe(cid)) : '') + '</div>';
+    + `<span class="cart">${artOrEmoji(c, cid)}<span class="sg">${RACES[c.race].g}</span>${cid && cid !== 'eco' ? estrelasHtml(nivelDe(cid)) : ''}</span>`
+    + `${gemaHtml(c)}<span class="cn">${c.name}</span>${body}</div>`;
 }
 
 /** Estrelinhas do nível da carta (só a partir do nível 2). */
@@ -304,16 +304,12 @@ export function galleryHtml(sign: Signo, selected: string | null): string {
   const tabs = ORDER.map(k => `<button class="gtab ${k === sign ? 'on' : ''}" data-act="gal" data-r="${k}" style="--rc:${RACES[k].c}" aria-label="${RACES[k].n}">${RACES[k].g}</button>`).join('');
   const list = cardsOfSign(sign).sort((a, b) => CARDS[a].cost - CARDS[b].cost || (CARDS[a].type > CARDS[b].type ? 1 : -1));
   const cards = list.map(k => cardHtml(CARDS[k], CARDS[k].cost, `data-act="gcard" data-k="${k}" tabindex="0" role="button"`, selected === k ? 'sel' : '', k)).join('');
-  const sel = selected ? CARDS[selected] : null;
-  const info = sel
-    ? `<b>${sel.name}</b> (${RARITY[sel.r].n}${sel.type === 'unit' ? `, ${sel.atk}/${sel.hp}` : `, ${T.magia}`}): ${cardText(sel)}`
-    : T.toqueCartaGaleria;
-  return `<div class="ov gal"><div class="panel wide">
-    <div class="gtop"><h2 style="color:${r.c}">${r.g} ${r.n}</h2><button class="btn rc" data-act="galback">${T.voltar}</button></div>
-    <div class="gtabs">${tabs}</div>
-    <p class="ginfo">${info}</p>
-    <div class="ggrid">${cards}</div>
-  </div></div>`;
+  // carta tocada: aberta grande no painel do lado (igual à Coleção e à Montagem)
+  const lado = selected ? `<div class="m-detalhe">${zoomHtml({ cid: selected, lado: 'p' })}</div>` : `<p class="m-dica">${T.toqueCartaGaleria}</p>`;
+  return `<div class="ov montar gal galeria"><div class="panel wide"><div class="m-fixo">`
+    + `<div class="gtop"><h2 style="color:${r.c}">${r.g} ${r.n}</h2><button class="btn rc" data-act="galback">${T.voltar}</button></div>`
+    + `<div class="gtabs">${tabs}</div></div>`
+    + `<div class="m-corpo"><div class="m-lado">${lado}</div><div class="ggrid">${cards}</div></div></div></div>`;
 }
 
 export function startHtml(now: Date): string {

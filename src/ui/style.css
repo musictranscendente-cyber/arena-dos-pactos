@@ -1122,3 +1122,15 @@ body.rot .ov.montar.gal .m-detalhe .z-nome{font-size:14px}body.rot .ov.montar.ga
 .card .nv.nv-1{color:#cfc6e6;text-shadow:none}
 .regras-bts{margin:4px 0 8px}
 .regras-bts .btn{min-height:38px;font-size:14px}
+
+/* selo de nível dentro da arte (canto de baixo à esquerda), sem cobrir o texto da carta */
+.card .cart .nv{position:absolute;left:3px;bottom:2px;top:auto;translate:none;font-size:8.5px;padding:0 4px;z-index:2}
+.card .cart .nv b{font-size:8px;margin-right:2px}
+/* quantas cópias (Coleção): no alto da arte, à esquerda, longe do nome */
+.colecao .card.tenho::after{top:25px;bottom:auto;left:5px;right:auto;font-size:11px}
+/* carta selecionada nas grades: só destaque de borda (sem crescer, para não cortar nem cobrir as vizinhas) */
+.ggrid .card.sel{transform:none;box-shadow:0 0 0 2px #fff3c4,0 0 0 4px var(--gold),0 0 16px var(--gold)}
+.ggrid .card.no-deck.sel{transform:none}
+.galeria .gtabs{margin-top:6px}
+.colecao .card.tenho::after{top:20px;left:auto;right:8px}
+.colecao .card.tenho::after{top:15px}

@@ -924,14 +924,7 @@ function onClick(ev: Event): void {
   if (a === 'rot') { toggleRot(); return; }
   if (a === 'info') { infoAberta = !infoAberta; render(); return; }
   if (a === 'gal') { gal = t.dataset.r as Signo; galSel = null; render(); return; }
-  if (a === 'gcard') {
-    galSel = t.dataset.k!;
-    const top = document.querySelector('.ov.gal')?.scrollTop ?? 0;
-    render();
-    const sc = document.querySelector('.ov.gal');
-    if (sc) sc.scrollTop = top;
-    return;
-  }
+  if (a === 'gcard') { galSel = t.dataset.k!; keepScroll(); return; }
   if (a === 'galback') { gal = null; tela = 'conhecer'; render(); return; }
   if (a === 'pick') { void tryLandscape(); startMatch({ modo: 'signo', sign: t.dataset.r as Signo }); return; }
   if (a === 'again' && M && ultimo) { revela = M.revelaDepois ?? null; startMatch(ultimo); render(); return; }
