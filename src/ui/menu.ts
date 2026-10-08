@@ -62,12 +62,13 @@ export function hubHtml(now: Date, deck: DeckMontado | null): string {
     + `<div class="hub-topo"><div class="hub-perfil"><div class="medal"><span>${r.g}</span></div>`
     + `<div class="hub-nome"><b>${T.invocador}</b><small>${deck ? nomeDeckMontado(deck) : T.semDeck}</small></div></div>`
     + `<div class="hub-titulo">${T.titulo}</div>`
+    + `<span class="hub-dir"><button class="hub-som" data-act="som" aria-label="${T.som}" title="${T.som}">${ICONE_SOM[modoSom()]}</button>`
     + `<button class="hub-evento breve" data-act="evento" style="--rc:${RACES[tem].c}" aria-label="${T.eventoTemporada} (${T.emBreve})">`
-    + `${criatura(tem + '25', 'mini')}<span><b>${T.eventoTemporada}</b><small>${RACES[tem].g} ${RACES[tem].n} · ${T.emBreve}</small></span></button></div>`
+    + `${criatura(tem + '25', 'mini')}<span><b>${T.eventoTemporada}</b><small>${RACES[tem].g} ${RACES[tem].n} · ${T.emBreve}</small></span></button></span></div>`
     + ilhas.map(ilhaHtml).join('')
     + `<div class="hub-base"><button class="hub-bt breve" data-act="missoes"><span>📜</span><b>${T.missoes}</b><small>${T.emBreve}</small></button>`
     + `<button class="hub-bt" data-act="regras"><span>📖</span><b>${T.comoJogar}</b></button>`
-    + `<button class="hub-bt" data-act="som" aria-label="${T.som}" title="${T.som}"><span>${ICONE_SOM[modoSom()]}</span><b>Som</b></button></div>`
+    + '</div>'
     + '</div>';
 }
 

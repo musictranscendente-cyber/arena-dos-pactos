@@ -964,3 +964,11 @@ body.rot .ov.montar.gal .m-detalhe .z-nome{font-size:14px}body.rot .ov.montar.ga
 @keyframes tut-pulsa{50%{box-shadow:0 0 0 3px #ffd57a,0 0 22px 6px #ffcf4d}}
 .land .tut{top:4px}.land .tut p{font-size:13.5px;margin-bottom:6px}
 @media (prefers-reduced-motion:reduce){.tut,.tut-alvo{animation:none !important}.tut-alvo{box-shadow:0 0 0 3px #ffd57a}}
+
+/* Partida Rápida: carneiro e leão lado a lado (sem um ficar por cima do outro) */
+.ilha.principal .ilha-figs{gap:1cqh}
+.ilha.principal .ilha-fig{height:calc(var(--w) * 21cqh);margin:0}
+/* botão de som redondo no alto, ao lado do evento */
+.hub-dir{display:flex;align-items:center;gap:8px}
+.hub-som{font:inherit;font-size:min(5.5cqh,20px);width:min(10cqh,40px);height:min(10cqh,40px);border-radius:50%;cursor:pointer;display:grid;place-items:center;padding:0;
+  background:linear-gradient(180deg,#3a2d72,#1d1442);border:1.5px solid #e9c77a;box-shadow:0 3px 8px #0009}
