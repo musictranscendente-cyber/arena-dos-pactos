@@ -972,3 +972,15 @@ body.rot .ov.montar.gal .m-detalhe .z-nome{font-size:14px}body.rot .ov.montar.ga
 .hub-dir{display:flex;align-items:center;gap:8px}
 .hub-som{font:inherit;font-size:min(5.5cqh,20px);width:min(10cqh,40px);height:min(10cqh,40px);border-radius:50%;cursor:pointer;display:grid;place-items:center;padding:0;
   background:linear-gradient(180deg,#3a2d72,#1d1442);border:1.5px solid #e9c77a;box-shadow:0 3px 8px #0009}
+
+/* janelinha do som: música e efeitos separados */
+.som-painel{position:absolute;right:12px;top:58px;z-index:130;width:210px;padding:10px;border-radius:14px;color:#fff;
+  background:linear-gradient(180deg,#33266aee,#1a1238f2);border:2px solid #e9c77a;box-shadow:0 10px 26px #000c;animation:tut-in .2s ease-out}
+.som-topo{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;font-size:15px}
+.som-fecha{font:inherit;font-weight:900;color:#fff;background:#ffffff14;border:1px solid #ffffff33;border-radius:50%;width:28px;height:28px;cursor:pointer}
+.som-op{font:inherit;width:100%;display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:6px;padding:9px 12px;border-radius:10px;cursor:pointer;
+  color:#cfc6e6;background:#ffffff0f;border:1.5px solid #6a5aa0}
+.som-op span{font-weight:800;font-size:14px}
+.som-op b{font-size:12px;padding:2px 8px;border-radius:999px;background:#00000040}
+.som-op.on{color:#fff;border-color:#6dff7e;background:#2d6b3a55}
+.som-op.on b{background:#3dbb55}

@@ -13,7 +13,7 @@ import { toggleRot, tryLandscape } from './orientacao';
 import { efeitoGeral, efeitosDeMagia, EXTRA_GERAL_MS, MAGIA_MS } from './efeitoMagia';
 import { precarregarVisiveis } from './precarga';
 import { launch, shotsOf } from './projetil';
-import { desbloquear, tocar, trocarModoSom, type Efeito } from './som';
+import { alternarSom, desbloquear, iconeSom, prefsSom, tocar, type Efeito } from './som';
 import { reverTutorial, tutorialEntendi, tutorialFimDePartida, tutorialHtml, tutorialNovaPartida, tutorialPular } from './tutorial';
 import { avisoHtml, dificuldadeHtml, hubHtml, montarHtml, regrasHtml, type Montagem } from './menu';
 import { deckAtivo, lerDecks, salvarDecks } from '../services/deckSalvo';
@@ -166,7 +166,7 @@ function act(a: Action, okMsg: string, failMsg?: string): void {
     return;
   }
   m.plan.push({ bi: livres(m)[a.hand], a });
-  tocar(a.t === 'burn' ? 'queimar' : a.t === 'spell' ? 'magia' : 'carta');
+  tocar(a.t === 'burn' ? 'queimar' : 'carta');
   m.g = m.shown = r.state;
   m.sel = null;
   m.msg = okMsg;
@@ -246,7 +246,7 @@ async function battle(): Promise<void> {
   const mortos = capturarMortos(tick?.events ?? []);
   beginPlanning(tick?.events ?? []);
   soltarMortos(mortos);
-  if (tick) showFx(tick.events);
+  if (tick) { showFx(tick.events); sonsDoQuadro(tick.events); }
 }
 
 /** Sons dos acontecimentos de um quadro da Batalha (cada som uma vez por quadro). */
@@ -262,6 +262,14 @@ function sonsDoQuadro(evs: GameEvent[]): void {
       case 'ShieldBroken': case 'ShieldGained': sons.add('escudo'); break;
       case 'HeroHealed': case 'UnitHealed': sons.add('cura'); break;
       case 'Reveal': case 'UnitPlaced': sons.add('carta'); break;
+      case 'Buffed': sons.add('buff'); break;
+      case 'Poisoned': case 'PoisonTick': sons.add('veneno'); break;
+      case 'ArmorBlocked': sons.add('bloqueio'); break;
+      case 'Sting': sons.add('ferrao'); break;
+      case 'UnitPushed': sons.add('empurrao'); break;
+      case 'UnitReturnedToHand': sons.add('ilusao'); break;
+      case 'RoundStarted': sons.add('rodada'); break;
+      case 'CardDrawn': if (e.side === 'p') sons.add('comprar'); break;
     }
   }
   for (const s of sons) tocar(s);
@@ -426,6 +434,18 @@ function showFx(events: GameEvent[]): void {
 
 /* ---------- desenho ---------- */
 
+/** Janelinha do som: liga/desliga música e efeitos separados. */
+let somAberto = false;
+function somHtml(): string {
+  if (!somAberto) return '';
+  const p = prefsSom();
+  const bt = (act: string, nome: string, on: boolean) =>
+    `<button class="som-op${on ? ' on' : ''}" data-act="${act}" aria-pressed="${on}"><span>${nome}</span><b>${on ? T.ligado : T.desligado}</b></button>`;
+  return `<div class="som-painel" role="dialog" aria-label="${T.som}"><div class="som-topo"><b>${iconeSom()} ${T.som}</b>`
+    + `<button class="som-fecha" data-act="som" aria-label="${T.voltar}">✕</button></div>`
+    + bt('som-musica', T.somMusica, p.musica) + bt('som-efeitos', T.somEfeitos, p.efeitos) + '</div>';
+}
+
 function render(): void {
   const root = app();
   if (!M) {
@@ -434,6 +454,7 @@ function render(): void {
       : tela === 'montar' && montagem ? montarHtml(montagem, meus.decks, meus.ativo)
       : tela === 'conhecer' ? startHtml(new Date())
       : hubHtml(new Date(), deckAtivo(meus)) + dlg;
+    root.insertAdjacentHTML('beforeend', somHtml());
     return;
   }
   const hs = root.querySelector('.hand');
@@ -454,6 +475,7 @@ function render(): void {
     : tutorialHtml({ rodada: M.g.round, ocupado: M.busy, selecionou: M.sel !== null, jogou: M.plan.length > 0,
       podeInvocar: M.g.p.hand.some(h => card(h.cid).type === 'unit' && costOf(M!.g.p, h.cid) <= M!.g.p.mana) });
   root.innerHTML = gameHtml(v) + tut.html + (M.confirma ? desistirHtml() : '') + (M.g.phase === 'over' && M.fim === 'pronto' ? endHtml(M.g) : '');
+  root.insertAdjacentHTML('beforeend', somHtml());
   if (tut.alvo) root.querySelectorAll(tut.alvo).forEach(el => el.classList.add('tut-alvo'));
   reporMortos();
   const h2 = root.querySelector('.hand');
@@ -657,11 +679,13 @@ function onClick(ev: Event): void {
   if (!t) return;
   const a = t.dataset.act;
   desbloquear();
-  if (a === 'som') { trocarModoSom(); desbloquear(); tocar('clique'); render(); return; }
+  if (a === 'som') { somAberto = !somAberto; tocar('clique'); render(); return; }
+  if (a === 'som-musica' || a === 'som-efeitos') { alternarSom(a === 'som-musica' ? 'musica' : 'efeitos'); tocar('clique'); render(); return; }
   if (a === 'tut-ok') { tutorialEntendi(); tocar('clique'); render(); return; }
   if (a === 'tut-pular') { tutorialPular(); tocar('clique'); render(); return; }
   if (a === 'rever-tut') { reverTutorial(); dialogo = null; render(); aviso(T.tutorialVolta); return; }
-  if (a !== 'hand' && a !== 'cell' && a !== 'punch' && a !== 'recharge') tocar('clique');
+  if (a === 'undo' || a === 'desprep') tocar('voltar');
+  else if (a !== 'hand' && a !== 'cell' && a !== 'punch' && a !== 'recharge') tocar('clique');
   if (a === 'rot') { toggleRot(); return; }
   if (a === 'info') { infoAberta = !infoAberta; render(); return; }
   if (a === 'gal') { gal = t.dataset.r as Signo; galSel = null; render(); return; }
@@ -714,6 +738,7 @@ function onClick(ev: Event): void {
       return;
     }
     m.sel = m.sel === i ? null : i;
+    tocar('selecionar');
     if (m.sel !== null) {
       const c = card(P.hand[i].cid);
       m.msg = costOf(P, P.hand[i].cid) > P.mana ? T.manaInsuficienteQueimar(c.name) : `${c.name}: ${cardText(c)} ${hintFor(P.hand[i].cid)}`;

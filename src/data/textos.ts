@@ -194,7 +194,11 @@ export const T = {
   voceDesistiu: 'Você desistiu da batalha.',
   rivalDesistiu: 'O rival desistiu da batalha.',
   alternarDeitado: 'Alternar modo deitado',
-  som: 'Som (toque para trocar: tudo, só efeitos, mudo)',
+  som: 'Som',
+  somMusica: '🎵 Música',
+  somEfeitos: '💥 Efeitos',
+  ligado: 'Ligado',
+  desligado: 'Desligado',
   reverTutorial: '🎓 Ver o tutorial de novo',
   tutorialVolta: 'O tutorial aparece de novo na próxima partida.',
   tut: {

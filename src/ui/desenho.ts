@@ -7,7 +7,7 @@ import { currentSign, ELEMENTO, ORDER, RACES } from '../data/signos';
 import { cardText, KW, T } from '../data/textos';
 import { pronta } from './precarga';
 import { isRanged } from './projetil';
-import { ICONE_SOM, modoSom } from './som';
+import { iconeSom } from './som';
 import { costOf, effAtk, isValidTarget, type GameState, type Side, type Target } from '../engine';
 
 export interface View {
@@ -223,7 +223,7 @@ const BANDEIRA = '<svg viewBox="0 0 20 20" aria-hidden="true"><rect x="2.2" y="1
 
 function hudHtml(s: GameState, nivel?: string): string {
   return `<div class="hud">${heroCard(s, 'p')}`
-    + `<div class="vs"><span class="vs-bts"><button class="rotbtn" data-act="rot" aria-label="${T.alternarDeitado}">⟳</button><button class="rotbtn" data-act="som" aria-label="${T.som}" title="${T.som}">${ICONE_SOM[modoSom()]}</button></span><span class="vsb">VS</span><span class="rd">${T.rodadaN(s.round)}<button class="infobtn" data-act="info" aria-label="${T.info}">i</button></span></div>`
+    + `<div class="vs"><span class="vs-bts"><button class="rotbtn" data-act="rot" aria-label="${T.alternarDeitado}">⟳</button><button class="rotbtn" data-act="som" aria-label="${T.som}" title="${T.som}">${iconeSom()}</button></span><span class="vsb">VS</span><span class="rd">${T.rodadaN(s.round)}<button class="infobtn" data-act="info" aria-label="${T.info}">i</button></span></div>`
     + `${heroCard(s, 'e', nivel)}</div>`;
 }
 
