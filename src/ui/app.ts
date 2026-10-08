@@ -13,6 +13,8 @@ import { toggleRot, tryLandscape } from './orientacao';
 import { efeitoGeral, efeitosDeMagia, EXTRA_GERAL_MS, MAGIA_MS } from './efeitoMagia';
 import { precarregarVisiveis } from './precarga';
 import { launch, shotsOf } from './projetil';
+import { desbloquear, tocar, trocarModoSom, type Efeito } from './som';
+import { reverTutorial, tutorialEntendi, tutorialFimDePartida, tutorialHtml, tutorialNovaPartida, tutorialPular } from './tutorial';
 import { avisoHtml, dificuldadeHtml, hubHtml, montarHtml, regrasHtml, type Montagem } from './menu';
 import { deckAtivo, lerDecks, salvarDecks } from '../services/deckSalvo';
 import { lerNivel, salvarNivel } from '../services/preferencias';
@@ -87,6 +89,7 @@ const name = (cid: string) => card(cid).name;
 
 function startMatch(cfg: Modo): void {
   ultimo = cfg;
+  tutorialNovaPartida();
   const seed = randomSeed();
   let state: GameState;
   if (cfg.modo === 'signo') {
@@ -163,6 +166,7 @@ function act(a: Action, okMsg: string, failMsg?: string): void {
     return;
   }
   m.plan.push({ bi: livres(m)[a.hand], a });
+  tocar(a.t === 'burn' ? 'queimar' : a.t === 'spell' ? 'magia' : 'carta');
   m.g = m.shown = r.state;
   m.sel = null;
   m.msg = okMsg;
@@ -172,6 +176,7 @@ function act(a: Action, okMsg: string, failMsg?: string): void {
 async function battle(): Promise<void> {
   const m = M!;
   m.busy = true;
+  tocar('batalha');
   m.sel = null;
   m.inspect = null;
   const { state, frames } = resolveBattle(m.g);
@@ -220,6 +225,7 @@ async function battle(): Promise<void> {
     // fortalecer/escudo de magia: o número e a luz aparecem logo depois do efeito da magia, para não ficarem por baixo dele
     const reforco: GameEvent[] = f.kind === 'spell' ? f.events.filter(e => e.t === 'Buffed' || e.t === 'ShieldGained') : [];
     showFx(f.events.filter(e => !reforco.includes(e)));
+    sonsDoQuadro(f.events);
     if (reforco.length) setTimeout(() => showFx(reforco), REFORCO_MS);
     // ataque à distância: o projétil sai no meio do avanço e chega junto com o dano do próximo quadro
     const next = frames[i + 1];
@@ -241,6 +247,24 @@ async function battle(): Promise<void> {
   beginPlanning(tick?.events ?? []);
   soltarMortos(mortos);
   if (tick) showFx(tick.events);
+}
+
+/** Sons dos acontecimentos de um quadro da Batalha (cada som uma vez por quadro). */
+function sonsDoQuadro(evs: GameEvent[]): void {
+  const sons = new Set<Efeito>();
+  for (const e of evs) {
+    switch (e.t) {
+      case 'Attack': sons.add('ataque'); break;
+      case 'Damage': sons.add('golpe'); break;
+      case 'HeroDamaged': sons.add('heroi'); break;
+      case 'UnitDied': sons.add('morte'); break;
+      case 'SpellResolved': sons.add('magia'); break;
+      case 'ShieldBroken': case 'ShieldGained': sons.add('escudo'); break;
+      case 'HeroHealed': case 'UnitHealed': sons.add('cura'); break;
+      case 'Reveal': case 'UnitPlaced': sons.add('carta'); break;
+    }
+  }
+  for (const s of sons) tocar(s);
 }
 
 function frameMsg(f: Frame): string | null {
@@ -426,7 +450,11 @@ function render(): void {
     nivel: ultimo?.modo === 'rapida' ? T.nivelNome[M.nivel] : undefined,
     fim: M.g.phase !== 'over' || M.busy ? null : M.fim === 'pronto' ? 'fixo' : 'anim',
   };
-  root.innerHTML = gameHtml(v) + (M.confirma ? desistirHtml() : '') + (M.g.phase === 'over' && M.fim === 'pronto' ? endHtml(M.g) : '');
+  const tut = M.confirma || M.g.phase === 'over' ? { html: '' }
+    : tutorialHtml({ rodada: M.g.round, ocupado: M.busy, selecionou: M.sel !== null, jogou: M.plan.length > 0,
+      podeInvocar: M.g.p.hand.some(h => card(h.cid).type === 'unit' && costOf(M!.g.p, h.cid) <= M!.g.p.mana) });
+  root.innerHTML = gameHtml(v) + tut.html + (M.confirma ? desistirHtml() : '') + (M.g.phase === 'over' && M.fim === 'pronto' ? endHtml(M.g) : '');
+  if (tut.alvo) root.querySelectorAll(tut.alvo).forEach(el => el.classList.add('tut-alvo'));
   reporMortos();
   const h2 = root.querySelector('.hand');
   if (h2) h2.scrollLeft = sl;
@@ -475,6 +503,8 @@ function zoomCriatura(m: Match, s: GameState): Zoom | null {
 /** Fim de partida: primeiro o lado de quem perdeu desce, treme e racha; depois aparece o resultado. */
 function fimDeJogo(m: Match): void {
   m.fim = 'caindo';
+  tutorialFimDePartida();
+  tocar(m.g.result === 'p' ? 'vitoria' : 'derrota');
   render();
   setTimeout(() => { if (M === m) { m.fim = 'pronto'; render(); } }, DESABA_MS);
 }
@@ -626,6 +656,12 @@ function onClick(ev: Event): void {
   const t = (ev.target as HTMLElement).closest<HTMLElement>('[data-act]');
   if (!t) return;
   const a = t.dataset.act;
+  desbloquear();
+  if (a === 'som') { trocarModoSom(); desbloquear(); tocar('clique'); render(); return; }
+  if (a === 'tut-ok') { tutorialEntendi(); tocar('clique'); render(); return; }
+  if (a === 'tut-pular') { tutorialPular(); tocar('clique'); render(); return; }
+  if (a === 'rever-tut') { reverTutorial(); dialogo = null; render(); aviso(T.tutorialVolta); return; }
+  if (a !== 'hand' && a !== 'cell' && a !== 'punch' && a !== 'recharge') tocar('clique');
   if (a === 'rot') { toggleRot(); return; }
   if (a === 'info') { infoAberta = !infoAberta; render(); return; }
   if (a === 'gal') { gal = t.dataset.r as Signo; galSel = null; render(); return; }

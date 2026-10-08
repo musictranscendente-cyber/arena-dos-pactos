@@ -3,6 +3,7 @@ import { CARDS } from '../data/cards';
 import { ARTE, artUrl } from '../data/arte';
 import type { Signo } from '../data/schema';
 import { currentSign, ORDER, RACES } from '../data/signos';
+import { ICONE_SOM, modoSom } from './som';
 import { T } from '../data/textos';
 import { cartasDisponiveis, contarCopias, DECK_SIZE, maxCopias, type DeckMontado, type Nivel } from '../engine';
 import { cardHtml, zoomHtml } from './desenho';
@@ -65,7 +66,8 @@ export function hubHtml(now: Date, deck: DeckMontado | null): string {
     + `${criatura(tem + '25', 'mini')}<span><b>${T.eventoTemporada}</b><small>${RACES[tem].g} ${RACES[tem].n} · ${T.emBreve}</small></span></button></div>`
     + ilhas.map(ilhaHtml).join('')
     + `<div class="hub-base"><button class="hub-bt breve" data-act="missoes"><span>📜</span><b>${T.missoes}</b><small>${T.emBreve}</small></button>`
-    + `<button class="hub-bt" data-act="regras"><span>📖</span><b>${T.comoJogar}</b></button></div>`
+    + `<button class="hub-bt" data-act="regras"><span>📖</span><b>${T.comoJogar}</b></button>`
+    + `<button class="hub-bt" data-act="som" aria-label="${T.som}" title="${T.som}"><span>${ICONE_SOM[modoSom()]}</span><b>Som</b></button></div>`
     + '</div>';
 }
 
@@ -89,7 +91,8 @@ export function dificuldadeHtml(deck: DeckMontado | null, ultimo: Nivel): string
 
 export function regrasHtml(): string {
   return `<div class="ov"><div class="panel wide"><div class="gtop"><h2>${T.comoJogar}</h2><button class="btn rc" data-act="fechar">${T.voltar}</button></div>`
-    + `<ul>${T.regras.map(x => `<li>${x}</li>`).join('')}</ul></div></div>`;
+    + `<ul>${T.regras.map(x => `<li>${x}</li>`).join('')}</ul>`
+    + `<button class="btn rc" data-act="rever-tut">${T.reverTutorial}</button></div></div>`;
 }
 
 export interface Montagem {
