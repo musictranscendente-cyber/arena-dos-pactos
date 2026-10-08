@@ -1078,3 +1078,43 @@ body.rot .ov.montar.gal .m-detalhe .z-nome{font-size:14px}body.rot .ov.montar.ga
 .cp-fase.t-chefe{width:66px;height:66px}
 .cp-fase.t-guardiao{width:58px;height:58px}
 .cp-fase{width:46px;height:46px}
+
+/* ---------- missões diárias e calendário ---------- */
+.hub-bt{position:relative}
+.hub-alerta{position:absolute;top:-6px;right:-6px;width:20px;height:20px;border-radius:50%;display:grid;place-items:center;font-style:normal;font-weight:900;font-size:13px;
+  color:#fff;background:#e0303a;border:2px solid #fff;animation:alerta 1s ease-in-out infinite}
+@keyframes alerta{50%{transform:scale(1.18)}}
+.ms-h{margin:8px 0 6px;font-family:'Grenze Gotisch',Georgia,serif;font-size:20px;color:var(--gold)}
+.ms-dias{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+.ms-dia{display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 3px;border-radius:10px;background:#ffffff10;border:1.5px solid #6a5aa0;text-align:center;min-width:0}
+.ms-dia small{font-size:10.5px;color:#c9bde6}
+.ms-dia span{font-size:20px}
+.ms-dia b{font-size:10.5px;line-height:1.15}
+.ms-dia i{font-style:normal;color:#6dff7e;font-weight:900}
+.ms-dia.atual{border-color:var(--gold);background:#f2b93b22;box-shadow:0 0 14px #f2b93b66}
+.ms-dia.feito{opacity:.55}
+.ms-dia .btn.mini{min-height:26px;font-size:12px;padding:0 6px;font-family:inherit}
+.ms-lista{display:flex;flex-direction:column;gap:6px}
+.ms-m{display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:10px;background:#ffffff0d;border:1.5px solid #ffffff1a}
+.ms-m.ok{opacity:.6}
+.ms-m.comp{border-style:dashed;border-color:#7ac8ff66}
+.ms-txt{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
+.ms-txt b{font-size:14px}
+.ms-barra{position:relative;height:12px;border-radius:999px;background:#0006;overflow:hidden}
+.ms-barra i{position:absolute;left:0;top:0;bottom:0;background:linear-gradient(90deg,#3dbb55,#6dff7e);border-radius:999px}
+.ms-barra em{position:absolute;inset:0;font-style:normal;font-size:9.5px;font-weight:800;display:grid;place-items:center;color:#fff;text-shadow:0 1px 1px #000}
+.ms-premio{font-weight:800;font-size:13px;color:#ffe08a;white-space:nowrap}
+.ms-m .btn.mini{min-height:30px;font-size:12.5px;font-family:inherit;white-space:nowrap}
+.ms-ok{font-style:normal;color:#6dff7e;font-weight:900;font-size:18px}
+.ms-bau{display:flex;align-items:center;gap:10px;margin-top:8px;padding:8px 12px;border-radius:12px;background:#ffffff0d;border:1.5px dashed #e9c77a88}
+.ms-bau div{flex:1;display:flex;flex-direction:column}
+.ms-bau small{font-size:12px;color:#c9bde6}
+.ms-bau-ic{font-size:28px}
+.ms-bau.pronto{border-style:solid;border-color:var(--gold);box-shadow:0 0 16px #f2b93b66}
+.ms-bau.pronto .ms-bau-ic{animation:alerta 1s ease-in-out infinite}
+.ms-rodape{font-size:12px;color:#a99ad6;text-align:center;margin:8px 0 0}
+.ov.missoes .panel{max-height:96%;overflow:auto}
+@media (max-width:620px){body:not(.rot) .ms-dias{grid-template-columns:repeat(4,1fr)}}
+@media (prefers-reduced-motion:reduce){.hub-alerta,.ms-bau-ic{animation:none !important}}
+.ov.missoes .panel{padding-top:12px}
+.ov.missoes .gtop{position:sticky;top:-12px;z-index:3;background:linear-gradient(180deg,#2a1f55,#2a1f55ee);margin:-12px -20px 4px;padding:10px 20px 6px}

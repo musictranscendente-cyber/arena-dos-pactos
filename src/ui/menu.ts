@@ -47,7 +47,7 @@ export function nomeDeckMontado(d: DeckMontado): string {
   return [...new Set(d.signos)].map(s => `${RACES[s].g} ${RACES[s].n}`).join(' + ');
 }
 
-export function hubHtml(now: Date, deck: DeckMontado | null, prog: Progresso): string {
+export function hubHtml(now: Date, deck: DeckMontado | null, prog: Progresso, alerta = false): string {
   const tem = currentSign(now);
   const avatar = deck ? deck.signos[0] : tem;
   const ilhas: Ilha[] = [
@@ -70,7 +70,7 @@ export function hubHtml(now: Date, deck: DeckMontado | null, prog: Progresso): s
     + ilhas.map(ilhaHtml).join('')
     + `<div class="hub-base esq"><button class="hub-bt" data-act="colecao"><span>🃏</span><b>${T.colecao}</b></button>`
     + `<button class="hub-bt" data-act="pacotes"><span>📦</span><b>${T.pacotes}</b></button></div>`
-    + `<div class="hub-base"><button class="hub-bt breve" data-act="missoes"><span>📜</span><b>${T.missoes}</b><small>${T.emBreve}</small></button>`
+    + `<div class="hub-base"><button class="hub-bt${alerta ? ' alerta' : ''}" data-act="missoes"><span>📜</span><b>${T.missoes}</b>${alerta ? `<i class="hub-alerta" aria-label="${T.temPremio}">!</i>` : ''}</button>`
     + `<button class="hub-bt" data-act="regras"><span>📖</span><b>${T.comoJogar}</b></button>`
     + '</div>'
     + '</div>';

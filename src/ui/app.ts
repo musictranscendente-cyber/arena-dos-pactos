@@ -23,6 +23,8 @@ import {
 } from '../meta/progresso';
 import { campanhaHtml, type TelaCampanha } from './campanha';
 import { deckDaFase, fase as dadosFase, FASES, faseLiberada, mundoAtual, MUNDOS, vencerFase } from '../meta/campanha';
+import { abrirBau, BAU_POEIRA, coletar, coletarLogin, garantirDia, loginDisponivel, registrar, trocar, type Contagem } from '../meta/missoes';
+import { missoesHtml, temColeta } from './missoes';
 import { colecaoHtml, inicialHtml, pacotesHtml, revelarHtml, type TelaColecao } from './colecao';
 import { lerNivel, salvarNivel } from '../services/preferencias';
 
@@ -73,6 +75,8 @@ interface Match {
   premio?: string;
   /** Cartas ganhas para mostrar ao sair da partida. */
   revelaDepois?: string;
+  /** O que o jogador fez na partida (para as missões). */
+  cont: Partial<Record<Contagem, number>>;
 }
 
 /** Dica de texto aberta pelo ícone de informação (fica escondida para não poluir a tela). */
@@ -85,12 +89,18 @@ let tela: 'hub' | 'conhecer' | 'montar' | 'colecao' | 'pacotes' | 'campanha' = '
 let telaCamp: TelaCampanha = { signo: 'aries', fase: 1 };
 /** Progresso do jogador (moedas, coleção, campanha, missões), salvo no aparelho. */
 let prog: Progresso = lerProgresso();
+const hoje = () => diaDe(new Date());
+/** Missões do dia sempre em dia (vira à meia-noite). */
+function emDia(): void {
+  const p = garantirDia(prog, hoje(), new Rng(randomSeed()));
+  if (p !== prog) mudarProgresso(p);
+}
 function mudarProgresso(p: Progresso): void { prog = p; salvarProgresso(p); }
 let telaColecao: TelaColecao = { filtro: 'todas', sel: null, msg: '' };
 /** Cartas recebidas mostradas por cima de tudo (pacote, prêmio). */
 let revela: string | null = null;
 let montagem: Montagem | null = null;
-let dialogo: 'nivel' | 'regras' | null = null;
+let dialogo: 'nivel' | 'regras' | 'missoes' | null = null;
 /** Última dificuldade escolhida na Partida Rápida. */
 let nivel: Nivel = lerNivel();
 /** Os 3 espaços de deck e qual está em uso. */
@@ -131,7 +141,7 @@ function startMatch(cfg: Modo): void {
     // cada cópia entra com o nível que o jogador tem dela (as de nível maior primeiro)
     state = newGame({ pSign: pa, pSign2: pb === pa ? undefined : pb, pDeck: deckComNiveis(prog, cfg.deck.cartas), eSign: ea, eSign2: eb, eDeck, seed, record: false }).state;
   }
-  M = { g: state, shown: state, sel: null, busy: false, msg: '', active: null, striking: null, aiRng: new Rng(seed ^ 0x5bd1e995), base: state, plan: [], inspect: null, nivel: cfg.modo === 'rapida' ? cfg.nivel : cfg.modo === 'campanha' ? dadosFase(cfg.signo, cfg.fase).nivelIA : 'normal' };
+  M = { g: state, shown: state, sel: null, busy: false, msg: '', active: null, striking: null, aiRng: new Rng(seed ^ 0x5bd1e995), base: state, plan: [], inspect: null, cont: {}, nivel: cfg.modo === 'rapida' ? cfg.nivel : cfg.modo === 'campanha' ? dadosFase(cfg.signo, cfg.fase).nivelIA : 'normal' };
   beginPlanning([]);
 }
 
@@ -207,6 +217,7 @@ async function battle(): Promise<void> {
   m.sel = null;
   m.inspect = null;
   const { state, frames } = resolveBattle(m.g);
+  contarRodada(m, frames);
   let revealed = false;
   for (let i = 0; i < frames.length; i++) {
     const f = frames[i];
@@ -300,6 +311,16 @@ function sonsDoQuadro(evs: GameEvent[]): void {
     }
   }
   for (const s of sons) tocar(s);
+}
+
+/** Soma para as missões o que o jogador fez na rodada: jogadas do planejamento e o que a Batalha causou. */
+function contarRodada(m: Match, frames: Frame[]): void {
+  const soma = (k: Contagem, n = 1) => { m.cont[k] = (m.cont[k] ?? 0) + n; };
+  for (const x of m.plan) soma(x.a.t === 'summon' ? 'invocar' : x.a.t === 'spell' ? 'magia' : 'queimar');
+  for (const f of frames) for (const e of f.events) {
+    if (e.t === 'HeroDamaged' && e.side === 'e') soma('danoHeroi', e.amount);
+    if (e.t === 'UnitDied' && e.side === 'e') soma('abater');
+  }
 }
 
 function frameMsg(f: Frame): string | null {
@@ -476,14 +497,16 @@ function somHtml(): string {
 function render(): void {
   const root = app();
   if (!M) {
-    const dlg = dialogo === 'nivel' ? dificuldadeHtml(deckAtivo(meus), nivel) : dialogo === 'regras' ? regrasHtml(prog.teste) : '';
+    emDia();
+    const dlg = dialogo === 'nivel' ? dificuldadeHtml(deckAtivo(meus), nivel) : dialogo === 'regras' ? regrasHtml(prog.teste)
+      : dialogo === 'missoes' ? missoesHtml(prog, hoje()) : '';
     root.innerHTML = gal ? galleryHtml(gal, galSel)
       : tela === 'montar' && montagem ? montarHtml(montagem, meus.decks, meus.ativo, prog)
       : tela === 'conhecer' ? startHtml(new Date())
       : tela === 'colecao' ? colecaoHtml(prog, telaColecao)
       : tela === 'campanha' ? campanhaHtml(prog, telaCamp, deckAtivo(meus))
-      : tela === 'pacotes' ? hubHtml(new Date(), deckAtivo(meus), prog) + pacotesHtml(prog)
-      : hubHtml(new Date(), deckAtivo(meus), prog) + dlg + (prog.inicial ? '' : inicialHtml());
+      : tela === 'pacotes' ? hubHtml(new Date(), deckAtivo(meus), prog, temColeta(prog, hoje())) + pacotesHtml(prog)
+      : hubHtml(new Date(), deckAtivo(meus), prog, temColeta(prog, hoje())) + dlg + (prog.inicial ? '' : inicialHtml());
     root.insertAdjacentHTML('beforeend', somHtml() + (revela ?? ''));
     return;
   }
@@ -572,6 +595,16 @@ function fimDeJogo(m: Match): void {
 
 /** Prêmio do fim da partida (Partida Rápida: Poeira; desistir não dá prêmio). Devolve o texto para a tela final. */
 function premiar(m: Match): string | undefined {
+  // missões: tudo o que fez conta; partida e vitória só sem desistir
+  emDia();
+  const venceu = m.g.result === 'p';
+  if (m.g.surrendered !== 'p') { m.cont.partida = 1; if (venceu) m.cont.vitoria = 1; }
+  if (venceu && ultimo?.modo === 'campanha') m.cont.fase = 1;
+  mudarProgresso(registrar(prog, m.cont));
+  return premioDaPartida(m);
+}
+
+function premioDaPartida(m: Match): string | undefined {
   if (ultimo?.modo === 'campanha') {
     if (m.g.result !== 'p') return undefined;
     const { signo, fase: n } = ultimo;
@@ -600,7 +633,38 @@ function menuClick(a: string | undefined, t: HTMLElement): boolean {
     case 'fechar': dialogo = null; render(); return true;
     case 'conhecer': tela = 'conhecer'; render(); return true;
     case 'regras': dialogo = 'regras'; render(); return true;
-    case 'torneio': case 'ranqueada': case 'evento': case 'missoes': emBreve(); return true;
+    case 'torneio': case 'ranqueada': case 'evento': emBreve(); return true;
+    case 'missoes': emDia(); dialogo = 'missoes'; render(); return true;
+    case 'login': {
+      const r = coletarLogin(prog, hoje(), new Rng(randomSeed()), prog.inicial ?? undefined);
+      if (!r) return true;
+      mudarProgresso(r.p);
+      tocar('vitoria');
+      if (r.cartas.length) revela = revelarHtml(T.calendario, r.cartas, r.novas, [r.premio.poeira ? `+${r.premio.poeira} ✨` : '', r.premio.gemas ? `+${r.premio.gemas} 💎` : ''].filter(Boolean).join(' · '));
+      else aviso(`+${r.premio.poeira ?? 0} ✨ · ${T.loginVolte}`);
+      render();
+      return true;
+    }
+    case 'mcoletar': {
+      const r = coletar(prog, t.dataset.id!);
+      if (!r.poeira) return true;
+      mudarProgresso(r.p);
+      tocar('cura');
+      render();
+      aviso(`+${r.poeira} ✨`);
+      return true;
+    }
+    case 'mtrocar': mudarProgresso(trocar(prog, t.dataset.id!, new Rng(randomSeed()))); render(); return true;
+    case 'bau': {
+      const r = abrirBau(prog, new Rng(randomSeed()));
+      if (!r) return true;
+      mudarProgresso(r.p);
+      tocar('vitoria');
+      revela = revelarHtml(T.bauDiario, r.cartas, r.novas, `+${BAU_POEIRA} ✨`);
+      render();
+      return true;
+    }
+    case 'compartilhar': void compartilhar(); return true;
     case 'rapida': dialogo = 'nivel'; render(); return true;
     case 'nivel': {
       nivel = t.dataset.n as Nivel;
@@ -784,6 +848,25 @@ function ultimaFaseLivre(): void {
   let n = 1;
   for (let i = 1; i <= FASES; i++) if (faseLiberada(prog, telaCamp.signo, i)) n = i;
   telaCamp.fase = n;
+}
+
+/** Compartilha o link do jogo (WhatsApp etc.); sem compartilhamento no aparelho, copia o link. Conta a missão. */
+async function compartilhar(): Promise<void> {
+  const url = location.origin + location.pathname;
+  let ok = false;
+  if (navigator.share) {
+    try { await navigator.share({ title: T.compartilharTitulo, text: T.compartilharTexto, url }); ok = true; } catch { /* cancelou */ }
+  } else {
+    // sem o compartilhamento do aparelho (computador): abre o WhatsApp com a mensagem pronta
+    ok = !!window.open(`https://wa.me/?text=${encodeURIComponent(`${T.compartilharTexto} ${url}`)}`, '_blank', 'noopener');
+    if (!ok) {
+      try { await navigator.clipboard.writeText(`${T.compartilharTexto} ${url}`); ok = true; aviso(T.linkCopiado); } catch { /* sem permissão */ }
+    }
+  }
+  if (!ok) return;
+  emDia();
+  mudarProgresso(registrar(prog, { compartilhar: 1 }));
+  render();
 }
 
 function abrirMontagem(): void {
@@ -1013,6 +1096,9 @@ function hintFor(cid: string): string {
 }
 
 export function startApp(): void {
+  // primeiro acesso do dia: já abre as missões com o prêmio do calendário
+  emDia();
+  if (prog.inicial && loginDisponivel(prog, hoje())) dialogo = 'missoes';
   app().addEventListener('click', onClick);
   // nome do deck: guarda enquanto digita, sem redesenhar (o teclado não fecha)
   app().addEventListener('input', e => {
