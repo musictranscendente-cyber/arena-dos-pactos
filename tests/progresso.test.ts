@@ -97,3 +97,14 @@ describe('pacote de signo', () => {
     expect(abrirPacote({ ...novoProgresso(), poeira: 300 }, new Rng(4), 'peixes')).toBeNull();
   });
 });
+
+describe('abrir vários pacotes', () => {
+  it('abre só o que a Poeira paga (até 10) e soma as cartas', async () => {
+    const { abrirPacotes } = await import('../src/meta/progresso');
+    const r = abrirPacotes({ ...novoProgresso(), poeira: 1500 }, new Rng(2), 10, 'leao')!;
+    expect(r.cartas).toHaveLength(20);
+    expect(r.p.poeira).toBe(100);
+    expect(r.cartas.every(c => card(c).race === 'leao')).toBe(true);
+    expect(abrirPacotes({ ...novoProgresso(), poeira: 100 }, new Rng(2), 1)).toBeNull();
+  });
+});

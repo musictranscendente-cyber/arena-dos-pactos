@@ -19,13 +19,13 @@ import { avisoHtml, dificuldadeHtml, hubHtml, montarHtml, regrasHtml, type Monta
 import { deckAtivo, lerDecks, salvarDecks } from '../services/deckSalvo';
 import { lerProgresso, salvarProgresso } from '../services/progresso';
 import {
-  abrirPacote, completarDeck, copiasParaDeck, deckComNiveis, diaDe, escolherInicial, faltando, fundir, podeFundir, premioRapida, type Progresso,
+  abrirPacotes, completarDeck, copiasParaDeck, MAX_PACOTES, precoPacote, deckComNiveis, diaDe, escolherInicial, faltando, fundir, podeFundir, premioRapida, type Progresso,
 } from '../meta/progresso';
 import { campanhaHtml, type TelaCampanha } from './campanha';
 import { deckDaFase, fase as dadosFase, FASES, faseLiberada, mundoAtual, vencerFase } from '../meta/campanha';
 import { abrirBau, BAU_POEIRA, coletar, coletarLogin, garantirDia, loginDisponivel, registrar, trocar, type Contagem } from '../meta/missoes';
 import { missoesHtml, temColeta } from './missoes';
-import { colecaoHtml, inicialHtml, pacotesHtml, proximoFiltro, revelarHtml, type TelaColecao } from './colecao';
+import { colecaoHtml, inicialHtml, pacotesHtml, proximoFiltro, revelarHtml, type TelaColecao, type TelaPacotes } from './colecao';
 import { lerNivel, salvarNivel } from '../services/preferencias';
 
 /** Nome da raridade em minúsculas, para os avisos. */
@@ -96,6 +96,7 @@ function emDia(): void {
   if (p !== prog) mudarProgresso(p);
 }
 function mudarProgresso(p: Progresso): void { prog = p; salvarProgresso(p); }
+let telaPacotes: TelaPacotes = { aberto: null, qtd: 1, confirmar: false };
 let telaColecao: TelaColecao = { filtro: 'todas', sel: null, msg: '' };
 /** Cartas recebidas mostradas por cima de tudo (pacote, prêmio). */
 let revela: string | null = null;
@@ -506,7 +507,7 @@ function render(): void {
       : tela === 'conhecer' ? startHtml(new Date())
       : tela === 'colecao' ? colecaoHtml(prog, telaColecao)
       : tela === 'campanha' ? campanhaHtml(prog, telaCamp, deckAtivo(meus))
-      : tela === 'pacotes' ? hubHtml(new Date(), deckAtivo(meus), prog, temColeta(prog, hoje())) + pacotesHtml(prog)
+      : tela === 'pacotes' ? hubHtml(new Date(), deckAtivo(meus), prog, temColeta(prog, hoje())) + pacotesHtml(prog, telaPacotes)
       : hubHtml(new Date(), deckAtivo(meus), prog, temColeta(prog, hoje())) + dlg + (prog.inicial ? '' : inicialHtml());
     root.insertAdjacentHTML('beforeend', somHtml() + (revela ?? ''));
     return;
@@ -689,7 +690,7 @@ function menuClick(a: string | undefined, t: HTMLElement): boolean {
       return true;
     }
     case 'colecao': tela = 'colecao'; telaColecao = { filtro: prog.inicial ?? 'todas', sel: null, msg: '' }; render(); return true;
-    case 'pacotes': tela = 'pacotes'; render(); return true;
+    case 'pacotes': tela = 'pacotes'; telaPacotes = { aberto: null, qtd: 1, confirmar: false }; render(); return true;
     case 'inicial': {
       const s = t.dataset.r as Signo;
       if (prog.inicial) return true;
@@ -731,10 +732,29 @@ function menuClick(a: string | undefined, t: HTMLElement): boolean {
       keepScroll();
       return true;
     }
-    case 'pabrir': {
-      const sg = t.dataset.r as Signo | undefined;
-      const r = abrirPacote(prog, new Rng(randomSeed()), sg);
-      if (!r) return true;
+    case 'pver': telaPacotes = { aberto: t.dataset.r as Signo | 'estelar', qtd: 1, confirmar: false }; render(); return true;
+    case 'pfecha': telaPacotes = { aberto: null, qtd: 1, confirmar: false }; render(); return true;
+    case 'pcorre': {
+      const v = document.querySelector('.pk-vitrine');
+      if (v) v.scrollBy({ left: Number(t.dataset.d) * v.clientWidth * 0.8, behavior: 'smooth' });
+      return true;
+    }
+    case 'pmenos': telaPacotes = { ...telaPacotes, qtd: Math.max(1, telaPacotes.qtd - 1) }; render(); return true;
+    case 'pmais': telaPacotes = { ...telaPacotes, qtd: Math.min(MAX_PACOTES, telaPacotes.qtd + 1) }; render(); return true;
+    case 'pmax': {
+      const sg = telaPacotes.aberto === 'estelar' ? undefined : telaPacotes.aberto ?? undefined;
+      telaPacotes = { ...telaPacotes, qtd: Math.max(1, Math.min(MAX_PACOTES, Math.floor(prog.poeira / precoPacote(sg)))) };
+      render(); return true;
+    }
+    case 'ppedir': telaPacotes = { ...telaPacotes, confirmar: true }; render(); return true;
+    case 'pcancela': telaPacotes = { ...telaPacotes, confirmar: false }; render(); return true;
+    case 'pconfirma': {
+      const id = telaPacotes.aberto;
+      if (!id) return true;
+      const sg = id === 'estelar' ? undefined : id;
+      const r = abrirPacotes(prog, new Rng(randomSeed()), telaPacotes.qtd, sg);
+      telaPacotes = { aberto: null, qtd: 1, confirmar: false };
+      if (!r) { render(); return true; }
       mudarProgresso(r.p);
       revela = revelarHtml(sg ? T.pacoteDe(RACES[sg].n) : T.pacoteEstelar, r.cartas, r.novas);
       tocar('magia');

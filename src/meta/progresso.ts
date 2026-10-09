@@ -215,6 +215,24 @@ export function abrirPacote(p: Progresso, rng: Rng, signo?: Signo): { p: Progres
   return { p: r.p, cartas, novas: r.novas };
 }
 
+/** Preço de um pacote (Estelar ou de signo). */
+export const precoPacote = (signo?: Signo) => (signo ? PRECO_PACOTE_SIGNO : PRECO_PACOTE);
+export const MAX_PACOTES = 10;
+
+/** Abre vários pacotes iguais de uma vez (até 10, e só os que a Poeira paga). */
+export function abrirPacotes(p: Progresso, rng: Rng, qtd: number, signo?: Signo): { p: Progresso; cartas: string[]; novas: string[] } | null {
+  const n = Math.min(qtd, MAX_PACOTES, Math.floor(p.poeira / precoPacote(signo)));
+  if (n < 1) return null;
+  let q = p;
+  const cartas: string[] = [], novas: string[] = [];
+  for (let i = 0; i < n; i++) {
+    const r = abrirPacote(q, rng, signo)!;
+    q = r.p; cartas.push(...r.cartas);
+    for (const c of r.novas) if (!novas.includes(c)) novas.push(c);
+  }
+  return { p: q, cartas, novas };
+}
+
 /* ---------- Partida Rápida ---------- */
 
 export const RAPIDA_VITORIA = 20;

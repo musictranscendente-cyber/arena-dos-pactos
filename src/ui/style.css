@@ -1205,3 +1205,71 @@ body.rot .ov.montar.gal .m-detalhe .z-nome{font-size:14px}body.rot .ov.montar.ga
   body.rot .pk-sub{font-size:11.5px;margin-bottom:5px}
   body.rot .pk-signos{grid-template-columns:repeat(12,1fr);gap:4px}
 }
+
+/* ---------- loja de pacotes (vitrine) ---------- */
+.ov.loja > .panel{display:flex;flex-direction:column;max-height:96%;overflow:hidden}
+.pk-vitrine-box{position:relative;display:flex;align-items:center;gap:6px;min-height:0;flex:1}
+.pk-vitrine{flex:1;display:flex;gap:12px;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;scrollbar-width:none;padding:6px 2px 10px;overscroll-behavior:contain}
+.pk-vitrine::-webkit-scrollbar{display:none}
+.pk-cartao{flex:0 0 auto;width:min(170px,30vh);scroll-snap-align:start;font:inherit;color:#fff;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;
+  padding:8px 8px 10px;border-radius:14px;position:relative;overflow:hidden;
+  background:linear-gradient(180deg,color-mix(in srgb,var(--rc) 55%,#2a1f55),#140c2c 85%);border:2px solid color-mix(in srgb,var(--rc) 60%,#e9c77a);
+  box-shadow:0 6px 16px #000a,inset 0 0 30px color-mix(in srgb,var(--rc) 30%,transparent)}
+.pk-cartao:active{transform:translateY(2px)}
+.pk-cartao.estelar{border-color:#e9c77a;box-shadow:0 0 18px #c8a8ff88,0 6px 16px #000a}
+.pk-topo{font-size:11px;font-weight:800;background:#0008;border-radius:999px;padding:1px 9px;white-space:nowrap}
+.pk-img{width:100%;aspect-ratio:1/1.05;display:grid;place-items:center;border-radius:10px;
+  background:radial-gradient(circle at 50% 40%,color-mix(in srgb,var(--rc) 50%,#fff3),transparent 70%)}
+.pk-img img{max-width:92%;max-height:92%;object-fit:contain;filter:drop-shadow(0 4px 4px #000a)}
+.pk-estrela{font-size:72px;color:#ffe08a;text-shadow:0 0 20px #c8a8ff}
+.pk-nome{font-family:'Grenze Gotisch',Georgia,serif;font-size:19px;line-height:1;text-align:center;color:#ffe9b0;text-shadow:0 2px 0 #000}
+.pk-qtd{font-size:11px;color:#d9cdf5}
+.pk-preco{font-size:15px;font-weight:900;color:#ffe08a}
+.btn.pk-comprar{width:100%;min-height:32px;font-size:17px;padding:0;display:grid;place-items:center}
+.pk-seta{flex:0 0 auto;width:38px;height:56px;border-radius:12px;cursor:pointer;font:inherit;font-size:32px;font-weight:900;line-height:1;color:#fff;
+  background:linear-gradient(180deg,#5a4aa8,#2a1f55);border:2px solid #e9c77a;box-shadow:0 4px 10px #000a}
+.pk-seta:active{transform:scale(.94)}
+/* detalhe do pacote */
+.ov.pk-det{z-index:120;background:#0b0720cc}
+.pk-det .panel{max-height:96%;overflow:auto;border:2px solid #e9c77a}
+.pk-destaques{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:6px 0}
+.pk-d .card{flex:none;width:84px;height:120px;cursor:default}
+.pk-qtd-linha{display:flex;align-items:center;justify-content:center;gap:8px;margin:8px 0}
+.btn.pk-q{width:44px;min-height:40px;font-size:24px;padding:0}
+.pk-qn{min-width:60px;text-align:center;font-size:22px;font-weight:900;background:#0007;border-radius:10px;padding:4px 10px}
+.btn.pk-max{width:auto;min-height:40px}
+.btn.pk-total{width:min(320px,100%);display:block;margin:4px auto 0;font-size:24px}
+/* confirmação */
+.ov.pk-conf{z-index:130;background:#000a}
+.pk-conf .panel{max-width:420px;text-align:center;border:2px solid #e9c77a}
+.pk-conf h3{margin:0 0 8px;font-family:'Grenze Gotisch',Georgia,serif;font-size:24px;color:var(--gold)}
+.pk-custa{font-size:18px}.pk-custa b{color:#ffe08a}
+.pk-conf-bts{flex-direction:row;justify-content:center}
+.pk-conf-bts .btn{width:auto;min-width:130px}
+/* muitas cartas reveladas: a janela rola */
+.ov.revela .panel{max-height:96%;overflow:auto}
+@media (max-height:430px){body:not(.rot) .loja .gtop h2{font-size:28px;margin:0}body:not(.rot) .pk-cartao{width:150px}body:not(.rot) .pk-nome{font-size:16px}}
+@media (max-width:430px){body.rot .loja .gtop h2{font-size:28px;margin:0}body.rot .pk-cartao{width:150px}body.rot .pk-nome{font-size:16px}}
+/* vitrine: os pacotes ocupam a altura que sobra (não cobrem o título) */
+.ov.loja > .panel{height:96%}
+.pk-vitrine-box{flex:1 1 auto;min-height:0}
+.pk-vitrine{height:100%;align-items:stretch}
+.pk-cartao{height:100%;max-height:100%;width:auto;aspect-ratio:.62;min-width:120px}
+.pk-cartao .pk-img{flex:1 1 auto;min-height:0;aspect-ratio:auto;width:100%}
+.pk-cartao .pk-img img{max-height:100%}
+.pk-cartao .pk-estrela{font-size:min(72px,12vh)}
+.loja .pk-sub{flex:0 0 auto;margin:4px 0 0}
+/* detalhe: duas colunas (cartas e chances | arte, quantidade e comprar) */
+.pk-det-corpo{display:grid;grid-template-columns:1fr minmax(200px,34%);gap:14px;align-items:center}
+.pk-det-dir{display:flex;flex-direction:column;align-items:center;gap:6px}
+.pk-img-det{width:min(150px,100%);aspect-ratio:1}
+.pk-det .pk-qtd-linha{margin:2px 0}
+.pk-det .pk-qtd-linha .btn{min-height:36px}
+.pk-det .btn.pk-total{font-size:22px;min-height:44px;margin:0}
+.pk-d .card{width:76px;height:108px}
+@media (max-width:620px){body:not(.rot) .pk-det-corpo{grid-template-columns:1fr}}
+@media (max-height:430px){body:not(.rot) .pk-det .gtop h2{font-size:28px;margin:0}body:not(.rot) .pk-img-det{width:96px}}
+@media (max-width:430px){body.rot .pk-det .gtop h2{font-size:28px;margin:0}body.rot .pk-img-det{width:96px}}
+.pk-img{position:relative;overflow:hidden}
+.pk-img img{position:absolute;inset:4%;width:92%;height:92%;max-width:none;max-height:none;object-fit:contain}
+.pk-conf .panel{height:auto}
