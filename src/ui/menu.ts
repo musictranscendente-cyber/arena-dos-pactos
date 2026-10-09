@@ -1,5 +1,5 @@
 // Tela inicial (ilhas flutuantes com os modos de jogo) e a montagem de deck com 2 signos.
-import { card, CARDS, comNivel } from '../data/cards';
+import { baseCid, card, CARDS, nivelDe } from '../data/cards';
 import { ARTE, artUrl } from '../data/arte';
 import type { Signo } from '../data/schema';
 import { currentSign, ORDER, RACES } from '../data/signos';
@@ -8,7 +8,7 @@ import { T } from '../data/textos';
 import { cartasDisponiveis, contarCopias, DECK_SIZE, maxCopias, type DeckMontado, type Nivel } from '../engine';
 import { cardHtml, zoomHtml } from './desenho';
 import { moedasHtml } from './colecao';
-import { copiasParaDeck, melhorNivel, totalCopias, type Progresso } from '../meta/progresso';
+import { copiasNoNivel, copiasParaDeck, niveisQueTem, type Progresso } from '../meta/progresso';
 
 /** Criatura de pé numa ilha (arte parada); `vira` espelha para ela olhar para a esquerda. */
 export function criatura(cid: string, cls = '', vira = false): string {
@@ -167,23 +167,31 @@ export function montarHtml(m: Montagem, decks: (DeckMontado | null)[], ativo: nu
   }
   const a = m.signos[0], b = m.signos[1] ?? m.signos[0];
   const um = a === b;
-  // cartas que o jogador tem primeiro; as que não tem aparecem apagadas no fim
-  const pode = (k: string) => copiasParaDeck(prog, k);
-  const lista = cartasDisponiveis(a, b).sort((x, y) => (pode(x) ? 0 : 1) - (pode(y) ? 0 : 1) || CARDS[x].cost - CARDS[y].cost
-    || (CARDS[x].race === a ? 0 : 1) - (CARDS[y].race === a ? 0 : 1));
+  // cada nível de uma carta é uma entrada separada (ex.: Basilisco Nv1 e Basilisco Nv2);
+  // as que o jogador tem vêm primeiro, as que não tem aparecem apagadas no fim
   const qtd = contarCopias(m.cartas);
-  const cards = lista.map(k => {
-    const n = qtd.get(k) ?? 0;
-    const cls = [n ? 'no-deck' : 'fora-deck', pode(k) ? '' : 'bloq', m.info === k ? 'sel' : ''].join(' ');
-    const id = comNivel(k, Math.max(1, melhorNivel(prog, k)));
-    return cardHtml(card(id), card(id).cost, `data-act="mcarta" data-k="${k}" data-n="${n}" tabindex="0" role="button" aria-label="${CARDS[k].name}: ${n}"`, cls, id);
+  const porBase = contarCopias(m.cartas.map(baseCid));
+  const pode = (id: string) => Math.max(0, Math.min(copiasParaDeck(prog, id), maxCopias(id) - ((porBase.get(baseCid(id)) ?? 0) - (qtd.get(id) ?? 0))));
+  const entradas: { id: string; tem: boolean }[] = [];
+  for (const k of cartasDisponiveis(a, b)) {
+    const ids = niveisQueTem(prog, k);
+    if (prog.teste && !ids.includes(k)) ids.push(k);
+    if (ids.length) for (const id of ids) entradas.push({ id, tem: true });
+    else entradas.push({ id: k, tem: false });
+  }
+  entradas.sort((x, y) => (x.tem ? 0 : 1) - (y.tem ? 0 : 1) || card(x.id).cost - card(y.id).cost
+    || (card(x.id).race === a ? 0 : 1) - (card(y.id).race === a ? 0 : 1) || baseCid(x.id).localeCompare(baseCid(y.id)) || nivelDe(y.id) - nivelDe(x.id));
+  const cards = entradas.map(({ id, tem }) => {
+    const n = qtd.get(id) ?? 0;
+    const cls = [n ? 'no-deck' : 'fora-deck', tem ? '' : 'bloq', m.info === id ? 'sel' : ''].join(' ');
+    return cardHtml(card(id), card(id).cost, `data-act="mcarta" data-k="${id}" data-n="${n}" tabindex="0" role="button" aria-label="${card(id).name} ${T.nivelN(nivelDe(id))}: ${n}"`, cls, id);
   }).join('');
   // curva de mana do deck: quantas cartas de cada custo (7+ juntas)
   const curva = [0, 0, 0, 0, 0, 0, 0, 0];
-  for (const k of m.cartas) curva[Math.min(7, CARDS[k].cost)]++;
+  for (const k of m.cartas) curva[Math.min(7, card(k).cost)]++;
   const max = Math.max(1, ...curva);
   const barras = curva.map((n, i) => `<span class="cv"><i style="height:${(n / max) * 100}%"></i><b>${n}</b><small>${i === 7 ? '7+' : i}</small></span>`).join('');
-  const deA = m.cartas.filter(k => CARDS[k].race === a).length;
+  const deA = m.cartas.filter(k => card(k).race === a).length;
   const cheio = m.cartas.length === DECK_SIZE;
   // painel da carta aberta: a carta grande com tudo, quantas cópias tem no deck e os botões de colocar/tirar
   let lado = `<p class="m-dica">${m.msg || T.toqueParaVer}</p>`;
@@ -192,10 +200,10 @@ export function montarHtml(m: Montagem, decks: (DeckMontado | null)[], ativo: nu
     // quantidade e botões em cima (sempre à vista); a carta grande logo abaixo
     // tudo numa linha só (tirar · quantas no deck · colocar) para sobrar altura para a carta
     lado = `<div class="m-qtd"><button class="btn rc" data-act="mmenos" ${n ? '' : 'disabled'} aria-label="${T.tirar}">－ ${T.tirar}</button>`
-      + `<p class="m-copias" title="${RAR_NOME[CARDS[k].r]}"><small>${T.noDeck}</small><span><b>${n}</b>/${mx}</span></p>`
+      + `<p class="m-copias" title="${RAR_NOME[card(k).r]}"><small>${T.noDeck}</small><span><b>${n}</b>/${mx}</span></p>`
       + `<button class="btn go" data-act="mmais" ${n < mx && !cheio ? '' : 'disabled'} aria-label="${T.colocar}">＋ ${T.colocar}</button></div>`
-      + `<p class="m-dica">${m.msg || T.semCopias(prog.teste ? maxCopias(k) : totalCopias(prog, k))}</p>`
-      + `<div class="m-detalhe">${zoomHtml({ cid: comNivel(k, Math.max(1, melhorNivel(prog, k))), lado: 'p' })}</div>`;
+      + `<p class="m-dica">${m.msg || T.semCopiasNivel(prog.teste && nivelDe(k) === 1 ? maxCopias(k) : copiasNoNivel(prog, k), nivelDe(k))}</p>`
+      + `<div class="m-detalhe">${zoomHtml({ cid: k, lado: 'p' })}</div>`;
   }
   return `<div class="ov montar gal"><div class="panel wide"><div class="m-fixo">`
     + `<div class="gtop"><div class="m-titulo"><span class="m-sg"><i style="--rc:${RACES[a].c}">${RACES[a].g}</i>${um ? '' : `<i style="--rc:${RACES[b].c}">${RACES[b].g}</i>`}</span>`

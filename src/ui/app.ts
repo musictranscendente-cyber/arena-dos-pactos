@@ -1,5 +1,5 @@
 // Controla as telas e a partida contra a IA. Toda regra vem do motor; aqui só desenha e anima.
-import { card, cardsOfSign } from '../data/cards';
+import { baseCid, card, cardsOfSign, comNivel, nivelDe } from '../data/cards';
 import type { Signo } from '../data/schema';
 import { ORDER, RACES } from '../data/signos';
 import { cardText, T } from '../data/textos';
@@ -19,7 +19,7 @@ import { avisoHtml, dificuldadeHtml, hubHtml, montarHtml, regrasHtml, type Monta
 import { deckAtivo, lerDecks, salvarDecks } from '../services/deckSalvo';
 import { lerProgresso, salvarProgresso } from '../services/progresso';
 import {
-  abrirPacotes, completarDeck, copiasParaDeck, MAX_PACOTES, precoPacote, deckComNiveis, diaDe, escolherInicial, faltando, fundir, podeFundir, premioRapida, type Progresso,
+  abrirPacotes, completarDeck, copiasNoNivel, copiasParaDeck, MAX_PACOTES, precoPacote, deckComNiveis, diaDe, escolherInicial, faltando, fundir, podeFundir, premioRapida, type Progresso,
 } from '../meta/progresso';
 import { campanhaHtml, type TelaCampanha } from './campanha';
 import { deckDaFase, fase as dadosFase, FASES, faseLiberada, mundoAtual, vencerFase } from '../meta/campanha';
@@ -106,6 +106,16 @@ let dialogo: 'nivel' | 'regras' | 'missoes' | null = null;
 let nivel: Nivel = lerNivel();
 /** Os 3 espaços de deck e qual está em uso. */
 const meus = lerDecks();
+// decks antigos guardavam só a carta (o nível era escolhido na hora): agora cada cópia guarda o nível dela
+(function migrarDecksComNivel() {
+  const CHAVE_V2 = 'arena-dos-pactos:decks-niveis';
+  try {
+    if (localStorage.getItem(CHAVE_V2)) return;
+    meus.decks = meus.decks.map(d => (d ? { ...d, cartas: deckComNiveis(prog, d.cartas) } : d));
+    salvarDecks(meus);
+    localStorage.setItem(CHAVE_V2, '1');
+  } catch { /* sem armazenamento */ }
+})();
 /** Como foi a última partida (para a Revanche repetir igual). */
 type Modo = { modo: 'signo'; sign: Signo } | { modo: 'rapida'; deck: DeckMontado; nivel: Nivel } | { modo: 'campanha'; deck: DeckMontado; signo: Signo; fase: number };
 let ultimo: Modo | null = null;
@@ -130,7 +140,7 @@ function startMatch(cfg: Modo): void {
     const rng = new Rng(seed ^ 0x6c8e9cf5);
     const [pa, pb] = cfg.deck.signos;
     state = newGame({
-      pSign: pa, pSign2: pb === pa ? undefined : pb, pDeck: deckComNiveis(prog, cfg.deck.cartas),
+      pSign: pa, pSign2: pb === pa ? undefined : pb, pDeck: [...cfg.deck.cartas],
       eSign: cfg.signo, eDeck: deckDaFase(f, rng), eHp: f.vidaRival, seed, record: false,
     }).state;
   } else {
@@ -139,8 +149,8 @@ function startMatch(cfg: Modo): void {
     const [ea, eb] = doisSignos(rng, ORDER);
     const [pa, pb] = cfg.deck.signos;
     const eDeck = cfg.nivel === 'dificil' ? deckForte(rng, ea, eb) : deckAleatorio(rng, ea, eb);
-    // cada cópia entra com o nível que o jogador tem dela (as de nível maior primeiro)
-    state = newGame({ pSign: pa, pSign2: pb === pa ? undefined : pb, pDeck: deckComNiveis(prog, cfg.deck.cartas), eSign: ea, eSign2: eb, eDeck, seed, record: false }).state;
+    // cada carta do deck já tem o seu nível (escolhido na Montagem)
+    state = newGame({ pSign: pa, pSign2: pb === pa ? undefined : pb, pDeck: [...cfg.deck.cartas], eSign: ea, eSign2: eb, eDeck, seed, record: false }).state;
   }
   M = { g: state, shown: state, sel: null, busy: false, msg: '', active: null, striking: null, aiRng: new Rng(seed ^ 0x5bd1e995), base: state, plan: [], inspect: null, cont: {}, nivel: cfg.modo === 'rapida' ? cfg.nivel : cfg.modo === 'campanha' ? dadosFase(cfg.signo, cfg.fase).nivelIA : 'normal' };
   beginPlanning([]);
@@ -722,11 +732,13 @@ function menuClick(a: string | undefined, t: HTMLElement): boolean {
     case 'cfundir': {
       const k = telaColecao.sel, nv = Number(t.dataset.nv);
       if (!k) return true;
-      const motivo = podeFundir(prog, k, nv);
+      const motivo = podeFundir(prog, baseCid(k), nv);
       if (motivo === 'poeira') telaColecao.msg = T.semPoeira;
       else if (!motivo) {
-        mudarProgresso(fundir(prog, k, nv));
+        mudarProgresso(fundir(prog, baseCid(k), nv));
         telaColecao.msg = T.fundiu(card(k).name, nv + 1);
+        // sem par no nível atual: mostra a carta nova (o nível de cima)
+        if (copiasNoNivel(prog, k) < 2) telaColecao.sel = comNivel(k, nv + 1);
         tocar('buff');
       }
       keepScroll();
@@ -798,10 +810,14 @@ function menuClick(a: string | undefined, t: HTMLElement): boolean {
     case 'mmais': {
       const k = mg.info;
       if (!k) return true;
-      const n = mg.cartas.filter(x => x === k).length, mx = copiasParaDeck(prog, k);
+      // cada nível é uma carta separada, mas o limite da raridade vale para todos os níveis juntos
+      const n = mg.cartas.filter(x => x === k).length;
+      const outros = mg.cartas.filter(x => x !== k && baseCid(x) === baseCid(k)).length;
+      const tem = copiasParaDeck(prog, k);
       if (mg.cartas.length >= DECK_SIZE) mg.msg = T.deckCheio;
-      else if (mx === 0) mg.msg = T.semCopias(0);
-      else if (n >= mx) mg.msg = mx < maxCopias(k) ? T.semCopias(mx) : T.limiteCopias(mx, RARIDADE_NOME[card(k).r]);
+      else if (tem === 0) mg.msg = T.semCopias(0);
+      else if (n + outros >= maxCopias(k)) mg.msg = T.limiteCopias(maxCopias(k), RARIDADE_NOME[card(k).r]);
+      else if (n >= tem) mg.msg = T.semCopiasNivel(tem, nivelDe(k));
       else { mg.cartas.push(k); mg.msg = ''; }
       keepScroll(); return true;
     }

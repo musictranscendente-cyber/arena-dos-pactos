@@ -39,8 +39,9 @@ export function validarDeck(d: DeckMontado): string | null {
   const [a, b] = d.signos;
   if (d.cartas.length !== DECK_SIZE) return 'tamanho';
   const ok = new Set(cartasDisponiveis(a, b));
-  if (d.cartas.some(c => !ok.has(c))) return 'signo';
-  for (const [c, n] of contarCopias(d.cartas)) if (n > maxCopias(c)) return 'copias';
+  // cartas com nível ("aries01*3") contam como a mesma carta: o limite de cópias vale para todos os níveis juntos
+  if (d.cartas.some(c => !ok.has(baseCid(c)))) return 'signo';
+  for (const [c, n] of contarCopias(d.cartas.map(baseCid))) if (n > maxCopias(c)) return 'copias';
   return null;
 }
 

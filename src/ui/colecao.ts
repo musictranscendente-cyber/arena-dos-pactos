@@ -1,12 +1,12 @@
 // Telas da coleção: escolha do signo inicial, coleção com fusão de cartas e pacotes.
-import { card, CARDS, cardsOfSign, comNivel, ECO_ID, NIVEL_MAX } from '../data/cards';
+import { baseCid, card, CARDS, cardsOfSign, comNivel, ECO_ID, NIVEL_MAX, nivelDe } from '../data/cards';
 import { ARTE, artUrl } from '../data/arte';
 import { RARITY } from '../data/raridades';
 import type { Raridade, Signo } from '../data/schema';
 import { ORDER, RACES } from '../data/signos';
 import { T } from '../data/textos';
 import {
-  CARTAS_PACOTE, CHANCES, copias, CUSTO_FUSAO, MAX_PACOTES, melhorNivel, podeFundir, PRECO_PACOTE, PRECO_PACOTE_SIGNO, precoPacote, totalCopias, type Progresso,
+  CARTAS_PACOTE, CHANCES, copiasNoNivel, CUSTO_FUSAO, MAX_PACOTES, niveisQueTem, podeFundir, PRECO_PACOTE, PRECO_PACOTE_SIGNO, precoPacote, type Progresso,
 } from '../meta/progresso';
 import { cardHtml, zoomHtml } from './desenho';
 
@@ -51,21 +51,21 @@ export function proximoFiltro(t: TelaColecao, qual: 'nivel' | 'rar' | 'tipo'): T
   return { ...t, tipo: ORDEM_TIPO[(ORDEM_TIPO.indexOf(t.tipo ?? 'todos') + 1) % ORDEM_TIPO.length] };
 }
 
-/** Dá para fundir alguma cópia dessa carta agora (tem 2 do mesmo nível e Poeira)? */
-const fundivelAgora = (p: Progresso, k: string) => [1, 2, 3, 4].some(x => !podeFundir(p, k, x));
-/** Tem 2 do mesmo nível (mesmo sem Poeira suficiente)? */
-const temPar = (p: Progresso, k: string) => copias(p, k).slice(0, 4).some(q => q >= 2);
-
 export function colecaoHtml(p: Progresso, t: TelaColecao): string {
   const nvF = t.nivel ?? 0, rarF = t.rar ?? 'todas', tipoF = t.tipo ?? 'todos';
-  const lista = (t.filtro === 'todas' ? Object.keys(CARDS).filter(k => k !== ECO_ID) : cardsOfSign(t.filtro))
-    .filter(k => (rarF === 'todas' || CARDS[k].r === rarF) && (tipoF === 'todos' || CARDS[k].type === tipoF)
-      && (!nvF || copias(p, k)[nvF - 1] > 0))
-    // as que dá para fundir primeiro, depois as que tem, depois as que faltam
-    .sort((a, b) => {
-      const peso = (k: string) => (fundivelAgora(p, k) ? 0 : temPar(p, k) ? 1 : totalCopias(p, k) > 0 ? 2 : 3);
-      return peso(a) - peso(b) || ORDER.indexOf(CARDS[a].race) - ORDER.indexOf(CARDS[b].race) || CARDS[a].cost - CARDS[b].cost;
-    });
+  const bases = (t.filtro === 'todas' ? Object.keys(CARDS).filter(k => k !== ECO_ID) : cardsOfSign(t.filtro))
+    .filter(k => (rarF === 'todas' || CARDS[k].r === rarF) && (tipoF === 'todos' || CARDS[k].type === tipoF));
+  // cada nível que o jogador tem é uma carta separada (Basilisco Nv1 ×3 e Basilisco Nv2 ×1 são duas)
+  const entradas: { id: string; n: number }[] = [];
+  for (const k of bases) {
+    const ids = niveisQueTem(p, k);
+    if (ids.length) { for (const id of ids) if (!nvF || nivelDe(id) === nvF) entradas.push({ id, n: copiasNoNivel(p, id) }); }
+    else if (!nvF) entradas.push({ id: k, n: 0 });
+  }
+  // as que dá para fundir agora primeiro, depois as que têm par, as que tem e as que faltam
+  const peso = (e: { id: string; n: number }) => (!e.n ? 3 : !podeFundir(p, e.id, nivelDe(e.id)) ? 0 : e.n >= 2 && nivelDe(e.id) < NIVEL_MAX ? 1 : 2);
+  entradas.sort((x, y) => peso(x) - peso(y) || ORDER.indexOf(card(x.id).race) - ORDER.indexOf(card(y.id).race)
+    || card(x.id).cost - card(y.id).cost || baseCid(x.id).localeCompare(baseCid(y.id)) || nivelDe(y.id) - nivelDe(x.id));
   const tem = Object.keys(p.cartas).length;
   const abas = [`<button class="c-aba${t.filtro === 'todas' ? ' on' : ''}" data-act="cfiltro" data-r="todas">${T.todas}</button>`]
     .concat(ORDER.map(k => `<button class="c-aba${t.filtro === k ? ' on' : ''}" data-act="cfiltro" data-r="${k}" style="--rc:${RACES[k].c}" title="${RACES[k].n}">${RACES[k].g}</button>`)).join('');
@@ -73,25 +73,25 @@ export function colecaoHtml(p: Progresso, t: TelaColecao): string {
     + `<button class="c-aba c-ciclo${rarF !== 'todas' ? ' on' : ''}" data-act="crar">${T.filtroRaridade}: <b>${rarF === 'todas' ? T.todas : NOMES_R[rarF]}</b></button>`
     + `<button class="c-aba c-ciclo${tipoF !== 'todos' ? ' on' : ''}" data-act="ctipo">${T.filtroTipo}: <b>${tipoF === 'todos' ? T.todos : tipoF === 'unit' ? T.criaturas : T.magiasTipo}</b></button>`
     + `<button class="c-aba c-info${t.ajuda ? ' on' : ''}" data-act="cajuda" aria-label="${T.comoFundir}" title="${T.comoFundir}">ⓘ</button>`;
-  const cards = lista.map(k => {
-    const n = totalCopias(p, k), nv = Math.max(1, melhorNivel(p, k)), id = comNivel(k, nv);
-    const cls = [n ? 'tenho' : 'bloq', t.sel === k ? 'sel' : '', fundivelAgora(p, k) ? 'fundivel' : ''].join(' ');
-    return cardHtml(card(id), card(id).cost, `data-act="ccarta" data-k="${k}" data-n="${n}" tabindex="0" role="button"`, cls, id);
+  const cards = entradas.map(({ id, n }) => {
+    const cls = [n ? 'tenho' : 'bloq', t.sel === id ? 'sel' : '', n && !podeFundir(p, id, nivelDe(id)) ? 'fundivel' : ''].join(' ');
+    return cardHtml(card(id), card(id).cost, `data-act="ccarta" data-k="${id}" data-n="${n}" tabindex="0" role="button"`, cls, id);
   }).join('') || `<p class="m-dica">${T.nenhumaCarta}</p>`;
   let lado = `<p class="m-dica">${t.msg || T.toqueColecao}</p>`;
   if (t.sel) {
-    const k = t.sel, c = copias(p, k), n = totalCopias(p, k);
-    const nv = Math.max(1, melhorNivel(p, k));
-    const linhas = c.map((q, i) => (q ? `<span class="c-nv"><b>Nv${i + 1}</b>×${q}</span>` : '')).join('');
-    const fusoes = [1, 2, 3, 4].filter(x => c[x - 1] >= 2).map(x => {
-      const motivo = podeFundir(p, k, x);
-      return `<button class="btn go c-fundir" data-act="cfundir" data-nv="${x}" ${motivo ? 'disabled' : ''}>${T.fundir(x, CUSTO_FUSAO[x + 1])}</button>`;
-    }).join('');
-    // tudo compacto em cima (cópias e fundir), para a carta grande caber inteira embaixo
+    const id = t.sel, nv = nivelDe(id), n = copiasNoNivel(p, id);
+    const outros = niveisQueTem(p, id).filter(x => x !== id).map(x => `<span class="c-nv"><b>Nv${nivelDe(x)}</b>×${copiasNoNivel(p, x)}</span>`).join('');
+    // fusão: mostra a carta como está e como fica depois (Nv atual → Nv seguinte)
+    let fusao = '';
+    if (n >= 2 && nv < NIVEL_MAX) {
+      const prox = comNivel(id, nv + 1), motivo = podeFundir(p, id, nv);
+      fusao = `<div class="c-fusao"><div class="c-f-carta">${cardHtml(card(id), card(id).cost, '', '', id)}<small>2×</small></div><span class="c-f-seta">➜</span>`
+        + `<div class="c-f-carta">${cardHtml(card(prox), card(prox).cost, '', 'depois', prox)}<small>1×</small></div></div>`
+        + `<button class="btn go c-fundir" data-act="cfundir" data-nv="${nv}" ${motivo ? 'disabled' : ''}>${T.fundir(nv, CUSTO_FUSAO[nv + 1])}</button>`;
+    }
     lado = (t.msg ? `<p class="m-dica">${t.msg}</p>` : '')
-      + `<div class="c-resumo"><b>${n ? T.naColecao(n) : T.naoTem}</b>${linhas}</div>`
-      + (fusoes ? `<div class="c-fusoes">${fusoes}</div>` : '')
-      + `<div class="m-detalhe">${zoomHtml({ cid: comNivel(k, nv), lado: 'p' })}</div>`;
+      + `<div class="c-resumo"><b>${n ? `${T.nivelN(nv)}: ×${n}` : T.naoTem}</b>${outros ? `<small>${T.outrosNiveis}</small>${outros}` : ''}</div>`
+      + (fusao || `<div class="m-detalhe">${zoomHtml({ cid: id, lado: 'p' })}</div>`);
   }
   const ajuda = t.ajuda ? `<div class="c-ajuda" data-act="cajuda"><p><b>${T.comoFundir}</b></p><p>${T.fusaoAjuda}</p><p>${T.bonusNivel}</p><p>${T.precisaCopias}</p></div>` : '';
   return `<div class="ov montar gal colecao"><div class="panel wide"><div class="m-fixo">`

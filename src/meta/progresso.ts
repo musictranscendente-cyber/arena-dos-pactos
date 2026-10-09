@@ -1,6 +1,6 @@
 // Progresso do jogador (fora da partida): moedas, coleção de cartas com nível, fusão e pacotes.
 // Lógica pura (sem tela e sem salvar): recebe o progresso e devolve um novo. Quem salva é services/progresso.ts.
-import { baseCid, CARDS, cardsOfSign, comNivel, ECO_ID, NIVEL_MAX } from '../data/cards';
+import { baseCid, CARDS, cardsOfSign, comNivel, ECO_ID, NIVEL_MAX, nivelDe } from '../data/cards';
 import { ORDER } from '../data/signos';
 import type { Raridade, Signo } from '../data/schema';
 import { maxCopias } from '../engine/deck';
@@ -93,10 +93,26 @@ export function melhorNivel(p: Progresso, cid: string): number {
 
 export function copias(p: Progresso, cid: string): Copias { return [...copiasDe(p, cid)] as Copias; }
 
-/** Quantas cópias dessa carta podem ir para um deck (o que tem, até o limite da raridade; no modo teste, o limite). */
-export function copiasParaDeck(p: Progresso, cid: string): number {
-  const mx = maxCopias(cid);
-  return p.teste ? mx : Math.min(mx, totalCopias(p, cid));
+/** Cópias que o jogador tem exatamente nesse nível ("aries01*3" = nível 3; "aries01" = nível 1). */
+export function copiasNoNivel(p: Progresso, id: string): number {
+  return copiasDe(p, id)[nivelDe(id) - 1];
+}
+
+/** As versões dessa carta que o jogador tem (uma por nível), do maior nível para o menor. */
+export function niveisQueTem(p: Progresso, cid: string): string[] {
+  const c = copiasDe(p, cid), out: string[] = [];
+  for (let i = NIVEL_MAX - 1; i >= 0; i--) if (c[i] > 0) out.push(comNivel(cid, i + 1));
+  return out;
+}
+
+/**
+ * Quantas cópias dessa versão (carta + nível) podem ir para um deck: as que tem nesse nível,
+ * até o limite da raridade. No modo teste, o nível 1 fica liberado até o limite.
+ */
+export function copiasParaDeck(p: Progresso, id: string): number {
+  const mx = maxCopias(id);
+  if (p.teste && nivelDe(id) === 1) return mx;
+  return Math.min(mx, copiasNoNivel(p, id));
 }
 
 export function darCarta(p: Progresso, cid: string, nivel = 1): Progresso {
@@ -132,12 +148,11 @@ export function deckComNiveis(p: Progresso, cartas: readonly string[]): string[]
   });
 }
 
-/** Cartas do deck que o jogador não tem cópias suficientes (fora do modo teste). Vazio = pode jogar. */
+/** Cartas do deck (cada uma com o seu nível) que o jogador não tem cópias suficientes. Vazio = pode jogar. */
 export function faltando(p: Progresso, cartas: readonly string[]): string[] {
-  if (p.teste) return [];
   const pedidas = new Map<string, number>();
-  for (const c of cartas) pedidas.set(baseCid(c), (pedidas.get(baseCid(c)) ?? 0) + 1);
-  return [...pedidas].filter(([k, n]) => totalCopias(p, k) < n).map(([k]) => k);
+  for (const c of cartas) pedidas.set(c, (pedidas.get(c) ?? 0) + 1);
+  return [...pedidas].filter(([k, n]) => !(p.teste && nivelDe(k) === 1) && copiasNoNivel(p, k) < n).map(([k]) => k);
 }
 
 /* ---------- fusão ---------- */
@@ -264,23 +279,36 @@ export function diaDe(d: Date): string {
  */
 export function completarDeck(p: Progresso, a: Signo, b: Signo, base: readonly string[], rng: Rng, tamanho = 30): string[] {
   const ok = new Set(a === b ? cardsOfSign(a) : [...cardsOfSign(a), ...cardsOfSign(b)]);
-  const deck = base.filter(c => ok.has(baseCid(c))).map(baseCid).slice(0, tamanho);
-  const ja = new Map<string, number>();
-  for (const c of deck) ja.set(c, (ja.get(c) ?? 0) + 1);
-  // cada cópia que ainda pode entrar vira uma ficha; embaralha e escolhe pelas faixas de custo
-  const fichas: string[] = [];
-  for (const c of ok) for (let i = ja.get(c) ?? 0; i < copiasParaDeck(p, c); i++) fichas.push(c);
-  for (let i = fichas.length - 1; i > 0; i--) { const j = rng.int(i + 1); [fichas[i], fichas[j]] = [fichas[j], fichas[i]]; }
-  const faixa = (c: string) => Math.min(4, Math.floor(CARDS[c].cost / 2));
+  const deck = base.filter(c => ok.has(baseCid(c))).slice(0, tamanho);
+  const porBase = new Map<string, number>(), porId = new Map<string, number>();
+  const contar = (c: string) => { porBase.set(baseCid(c), (porBase.get(baseCid(c)) ?? 0) + 1); porId.set(c, (porId.get(c) ?? 0) + 1); };
+  deck.forEach(contar);
+  // cada cópia que ainda pode entrar vira uma ficha (as de nível maior primeiro); embaralha por carta e escolhe pelas faixas de custo
+  const grupos: string[][] = [];
+  for (const c of ok) {
+    const g: string[] = [];
+    const ids = p.teste ? [...new Set([...niveisQueTem(p, c), c])] : niveisQueTem(p, c);
+    for (const id of ids) for (let i = porId.get(id) ?? 0; i < copiasParaDeck(p, id); i++) g.push(id);
+    if (g.length) grupos.push(g);
+  }
+  for (let i = grupos.length - 1; i > 0; i--) { const j = rng.int(i + 1); [grupos[i], grupos[j]] = [grupos[j], grupos[i]]; }
+  const faixa = (c: string) => Math.min(4, Math.floor(CARDS[baseCid(c)].cost / 2));
   const alvo = [0, 0, 0, 0, 0];
   for (const c of cardsOfSign(a)) alvo[faixa(c)]++;
   const tem = [0, 0, 0, 0, 0];
   for (const c of deck) tem[faixa(c)]++;
-  const usadas = new Set<number>();
-  fichas.forEach((c, i) => {
-    if (deck.length >= tamanho) return;
-    if (tem[faixa(c)] < alvo[faixa(c)]) { deck.push(c); tem[faixa(c)]++; usadas.add(i); }
-  });
-  fichas.forEach((c, i) => { if (deck.length < tamanho && !usadas.has(i)) deck.push(c); });
+  const cabe = (c: string) => (porBase.get(baseCid(c)) ?? 0) < maxCopias(c);
+  const por = (c: string) => { deck.push(c); tem[faixa(c)]++; contar(c); };
+  // 1ª passada: respeita a curva; 2ª: completa com o que sobrou
+  for (const fiel of [true, false]) {
+    for (const g of grupos) {
+      for (const c of g) {
+        if (deck.length >= tamanho) break;
+        if (!cabe(c) || (porId.get(c) ?? 0) >= copiasParaDeck(p, c)) continue;
+        if (fiel && tem[faixa(c)] >= alvo[faixa(c)]) continue;
+        por(c);
+      }
+    }
+  }
   return deck;
 }
