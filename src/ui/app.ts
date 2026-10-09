@@ -23,7 +23,7 @@ import {
 } from '../meta/progresso';
 import { campanhaHtml, type TelaCampanha } from './campanha';
 import { desafioHtml, TEMPO_DESAFIO } from './desafio';
-import { deckDaFase, fase as dadosFase, FASES, faseLiberada, mundoAtual, vencerFase } from '../meta/campanha';
+import { deckDaFase, fase as dadosFase, FASES, faseLiberada, mundoAtual, nivelMedioDeck, vencerFase } from '../meta/campanha';
 import { abrirBau, BAU_POEIRA, coletar, coletarLogin, garantirDia, loginDisponivel, registrar, trocar, type Contagem } from '../meta/missoes';
 import { missoesHtml, temColeta } from './missoes';
 import { colecaoHtml, inicialHtml, pacotesHtml, proximoFiltro, revelarHtml, type TelaColecao, type TelaPacotes } from './colecao';
@@ -179,7 +179,7 @@ function startMatch(cfg: Modo): void {
     const foe = foes[Math.floor(Math.random() * foes.length)];
     state = newGame({ pSign: cfg.sign, eSign: foe, seed, record: false }).state;
   } else if (cfg.modo === 'campanha') {
-    const f = dadosFase(cfg.signo, cfg.fase);
+    const f = dadosFase(cfg.signo, cfg.fase, nivelMedioDeck(cfg.deck.cartas));
     const rng = new Rng(seed ^ 0x6c8e9cf5);
     const [pa, pb] = cfg.deck.signos;
     state = newGame({

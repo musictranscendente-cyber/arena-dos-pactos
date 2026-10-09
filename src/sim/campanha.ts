@@ -1,6 +1,6 @@
 // Mede a dificuldade da campanha: um jogador "normal" com o deck inicial (30 cartas do próprio signo, Nv1)
 // enfrenta cada fase de cada mundo. Mostra a taxa de vitória do jogador por fase.
-// npx tsx src/sim/campanha.ts [partidas]
+// npx tsx src/sim/campanha.ts [partidas]   (JOGADOR=dificil para um jogador experiente)
 import { cardsOfSign } from '../data/cards';
 import { ORDER } from '../data/signos';
 import { newGame, planTurnNivel, resolveBattle, Rng } from '../engine';
@@ -21,7 +21,7 @@ for (const mundo of ORDER) {
       const rp = new Rng(seed ^ 1), re = new Rng(seed ^ 2);
       while (state.phase === 'plan' && state.round < 80) {
         state = planTurnNivel(state, 'e', re, f.nivelIA).state;
-        state = planTurnNivel(state, 'p', rp, 'normal').state;
+        state = planTurnNivel(state, 'p', rp, (process.env.JOGADOR ?? 'normal') as 'normal').state;
         state = resolveBattle(state, { record: false }).state;
       }
       if (state.result === 'p') v++;

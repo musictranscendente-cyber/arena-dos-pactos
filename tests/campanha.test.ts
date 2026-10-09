@@ -4,7 +4,7 @@ import { card, nivelDe } from '../src/data/cards';
 import { newGame } from '../src/engine/round';
 import { Rng } from '../src/engine/rng';
 import {
-  deckDaFase, estrelasDaVitoria, fase, faseLiberada, FASES, mundoAtual, mundoLiberado, poeiraDaFase, POEIRA_REPETIR, vencerFase, VIDA_CHEFE,
+  deckDaFase, estrelasDaVitoria, fase, faseLiberada, FASES, mundoAtual, mundoLiberado, nivelMedioDeck, poeiraDaFase, POEIRA_REPETIR, vencerFase, VIDA_CHEFE,
 } from '../src/meta/campanha';
 import { novoProgresso, totalCopias } from '../src/meta/progresso';
 import { healHero } from '../src/engine/state';
@@ -55,9 +55,16 @@ describe('campanha', () => {
     expect(fase('escorpiao', 1).nivelIA).toBe('facil');
     expect(fase('peixes', 1)).toEqual({ ...fase('aries', 1), signo: 'peixes' });
     expect(fase('peixes', 10).nivelIA).toBe('dificil');
-    const d = deckDaFase(fase('peixes', 7), new Rng(1));
+    const d = deckDaFase(fase('peixes', 8), new Rng(1));
     expect(d).toHaveLength(30);
     expect(d.every(c => nivelDe(c) === 2)).toBe(true);
+  });
+  it('rival acompanha o nível médio do deck do jogador (até o Nv5)', () => {
+    expect(fase('aries', 1, 1).nivelCartas).toBe(1);
+    expect(fase('aries', 1, 2.4).nivelCartas).toBe(2);
+    expect(fase('aries', 8, 3).nivelCartas).toBe(4);
+    expect(fase('aries', 10, 5).nivelCartas).toBe(5);
+    expect(nivelMedioDeck(['aries01', 'aries02*3'])).toBe(2);
   });
   it('herói com vida maior (chefe) não perde vida ao ser curado', () => {
     const { state } = newGame({ pSign: 'aries', eSign: 'leao', seed: 1, record: false, eHp: 40 });

@@ -5,7 +5,7 @@ import { RACES } from '../data/signos';
 import { T } from '../data/textos';
 import type { DeckMontado } from '../engine';
 import {
-  estrelas, estrelasDoMundo, fase, faseLiberada, FASES, GEMAS_CHEFE, MUNDOS, mundoLiberado, poeiraDaFase, POEIRA_REPETIR,
+  estrelas, estrelasDoMundo, fase, nivelMedioDeck, faseLiberada, FASES, GEMAS_CHEFE, MUNDOS, mundoLiberado, poeiraDaFase, POEIRA_REPETIR,
 } from '../meta/campanha';
 import type { Progresso } from '../meta/progresso';
 import { moedasHtml } from './colecao';
@@ -31,7 +31,7 @@ export function campanhaHtml(p: Progresso, t: TelaCampanha, deck: DeckMontado | 
     return `<button class="${cls}" data-act="cfase" data-n="${n}" style="left:${x}%;top:${y}%">${fig}<b>${livre ? n : '🔒'}</b>${est ? estrelinhas(est) : ''}</button>`;
   }).join('');
   // detalhes da fase escolhida
-  const f = fase(t.signo, t.fase), est = estrelas(p, t.signo, t.fase), livre = faseLiberada(p, t.signo, t.fase);
+  const f = fase(t.signo, t.fase, deck ? nivelMedioDeck(deck.cartas) : 1), est = estrelas(p, t.signo, t.fase), livre = faseLiberada(p, t.signo, t.fase);
   const titulo = f.tipo === 'chefe' ? T.chefe(f.rival) : f.tipo === 'guardiao' ? T.guardiao(f.rival) : T.rivalDoMundo(r.n);
   const premio = est
     ? `<p><b>${T.repetir}:</b> +${POEIRA_REPETIR} ✨</p>`

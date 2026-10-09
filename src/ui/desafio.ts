@@ -6,7 +6,7 @@ import type { Signo } from '../data/schema';
 import { RACES } from '../data/signos';
 import { T } from '../data/textos';
 import type { DeckMontado } from '../engine';
-import { fase, FASES } from '../meta/campanha';
+import { fase, FASES, nivelMedioDeck } from '../meta/campanha';
 import { criatura, nomeDeckMontado } from './menu';
 
 /** Quanto tempo a tela fica antes de entrar sozinha na arena (ms). */
@@ -29,7 +29,7 @@ function figuraJogador(d: DeckMontado, evitar: string): string {
 }
 
 export function desafioHtml(signo: Signo, n: number, deck: DeckMontado): string {
-  const f = fase(signo, n), r = RACES[signo];
+  const f = fase(signo, n, nivelMedioDeck(deck.cartas)), r = RACES[signo];
   const titulo = f.tipo === 'chefe' ? T.desafioChefe : f.tipo === 'guardiao' ? T.desafioGuardiao : T.proximoDesafio;
   const rival = f.tipo === 'normal' ? T.rivalDoMundo(r.n) : f.rival;
   const [a, b] = deck.signos;
