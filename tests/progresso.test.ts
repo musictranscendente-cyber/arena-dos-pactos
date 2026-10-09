@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { card, cardsOfSign, comNivel, nivelDe } from '../src/data/cards';
 import { Rng } from '../src/engine/rng';
 import {
-  abrirPacote, completarDeck, copiasParaDeck, CUSTO_FUSAO, darCarta, deckComNiveis, escolherInicial, faltando, fundir,
+  abrirPacote, ajustarDeck, completarDeck, copiasParaDeck, CUSTO_FUSAO, darCarta, deckComNiveis, escolherInicial, faltando, fundir,
   melhorNivel, normalizar, novoProgresso, podeFundir, premioRapida, PRECO_PACOTE, RAPIDA_LIMITE, totalCopias,
 } from '../src/meta/progresso';
 
@@ -106,5 +106,24 @@ describe('abrir vários pacotes', () => {
     expect(r.p.poeira).toBe(100);
     expect(r.cartas.every(c => card(c).race === 'leao')).toBe(true);
     expect(abrirPacotes({ ...novoProgresso(), poeira: 100 }, new Rng(2), 1)).toBeNull();
+  });
+});
+
+describe('ajustar deck depois da fusão', () => {
+  it('cópias fundidas viram o nível novo e a que sobra sai do deck', () => {
+    // 3 cópias Nv1 no deck; funde 2 → fica 1 Nv1 + 1 Nv2
+    let p = { ...novoProgresso(), poeira: 1000 };
+    for (let i = 0; i < 3; i++) p = darCarta(p, 'aries01');
+    const deck = ['aries01', 'aries01', 'aries01', 'aries02'];
+    p = darCarta(p, 'aries02');
+    p = fundir(p, 'aries01', 1);
+    const novo = ajustarDeck(p, deck);
+    expect(novo).toEqual(['aries01', 'aries01*2', 'aries02']);
+    expect(faltando(p, novo)).toEqual([]);
+  });
+  it('deck que já está certo não muda', () => {
+    let p = novoProgresso();
+    p = darCarta(darCarta(p, 'aries01'), 'aries01', 3);
+    expect(ajustarDeck(p, ['aries01*3', 'aries01'])).toEqual(['aries01*3', 'aries01']);
   });
 });

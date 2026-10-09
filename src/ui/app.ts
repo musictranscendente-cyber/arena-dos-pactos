@@ -19,7 +19,7 @@ import { avisoHtml, dificuldadeHtml, hubHtml, montarHtml, regrasHtml, type Monta
 import { deckAtivo, lerDecks, salvarDecks } from '../services/deckSalvo';
 import { lerProgresso, salvarProgresso } from '../services/progresso';
 import {
-  abrirPacotes, completarDeck, copiasNoNivel, copiasParaDeck, MAX_PACOTES, precoPacote, deckComNiveis, diaDe, escolherInicial, faltando, fundir, podeFundir, premioRapida, type Progresso,
+  abrirPacotes, ajustarDeck, completarDeck, copiasNoNivel, copiasParaDeck, MAX_PACOTES, precoPacote, deckComNiveis, diaDe, escolherInicial, faltando, fundir, podeFundir, premioRapida, type Progresso,
 } from '../meta/progresso';
 import { campanhaHtml, type TelaCampanha } from './campanha';
 import { desafioHtml, TEMPO_DESAFIO } from './desafio';
@@ -117,6 +117,19 @@ const meus = lerDecks();
     localStorage.setItem(CHAVE_V2, '1');
   } catch { /* sem armazenamento */ }
 })();
+/** Deixa os decks salvos de acordo com a coleção (fusão muda os níveis das cópias). */
+function sincronizarDecks(): void {
+  let mudou = false;
+  meus.decks = meus.decks.map(d => {
+    if (!d) return d;
+    const cartas = ajustarDeck(prog, d.cartas);
+    if (cartas.length === d.cartas.length && cartas.every((c, i) => c === d.cartas[i])) return d;
+    mudou = true;
+    return { ...d, cartas };
+  });
+  if (mudou) salvarDecks(meus);
+}
+sincronizarDecks();
 /** Como foi a última partida (para a Revanche repetir igual). */
 type Modo = { modo: 'signo'; sign: Signo } | { modo: 'rapida'; deck: DeckMontado; nivel: Nivel } | { modo: 'campanha'; deck: DeckMontado; signo: Signo; fase: number };
 let ultimo: Modo | null = null;
@@ -767,6 +780,7 @@ function menuClick(a: string | undefined, t: HTMLElement): boolean {
       if (motivo === 'poeira') telaColecao.msg = T.semPoeira;
       else if (!motivo) {
         mudarProgresso(fundir(prog, baseCid(k), nv));
+        sincronizarDecks();
         telaColecao.msg = T.fundiu(card(k).name, nv + 1);
         // sem par no nível atual: mostra a carta nova (o nível de cima)
         if (copiasNoNivel(prog, k) < 2) telaColecao.sel = comNivel(k, nv + 1);
@@ -893,9 +907,11 @@ function deckPronto(): DeckMontado | null {
   }
   // sem deck, ou com cartas que o jogador não tem (fundiu, ou deck antigo): vai ajustar na Montagem
   const falta = d ? faltando(prog, d.cartas) : [];
-  if (!d || falta.length) {
-    abrirMontagem();
-    if (falta.length) aviso(T.faltamCartas(falta.length));
+  const incompleto = !!d && d.cartas.length < DECK_SIZE;
+  if (!d || falta.length || incompleto) {
+    const msg = falta.length ? T.faltamCartas(falta.length) : d && incompleto ? T.deckIncompleto(DECK_SIZE - d.cartas.length) : '';
+    abrirMontagem(d && meus.decks[meus.ativo] === d ? meus.ativo : undefined, msg);
+    if (msg) aviso(msg);
     return null;
   }
   return d;
@@ -935,10 +951,13 @@ async function compartilhar(): Promise<void> {
   render();
 }
 
-function abrirMontagem(): void {
+/** Abre Meus Decks; com `editar`, já abre esse deck para mexer nas cartas (e mostra `msg`). */
+function abrirMontagem(editar?: number, msg = ''): void {
   dialogo = null;
   tela = 'montar';
   montagem = { passo: 0, espaco: 0, signos: [], cartas: [], info: null, msg: '', apagar: null, nome: '' };
+  const d = editar !== undefined ? meus.decks[editar] : null;
+  if (d && editar !== undefined) montagem = { ...montagem, passo: 2, espaco: editar, signos: [...d.signos], cartas: [...d.cartas], nome: d.nome ?? '', msg };
   render();
 }
 

@@ -256,6 +256,7 @@ export const T = {
   escolhaInicialTitulo: 'Escolha seu signo',
   escolhaInicialTexto: 'Você ganha as 30 cartas do signo escolhido para começar sua coleção. As outras você conquista na campanha, nas missões e nos pacotes.',
   bemVindoSigno: (n: string) => `Bem-vindo, invocador de ${n}! Suas 30 cartas estão na coleção.`,
+  deckIncompleto: (n: number) => `Faltam ${n} carta(s) no seu deck (a fusão juntou cópias). Complete o deck para jogar.`,
   faltamCartas: (n: number) => `Seu deck tem ${n} carta(s) que você não possui. Ajuste o deck na Montagem.`,
   modoTeste: '🧪 Modo teste (todas as cartas liberadas)',
   modoTesteLigado: 'Modo teste ligado: todas as cartas podem ir para o deck.',

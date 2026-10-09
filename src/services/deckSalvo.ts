@@ -1,7 +1,7 @@
 // Guarda os decks montados no próprio aparelho (localStorage): 3 espaços e qual deles está em uso.
 // Se o navegador bloquear, o jogo segue sem salvar.
 import { ORDER } from '../data/signos';
-import { validarDeck, type DeckMontado } from '../engine';
+import { DECK_SIZE, validarDeck, type DeckMontado } from '../engine';
 
 export const ESPACOS = 3;
 
@@ -18,7 +18,9 @@ const CHAVE_ANTIGA = 'arena-dos-pactos:deck';
 function valido(d: unknown): d is DeckMontado {
   const x = d as DeckMontado;
   return !!x && Array.isArray(x.signos) && x.signos.length === 2 && x.signos.every(s => ORDER.includes(s))
-    && Array.isArray(x.cartas) && !validarDeck(x);
+    && Array.isArray(x.cartas) && x.cartas.length <= DECK_SIZE
+    // deck que ficou com menos de 30 (uma fusão tirou cópias) continua salvo para o jogador completar
+    && (!validarDeck(x) || (validarDeck(x) === 'tamanho' && x.cartas.length > 0));
 }
 
 function vazio(): MeusDecks {

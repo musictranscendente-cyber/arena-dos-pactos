@@ -148,6 +148,26 @@ export function deckComNiveis(p: Progresso, cartas: readonly string[]): string[]
   });
 }
 
+/**
+ * Acerta um deck com a coleção atual (ex.: depois de fundir, as 2 cópias Nv1 viraram 1 Nv2).
+ * Cada cópia que o jogador não tem mais naquele nível troca por outro nível da mesma carta que sobrou
+ * (o mais alto primeiro); se não sobrar nenhum, sai do deck. A ordem das outras cartas não muda.
+ */
+export function ajustarDeck(p: Progresso, cartas: readonly string[]): string[] {
+  const usadas = new Map<string, number>();
+  const usa = (id: string) => usadas.set(id, (usadas.get(id) ?? 0) + 1);
+  const sobra = (id: string) => copiasParaDeck(p, id) - (usadas.get(id) ?? 0);
+  // primeiro guarda as cópias que ainda existem, para não serem tomadas pelas trocas
+  const ok = cartas.map(id => { if (sobra(id) > 0) { usa(id); return true; } return false; });
+  const out: string[] = [];
+  cartas.forEach((id, i) => {
+    if (ok[i]) { out.push(id); return; }
+    const outro = [...niveisQueTem(p, id), ...(p.teste ? [baseCid(id)] : [])].find(x => sobra(x) > 0);
+    if (outro) { usa(outro); out.push(outro); }
+  });
+  return out;
+}
+
 /** Cartas do deck (cada uma com o seu nível) que o jogador não tem cópias suficientes. Vazio = pode jogar. */
 export function faltando(p: Progresso, cartas: readonly string[]): string[] {
   const pedidas = new Map<string, number>();
