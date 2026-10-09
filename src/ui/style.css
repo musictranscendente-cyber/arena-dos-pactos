@@ -1397,3 +1397,31 @@ body.rot .ov.montar.gal .m-detalhe .z-nome{font-size:14px}body.rot .ov.montar.ga
 .ggrid{grid-template-columns:repeat(auto-fill,minmax(80px,1fr))}
 .ggrid .card,.land .ggrid .card{width:auto;height:auto;aspect-ratio:92/132;flex:none;padding:4px 4px 5px}
 .c-f-carta .card,.land .c-f-carta .card{width:74px;height:auto;aspect-ratio:92/132;flex:none}
+
+/* carta grande (descrição completa): sempre o mesmo formato, em pé (5×7), arte com proporção fixa;
+   o texto das habilidades fica embaixo e rola por dentro se for longo */
+.zoom{aspect-ratio:5/7;display:flex;flex-direction:column;overflow:hidden}
+.zoom>*{flex:0 0 auto}
+.zoom .z-arte,.land .zoom .z-arte,.ov.montar.gal .m-detalhe .z-arte{flex:0 0 auto;width:100%;height:auto;aspect-ratio:16/10;min-height:0}
+.zoom .z-arte img,.land .zoom .z-arte img,.ov.montar.gal .m-detalhe .z-arte img{position:absolute;inset:4px;width:calc(100% - 8px);height:calc(100% - 8px);max-height:none;max-width:none;object-fit:contain}
+.zoom .z-hab,.zoom .z-magia{flex:1 1 auto;min-height:0;overflow-y:auto;scrollbar-width:thin;scrollbar-color:#e9c77a55 transparent}
+.zoom .z-emo{font-size:clamp(28px,40%,56px)}
+/* nos painéis (Coleção, Montar Deck, Galeria): a carta usa o espaço que sobra, sempre em pé (5×7), sem esticar */
+.ov.montar.gal .m-detalhe{container-type:size;flex:1 1 0;min-height:120px;width:100%;display:flex;align-items:flex-start;justify-content:center;padding:4px 0 6px;background:none}
+.ov.montar.gal .m-detalhe .zoom{width:min(100cqw,100cqh * 5 / 7);height:auto;max-height:none;max-width:none;aspect-ratio:5/7;overflow:hidden;flex:none;display:flex}
+.ov.montar.gal .m-detalhe .z-rar{flex-wrap:wrap;row-gap:0;font-size:9.5px;letter-spacing:.2px}
+.ov.montar.gal .m-detalhe .z-topo{margin-bottom:3px}
+.ov.montar.gal .m-detalhe .zoom{margin:0 auto}
+.ov.montar.gal .m-detalhe .z-arte{aspect-ratio:2/1}
+.ov.montar.gal .m-detalhe .z-rar{flex-wrap:nowrap;white-space:nowrap;overflow:hidden;font-size:9px;letter-spacing:0;gap:3px}
+.ov.montar.gal .m-detalhe .z-hab li,.ov.montar.gal .m-detalhe .z-magia{font-size:10.5px;line-height:1.22}
+.ov.montar.gal .m-lado .m-tem{padding:3px 8px;font-size:11.5px;line-height:1.2}
+.ov.montar.gal .m-detalhe .z-rar{justify-content:flex-start}
+/* carta grande pequena (telas baixas): esconde as palavras "ataque"/"vida" e encurta a linha de raridade */
+.ov.montar.gal .m-detalhe .zoom{container-type:inline-size}
+@container (max-width:170px){
+  .zoom .z-st span{font-size:0;gap:0}.zoom .z-st b{font-size:11px}
+  .zoom .z-rar{font-size:8.5px}
+  .zoom .z-nome{font-size:13px}
+  .zoom .z-hab li,.zoom .z-magia{font-size:9.5px !important;line-height:1.18 !important}
+}

@@ -264,7 +264,7 @@ export const T = {
   maisPoeira: '🧪 +1000 ✨ (teste)',
   premio: 'Prêmio',
   limiteRapida: 'Limite de prêmios da Partida Rápida de hoje atingido.',
-  semCopiasNivel: (n: number, nv: number) => n ? `Você tem ${n} cópia(s) desta carta no nível ${nv}. As de outros níveis aparecem como cartas separadas.` : 'Você não tem esta carta. Consiga na campanha, nas missões ou nos pacotes.',
+  semCopiasNivel: (n: number, nv: number) => n ? `Você tem ×${n} no Nível ${nv}.` : 'Você não tem esta carta (ganhe na campanha, missões ou pacotes).',
   semCopias: (n: number) => n ? `Você tem ${n} cópia(s) desta carta.` : 'Você não tem esta carta. Consiga na campanha, nas missões ou nos pacotes.',
   umSigno: 'Deck de 1 signo',
   escolha1ou2Signos: 'Escolha 1 ou 2 signos:',

@@ -202,7 +202,7 @@ export function montarHtml(m: Montagem, decks: (DeckMontado | null)[], ativo: nu
     lado = `<div class="m-qtd"><button class="btn rc" data-act="mmenos" ${n ? '' : 'disabled'} aria-label="${T.tirar}">－ ${T.tirar}</button>`
       + `<p class="m-copias" title="${RAR_NOME[card(k).r]}"><small>${T.noDeck}</small><span><b>${n}</b>/${mx}</span></p>`
       + `<button class="btn go" data-act="mmais" ${n < mx && !cheio ? '' : 'disabled'} aria-label="${T.colocar}">＋ ${T.colocar}</button></div>`
-      + `<p class="m-dica">${m.msg || T.semCopiasNivel(prog.teste && nivelDe(k) === 1 ? maxCopias(k) : copiasNoNivel(prog, k), nivelDe(k))}</p>`
+      + `<p class="m-dica m-tem">${m.msg || T.semCopiasNivel(prog.teste && nivelDe(k) === 1 ? maxCopias(k) : copiasNoNivel(prog, k), nivelDe(k))}</p>`
       + `<div class="m-detalhe">${zoomHtml({ cid: k, lado: 'p' })}</div>`;
   }
   return `<div class="ov montar gal"><div class="panel wide"><div class="m-fixo">`
