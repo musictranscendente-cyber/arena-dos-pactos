@@ -22,6 +22,7 @@ import {
   abrirPacotes, completarDeck, copiasNoNivel, copiasParaDeck, MAX_PACOTES, precoPacote, deckComNiveis, diaDe, escolherInicial, faltando, fundir, podeFundir, premioRapida, type Progresso,
 } from '../meta/progresso';
 import { campanhaHtml, type TelaCampanha } from './campanha';
+import { desafioHtml, TEMPO_DESAFIO } from './desafio';
 import { deckDaFase, fase as dadosFase, FASES, faseLiberada, mundoAtual, vencerFase } from '../meta/campanha';
 import { abrirBau, BAU_POEIRA, coletar, coletarLogin, garantirDia, loginDisponivel, registrar, trocar, type Contagem } from '../meta/missoes';
 import { missoesHtml, temColeta } from './missoes';
@@ -120,6 +121,35 @@ const meus = lerDecks();
 type Modo = { modo: 'signo'; sign: Signo } | { modo: 'rapida'; deck: DeckMontado; nivel: Nivel } | { modo: 'campanha'; deck: DeckMontado; signo: Signo; fase: number };
 let ultimo: Modo | null = null;
 const app = () => document.getElementById('app')!;
+
+/* ---------- tela de "próximo desafio" antes de cada fase da campanha ---------- */
+type ModoCampanha = Extract<Modo, { modo: 'campanha' }>;
+let desafio: { cfg: ModoCampanha; timer: number; saindo: boolean } | null = null;
+
+function mostrarDesafio(cfg: ModoCampanha): void {
+  if (desafio) clearTimeout(desafio.timer);
+  desafio = { cfg, timer: window.setTimeout(entrarDesafio, TEMPO_DESAFIO), saindo: false };
+  tocar('rodada');
+  render();
+}
+
+/** Sai da tela do desafio (sozinho ou com um toque) e entra na arena com uma transição. */
+function entrarDesafio(): void {
+  const d = desafio;
+  if (!d || d.saindo) return;
+  d.saindo = true;
+  clearTimeout(d.timer);
+  app().querySelector('.desafio')?.classList.add('sai');
+  tocar('batalha');
+  window.setTimeout(() => {
+    if (desafio !== d) return;
+    desafio = null;
+    startMatch(d.cfg);
+    const root = app();
+    root.classList.add('arena-entra');
+    window.setTimeout(() => root.classList.remove('arena-entra'), 700);
+  }, 450);
+}
 
 const who = (side: Side) => (side === 'p' ? T.voce : 'O rival');
 const name = (cid: string) => card(cid).name;
@@ -519,7 +549,7 @@ function render(): void {
       : tela === 'campanha' ? campanhaHtml(prog, telaCamp, deckAtivo(meus))
       : tela === 'pacotes' ? hubHtml(new Date(), deckAtivo(meus), prog, temColeta(prog, hoje())) + pacotesHtml(prog, telaPacotes)
       : hubHtml(new Date(), deckAtivo(meus), prog, temColeta(prog, hoje())) + dlg + (prog.inicial ? '' : inicialHtml());
-    root.insertAdjacentHTML('beforeend', somHtml() + (revela ?? ''));
+    root.insertAdjacentHTML('beforeend', somHtml() + (revela ?? '') + (desafio ? desafioHtml(desafio.cfg.signo, desafio.cfg.fase, desafio.cfg.deck) : ''));
     return;
   }
   const hs = root.querySelector('.hand');
@@ -697,7 +727,7 @@ function menuClick(a: string | undefined, t: HTMLElement): boolean {
       const d = deckPronto();
       if (!d) return true;
       void tryLandscape();
-      startMatch({ modo: 'campanha', deck: d, signo: telaCamp.signo, fase: telaCamp.fase });
+      mostrarDesafio({ modo: 'campanha', deck: d, signo: telaCamp.signo, fase: telaCamp.fase });
       return true;
     }
     case 'colecao': tela = 'colecao'; telaColecao = { filtro: prog.inicial ?? 'todas', sel: null, msg: '' }; render(); return true;
@@ -974,11 +1004,13 @@ function onClick(ev: Event): void {
     telaCamp = { signo: u.signo, fase: u.fase };
     if (a === 'proxfase' && u.fase < FASES) {
       const d = deckPronto();
-      if (d) { startMatch({ modo: 'campanha', deck: d, signo: u.signo, fase: u.fase + 1 }); telaCamp.fase = u.fase + 1; }
+      telaCamp.fase = u.fase + 1;
+      if (d) { mostrarDesafio({ modo: 'campanha', deck: d, signo: u.signo, fase: u.fase + 1 }); return; }
     }
     render();
     return;
   }
+  if (a === 'desafio-ir') { entrarDesafio(); return; }
   if (a === 'menu') { M = null; tela = 'hub'; render(); return; }
   if (!M && menuClick(a, t)) return;
   // dá para desistir também durante a animação da Batalha
