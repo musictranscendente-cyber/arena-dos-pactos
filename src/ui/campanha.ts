@@ -11,7 +11,7 @@ import type { Progresso } from '../meta/progresso';
 import { moedasHtml } from './colecao';
 import { criatura, nomeDeckMontado } from './menu';
 
-export interface TelaCampanha { signo: Signo; fase: number }
+export interface TelaCampanha { signo: Signo; fase: number; ajuda?: boolean }
 
 const estrelinhas = (n: number) => `<span class="cp-est">${[1, 2, 3].map(i => `<i class="${i <= n ? 'on' : ''}">★</i>`).join('')}</span>`;
 
@@ -35,21 +35,25 @@ export function campanhaHtml(p: Progresso, t: TelaCampanha, deck: DeckMontado | 
   const titulo = f.tipo === 'chefe' ? T.chefe(f.rival) : f.tipo === 'guardiao' ? T.guardiao(f.rival) : T.rivalDoMundo(r.n);
   const premio = est
     ? `<p><b>${T.repetir}:</b> +${POEIRA_REPETIR} ✨</p>`
-    : `<p><b>${T.primeiraVitoria}:</b> +${poeiraDaFase(t.fase)} ✨ · ${T.cartaDoSigno(r.n)}`
-      + (f.tipo === 'chefe' ? ` · ${T.epicaDoSigno(r.n)} · +${GEMAS_CHEFE} 💎` : '') + '</p>';
+    : `<p title="${T.primeiraVitoria}">🎁 +${poeiraDaFase(t.fase)} ✨ · ${T.umaCarta}`
+      + (f.tipo === 'chefe' ? ` · ${T.umaEpica} · +${GEMAS_CHEFE} 💎` : '') + '</p>';
   const lenda = CARDS[`${t.signo}25`];
-  const det = `<div class="cp-det"><h3>${T.faseN(t.fase)} · ${titulo}</h3>`
-    + `<p class="cp-info"><span>${T.dificuldade}: <b>${T.nivelNome[f.nivelIA]}</b></span><span>${T.cartasRival}: <b>${T.nivelN(f.nivelCartas)}</b></span><span>${T.vidaRival}: <b>${f.vidaRival}</b></span></p>`
-    + `<p class="cp-melhor">${estrelinhas(est)}</p><p class="cp-crit">${T.criteriosEstrelas}</p>`
+  // painel compacto (cabe sem rolar); critérios das estrelas e a meta da lendária ficam no ⓘ
+  const det = `<div class="cp-det"><div class="cp-tit"><h3>${T.faseN(t.fase)} · ${titulo}</h3>`
+    + `<button class="c-aba c-info${t.ajuda ? ' on' : ''}" data-act="cpajuda" aria-label="${T.comoFunciona}" title="${T.comoFunciona}">ⓘ</button></div>`
+    + `<p class="cp-info"><span class="cp-chip" title="${T.dificuldade}">🧠 <b>${T.nivelNome[f.nivelIA]}</b></span>`
+    + `<span class="cp-chip" title="${T.cartasRival}">🃏 <b>Nv${f.nivelCartas}</b></span><span class="cp-chip" title="${T.vidaRival}">❤️ <b>${f.vidaRival}</b></span>`
+    + `${estrelinhas(est)}${lenda ? `<span class="cp-chip cp-meta" title="${lenda.name}">🏆 ${estrelasDoMundo(p, t.signo)}/30</span>` : ''}</p>`
     + premio
-    + (lenda ? `<p class="cp-lenda">${T.lendaMeta(lenda.name, estrelasDoMundo(p, t.signo))}</p>` : '')
     + `<p class="nv-deck">${T.seuDeck}: <b>${deck ? nomeDeckMontado(deck) : T.semDeck}</b> <button class="btn rc mini" data-act="montar">${T.trocar}</button></p>`
     + (livre ? `<button class="btn go cp-lutar" data-act="clutar">${T.lutar}</button>`
       : `<p class="m-dica">${mundoLiberado(p, t.signo) ? T.bloqueada : T.mundoBloqueado(RACES[MUNDOS[MUNDOS.indexOf(t.signo) - 1]].n)}</p>`)
     + '</div>';
+  const ajuda = t.ajuda ? `<div class="c-ajuda" data-act="cpajuda"><p><b>${T.comoFunciona}</b></p><p>${T.criteriosEstrelas}</p>`
+    + (lenda ? `<p>${T.lendaMeta(lenda.name, estrelasDoMundo(p, t.signo))}</p>` : '') + `<p>${T.legendaFase}</p><p>${T.ajudaCampanha(r.n)}</p></div>` : '';
   return `<div class="ov montar gal campanha" style="--rc:${r.c}"><div class="panel wide"><div class="m-fixo">`
     + `<div class="gtop"><h2>${T.campanha} <small>${r.g} ${T.mundo(r.n)}</small></h2><span class="m-topo-bts">${moedasHtml(p)}`
     + `<button class="m-fecha" data-act="hub" aria-label="${T.sair}">✕</button></span></div>`
     + `<div class="c-abas">${abas}</div></div>`
-    + `<div class="m-corpo cp-corpo"><div class="cp-mapa">${nos}</div>${det}</div></div></div>`;
+    + `<div class="m-corpo cp-corpo"><div class="cp-mapa">${nos}</div>${det}</div>${ajuda}</div></div>`;
 }

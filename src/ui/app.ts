@@ -690,7 +690,8 @@ function menuClick(a: string | undefined, t: HTMLElement): boolean {
     case 'montar': abrirMontagem(); return true;
     case 'campanha': abrirCampanha(); return true;
     case 'cmundo': telaCamp = { signo: t.dataset.r as Signo, fase: 1 }; ultimaFaseLivre(); render(); return true;
-    case 'cfase': telaCamp = { ...telaCamp, fase: Number(t.dataset.n) }; render(); return true;
+    case 'cfase': telaCamp = { ...telaCamp, fase: Number(t.dataset.n), ajuda: false }; render(); return true;
+    case 'cpajuda': telaCamp = { ...telaCamp, ajuda: !telaCamp.ajuda }; render(); return true;
     case 'clutar': {
       if (!faseLiberada(prog, telaCamp.signo, telaCamp.fase)) return true;
       const d = deckPronto();
