@@ -42,7 +42,7 @@ export interface TelaColecao {
   ajuda?: boolean;
 }
 
-const ORDEM_RAR: (Raridade | 'todas')[] = ['todas', 'c', 'r', 'e', 'l'];
+export const ORDEM_RAR: (Raridade | 'todas')[] = ['todas', 'c', 'r', 'e', 'l'];
 const ORDEM_TIPO: ('todos' | 'unit' | 'spell')[] = ['todos', 'unit', 'spell'];
 /** Próximo valor de cada filtro (cada toque no botão passa para o seguinte). */
 export function proximoFiltro(t: TelaColecao, qual: 'nivel' | 'rar' | 'tipo'): TelaColecao {
@@ -100,7 +100,7 @@ export function colecaoHtml(p: Progresso, t: TelaColecao): string {
     + `<div class="m-corpo"><div class="m-lado">${lado}</div><div class="ggrid">${cards}</div></div>${ajuda}</div></div>`;
 }
 
-const NOMES_R: Record<Raridade, string> = { c: 'Comum', r: 'Rara', e: 'Épica', l: 'Lendária' };
+export const NOMES_R: Record<Raridade, string> = { c: 'Comum', r: 'Rara', e: 'Épica', l: 'Lendária' };
 
 /** Loja de pacotes: vitrine que corre para os lados; tocar abre os detalhes; comprar pede confirmação. */
 export interface TelaPacotes { aberto: Signo | 'estelar' | null; qtd: number; confirmar: boolean }

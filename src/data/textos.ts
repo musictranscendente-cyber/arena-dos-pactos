@@ -216,6 +216,7 @@ export const T = {
   filtroNivel: 'Nível',
   filtroRaridade: 'Raridade',
   filtroTipo: 'Tipo',
+  filtroMana: 'Mana',
   todos: 'Todos',
   criaturas: 'Criaturas',
   magiasTipo: 'Magias',

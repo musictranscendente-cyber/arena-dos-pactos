@@ -7,7 +7,7 @@ import { iconeSom } from './som';
 import { T } from '../data/textos';
 import { cartasDisponiveis, contarCopias, DECK_SIZE, maxCopias, type DeckMontado, type Nivel } from '../engine';
 import { cardHtml, zoomHtml } from './desenho';
-import { moedasHtml } from './colecao';
+import { moedasHtml, NOMES_R } from './colecao';
 import { copiasNoNivel, copiasParaDeck, niveisQueTem, type Progresso } from '../meta/progresso';
 
 /** Criatura de pé numa ilha (arte parada); `vira` espelha para ela olhar para a esquerda. */
@@ -117,6 +117,10 @@ export interface Montagem {
   apagar: number | null;
   /** Nome do deck (vazio = usa os signos). */
   nome: string;
+  /** Filtros da lista de cartas: nível (0 = todos), raridade e custo de mana (-1 = todos; 7 = 7 ou mais). */
+  fNv?: number;
+  fRar?: 'todas' | 'c' | 'r' | 'e' | 'l';
+  fMana?: number;
 }
 
 const RAR_NOME: Record<string, string> = { c: 'Comum', r: 'Rara', e: 'Épica', l: 'Lendária' };
@@ -181,16 +185,24 @@ export function montarHtml(m: Montagem, decks: (DeckMontado | null)[], ativo: nu
   }
   entradas.sort((x, y) => (x.tem ? 0 : 1) - (y.tem ? 0 : 1) || card(x.id).cost - card(y.id).cost
     || (card(x.id).race === a ? 0 : 1) - (card(y.id).race === a ? 0 : 1) || baseCid(x.id).localeCompare(baseCid(y.id)) || nivelDe(y.id) - nivelDe(x.id));
-  const cards = entradas.map(({ id, tem }) => {
+  const fNv = m.fNv ?? 0, fRar = m.fRar ?? 'todas', fMana = m.fMana ?? -1;
+  const visiveis = entradas.filter(({ id, tem }) => (!fNv || (tem && nivelDe(id) === fNv))
+    && (fRar === 'todas' || card(id).r === fRar)
+    && (fMana < 0 || (fMana >= 7 ? card(id).cost >= 7 : card(id).cost === fMana)));
+  const filtros = `<button class="c-aba c-ciclo${fNv ? ' on' : ''}" data-act="mfnivel">${T.filtroNivel}: <b>${fNv ? `Nv${fNv}` : T.todos}</b></button>`
+    + `<button class="c-aba c-ciclo${fRar !== 'todas' ? ' on' : ''}" data-act="mfrar">${T.filtroRaridade}: <b>${fRar === 'todas' ? T.todas : NOMES_R[fRar]}</b></button>`
+    + `<button class="c-aba c-ciclo${fMana >= 0 ? ' on' : ''}" data-act="mfmana">${T.filtroMana}: <b>${fMana < 0 ? T.todos : fMana >= 7 ? '7+' : fMana}</b></button>`;
+  const cards = visiveis.map(({ id, tem }) => {
     const n = qtd.get(id) ?? 0;
     const cls = [n ? 'no-deck' : 'fora-deck', tem ? '' : 'bloq', m.info === id ? 'sel' : ''].join(' ');
     return cardHtml(card(id), card(id).cost, `data-act="mcarta" data-k="${id}" data-n="${n}" tabindex="0" role="button" aria-label="${card(id).name} ${T.nivelN(nivelDe(id))}: ${n}"`, cls, id);
-  }).join('');
+  }).join('') || `<p class="m-dica">${T.nenhumaCarta}</p>`;
   // curva de mana do deck: quantas cartas de cada custo (7+ juntas)
   const curva = [0, 0, 0, 0, 0, 0, 0, 0];
   for (const k of m.cartas) curva[Math.min(7, card(k).cost)]++;
   const max = Math.max(1, ...curva);
-  const barras = curva.map((n, i) => `<span class="cv"><i style="height:${(n / max) * 100}%"></i><b>${n}</b><small>${i === 7 ? '7+' : i}</small></span>`).join('');
+  // tocar numa barra filtra a lista por esse custo (tocar de novo tira o filtro)
+  const barras = curva.map((n, i) => `<button class="cv${fMana === i ? ' on' : ''}" data-act="mfmana" data-c="${i}" aria-label="${T.filtroMana} ${i === 7 ? '7+' : i}"><i style="height:${(n / max) * 100}%"></i><b>${n}</b><small>${i === 7 ? '7+' : i}</small></button>`).join('');
   const deA = m.cartas.filter(k => card(k).race === a).length;
   const cheio = m.cartas.length === DECK_SIZE;
   // painel da carta aberta: a carta grande com tudo, quantas cópias tem no deck e os botões de colocar/tirar
@@ -215,5 +227,5 @@ export function montarHtml(m: Montagem, decks: (DeckMontado | null)[], ativo: nu
     + `<div class="m-bts"><button class="btn rc" data-act="mcompletar" ${cheio ? 'disabled' : ''}>${T.completar}</button>`
     + `<button class="btn rc" data-act="mlimpar" ${m.cartas.length ? '' : 'disabled'}>${T.limpar}</button>`
     + `<button class="btn go" data-act="msalvar" ${cheio ? '' : 'disabled'}>${T.salvarDeck}</button></div></div></div>`
-    + `<div class="m-corpo"><div class="m-lado">${lado}</div><div class="ggrid">${cards}</div></div></div></div>`;
+    + `<div class="m-corpo"><div class="m-lado">${lado}</div><div class="m-dir"><div class="c-abas c-filtros m-filtros">${filtros}</div><div class="ggrid">${cards}</div></div></div></div></div>`;
 }

@@ -855,6 +855,14 @@ function menuClick(a: string | undefined, t: HTMLElement): boolean {
     case 'mvoltar': mg.passo = 1; break;
     // tocar numa carta abre ela no painel; os botões do painel colocam e tiram cópias
     case 'mcarta': mg.info = t.dataset.k!; mg.msg = ''; keepScroll(); return true;
+    case 'mfnivel': mg.fNv = ((mg.fNv ?? 0) + 1) % 6; render(); return true;
+    case 'mfrar': { const o = ['todas', 'c', 'r', 'e', 'l'] as const; mg.fRar = o[(o.indexOf(mg.fRar ?? 'todas') + 1) % o.length]; render(); return true; }
+    case 'mfmana': {
+      // barra da curva: escolhe esse custo (ou tira o filtro); botão: passa para o próximo custo
+      const c = t.dataset.c;
+      mg.fMana = c !== undefined ? (mg.fMana === Number(c) ? -1 : Number(c)) : (mg.fMana ?? -1) >= 7 ? -1 : (mg.fMana ?? -1) + 1;
+      render(); return true;
+    }
     case 'mmais': {
       const k = mg.info;
       if (!k) return true;
