@@ -1427,3 +1427,7 @@ body.rot .m-corpo{margin-top:5px}
 .m-curva .cv.on{outline:2px solid #ffe08a;outline-offset:2px}
 .m-curva .cv.on i{background:linear-gradient(180deg,#ffe08a,#e0a52e)}
 @media (max-width:620px){body:not(.rot) .m-dir{height:auto}}
+/* proporção travada: o conteúdo não pode esticar a carta (min-height:auto deixava a carta da fusão mais alta) */
+.c-f-carta .card,.land .c-f-carta .card{min-height:0;max-height:none}
+.c-f-carta .card,.land .c-f-carta .card{width:84px;height:auto;aspect-ratio:92/132;flex:none}
+.c-fusao{gap:8px}
