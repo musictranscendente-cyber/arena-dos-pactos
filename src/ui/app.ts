@@ -8,7 +8,7 @@ import {
   maxCopias, planTurnNivel, type DeckMontado, type Nivel,
   type Action, type Frame, type GameEvent, type GameState, type Side, type Target,
 } from '../engine';
-import { ATK_MS, desistirHtml, endHtml, galleryHtml, gameHtml, startHtml, zoomHtml, type View, type Zoom } from './desenho';
+import { ajustarZooms, ATK_MS, desistirHtml, endHtml, galleryHtml, gameHtml, startHtml, zoomHtml, type View, type Zoom } from './desenho';
 import { toggleRot, tryLandscape } from './orientacao';
 import { efeitoGeral, efeitosDeMagia, EXTRA_GERAL_MS, MAGIA_MS } from './efeitoMagia';
 import { precarregarVisiveis } from './precarga';
@@ -563,6 +563,7 @@ function render(): void {
       : tela === 'pacotes' ? hubHtml(new Date(), deckAtivo(meus), prog, temColeta(prog, hoje())) + pacotesHtml(prog, telaPacotes)
       : hubHtml(new Date(), deckAtivo(meus), prog, temColeta(prog, hoje())) + dlg + (prog.inicial ? '' : inicialHtml());
     root.insertAdjacentHTML('beforeend', somHtml() + (revela ?? '') + (desafio ? desafioHtml(desafio.cfg.signo, desafio.cfg.fase, desafio.cfg.deck) : ''));
+    ajustarZooms(root);
     return;
   }
   const hs = root.querySelector('.hand');
@@ -588,6 +589,7 @@ function render(): void {
   reporMortos();
   const h2 = root.querySelector('.hand');
   if (h2) h2.scrollLeft = sl;
+  ajustarZooms(root);
 }
 
 /** Botões da tela final na campanha: próxima fase (se venceu) ou tentar de novo, e voltar ao mapa. */
@@ -613,6 +615,7 @@ function atualizarZoom(m: Match): void {
   root.querySelector(':scope > .zoom')?.remove();
   const z = zoomAtual(m);
   if (z) root.insertAdjacentHTML('beforeend', zoomHtml(z));
+  ajustarZooms(root);
 }
 
 /** Carta aberta grande: a selecionada na mão, ou a criatura tocada no tabuleiro (também durante a Batalha). */
@@ -1190,3 +1193,7 @@ export function startApp(): void {
   });
   render();
 }
+
+// a carta grande depende do tamanho da tela e da fonte carregada: reajusta quando mudam
+window.addEventListener('resize', () => ajustarZooms(app()));
+void document.fonts?.ready.then(() => ajustarZooms(app()));

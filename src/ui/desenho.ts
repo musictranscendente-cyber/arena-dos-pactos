@@ -73,6 +73,41 @@ export function zoomHtml(z: Zoom): string {
     + `<div class="z-rar">${gemaHtml(c)}${RARITY[c.r].n} · ${ELEMENTO[r.el].i} ${r.el}${z.cid !== 'eco' ? ` · <span class="z-nv">${T.nivelN(nivelDe(z.cid))} ${'★'.repeat(nivelDe(z.cid))}</span>` : ''}</div>${corpo}</div>`;
 }
 
+/** Diminui a variável de fonte `v` (1 → mínimo) enquanto `passou()` for verdade. */
+function encolher(z: HTMLElement, v: string, passou: () => boolean, min = 0.55): void {
+  let f = 1;
+  z.style.setProperty(v, '1');
+  while (passou() && f > min) { f = Math.round((f - 0.05) * 100) / 100; z.style.setProperty(v, String(f)); }
+}
+
+/**
+ * Ajusta as cartas grandes depois de desenhar: o desenho é fixo (200×280) e
+ * 1) as fontes do nome, da raridade e do texto diminuem até caber (sem cortar e sem rolar);
+ * 2) a carta inteira muda de escala para caber no lugar (painel do lado ou meio da arena).
+ */
+export function ajustarZooms(root: ParentNode = document): void {
+  root.querySelectorAll<HTMLElement>('.zoom').forEach(z => {
+    z.style.removeProperty('zoom');
+    const nome = z.querySelector<HTMLElement>('.z-nome'), rar = z.querySelector<HTMLElement>('.z-rar');
+    const corpo = z.querySelector<HTMLElement>('.z-hab, .z-magia');
+    if (nome) encolher(z, '--zn', () => nome.offsetHeight > 36, 0.7);
+    if (rar) encolher(z, '--zr', () => rar.scrollWidth > rar.clientWidth + 1, 0.6);
+    if (corpo) encolher(z, '--zt', () => corpo.scrollHeight > corpo.clientHeight + 1, 0.5);
+    const painel = z.closest<HTMLElement>('.m-detalhe');
+    if (painel) {
+      const cs = getComputedStyle(painel);
+      const w = painel.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+      const h = painel.clientHeight - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom);
+      const k = Math.max(0.3, Math.min(w / 200, h > 40 ? h / 280 : w / 200, 1.7));
+      z.style.setProperty('zoom', String(Math.round(k * 1000) / 1000));
+    } else {
+      const box = z.closest<HTMLElement>('#app') ?? document.body;
+      const k = Math.min(1, (box.clientWidth * 0.24) / 200, (box.clientHeight * 0.62) / 280);
+      z.style.setProperty('--zk', String(Math.round(k * 1000) / 1000));
+    }
+  });
+}
+
 function artOrEmoji(c: Card, cid?: string): string {
   if (cid && ARTE[cid]) return `<img class="art" src="${artUrl(cid, c.race, 'parado')}" alt="">`;
   return c.art ? `<img class="art" src="${c.art}" alt="">` : `<span class="emo">${c.e}</span>`;
