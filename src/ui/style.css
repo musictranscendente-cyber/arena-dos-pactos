@@ -1273,3 +1273,43 @@ body.rot .ov.montar.gal .m-detalhe .z-nome{font-size:14px}body.rot .ov.montar.ga
 .pk-img{position:relative;overflow:hidden}
 .pk-img img{position:absolute;inset:4%;width:92%;height:92%;max-width:none;max-height:none;object-fit:contain}
 .pk-conf .panel{height:auto}
+
+/* ---------- loja v2: faixa do Estelar + grade de quadradinhos ---------- */
+.loja > .panel{height:auto}
+.pk-faixa{width:100%;display:flex;align-items:center;gap:14px;padding:8px 14px;border-radius:14px;cursor:pointer;font:inherit;color:#fff;text-align:left;
+  background:linear-gradient(100deg,#5a3ab8,#2a1f6a 45%,#1a3a7a);border:2px solid #e9c77a;box-shadow:0 0 18px #c8a8ff66,0 5px 14px #000a;position:relative;overflow:hidden}
+.pk-faixa::after{content:'';position:absolute;inset:0;background:radial-gradient(circle at 15% 50%,#ffffff22,transparent 40%);pointer-events:none}
+.pk-faixa-img{flex:0 0 auto;width:64px;height:64px;display:grid;place-items:center}
+.pk-faixa-img .pk-estrela{font-size:54px}
+.pk-faixa-txt{flex:1;min-width:0;display:flex;flex-direction:column}
+.pk-faixa-txt b{font-family:'Grenze Gotisch',Georgia,serif;font-size:24px;color:#ffe9b0;text-shadow:0 2px 0 #000;line-height:1.05}
+.pk-faixa-txt small{font-size:12.5px;color:#d9cdf5}
+.pk-faixa-preco{font-size:18px;font-weight:900;color:#ffe08a;white-space:nowrap}
+.btn.pk-faixa-bt{width:auto;min-height:40px;padding:0 18px;font-size:19px;display:grid;place-items:center}
+.pk-sub-signo{margin:8px 0 5px}
+.pk-grade{display:grid;grid-template-columns:repeat(6,1fr);gap:7px}
+.pk-quad{font:inherit;color:#fff;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;padding:4px 4px 5px;border-radius:10px;min-width:0;
+  background:linear-gradient(180deg,color-mix(in srgb,var(--rc) 50%,#2a1f55),#140c2c 90%);border:2px solid color-mix(in srgb,var(--rc) 60%,#e9c77a);box-shadow:0 3px 8px #0009}
+.pk-quad:active{transform:translateY(2px)}
+.pk-quad-nome{font-size:11px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.pk-quad .pk-img{width:100%;aspect-ratio:1.25}
+.pk-quad-preco{font-size:12px;font-weight:900;color:#ffe08a;background:#0007;border-radius:999px;padding:0 8px}
+/* detalhe: chances em quadradinhos coloridos */
+.pk-chances{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:8px 0 4px}
+.pk-ch-q{display:flex;flex-direction:column;align-items:center;padding:8px 4px;border-radius:12px;background:#ffffff0d;border:2px solid var(--rr);box-shadow:inset 0 0 14px color-mix(in srgb,var(--rr) 25%,transparent)}
+.pk-ch-q b{font-size:24px;color:var(--rr);line-height:1}
+.pk-ch-q span{font-weight:800;font-size:14px}
+.pk-ch-q small{font-size:10.5px;color:#c9bde6}
+@media (max-height:430px){body:not(.rot) .pk-faixa{padding:5px 12px}body:not(.rot) .pk-faixa-img{width:48px;height:48px}body:not(.rot) .pk-faixa-txt b{font-size:20px}body:not(.rot) .pk-quad .pk-img{aspect-ratio:1.5}}
+@media (max-width:430px){body.rot .pk-faixa{padding:5px 12px}body.rot .pk-faixa-img{width:48px;height:48px}body.rot .pk-faixa-txt b{font-size:20px}body.rot .pk-quad .pk-img{aspect-ratio:1.5}}
+@media (max-width:620px){body:not(.rot) .pk-grade{grid-template-columns:repeat(4,1fr)}body:not(.rot) .pk-chances{grid-template-columns:repeat(2,1fr)}}
+.pk-faixa,.pk-sub-signo,.loja .gtop{flex:0 0 auto}
+.loja > .panel{overflow-y:auto}
+.pk-grade{flex:0 0 auto}
+.pk-quad .pk-img{aspect-ratio:1.45}
+@media (max-height:430px){body:not(.rot) .pk-quad .pk-img{aspect-ratio:1.9}body:not(.rot) .pk-sub-signo{margin:5px 0 4px;font-size:11.5px}}
+@media (max-width:430px){body.rot .pk-quad .pk-img{aspect-ratio:1.9}body.rot .pk-sub-signo{margin:5px 0 4px;font-size:11.5px}}
+@media (max-height:430px){body:not(.rot) .pk-faixa-txt small{display:none}body:not(.rot) .pk-faixa-img{width:40px;height:40px}body:not(.rot) .pk-faixa-img .pk-estrela{font-size:38px}body:not(.rot) .btn.pk-faixa-bt{min-height:34px;font-size:17px}}
+@media (max-width:430px){body.rot .pk-faixa-txt small{display:none}body.rot .pk-faixa-img{width:40px;height:40px}body.rot .pk-faixa-img .pk-estrela{font-size:38px}body.rot .btn.pk-faixa-bt{min-height:34px;font-size:17px}}
+@media (max-width:430px){body.rot .pk-quad .pk-img{aspect-ratio:2.4}body.rot .pk-faixa{padding:3px 10px}body.rot .loja .gtop{margin-bottom:0}}
+@media (max-height:430px){body:not(.rot) .pk-quad .pk-img{aspect-ratio:2}}

@@ -6,7 +6,7 @@ import type { Raridade, Signo } from '../data/schema';
 import { ORDER, RACES } from '../data/signos';
 import { T } from '../data/textos';
 import {
-  CARTAS_PACOTE, CHANCES, copias, CUSTO_FUSAO, MAX_PACOTES, melhorNivel, podeFundir, precoPacote, totalCopias, type Progresso,
+  CARTAS_PACOTE, CHANCES, copias, CUSTO_FUSAO, MAX_PACOTES, melhorNivel, podeFundir, PRECO_PACOTE, PRECO_PACOTE_SIGNO, precoPacote, totalCopias, type Progresso,
 } from '../meta/progresso';
 import { cardHtml, zoomHtml } from './desenho';
 
@@ -119,21 +119,18 @@ function nomePacote(id: Signo | 'estelar'): string {
 }
 
 export function pacotesHtml(p: Progresso, tp: TelaPacotes): string {
-  const ids: (Signo | 'estelar')[] = ['estelar', ...ORDER];
-  const vitrine = ids.map(id => {
-    const preco = precoPacote(signoDe(id)), cor = id === 'estelar' ? '#8a6ad8' : RACES[id].c;
-    return `<button class="pk-cartao${id === 'estelar' ? ' estelar' : ''}" data-act="pver" data-r="${id}" style="--rc:${cor}">`
-      + `<span class="pk-topo">${id === 'estelar' ? T.todosSignos : `${RACES[id].g} ${RACES[id].n}`}</span>`
-      + `<span class="pk-img">${arteDoPacote(id)}</span>`
-      + `<b class="pk-nome">${nomePacote(id)}</b><small class="pk-qtd">${T.nCartas(CARTAS_PACOTE)}</small>`
-      + `<span class="pk-preco">✨ ${preco}</span><span class="btn go pk-comprar">${T.comprar}</span></button>`;
-  }).join('');
+  // Estelar em destaque no alto (faixa larga); os 12 de signo em quadradinhos, todos à vista
+  const estelar = `<button class="pk-faixa" data-act="pver" data-r="estelar">`
+    + `<span class="pk-faixa-img">${arteDoPacote('estelar')}</span>`
+    + `<span class="pk-faixa-txt"><b>${T.pacoteEstelar}</b><small>${T.pacoteDesc(CARTAS_PACOTE)}</small></span>`
+    + `<span class="pk-faixa-preco">✨ ${PRECO_PACOTE}</span><span class="btn go pk-faixa-bt">${T.comprar}</span></button>`;
+  const quadros = ORDER.map(id => `<button class="pk-quad" data-act="pver" data-r="${id}" style="--rc:${RACES[id].c}">`
+    + `<span class="pk-quad-nome">${RACES[id].g} ${RACES[id].n}</span><span class="pk-img">${arteDoPacote(id)}</span>`
+    + `<span class="pk-quad-preco">✨ ${PRECO_PACOTE_SIGNO}</span></button>`).join('');
   const detalhe = tp.aberto ? pacoteDetalheHtml(p, tp) : '';
   return `<div class="ov tela-pacotes loja"><div class="panel wide pacotes"><div class="gtop"><h2>${T.pacotes}</h2><span class="m-topo-bts">${moedasHtml(p)}${fecha()}</span></div>`
-    + `<div class="pk-vitrine-box"><button class="pk-seta esq" data-act="pcorre" data-d="-1" aria-label="${T.anterior}">‹</button>`
-    + `<div class="pk-vitrine">${vitrine}</div>`
-    + `<button class="pk-seta dir" data-act="pcorre" data-d="1" aria-label="${T.proximo}">›</button></div>`
-    + `<p class="pk-sub">${T.lojaDica}</p></div>${detalhe}</div>`;
+    + estelar + `<p class="pk-sub pk-sub-signo">${T.pacotesSigno}: ${T.pacotesSignoDesc(CARTAS_PACOTE)}</p>`
+    + `<div class="pk-grade">${quadros}</div></div>${detalhe}</div>`;
 }
 
 function pacoteDetalheHtml(p: Progresso, tp: TelaPacotes): string {
@@ -141,21 +138,20 @@ function pacoteDetalheHtml(p: Progresso, tp: TelaPacotes): string {
   const max = Math.max(1, Math.min(MAX_PACOTES, Math.floor(p.poeira / preco)));
   const qtd = Math.max(1, Math.min(tp.qtd, max));
   const total = preco * qtd, pode = p.poeira >= total;
-  // destaques: o que de melhor pode vir (lendárias e épicas)
-  const base = sg ? cardsOfSign(sg) : ORDER.map(s => `${s}25`);
-  const destaques = base.filter(k => CARDS[k] && (CARDS[k].r === 'l' || CARDS[k].r === 'e')).slice(sg ? -5 : 0, sg ? undefined : 5);
-  const cs = destaques.map(k => `<div class="pk-d">${cardHtml(card(k), card(k).cost, '', '', k)}</div>`).join('');
-  const chances = (Object.keys(CHANCES) as Raridade[]).map(r =>
-    `<li style="--rr:${RARITY[r].col}"><b>${NOMES_R[r]}</b> ${(CHANCES[r] * 100).toFixed(0)}%</li>`).join('');
+  // só as chances (sem mostrar cartas de exemplo, que davam a impressão de que aquelas iam sair)
+  const total5 = (sg ? cardsOfSign(sg) : Object.keys(CARDS).filter(k => k !== ECO_ID));
+  const chances = (['l', 'e', 'r', 'c'] as Raridade[]).map(r => {
+    const n = total5.filter(k => CARDS[k].r === r).length;
+    return `<div class="pk-ch-q" style="--rr:${RARITY[r].col}"><b>${(CHANCES[r] * 100).toFixed(0)}%</b><span>${NOMES_R[r]}</span><small>${T.cartasPossiveis(n)}</small></div>`;
+  }).join('');
   const conf = tp.confirmar
     ? `<div class="ov pk-conf"><div class="panel"><h3>${T.notificacao}</h3><p class="pk-custa">${T.custa} <b>✨ ${total}</b> ${T.continuarPergunta}</p>`
       + `<p class="pk-sub">${qtd}× ${nomePacote(id)} = ${T.nCartas(qtd * CARTAS_PACOTE)}</p>`
       + `<div class="acts2 pk-conf-bts"><button class="btn rc" data-act="pcancela">${T.cancelar}</button><button class="btn go" data-act="pconfirma">${T.confirmar}</button></div></div></div>`
     : '';
   return `<div class="ov pk-det"><div class="panel wide"><div class="gtop"><h2>${nomePacote(id)}</h2><button class="m-fecha" data-act="pfecha" aria-label="${T.sair}">✕</button></div>`
-    + `<div class="pk-det-corpo"><div class="pk-det-esq"><p class="pk-sub">${sg ? T.pacotesSignoDesc(CARTAS_PACOTE) : T.pacoteDesc(CARTAS_PACOTE)} ${T.podeVir}</p>`
-    + `<div class="pk-destaques">${cs}</div>`
-    + `<ul class="pk-lista">${chances}</ul></div><div class="pk-det-dir">`
+    + `<div class="pk-det-corpo"><div class="pk-det-esq"><p class="pk-sub">${sg ? T.pacotesSignoDesc(CARTAS_PACOTE) : T.pacoteDesc(CARTAS_PACOTE)}</p>`
+    + `<div class="pk-chances">${chances}</div><p class="pk-sub">${T.chancePorCarta}</p></div><div class="pk-det-dir">`
     + `<span class="pk-img pk-img-det" style="--rc:${sg ? RACES[sg].c : '#8a6ad8'}">${arteDoPacote(id)}</span>`
     + `<div class="pk-qtd-linha"><button class="btn rc pk-q" data-act="pmenos" ${qtd <= 1 ? 'disabled' : ''}>−</button><span class="pk-qn">${qtd}</span>`
     + `<button class="btn rc pk-q" data-act="pmais" ${qtd >= max ? 'disabled' : ''}>+</button><button class="btn rc pk-max" data-act="pmax" ${qtd >= max ? 'disabled' : ''}>${T.maximo}</button></div>`
@@ -165,7 +161,11 @@ function pacoteDetalheHtml(p: Progresso, tp: TelaPacotes): string {
 }
 
 /** Cartas recebidas (pacote, prêmio): aparecem viradas e desviram uma a uma. */
-export function revelarHtml(titulo: string, cartas: readonly string[], novas: readonly string[], extra = ''): string {
+const PESO_R: Record<Raridade, number> = { l: 0, e: 1, r: 2, c: 3 };
+
+export function revelarHtml(titulo: string, cartas0: readonly string[], novas: readonly string[], extra = ''): string {
+  // da mais rara para a mais comum (e por custo dentro da mesma raridade)
+  const cartas = [...cartas0].sort((a, b) => PESO_R[card(a).r] - PESO_R[card(b).r] || card(b).cost - card(a).cost);
   // "NOVA!" só na primeira vez que a carta aparece (a repetida já não é nova)
   const cs = cartas.map((k, i) => `<div class="rv-c" style="--i:${Math.min(i, 14)}">${novas.includes(k) && cartas.indexOf(k) === i ? `<span class="rv-nova">${T.novaCarta}</span>` : ''}`
     + cardHtml(card(k), card(k).cost, '', '', k) + '</div>').join('');

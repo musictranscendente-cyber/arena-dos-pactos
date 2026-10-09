@@ -734,11 +734,6 @@ function menuClick(a: string | undefined, t: HTMLElement): boolean {
     }
     case 'pver': telaPacotes = { aberto: t.dataset.r as Signo | 'estelar', qtd: 1, confirmar: false }; render(); return true;
     case 'pfecha': telaPacotes = { aberto: null, qtd: 1, confirmar: false }; render(); return true;
-    case 'pcorre': {
-      const v = document.querySelector('.pk-vitrine');
-      if (v) v.scrollBy({ left: Number(t.dataset.d) * v.clientWidth * 0.8, behavior: 'smooth' });
-      return true;
-    }
     case 'pmenos': telaPacotes = { ...telaPacotes, qtd: Math.max(1, telaPacotes.qtd - 1) }; render(); return true;
     case 'pmais': telaPacotes = { ...telaPacotes, qtd: Math.min(MAX_PACOTES, telaPacotes.qtd + 1) }; render(); return true;
     case 'pmax': {
