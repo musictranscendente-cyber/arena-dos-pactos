@@ -2097,3 +2097,31 @@ body.sem-giro .ov.conhecer>.panel,body.sem-giro .ov.missoes>.panel{width:100%;ma
 .ov.campanha .cp-fase.feita{background:radial-gradient(circle at 50% 35%,color-mix(in srgb,var(--rc) 80%,#fff),color-mix(in srgb,var(--rc) 75%,#1a0a40));border-color:#ffd76a}
 .ov.campanha .cp-trilha line{stroke:color-mix(in srgb,var(--rc) 50%,#e9c46a)}
 .ov.campanha .cp-trilha line.feito{stroke:#ffd76a}
+
+/* símbolo do signo como texto num círculo da cor do signo (o emoji muda de cor em cada celular) */
+.sg-ico{display:inline-grid;place-items:center;width:1.45em;height:1.45em;border-radius:50%;font-style:normal;line-height:1;
+  font-family:'Noto Sans Symbols','Noto Sans Symbols 2','Segoe UI Symbol','DejaVu Sans',sans-serif;font-weight:700;color:#fff;
+  background:radial-gradient(circle at 35% 30%,color-mix(in srgb,var(--rc) 55%,#fff),var(--rc) 60%,color-mix(in srgb,var(--rc) 60%,#000));
+  box-shadow:0 0 0 1.5px #fff8,0 1px 3px #000a;text-shadow:0 1px 1px #0008;vertical-align:middle}
+.ov.campanha .cp-mundo .sg-ico{font-size:17px}
+.ov.campanha .cp-mundo.bloq{opacity:.5}
+.ov.campanha .gtop h2 small .sg-ico{font-size:14px;margin-right:2px}
+
+/* campanha: tudo puxado para a cor do signo escolhido */
+.ov.campanha{background:linear-gradient(var(--rc),var(--rc)),url('./img/hub.webp') center/cover no-repeat;background-blend-mode:color,normal}
+.ov.campanha .cp-mapa{background:linear-gradient(180deg,#0000,#0006),linear-gradient(var(--rc),var(--rc)),url('./img/hub.webp') center 65%/cover no-repeat;background-blend-mode:normal,color,normal}
+.ov.campanha>.panel.wide{background:radial-gradient(80% 70% at 20% 0%,color-mix(in srgb,var(--rc) 40%,transparent),transparent 70%),linear-gradient(180deg,color-mix(in srgb,var(--rc) 22%,#160c38) ,color-mix(in srgb,var(--rc) 12%,#0e0828));border-color:color-mix(in srgb,var(--rc) 50%,#e9c46a)}
+.ov.campanha .c-abas{background:color-mix(in srgb,var(--rc) 18%,#0d0828cc);border-color:color-mix(in srgb,var(--rc) 55%,#e9c46a55)}
+.ov.campanha .cp-mundo{background:linear-gradient(180deg,color-mix(in srgb,var(--rc) 30%,#2e1c62),color-mix(in srgb,var(--rc) 15%,#1a1040));border-color:color-mix(in srgb,var(--rc) 60%,#e9c46a66)}
+.ov.campanha .cp-mundo.on{border:2px solid #ffe08a}
+.ov.campanha .cp-det{background:linear-gradient(180deg,color-mix(in srgb,var(--rc) 40%,#1e1048),color-mix(in srgb,var(--rc) 18%,#120a30))}
+.ov.campanha .cp-chip,.ov.campanha .cp-det .nv-deck,.ov.campanha .cp-det>p:not(.cp-info):not(.nv-deck):not(.m-dica){background:color-mix(in srgb,var(--rc) 20%,#0d0828aa)}
+
+/* girado (celular em pé): a página não desliza — só o jogo aparece */
+html:has(body.rot){height:100%;overflow:hidden;overscroll-behavior:none}
+body.rot{height:100%;min-height:0;overflow:hidden;overscroll-behavior:none}
+.ov.campanha .cp-mapa{background:linear-gradient(180deg,#0000,#0006),linear-gradient(color-mix(in srgb,var(--rc) 80%,transparent),color-mix(in srgb,var(--rc) 80%,transparent)),url('./img/hub.webp') center 65%/cover no-repeat}
+.ov.campanha .cp-det{overflow:hidden;gap:0}
+.ov.campanha .cp-det .btn.cp-lutar{flex:none}
+@media (max-height:420px){.ov.campanha .cp-det>p:not(.cp-info):not(.nv-deck):not(.m-dica){margin:2px 0;padding:3px 8px}.ov.campanha .cp-det .nv-deck{margin:3px 0}}
+body.rot .ov.campanha .cp-det>p:not(.cp-info):not(.nv-deck):not(.m-dica){margin:2px 0;padding:3px 8px}body.rot .ov.campanha .cp-det .nv-deck{margin:3px 0}
