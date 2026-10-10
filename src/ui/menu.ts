@@ -3,7 +3,8 @@ import { baseCid, card, CARDS, nivelDe } from '../data/cards';
 import { ARTE, artUrl } from '../data/arte';
 import type { Signo } from '../data/schema';
 import { currentSign, ORDER, RACES } from '../data/signos';
-import { sg as sgImg } from './icones';
+import { ic, sg as sgImg } from './icones';
+import { estrelasDoMundo, MUNDOS } from '../meta/campanha';
 import { iconeSom } from './som';
 import icColecao from './img/hub/colecao-ic.webp';
 import icPacotes from './img/hub/pacotes-ic.webp';
@@ -86,6 +87,7 @@ export function hubHtml(now: Date, deck: DeckMontado | null, prog: Progresso, al
     { act: 'ranqueada', nome: T.ranqueada, sub: T.ranqueadaSub, x: 74, y: 75, w: .6, breve: true, figs: criatura('touro25') + criatura('escorpiao25', '', true) },
   ];
   const r = RACES[avatar];
+  const estrelasTotais = MUNDOS.reduce((t, sg) => t + estrelasDoMundo(prog, sg), 0), cartasTem = Object.keys(prog.cartas).length;
   return `<div class="hub hub-v2" style="--rc:${r.c}">`
     + '<div class="hub-ceu"></div><div class="hub-brilho"></div>'
     // canto de cima à esquerda: Coleção e Pacotes; no meio, a logo
@@ -93,11 +95,14 @@ export function hubHtml(now: Date, deck: DeckMontado | null, prog: Progresso, al
     + `<button class="hub-bt hub-bt-arte" data-act="pacotes"><img src="${icPacotes}" alt="" draggable="false"><b>${T.pacotes}</b></button></div>`
     + `<div class="hub-titulo" role="img" aria-label="${T.titulo}"></div>`
     // canto de cima à direita: perfil, evento da temporada e o som
-    + `<div class="hub-col dir"><div class="hub-perfil"><div class="medal">${sgImg(avatar)}</div>`
-    + `<div class="hub-nome"><b>${T.invocador}</b><small>${deck ? nomeDeckMontado(deck) : T.semDeck}</small>${moedasHtml(prog)}</div></div>`
-    + `<button class="hub-evento breve" data-act="evento" style="--rc:${RACES[tem].c}" aria-label="${T.eventoTemporada} (${T.emBreve})">`
-    + `${criatura(tem + '25', 'mini')}<span><b>${T.eventoTemporada}</b><small>${sgImg(tem)} ${RACES[tem].n} · ${T.emBreve}</small></span></button>`
+    + `<div class="hub-col dir"><div class="hub-perfil perfil-v3"><div class="medal">${sgImg(avatar)}</div>`
+    + `<div class="hub-nome"><b>${T.invocador}</b><small>${deck ? nomeDeckMontado(deck) : T.semDeck}</small>`
+    + `<span class="hub-stats"><span title="${T.estrelasCampanha}">${ic('trofeu')}<b>${estrelasTotais}★</b></span><span title="${T.cartasNaColecao}">${ic('carta')}<b>${cartasTem}/360</b></span></span>`
+    + `${moedasHtml(prog)}</div></div>`
     + `<button class="hub-som" data-act="som" aria-label="${T.som}" title="${T.som}">${iconeSom()}</button></div>`
+    // meio da coluna da esquerda: evento da temporada (lendária do signo da vez)
+    + `<button class="hub-bt hub-bt-arte hub-ev breve" data-act="evento" style="--rc:${RACES[tem].c}" aria-label="${T.eventoTemporada}: ${RACES[tem].n} (${T.emBreve})">`
+    + `${criatura(tem + '25', 'ev-fig')}<i class="ev-sg">${sgImg(tem)}</i><b>${T.evento}</b><em>${T.emBreve}</em></button>`
     + ilhas.map(ilhaHtml).join('')
     // canto de baixo à esquerda: Missões e Como jogar
     + `<div class="hub-base esq"><button class="hub-bt hub-bt-arte${alerta ? ' alerta' : ''}" data-act="missoes"><img src="${icMissoes}" alt="" draggable="false"><b>${T.missoes}</b>${alerta ? `<i class="hub-alerta" aria-label="${T.temPremio}">!</i>` : ''}</button>`
