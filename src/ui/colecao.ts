@@ -127,7 +127,7 @@ function detalheHtml(p: Progresso, id: string, t: TelaColecao): string {
         + `<div class="cd-col cd-req"><small>${T.fusaoCopias}</small><b class="cd-qtd${n >= 2 ? ' ok' : ''}">${n} / 2</b>`
         + `<span class="cd-custo${p.poeira >= custo ? ' ok' : ''}">${T.fusaoCusto}: ✨ ${custo}</span>`
         + `<button class="btn go cd-fundir" data-act="cfundir" data-nv="${nv}" ${motivo ? 'disabled aria-disabled="true"' : ''}>${T.fusaoBotao}</button></div></div>`
-        + (porque ? `<p class="cd-motivo">${porque}</p>` : '');
+        + `<p class="cd-motivo">${porque || '&nbsp;'}</p>`;
     }
     fusao = `<div class="cd-fusao"><h4>${T.fusaoTitulo}</h4>${corpo}</div>`;
   } else fusao = `<p class="cd-motivo">${T.precisaCopias}</p>`;

@@ -1767,3 +1767,10 @@ body.rot .ov.rapida .nv-topo h2{font-size:clamp(34px,6.4vh,60px)}
 .cd-carta .card,.cd-col .card{height:auto !important;min-height:0 !important}
 .cd-carta .card{aspect-ratio:92/132}
 .c-det{flex-basis:50%}
+/* painel da carta com altura fixa: a escala é sempre a mesma, as cartas não mudam de tamanho */
+.c-det-in{height:560px;display:flex;flex-direction:column;position:relative}
+.cd-msg{position:absolute;left:14px;right:14px;top:52px;z-index:6;margin:0;box-shadow:0 4px 10px #000a}
+.cd-fusao{margin-top:auto}
+.cd-msg{animation:cd-toast 3.2s ease forwards;pointer-events:none}
+@keyframes cd-toast{0%{opacity:0;translate:0 -6px}8%{opacity:1;translate:0 0}80%{opacity:1}100%{opacity:0;visibility:hidden}}
+@media (prefers-reduced-motion:reduce){.cd-msg{animation:cd-toast 3.2s steps(1,end) forwards}}
