@@ -69,7 +69,7 @@ export function hubHtml(now: Date, deck: DeckMontado | null, prog: Progresso, al
     + `<button class="hub-evento breve" data-act="evento" style="--rc:${RACES[tem].c}" aria-label="${T.eventoTemporada} (${T.emBreve})">`
     + `${criatura(tem + '25', 'mini')}<span><b>${T.eventoTemporada}</b><small>${RACES[tem].g} ${RACES[tem].n} · ${T.emBreve}</small></span></button></span></div>`
     + ilhas.map(ilhaHtml).join('')
-    + `<div class="hub-base esq"><button class="hub-bt" data-act="colecao"><span>🃏</span><b>${T.colecao}</b></button>`
+    + `<div class="hub-base esq"><button class="hub-bt" data-act="colecao"><span>🗂️</span><b>${T.colecao}</b></button>`
     + `<button class="hub-bt" data-act="pacotes"><span>📦</span><b>${T.pacotes}</b></button></div>`
     + `<div class="hub-base"><button class="hub-bt${alerta ? ' alerta' : ''}" data-act="missoes"><span>📜</span><b>${T.missoes}</b>${alerta ? `<i class="hub-alerta" aria-label="${T.temPremio}">!</i>` : ''}</button>`
     + `<button class="hub-bt" data-act="regras"><span>📖</span><b>${T.comoJogar}</b></button>`
