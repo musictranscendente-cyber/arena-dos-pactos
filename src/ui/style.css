@@ -1986,3 +1986,16 @@ body.rot .ov.pk-det>.panel.pk-janela{width:96vh;max-width:min(980px,96vh);max-he
 .hub-v2 .ilha.principal .placa{min-width:0;max-width:26cqw;padding:1cqh 4cqh 1.1cqh}
 .hub-v2 .ilha.principal .placa b{font-size:min(6.2cqh,2.9cqw,28px)}
 .hub-v2 .ilha.breve .placa{min-width:0}
+
+/* ===== tela inicial: placas ilustradas (imagem com o nome do modo) ===== */
+.hub-v2 .ilha.ilha-arte{width:min(29cqw,68cqh);height:auto;translate:-50% -50%;display:block;filter:drop-shadow(0 6px 10px #000a)}
+.hub-v2 .ilha.ilha-arte.principal{width:min(31cqw,74cqh)}
+.hub-v2 .ilha.ilha-arte img{display:block;width:100%;height:auto;pointer-events:none;user-select:none;-webkit-user-drag:none}
+.hub-v2 .ilha.ilha-arte:hover,.hub-v2 .ilha.ilha-arte:focus-visible{filter:drop-shadow(0 6px 10px #000a) brightness(1.08)}
+.hub-v2 .ilha.ilha-arte:focus-visible{outline:2px solid #fff;outline-offset:2px;border-radius:12px}
+.hub-v2 .ilha.ilha-arte:active img{transform:scale(.97)}
+/* em breve: arte levemente apagada, etiqueta no meio da ilustração */
+.hub-v2 .ilha.ilha-arte.breve img{filter:grayscale(.45) brightness(.8)}
+.hub-v2 .ilha.ilha-arte .cadeado{top:34%;bottom:auto;translate:-50% -50%}
+.hub-v2 .ilha.ilha-arte{width:min(25cqw,58cqh)}
+.hub-v2 .ilha.ilha-arte.principal{width:min(27cqw,63cqh)}
