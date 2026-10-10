@@ -1448,79 +1448,72 @@ body.rot .m-corpo{margin-top:5px}
 /* logo do jogo no topo do hub */
 .hub-titulo{width:min(46cqh,230px);aspect-ratio:900/455;font-size:0;background:url('./img/logo.webp') center/contain no-repeat;filter:drop-shadow(0 4px 8px #000a);margin-top:-1cqh}
 
-/* ================= hub v2: fundo novo, logo no meio, botões dourados ================= */
-.hub-v2 .hub-ceu{background:url('./img/hub.webp') center 30%/cover no-repeat;filter:saturate(1.05) brightness(.95);inset:-3%}
-.hub-v2 .hub-brilho{background:radial-gradient(70% 40% at 50% 112%,#1a1040cc,transparent 70%),radial-gradient(30% 22% at 50% 4%,#14093a99,transparent 80%)}
-.hub-v2{--ouro:#f6d27a;--ouro2:#b8812a;--fonte:'Alegreya SC','Alegreya Sans',Georgia,serif}
-/* logo no topo, centrada sobre a roda do zodíaco */
-.hub-v2 .hub-titulo{position:absolute;left:50%;top:1.5cqh;translate:-50% 0;z-index:4;width:min(62cqh,300px);margin:0}
-/* colunas dos cantos de cima */
-.hub-col{position:absolute;top:2cqh;z-index:5;display:flex;flex-direction:column;gap:1.6cqh}
-.hub-col.esq{left:1.6cqw;align-items:flex-start}
-.hub-col.dir{right:1.6cqw;align-items:flex-end}
-.hub-v2 .hub-perfil{gap:1.6cqh;padding:.8cqh 2.4cqh .8cqh .8cqh;border-radius:999px 2cqh 2cqh 999px;
-  background:linear-gradient(90deg,#1a1040e6,#1a104099);box-shadow:0 0 0 1.5px #f6d27a99,0 4px 12px #0008}
-.hub-v2 .hub-nome b{font-family:var(--fonte);font-weight:800;font-size:min(6cqh,24px);letter-spacing:.3px;color:#fff3d0}
-.hub-v2 .hub-nome small{font-size:min(3.4cqh,13px);max-width:24cqw}
-.hub-v2 .hub-evento{border:2px solid var(--ouro);box-shadow:0 0 0 1.5px #5a3a0a,0 0 12px #f6d27a66,0 4px 10px #0009}
-.hub-v2 .hub-evento b{font-family:var(--fonte);font-size:min(4cqh,15px)}
-.hub-v2 .hub-som{width:min(12cqh,46px);height:min(12cqh,46px);border:2px solid var(--ouro);background:radial-gradient(circle at 50% 35%,#4b2d86,#1c1240);
-  box-shadow:0 0 0 1.5px #5a3a0a,0 0 12px #f6d27a66,0 4px 10px #0009}
-/* placas das ilhas: roxo com moldura dourada brilhante e pontas em losango */
-.hub-v2 .placa{padding:.9cqh 4.4cqh 1cqh;border-radius:1.4cqh;border:2px solid var(--ouro);
-  background:linear-gradient(180deg,#4a2a8a,#2a1658 55%,#1d0f42);
-  box-shadow:0 0 0 1.5px #5a3a0a,0 0 0 3px #f6d27a44,0 0 16px #f6d27a55,0 6px 14px #000b,inset 0 1px 0 #ffffff40,inset 0 -2px 6px #0006}
-.hub-v2 .placa::before,.hub-v2 .placa::after{content:'';position:absolute;top:50%;width:1.8cqh;height:1.8cqh;translate:0 -50%;rotate:45deg;
-  background:linear-gradient(135deg,#fff3c4,var(--ouro) 45%,var(--ouro2));box-shadow:0 0 6px #f6d27a99;border:1px solid #5a3a0a}
-.hub-v2 .placa::before{left:-1cqh}.hub-v2 .placa::after{right:-1cqh}
-.hub-v2 .placa b{font-family:var(--fonte);font-weight:800;font-size:min(6.4cqh,26px);letter-spacing:.3px;color:#ffe9b0;
-  text-shadow:0 2px 0 #3a1a00,0 0 10px #f6d27a66}
-.hub-v2 .placa small{font-family:'Alegreya Sans',sans-serif;font-weight:700;font-size:min(3.4cqh,13px);color:#efe6ff}
-.hub-v2 .ilha.principal .placa{padding:1.2cqh 6cqh 1.4cqh;background:linear-gradient(180deg,#ffb04a,#ef6a24 50%,#b8381a);
-  box-shadow:0 0 0 1.5px #5a2a0a,0 0 0 3px #f6d27a66,0 0 26px #ff9a3caa,0 6px 14px #000b,inset 0 1px 0 #fff8}
-.hub-v2 .ilha.principal .placa b{color:#fff;font-size:min(8.4cqh,34px);text-shadow:0 2px 0 #7a2a00,0 0 12px #ffd08088}
-.hub-v2 .ilha.principal .placa small{color:#fff6e0;font-size:min(3.8cqh,14px)}
-.hub-v2 .ilha.breve .placa{background:linear-gradient(180deg,#4e4a62,#2b2840);border-color:#c9b98a;box-shadow:0 0 0 1.5px #3a2a0a,0 6px 14px #000b}
-.hub-v2 .ilha.breve .placa::before,.hub-v2 .ilha.breve .placa::after{background:#c9b98a;box-shadow:none}
-/* botões dos cantos: quadrados com moldura dourada e brilho */
-.hub-v2 .hub-bt{min-width:min(21cqh,84px);padding:1cqh 1.6cqh 1.2cqh;gap:.4cqh;border-radius:1.8cqh;border:2px solid var(--ouro);
-  background:linear-gradient(180deg,#4a2a8a,#22124a);box-shadow:0 0 0 1.5px #5a3a0a,0 0 12px #f6d27a55,0 4px 10px #0009,inset 0 1px 0 #ffffff33}
-.hub-v2 .hub-bt span{font-size:min(8cqh,30px);filter:drop-shadow(0 2px 2px #0008)}
-.hub-v2 .hub-bt b{font-family:var(--fonte);font-weight:800;font-size:min(3.8cqh,15px);color:#fff3d0;text-shadow:0 1px 0 #000}
-.hub-v2 .hub-bt:hover,.hub-v2 .hub-evento:hover{filter:brightness(1.12)}
-.hub-v2 .hub-base.esq{left:1.6cqw;bottom:2cqh}
-.hub-v2 .hub-base{gap:1.6cqh}
-/* figuras um pouco menores nas ilhas de cima para não encostar na logo */
-.hub-v2 .ilha .ilha-rocha{opacity:.95}
-/* ajuste de proporções do hub v2 */
-.hub-v2 .hub-titulo{width:min(48cqh,250px);top:1cqh}
-.hub-v2 .placa{padding:.7cqh 3.6cqh .8cqh}
-.hub-v2 .placa b{font-size:min(5cqh,21px)}
-.hub-v2 .placa small{font-size:min(2.9cqh,11.5px)}
-.hub-v2 .ilha.principal .placa{padding:1cqh 5cqh 1.1cqh}
-.hub-v2 .ilha.principal .placa b{font-size:min(6.8cqh,28px)}
-.hub-v2 .ilha.principal .placa small{font-size:min(3.2cqh,12.5px)}
-.hub-v2 .hub-nome b{font-size:min(5cqh,20px)}
-.hub-v2 .hub-nome .moedas b{font-size:min(3.6cqh,13px)}
-.hub-v2 .hub-nome .moedas span{font-size:min(3.2cqh,12px)}
-.hub-v2 .hub-perfil .medal{width:min(13cqh,52px);height:min(13cqh,52px)}
+/* ================= tela principal (hub v2) =================
+   Tudo aqui vale só para .hub-v2 (a tela principal); as outras telas não mudam.
+   Grade: 3 colunas de ilhas (25% · 50% · 75%) em 2 fileiras; botões dos cantos numa coluna à esquerda,
+   perfil/evento/som numa coluna à direita, todos com o mesmo tamanho. */
+.hub-v2{--ouro:#e9c46a;--ouro-forte:#f6d27a;--ouro-esc:#5a3a0a;--fonte:'Alegreya SC','Alegreya Sans',Georgia,serif;--fonte-txt:'Alegreya Sans',system-ui,sans-serif;
+  --bt:min(16cqh,64px);--gap:1.4cqh;--margem:max(10px,1.6cqw)}
+/* fundo: a arte inteira, só um véu azul-marinho discreto embaixo e nos cantos onde ficam os botões */
+.hub-v2 .hub-ceu{background:url('./img/hub.webp') center 30%/cover no-repeat;filter:none;inset:-3%}
+.hub-v2 .hub-brilho{animation:none;background:
+  linear-gradient(0deg,#0d0828b3 0%,#0d082866 22%,transparent 42%),
+  linear-gradient(90deg,#0d082880 0%,transparent 14%,transparent 86%,#0d082880 100%),
+  radial-gradient(40% 26% at 50% 8%,#0d082855,transparent 80%)}
+/* logo oficial no centro de cima */
+.hub-v2 .hub-titulo{position:absolute;left:50%;top:1cqh;translate:-50% 0;z-index:4;width:min(48cqh,250px);margin:0;filter:drop-shadow(0 3px 6px #000a)}
+/* colunas dos cantos */
+.hub-col{position:absolute;top:var(--margem);z-index:5;display:flex;flex-direction:column;gap:var(--gap)}
+.hub-col.esq{left:var(--margem);align-items:flex-start}
+.hub-col.dir{right:var(--margem);align-items:stretch;width:min(64cqh,260px)}
+.hub-v2 .hub-base.esq{left:var(--margem);right:auto;bottom:var(--margem);flex-direction:column;gap:var(--gap)}
+/* botões dos cantos: todos do mesmo tamanho, ícone em cima, nome embaixo */
+.hub-v2 .hub-bt{width:var(--bt);height:var(--bt);min-width:0;padding:0;gap:.3cqh;justify-content:center;border-radius:1.6cqh;border:1.5px solid var(--ouro);
+  background:linear-gradient(180deg,#3d2478,#1f1248);box-shadow:0 0 0 1px var(--ouro-esc),0 3px 8px #0009,inset 0 1px 0 #ffffff26}
+.hub-v2 .hub-bt span{font-size:calc(var(--bt) * .38);line-height:1;filter:drop-shadow(0 1px 1px #0008)}
+.hub-v2 .hub-bt b{font-family:var(--fonte);font-weight:700;font-size:min(2.8cqh,11px);line-height:1.05;color:#fbefd0;text-shadow:0 1px 1px #000a;white-space:nowrap}
+/* perfil e evento com a mesma largura e o mesmo estilo de caixa; som alinhado à direita */
+.hub-v2 .hub-perfil,.hub-v2 .hub-evento{box-sizing:border-box;width:100%;border-radius:1.8cqh;border:1.5px solid var(--ouro);
+  background:linear-gradient(180deg,#2e1c62e6,#1a1040e6);box-shadow:0 0 0 1px var(--ouro-esc),0 3px 8px #0009}
+.hub-v2 .hub-perfil{gap:1.4cqh;padding:.8cqh 1.6cqh .8cqh .8cqh}
+.hub-v2 .hub-perfil .medal{width:min(13cqh,52px);height:min(13cqh,52px);flex:none}
 .hub-v2 .hub-perfil .medal span{font-size:min(7cqh,28px)}
-.hub-v2 .hub-evento b{font-size:min(3.4cqh,13px)}
+.hub-v2 .hub-nome{min-width:0}
+.hub-v2 .hub-nome b{font-family:var(--fonte);font-weight:700;font-size:min(5cqh,20px);color:#fbefd0;text-shadow:0 1px 2px #000a}
+.hub-v2 .hub-nome small{font-family:var(--fonte-txt);font-size:min(3.2cqh,12.5px);max-width:none}
+.hub-v2 .hub-nome .moedas b{font-family:var(--fonte-txt);font-size:min(3.4cqh,13px)}
+.hub-v2 .hub-nome .moedas span{font-size:min(3.1cqh,12px)}
+.hub-v2 .hub-evento{padding:.6cqh 1.4cqh .6cqh .6cqh;gap:1cqh}
 .hub-v2 .hub-evento .ilha-fig.mini{height:min(9cqh,36px)}
-.hub-v2 .hub-col{gap:1.2cqh}
-.hub-v2 .hub-bt{min-width:min(17cqh,70px);padding:.8cqh 1.2cqh 1cqh}
-.hub-v2 .hub-bt span{font-size:min(6.5cqh,24px)}
-.hub-v2 .hub-bt b{font-size:min(3.3cqh,13px)}
-.hub-v2 .hub-som{width:min(10cqh,40px);height:min(10cqh,40px)}
-.hub-v2 .hub-base .hub-bt{min-width:min(15cqh,62px)}
-/* telas menos largas: placas mais compactas para não encostarem */
-@container (max-aspect-ratio: 2.15) {
-  .hub-v2 .placa{padding:.6cqh 2.6cqh .7cqh}
-  .hub-v2 .placa b{font-size:4.4cqh}
-  .hub-v2 .placa small{font-size:2.6cqh}
-  .hub-v2 .ilha.principal .placa{padding:.9cqh 4cqh 1cqh}
-  .hub-v2 .ilha.principal .placa b{font-size:6cqh}
-}
+.hub-v2 .hub-evento b{font-family:var(--fonte);font-weight:700;font-size:min(3.4cqh,13px);color:#fbefd0}
+.hub-v2 .hub-evento small{font-family:var(--fonte-txt);font-size:min(2.9cqh,11px)}
+.hub-v2 .hub-som{align-self:flex-end;width:min(10cqh,40px);height:min(10cqh,40px);border:1.5px solid var(--ouro);background:linear-gradient(180deg,#3d2478,#1f1248);
+  box-shadow:0 0 0 1px var(--ouro-esc),0 3px 8px #0009}
+.hub-v2 .hub-bt:hover,.hub-v2 .hub-evento:hover,.hub-v2 .hub-som:hover{filter:brightness(1.12)}
+/* placas dos modos: mesmas medidas por nível de importância, texto centralizado */
+.hub-v2 .placa{box-sizing:border-box;width:max-content;min-width:40cqh;padding:.8cqh 2cqh .9cqh;border-radius:1.4cqh;border:1.5px solid var(--ouro);white-space:nowrap;
+  background:linear-gradient(180deg,#45288a,#28165a 60%,#1e1046);
+  box-shadow:0 0 0 1px var(--ouro-esc),0 4px 10px #000a,inset 0 1px 0 #ffffff33}
+.hub-v2 .placa::before,.hub-v2 .placa::after{content:'';position:absolute;top:50%;width:1.5cqh;height:1.5cqh;translate:0 -50%;rotate:45deg;
+  background:linear-gradient(135deg,#fff3c4,var(--ouro) 50%,#a87420);border:1px solid var(--ouro-esc)}
+.hub-v2 .placa::before{left:-.85cqh}.hub-v2 .placa::after{right:-.85cqh}
+.hub-v2 .placa b{font-family:var(--fonte);font-weight:700;font-size:min(5cqh,21px);letter-spacing:.2px;color:#ffe6a8;text-shadow:0 1px 2px #000c}
+.hub-v2 .placa small{font-family:var(--fonte-txt);font-weight:700;font-size:min(2.9cqh,11.5px);color:#ece2ff;text-shadow:0 1px 1px #000a}
+/* 1º Partida Rápida: maior, laranja-dourado, único com brilho */
+.hub-v2 .ilha.principal .placa{min-width:54cqh;padding:1cqh 2cqh 1.1cqh;border-color:var(--ouro-forte);background:linear-gradient(180deg,#ffb04a,#ef6a24 55%,#b8381a);
+  box-shadow:0 0 0 1px #5a2a0a,0 0 18px #ff9a3c88,0 4px 10px #000a,inset 0 1px 0 #fff8}
+.hub-v2 .ilha.principal .placa b{color:#fff;font-size:min(6.8cqh,28px);text-shadow:0 1px 2px #6a1a00}
+.hub-v2 .ilha.principal .placa small{color:#fff4dc;font-size:min(3.2cqh,12.5px)}
+/* 5º Torneio e Ranqueada: placa menor e acinzentada; ilustração visível, só levemente apagada */
+.hub-v2 .ilha.breve .placa{min-width:32cqh;padding-top:1.4cqh;background:linear-gradient(180deg,#3e3a54,#24203a);border-color:#a8996a;box-shadow:0 0 0 1px #2a1f0a,0 4px 10px #000a}
+.hub-v2 .ilha.breve .placa b{color:#d6d0e6}
+.hub-v2 .ilha.breve .placa::before,.hub-v2 .ilha.breve .placa::after{background:#a8996a}
+.hub-v2 .ilha.breve .ilha-fig,.hub-v2 .ilha.breve .ilha-rocha{filter:grayscale(.55) brightness(.82)}
+/* cadeado: etiqueta escura pequena presa na borda de cima da placa (não cobre os personagens) */
+.hub-v2 .cadeado{top:calc(var(--w) * 6cqh);bottom:auto;translate:-50% -85%;flex-direction:row;gap:.6cqh;align-items:center;
+  font-size:min(3cqh,12px);padding:.3cqh 1.2cqh;border-radius:999px;background:#120b2ee6;border:1px solid #c9a95a;box-shadow:0 2px 4px #0009;filter:none;z-index:4}
+.hub-v2 .cadeado small{font-size:min(2.8cqh,11px);font-weight:700;background:none;border:0;padding:0;color:#efe6c8;letter-spacing:.3px}
+@media (prefers-reduced-motion:reduce){.hub-v2 .ilha{animation:none}}
 
 /* ================= identidade visual: painéis com moldura dourada e botões de ouro ================= */
 .panel{position:relative;background:radial-gradient(120% 80% at 50% 0%,#2f2068f2,#1a1040f5 55%,#120a30f8);

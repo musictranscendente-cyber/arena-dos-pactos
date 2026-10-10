@@ -53,12 +53,12 @@ export function hubHtml(now: Date, deck: DeckMontado | null, prog: Progresso, al
   // a ilha de montar deck usa um signo que não aparece em outra ilha nem no evento da temporada
   // disposição: 3 ilhas em cima (Conhecer, Campanha, Torneio) e 3 embaixo (Montar, Partida Rápida, Ranqueada)
   const ilhas: Ilha[] = [
-    { act: 'conhecer', nome: T.conhecerDecks, sub: T.conhecerSub, x: 27, y: 47, w: .64, figs: criatura('peixes25') + criatura('gemeos25', 'peq', true) },
-    { act: 'campanha', nome: T.campanha, sub: T.campSub, x: 50, y: 46, w: .66, figs: criatura('capricornio25') + criatura('capricornio22', 'peq', true) },
-    { act: 'torneio', nome: T.torneio, x: 75, y: 47, w: .6, breve: true, figs: criatura('sagitario25') },
-    { act: 'montar', nome: T.montarDeck, sub: deck ? nomeDeckMontado(deck) : T.montarSub, x: 30, y: 75, w: .64, cls: 'deck', figs: '<span class="leque"><i></i><i></i><i></i></span>' + criatura(tem === 'aquario' ? 'cancer25' : 'aquario25', 'peq frente') },
-    { act: 'rapida', nome: T.partidaRapida, sub: T.rapidaSub, x: 52, y: 77, w: .86, cls: 'principal', figs: criatura('aries25') + criatura('leao25', '', true) },
-    { act: 'ranqueada', nome: T.ranqueada, x: 74, y: 75, w: .62, breve: true, figs: criatura('touro25') + criatura('escorpiao25', '', true) },
+    { act: 'conhecer', nome: T.conhecerDecks, sub: T.conhecerSub, x: 25, y: 47, w: .64, figs: criatura('peixes25') + criatura('gemeos25', 'peq', true) },
+    { act: 'campanha', nome: T.campanha, sub: T.campSub, x: 50, y: 47, w: .64, figs: criatura('capricornio25') + criatura('capricornio22', 'peq', true) },
+    { act: 'torneio', nome: T.torneio, x: 75, y: 49, w: .58, breve: true, figs: criatura('sagitario25') },
+    { act: 'montar', nome: T.montarDeck, sub: deck ? nomeDeckMontado(deck) : T.montarSub, x: 25, y: 76, w: .64, cls: 'deck', figs: '<span class="leque"><i></i><i></i><i></i></span>' + criatura(tem === 'aquario' ? 'cancer25' : 'aquario25', 'peq frente') },
+    { act: 'rapida', nome: T.partidaRapida, sub: T.rapidaSub, x: 50, y: 77, w: .86, cls: 'principal', figs: criatura('aries25') + criatura('leao25', '', true) },
+    { act: 'ranqueada', nome: T.ranqueada, x: 75, y: 76, w: .6, breve: true, figs: criatura('touro25') + criatura('escorpiao25', '', true) },
   ];
   const r = RACES[avatar];
   return `<div class="hub hub-v2" style="--rc:${r.c}">`
