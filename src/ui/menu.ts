@@ -50,12 +50,13 @@ export function nomeDeckMontado(d: DeckMontado): string {
 export function hubHtml(now: Date, deck: DeckMontado | null, prog: Progresso, alerta = false): string {
   const tem = currentSign(now);
   const avatar = deck ? deck.signos[0] : tem;
+  // a ilha de montar deck usa um signo que não aparece em outra ilha nem no evento da temporada
   const ilhas: Ilha[] = [
     { act: 'campanha', nome: T.campanha, sub: T.campSub, x: 40, y: 35, w: .8, figs: criatura('capricornio25') + criatura('capricornio22', 'peq', true) },
     { act: 'torneio', nome: T.torneio, x: 67, y: 34, w: .72, breve: true, figs: criatura('sagitario25') },
     { act: 'conhecer', nome: T.conhecerDecks, sub: T.conhecerSub, x: 14, y: 47, w: .8, figs: criatura('peixes25') + criatura('gemeos25', 'peq', true) },
     { act: 'ranqueada', nome: T.ranqueada, x: 85, y: 58, w: .85, breve: true, figs: criatura('touro25') + criatura('escorpiao25', '', true) },
-    { act: 'montar', nome: T.montarDeck, sub: deck ? nomeDeckMontado(deck) : T.montarSub, x: 35, y: 73, w: .92, cls: 'deck', figs: criatura('libra25', 'peq') + '<span class="leque"><i></i><i></i><i></i></span>' },
+    { act: 'montar', nome: T.montarDeck, sub: deck ? nomeDeckMontado(deck) : T.montarSub, x: 35, y: 73, w: .92, cls: 'deck', figs: '<span class="leque"><i></i><i></i><i></i></span>' + criatura(tem === 'aquario' ? 'cancer25' : 'aquario25', 'peq frente') },
     { act: 'rapida', nome: T.partidaRapida, sub: T.rapidaSub, x: 60, y: 74, w: 1.15, cls: 'principal', figs: criatura('aries25') + criatura('leao25', '', true) },
   ];
   const r = RACES[avatar];

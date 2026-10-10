@@ -1441,3 +1441,7 @@ body.rot .m-corpo{margin-top:5px}
 .ov.fim.com-cartas .panel>*{grid-column:1}
 .ov.fim.com-cartas .fim-cartas{grid-column:2;grid-row:1 / span 5;align-self:center;margin:0;flex-wrap:wrap;max-width:260px;justify-content:center}
 .ov.fim.com-cartas .acts2{margin-top:6px}
+/* montar deck: a criatura fica na frente do leque de cartas */
+.ilha.deck .ilha-figs{align-items:flex-end}
+.ilha.deck .ilha-fig.frente{position:relative;z-index:3;margin-left:calc(var(--w) * -5cqh)}
+.ilha.deck .leque{z-index:1}
