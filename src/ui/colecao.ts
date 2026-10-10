@@ -103,6 +103,17 @@ function atributosHtml(id: string): string {
   return 'v' in c && typeof c.v === 'number' ? `<span class="c-at"><i>✨</i>${c.v}</span>` : '';
 }
 
+/** Topo do painel: a criatura em pé respirando (como no tabuleiro) com custo, ataque e vida; sem arte, a carta. */
+function figuraDetalhe(id: string): string {
+  const c = card(id), b = baseCid(id);
+  const ats = `<span class="cd-at cd-custo-at" title="${T.custoMana}">${c.cost}</span>`
+    + (c.type === 'unit' ? `<span class="cd-at cd-atk" title="${T.ataque}">⚔️ ${c.atk}</span><span class="cd-at cd-hp" title="${T.vida}">❤️ ${c.hp}</span>`
+      : 'v' in c && typeof c.v === 'number' ? `<span class="cd-at cd-val">✨ ${c.v}</span>` : '');
+  if (!ARTE[b]) return `<div class="cd-carta">${cardHtml(c, c.cost, '', '', id)}</div>`;
+  return `<div class="cd-carta cd-fig"><div class="cd-palco"><img class="cd-bicho" src="${artUrl(id, c.race, 'parado')}" alt="${c.name}" draggable="false"></div>`
+    + `<div class="cd-ats-fig">${ats}</div><span class="cd-nvtag">Nv${nivelDe(id)} ${'★'.repeat(nivelDe(id))}</span></div>`;
+}
+
 /** Painel da carta escolhida: detalhes completos e a fusão (Atual → Resultado → Cópias). */
 function detalheHtml(p: Progresso, id: string, t: TelaColecao): string {
   const c = card(id), nv = nivelDe(id), n = copiasNoNivel(p, id), r = RACES[c.race];
@@ -110,6 +121,7 @@ function detalheHtml(p: Progresso, id: string, t: TelaColecao): string {
   const info = `<div class="cd-info">`
     + `<p><span>${T.rotTipo}:</span> ${c.type === 'unit' ? T.tipoCriatura : T.tipoMagia}</p>`
     + `<p><span>${T.rotSigno}:</span> ${sgImg(c.race)} ${r.n} · ${ELEMENTO[r.el].i} ${r.el}</p>`
+    + `<p><span>${T.rotAtributos}:</span> <b>${T.custo} ${c.cost}</b>${c.type === 'unit' ? ` · <b>⚔️ ${c.atk}</b> · <b>❤️ ${c.hp}</b>` : 'v' in c && typeof c.v === 'number' ? ` · <b>✨ ${c.v}</b>` : ''}</p>`
     + `<p><span>${T.rotRaridade}:</span> <b class="cd-rar" style="--rr:${RARITY[c.r].col}">${RARITY[c.r].n}</b> <b class="cd-nv">Nv${nv} ${'★'.repeat(nv)}</b></p>`
     + `<p><span>${T.rotCopias}:</span> <b>${n ? `×${n}` : T.naoTem}</b>${outros ? ` <small>${T.outrosNiveis}</small> ${outros}` : ''}</p></div>`;
   const hab = `<div class="cd-hab"><h4>${c.type === 'unit' ? 'Habilidades' : T.tipoMagia}</h4>${habilidadesHtml(id)}</div>`;
@@ -139,7 +151,7 @@ function detalheHtml(p: Progresso, id: string, t: TelaColecao): string {
   return `<aside class="c-det" style="--rc:${r.c}" aria-label="${c.name}"><div class="c-det-in">`
     + `<div class="cd-topo"><h3>${c.name}</h3><button class="m-fecha" data-act="cfechar" aria-label="${T.fechar}" title="${T.fechar}">✕</button></div>`
     + (t.msg ? `<p class="cd-msg">${t.msg}</p>` : '')
-    + `<div class="cd-cima"><div class="cd-carta">${cardHtml(c, c.cost, '', '', id)}</div><div class="cd-txt">${info}${hab}</div></div>`
+    + `<div class="cd-cima">${figuraDetalhe(id)}<div class="cd-txt">${info}${hab}</div></div>`
     + fusao + '</div>' + confirmar + '</aside>';
 }
 
