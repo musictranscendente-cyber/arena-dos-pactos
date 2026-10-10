@@ -16,6 +16,9 @@ import { launch, shotsOf } from './projetil';
 import { alternarSom, desbloquear, iconeSom, prefsSom, tocar, trilha, type Efeito } from './som';
 import { reverTutorial, tutorialEntendi, tutorialFimDePartida, tutorialHtml, tutorialNovaPartida, tutorialPular } from './tutorial';
 import { ic } from './icones';
+import { configHtml } from './config';
+import { entrarEmail, entrarGoogle, iniciarNuvem, sair } from '../services/nuvem';
+import { lerPerfil, salvarPerfil } from '../services/perfil';
 import { avisoHtml, dificuldadeHtml, hubHtml, montarHtml, regrasHtml, type Montagem } from './menu';
 import { deckAtivo, lerDecks, salvarDecks } from '../services/deckSalvo';
 import { lerProgresso, salvarProgresso } from '../services/progresso';
@@ -107,11 +110,13 @@ let fundindo = false;
 /** Cartas recebidas mostradas por cima de tudo (pacote, prêmio). */
 let revela: string | null = null;
 let montagem: Montagem | null = null;
-let dialogo: 'nivel' | 'regras' | 'missoes' | null = null;
+let dialogo: 'nivel' | 'regras' | 'missoes' | 'config' | null = null;
+/** Nome de invocador e mensagem curta da janela de Configurações. */
+let perfil = lerPerfil(), avisoCfg = '';
 /** Última dificuldade escolhida na Partida Rápida. */
 let nivel: Nivel = lerNivel();
 /** Os 3 espaços de deck e qual está em uso. */
-const meus = lerDecks();
+let meus = lerDecks();
 // decks antigos guardavam só a carta (o nível era escolhido na hora): agora cada cópia guarda o nível dela
 (function migrarDecksComNivel() {
   const CHAVE_V2 = 'arena-dos-pactos:decks-niveis';
@@ -561,14 +566,14 @@ function render(): void {
   if (!M) {
     emDia();
     const dlg = dialogo === 'nivel' ? dificuldadeHtml(deckAtivo(meus), nivel) : dialogo === 'regras' ? regrasHtml(prog.teste)
-      : dialogo === 'missoes' ? missoesHtml(prog, hoje()) : '';
+      : dialogo === 'missoes' ? missoesHtml(prog, hoje()) : dialogo === 'config' ? configHtml(perfil, avisoCfg) : '';
     root.innerHTML = gal ? galleryHtml(gal, galSel)
       : tela === 'montar' && montagem ? montarHtml(montagem, meus.decks, meus.ativo, prog)
       : tela === 'conhecer' ? startHtml(new Date())
       : tela === 'colecao' ? colecaoHtml(prog, telaColecao)
       : tela === 'campanha' ? campanhaHtml(prog, telaCamp, deckAtivo(meus))
-      : tela === 'pacotes' ? hubHtml(new Date(), deckAtivo(meus), prog, temColeta(prog, hoje())) + pacotesHtml(prog, telaPacotes)
-      : hubHtml(new Date(), deckAtivo(meus), prog, temColeta(prog, hoje())) + dlg + (prog.inicial ? '' : inicialHtml());
+      : tela === 'pacotes' ? hubHtml(new Date(), deckAtivo(meus), prog, temColeta(prog, hoje()), perfil.nome) + pacotesHtml(prog, telaPacotes)
+      : hubHtml(new Date(), deckAtivo(meus), prog, temColeta(prog, hoje()), perfil.nome) + dlg + (prog.inicial ? '' : inicialHtml());
     root.insertAdjacentHTML('beforeend', somHtml() + (revela ?? '') + (desafio ? desafioHtml(desafio.cfg.signo, desafio.cfg.fase, desafio.cfg.deck) : ''));
     ajustarZooms(root);
     return;
@@ -697,6 +702,16 @@ function menuClick(a: string | undefined, t: HTMLElement): boolean {
     case 'fechar': dialogo = null; render(); return true;
     case 'conhecer': tela = 'conhecer'; render(); return true;
     case 'regras': dialogo = 'regras'; render(); return true;
+    case 'config': avisoCfg = ''; dialogo = 'config'; tocar('clique'); render(); return true;
+    case 'cfg-giro': toggleRot(); render(); return true;
+    case 'cfg-google': void entrarGoogle(); return true;
+    case 'cfg-email': {
+      const email = (app().querySelector<HTMLInputElement>('#cfg-email')?.value ?? '').trim();
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { avisoCfg = T.cfgEmailInvalido; render(); return true; }
+      void entrarEmail(email).then(ok => { avisoCfg = ok ? T.cfgEmailEnviado : ''; render(); });
+      return true;
+    }
+    case 'cfg-sair': void sair().then(() => { avisoCfg = T.cfgSaiu; render(); }); return true;
     case 'torneio': case 'ranqueada': case 'evento': emBreve(); return true;
     case 'missoes': emDia(); dialogo = 'missoes'; render(); return true;
     case 'login': {
@@ -1213,10 +1228,16 @@ export function startApp(): void {
   emDia();
   if (prog.inicial && loginDisponivel(prog, hoje())) dialogo = 'missoes';
   app().addEventListener('click', onClick);
+  // conta na nuvem: atualiza a janela de Configurações; ao entrar, relê o que veio da nuvem
+  void iniciarNuvem(() => { if (dialogo === 'config' && !M) render(); }, () => {
+    prog = lerProgresso(); meus = lerDecks(); perfil = lerPerfil(); avisoCfg = T.cfgEntrou;
+    if (!M) render();
+  });
   // nome do deck: guarda enquanto digita, sem redesenhar (o teclado não fecha)
   app().addEventListener('input', e => {
     const t = e.target as HTMLInputElement;
     if (t.id === 'm-nome' && montagem) montagem.nome = t.value;
+    if (t.id === 'cfg-nome') { perfil = { nome: t.value }; salvarPerfil(perfil); }
   });
   app().addEventListener('keydown', e => {
     if ((e.key === 'Enter' || e.key === ' ') && (e.target as HTMLElement).matches('[role="button"]')) {

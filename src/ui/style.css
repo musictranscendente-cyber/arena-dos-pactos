@@ -2353,3 +2353,37 @@ body:not(.batalha) .som-painel{top:80px;left:66px}
 
 /* tela inicial: fundo levemente desfocado e mais escuro para os botões se destacarem */
 .hub-v2 .hub-ceu{filter:blur(2px) brightness(.68) saturate(.95);inset:-4%}
+
+/* medalhão do perfil vira botão de Configurações (com engrenagem) */
+.hub-v2 .medal.medal-bt{font:inherit;color:inherit;padding:0;cursor:pointer;position:relative}
+.hub-v2 .medal-bt:hover>.sgm,.hub-v2 .medal-bt:focus-visible>.sgm{filter:brightness(1.15) drop-shadow(0 0 8px #ffe08a)}
+.medal-eng{position:absolute;right:-4px;bottom:-4px;width:46%;height:46%;display:grid;place-items:center;font-style:normal;font-size:min(3.6cqh,14px);line-height:1;
+  color:#2a1606;background:linear-gradient(180deg,#ffe9a8,#d9a640);border-radius:50%;box-shadow:0 0 0 1.5px #4a2c0a,0 2px 3px #000a}
+
+/* ---------- Configurações ---------- */
+.ov.config{background:radial-gradient(ellipse at center,#0b072200,#0b072266),url('./img/menu-fundo.webp') center/cover no-repeat,#0b0722;overflow:hidden;padding:8px}
+.ov.config>.panel{max-height:100%;display:flex;flex-direction:column;overflow:hidden;padding:10px 16px 12px}
+.ov.config .gtop{margin:0 0 6px}
+.ov.config .gtop h2{margin:0;font-size:clamp(24px,6vmin,36px)}
+.cfg-aviso{margin:0 0 6px;padding:6px 10px;border-radius:10px;background:#2d6b3a55;border:1px solid #6dff7e88;font-size:13px}
+.cfg-grade{flex:1 1 auto;min-height:0;overflow:auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,250px),1fr));gap:8px;align-content:start;overscroll-behavior:contain}
+.cfg-bloco{background:#0d082899;border:1px solid #e9c46a55;border-radius:12px;padding:8px 10px;display:flex;flex-direction:column;gap:6px}
+.cfg-bloco h4{margin:0;font-family:var(--fonte-titulo);font-size:15px;letter-spacing:.5px;text-transform:uppercase;color:#ffe7a3}
+.cfg-bloco p{margin:0;font-size:13px;line-height:1.3}
+.cfg-dica{color:#c9bde6;font-size:12px !important}
+.cfg-sit{font-size:12px !important;color:#bfe8c6}
+.cfg-bloco .btn{min-height:36px;font-size:15px}
+.cfg-google{display:flex;align-items:center;justify-content:center;gap:8px}
+.cfg-g{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;background:#fff;color:#4285f4;font-weight:900;font-family:Arial,sans-serif;font-size:15px}
+.cfg-email{display:flex;gap:6px}
+.cfg-email input,.cfg-campo input{flex:1;min-width:0;font:inherit;font-size:15px;color:#fff;background:#0007;border:1.5px solid #e9c46a88;border-radius:9px;padding:6px 10px;user-select:text;-webkit-user-select:text}
+.cfg-campo{display:flex;flex-direction:column;gap:3px}
+.cfg-campo small{font-size:12px;color:#e6dbff}
+.cfg-op{font:inherit;color:#fff;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:7px 10px;border-radius:10px;cursor:pointer;background:#ffffff10;border:1px solid #ffffff2a;text-align:left;font-size:14px}
+.cfg-chave{flex:none;font-size:12px;padding:2px 9px;border-radius:999px;background:#00000055;color:#e6dbff}
+.cfg-chave.on{background:#3dbb55;color:#fff}
+.cfg-bloco:last-child{flex-direction:row;flex-wrap:wrap;align-items:center}
+.cfg-bloco:last-child h4,.cfg-bloco:last-child p{flex-basis:100%}
+.cfg-bloco:last-child .btn{flex:1 1 auto;width:auto}
+.cfg-email .btn{flex:none;width:auto;padding:0 12px}
+.cfg-email input{flex:1 1 auto;width:auto}

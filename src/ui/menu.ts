@@ -73,7 +73,7 @@ export function nomeDeckMontado(d: DeckMontado): string {
   return [...new Set(d.signos)].map(s => `${sgImg(s)} ${RACES[s].n}`).join(' + ');
 }
 
-export function hubHtml(now: Date, deck: DeckMontado | null, prog: Progresso, alerta = false): string {
+export function hubHtml(now: Date, deck: DeckMontado | null, prog: Progresso, alerta = false, nome = ''): string {
   const tem = currentSign(now);
   const avatar = deck ? deck.signos[0] : tem;
   // a ilha de montar deck usa um signo que não aparece em outra ilha nem no evento da temporada
@@ -95,8 +95,8 @@ export function hubHtml(now: Date, deck: DeckMontado | null, prog: Progresso, al
     + `<button class="hub-bt hub-bt-arte" data-act="pacotes"><img src="${icPacotes}" alt="" draggable="false"><b>${T.pacotes}</b></button></div>`
     + `<div class="hub-titulo" role="img" aria-label="${T.titulo}"></div>`
     // canto de cima à direita: perfil, evento da temporada e o som
-    + `<div class="hub-col dir"><div class="hub-perfil perfil-v3"><div class="medal">${sgImg(avatar)}</div>`
-    + `<div class="hub-nome"><b>${T.invocador}</b><small>${deck ? nomeDeckMontado(deck) : T.semDeck}</small>`
+    + `<div class="hub-col dir"><div class="hub-perfil perfil-v3"><button class="medal medal-bt" data-act="config" aria-label="${T.config}" title="${T.config}">${sgImg(avatar)}<i class="medal-eng" aria-hidden="true">⚙</i></button>`
+    + `<div class="hub-nome"><b>${nome ? esc(nome) : T.invocador}</b><small>${deck ? nomeDeckMontado(deck) : T.semDeck}</small>`
     + `<span class="hub-linha"><span class="hub-stats"><span title="${T.estrelasCampanha}">${ic('trofeu')}<b>${estrelasTotais}★</b></span><span title="${T.cartasNaColecao}">${ic('carta')}<b>${cartasTem}/360</b></span></span>`
     + `${moedasHtml(prog)}</span></div></div>`
     + `<button class="hub-som" data-act="som" aria-label="${T.som}" title="${T.som}">${iconeSom()}</button></div>`

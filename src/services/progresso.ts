@@ -1,5 +1,6 @@
 // Guarda o progresso do jogador no aparelho (localStorage). Se o navegador bloquear, o jogo segue sem salvar.
 import { normalizar, novoProgresso, type Progresso } from '../meta/progresso';
+import { marcarMudanca } from './nuvem';
 
 const CHAVE = 'arena-dos-pactos:progresso';
 
@@ -15,6 +16,7 @@ export function lerProgresso(): Progresso {
 export function salvarProgresso(p: Progresso): boolean {
   try {
     localStorage.setItem(CHAVE, JSON.stringify(p));
+    marcarMudanca();
     return true;
   } catch {
     return false;

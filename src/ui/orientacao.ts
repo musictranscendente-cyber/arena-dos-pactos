@@ -14,6 +14,9 @@ export function applyOrient(): void {
   else { app.style.width = ''; app.style.height = ''; }
 }
 
+/** O jogo gira sozinho quando o celular está em pé? */
+export const giroLigado = () => rotPref;
+
 export function toggleRot(): void {
   rotPref = !rotPref;
   try { localStorage.setItem('rotPref', rotPref ? 'on' : 'off'); } catch { /* ignora */ }

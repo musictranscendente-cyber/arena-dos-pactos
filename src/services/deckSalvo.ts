@@ -2,6 +2,7 @@
 // Se o navegador bloquear, o jogo segue sem salvar.
 import { ORDER } from '../data/signos';
 import { DECK_SIZE, validarDeck, type DeckMontado } from '../engine';
+import { marcarMudanca } from './nuvem';
 
 export const ESPACOS = 3;
 
@@ -53,6 +54,7 @@ export function lerDecks(): MeusDecks {
 export function salvarDecks(m: MeusDecks): boolean {
   try {
     localStorage.setItem(CHAVE, JSON.stringify(m));
+    marcarMudanca();
     return true;
   } catch {
     return false;
