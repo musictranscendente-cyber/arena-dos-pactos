@@ -19,25 +19,19 @@
 <body>
 <!-- tela de carregamento: aparece antes de tudo e some quando o jogo está pronto -->
 <div id="carregando" role="status" aria-label="Carregando Cosmic Citadel">
-  <div class="cg-logo"></div>
-  <div class="cg-barra"><i id="cg-prog"></i></div>
-  <p class="cg-txt">Carregando…</p>
+  <div class="cg-palco"><div class="cg-barra"><i id="cg-prog"></i></div></div>
 </div>
 <style>
-#carregando{position:fixed;inset:0;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:12px;padding-bottom:9vh;
-  background:radial-gradient(60% 50% at 50% 40%,transparent,#0b0722cc 90%),linear-gradient(0deg,#0b0722 0,transparent 45%),url('./carregar-fundo.webp') center 30%/cover no-repeat,#0b0722;
-  transition:opacity .5s ease}
+/* tela de carregamento: arte com os personagens; a barra de verdade fica por cima da barra desenhada */
+#carregando{position:fixed;inset:0;z-index:9999;overflow:hidden;background:#0b0722;transition:opacity .5s ease}
 #carregando.sai{opacity:0;pointer-events:none}
-#carregando .cg-logo{width:min(62vw,560px,80vh);aspect-ratio:900/455;background:url('./logo.webp') center/contain no-repeat;filter:drop-shadow(0 6px 14px #000c);animation:cg-flut 3s ease-in-out infinite}
-#carregando .cg-barra{position:relative;width:min(56vw,480px);height:16px;border-radius:999px;background:#0d0828;border:2px solid #e9c46a;
-  box-shadow:0 0 0 1.5px #3a2206,0 0 12px #f6c95a55,inset 0 2px 6px #000a;overflow:hidden}
-#carregando .cg-barra::before,#carregando .cg-barra::after{content:'';position:absolute;top:50%;width:10px;height:10px;translate:0 -50%;rotate:45deg;background:#f6d27a}
-#carregando .cg-barra i{display:block;height:100%;width:5%;border-radius:999px;background:linear-gradient(180deg,#9fe0ff,#3b8ff0 55%,#1f4fc2);box-shadow:0 0 10px #58b4ff;transition:width .3s ease}
-#carregando .cg-txt{margin:0;font-family:Georgia,serif;font-variant:small-caps;letter-spacing:3px;font-size:16px;color:#ffe9b0;text-shadow:0 2px 3px #000}
-@keyframes cg-flut{50%{translate:0 -6px}}
-/* celular em pé: a tela de carregamento já aparece deitada, igual ao jogo */
-@media (orientation:portrait){#carregando{inset:auto;top:0;left:0;width:100vh;height:100vw;transform-origin:top left;transform:rotate(90deg) translateY(-100%);padding-bottom:9vw}
-  #carregando .cg-logo{width:min(62vh,560px,80vw)}#carregando .cg-barra{width:min(56vh,480px)}}
+#carregando .cg-palco{position:absolute;left:50%;bottom:0;translate:-50% 0;aspect-ratio:1672/941;width:max(100vw,100vh * 1672 / 941);
+  background:url('./carregar.webp') center/100% 100% no-repeat}
+#carregando .cg-barra{position:absolute;left:32.7%;top:87.35%;width:34.6%;height:3.7%;border-radius:999px;overflow:hidden;background:linear-gradient(180deg,#140a3a,#2a1660)}
+#carregando .cg-barra i{display:block;height:100%;width:5%;border-radius:999px;background:linear-gradient(180deg,#9fe8ff,#2f8cff 50%,#1a4fd0);box-shadow:0 0 10px #58b4ff,inset 0 1px 0 #fff8;transition:width .3s ease}
+/* celular em pé: a tela já aparece deitada, igual ao jogo */
+@media (orientation:portrait){#carregando{inset:auto;top:0;left:0;width:100vh;height:100vw;transform-origin:top left;transform:rotate(90deg) translateY(-100%)}
+  #carregando .cg-palco{width:max(100vh,100vw * 1672 / 941)}}
 </style>
 <div id="app"></div>
 <script type="module" src="/src/main.ts"></script>
