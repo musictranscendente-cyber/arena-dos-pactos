@@ -4,17 +4,17 @@ import { ARTE, artUrl } from '../data/arte';
 import type { Signo } from '../data/schema';
 import { currentSign, ORDER, RACES } from '../data/signos';
 import { iconeSom } from './som';
-import placaConhecer from './img/hub/conhecer-placa.webp';
-import placaCampanha from './img/hub/campanha-placa.webp';
-import placaTorneio from './img/hub/torneio-placa.webp';
-import placaMontar from './img/hub/montar-placa.webp';
-import placaRapida from './img/hub/rapida-placa.webp';
-import placaRanqueada from './img/hub/ranqueada-placa.webp';
+import arteConhecer from './img/hub/conhecer-arte.webp';
+import arteCampanha from './img/hub/campanha-arte.webp';
+import arteTorneio from './img/hub/torneio-arte.webp';
+import arteMontar from './img/hub/montar-arte.webp';
+import arteRapida from './img/hub/rapida-arte.webp';
+import arteRanqueada from './img/hub/ranqueada-arte.webp';
 
-/** Placas ilustradas da tela inicial (arte com o nome do modo já desenhado). */
-const PLACAS: Record<string, string> = {
-  conhecer: placaConhecer, campanha: placaCampanha, torneio: placaTorneio,
-  montar: placaMontar, rapida: placaRapida, ranqueada: placaRanqueada,
+/** Ilustrações das ilhas da tela inicial (sem texto: o nome fica na placa, traduzível). */
+const ARTES: Record<string, string> = {
+  conhecer: arteConhecer, campanha: arteCampanha, torneio: arteTorneio,
+  montar: arteMontar, rapida: arteRapida, ranqueada: arteRanqueada,
 };
 import { T } from '../data/textos';
 import { cartasDisponiveis, contarCopias, DECK_SIZE, maxCopias, type DeckMontado, type Nivel } from '../engine';
@@ -41,10 +41,11 @@ interface Ilha {
 }
 
 function ilhaHtml(i: Ilha, k: number): string {
-  const placa = PLACAS[i.act];
-  if (placa) {
+  const arte = ARTES[i.act];
+  if (arte) {
     return `<button class="ilha ilha-arte ${i.cls ?? ''}${i.breve ? ' breve' : ''}" data-act="${i.act}" style="--x:${i.x}%;--y:${i.y}%;--d:${(k % 4) * -1.3}s" aria-label="${i.nome}${i.sub ? `: ${i.sub}` : ''}${i.breve ? ` (${T.emBreve})` : ''}">`
-      + `<img src="${placa}" alt="" draggable="false">`
+      + `<img src="${arte}" alt="" draggable="false">`
+      + `<span class="placa"><i class="pl-gema c" aria-hidden="true"></i><i class="pl-gema b" aria-hidden="true"></i><b>${i.nome}</b>${i.sub ? `<small>${i.sub}</small>` : ''}</span>`
       + (i.breve ? `<span class="cadeado" aria-hidden="true">🔒<small>${T.emBreve}</small></span>` : '')
       + '</button>';
   }
@@ -72,12 +73,12 @@ export function hubHtml(now: Date, deck: DeckMontado | null, prog: Progresso, al
   // a ilha de montar deck usa um signo que não aparece em outra ilha nem no evento da temporada
   // disposição: 3 ilhas em cima (Conhecer, Campanha, Torneio) e 3 embaixo (Montar, Partida Rápida, Ranqueada)
   const ilhas: Ilha[] = [
-    { act: 'conhecer', nome: T.conhecerDecks, sub: T.conhecerSub, x: 26, y: 45, w: .64, figs: criatura('peixes25') + criatura('gemeos25', 'peq', true) },
-    { act: 'campanha', nome: T.campanha, sub: T.campSub, x: 50, y: 44, w: .64, figs: criatura('capricornio25') + criatura('capricornio22', 'peq', true) },
-    { act: 'torneio', nome: T.torneio, sub: T.torneioSub, x: 74, y: 47, w: .58, breve: true, figs: criatura('sagitario25') },
-    { act: 'montar', nome: T.montarDeck, sub: T.montarSubHub, x: 26, y: 77, w: .64, cls: 'deck', figs: '<span class="leque"><i></i><i></i><i></i></span>' + criatura(tem === 'aquario' ? 'cancer25' : 'aquario25', 'peq frente') },
-    { act: 'rapida', nome: T.partidaRapida, sub: T.rapidaSub, x: 50, y: 77, w: .86, cls: 'principal', figs: criatura('aries25') + criatura('leao25', '', true) },
-    { act: 'ranqueada', nome: T.ranqueada, sub: T.ranqueadaSub, x: 74, y: 77, w: .6, breve: true, figs: criatura('touro25') + criatura('escorpiao25', '', true) },
+    { act: 'conhecer', nome: T.conhecerDecks, sub: T.conhecerSub, x: 26, y: 40, w: .64, figs: criatura('peixes25') + criatura('gemeos25', 'peq', true) },
+    { act: 'campanha', nome: T.campanha, sub: T.campSub, x: 50, y: 40, w: .64, figs: criatura('capricornio25') + criatura('capricornio22', 'peq', true) },
+    { act: 'torneio', nome: T.torneio, sub: T.torneioSub, x: 74, y: 40, w: .58, breve: true, figs: criatura('sagitario25') },
+    { act: 'montar', nome: T.montarDeck, sub: T.montarSubHub, x: 26, y: 75, w: .64, cls: 'deck', figs: '<span class="leque"><i></i><i></i><i></i></span>' + criatura(tem === 'aquario' ? 'cancer25' : 'aquario25', 'peq frente') },
+    { act: 'rapida', nome: T.partidaRapida, sub: T.rapidaSub, x: 50, y: 75, w: .86, cls: 'principal', figs: criatura('aries25') + criatura('leao25', '', true) },
+    { act: 'ranqueada', nome: T.ranqueada, sub: T.ranqueadaSub, x: 74, y: 75, w: .6, breve: true, figs: criatura('touro25') + criatura('escorpiao25', '', true) },
   ];
   const r = RACES[avatar];
   return `<div class="hub hub-v2" style="--rc:${r.c}">`

@@ -1999,3 +1999,8 @@ body.rot .ov.pk-det>.panel.pk-janela{width:96vh;max-width:min(980px,96vh);max-he
 .hub-v2 .ilha.ilha-arte .cadeado{top:34%;bottom:auto;translate:-50% -50%}
 .hub-v2 .ilha.ilha-arte{width:min(25cqw,58cqh)}
 .hub-v2 .ilha.ilha-arte.principal{width:min(27cqw,63cqh)}
+.hub-v2 .ilha.ilha-arte{width:min(20cqw,44cqh);translate:-50% -50%}
+.hub-v2 .ilha.ilha-arte.principal{width:min(22cqw,48cqh)}
+.hub-v2 .ilha.ilha-arte img{width:100%;max-height:30cqh;object-fit:contain}
+.hub-v2 .ilha.ilha-arte .placa{margin-top:-3cqh}
+.hub-v2 .ilha.ilha-arte .cadeado{top:32%}
