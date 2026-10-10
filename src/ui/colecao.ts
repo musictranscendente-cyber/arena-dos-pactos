@@ -105,13 +105,9 @@ function atributosHtml(id: string): string {
 
 /** Topo do painel: a criatura em pé respirando (como no tabuleiro) com custo, ataque e vida; sem arte, a carta. */
 function figuraDetalhe(id: string): string {
-  const c = card(id), b = baseCid(id);
-  const ats = `<span class="cd-at cd-custo-at" title="${T.custoMana}">${c.cost}</span>`
-    + (c.type === 'unit' ? `<span class="cd-at cd-atk" title="${T.ataque}">⚔️ ${c.atk}</span><span class="cd-at cd-hp" title="${T.vida}">❤️ ${c.hp}</span>`
-      : 'v' in c && typeof c.v === 'number' ? `<span class="cd-at cd-val">✨ ${c.v}</span>` : '');
-  if (!ARTE[b]) return `<div class="cd-carta">${cardHtml(c, c.cost, '', '', id)}</div>`;
-  return `<div class="cd-carta cd-fig"><div class="cd-palco"><img class="cd-bicho" src="${artUrl(id, c.race, 'parado')}" alt="${c.name}" draggable="false"></div>`
-    + `<div class="cd-ats-fig">${ats}</div><span class="cd-nvtag">Nv${nivelDe(id)} ${'★'.repeat(nivelDe(id))}</span></div>`;
+  const c = card(id);
+  if (!ARTE[baseCid(id)]) return `<div class="cd-carta">${cardHtml(c, c.cost, '', '', id)}</div>`;
+  return `<div class="cd-carta cd-fig"><img class="cd-bicho" src="${artUrl(id, c.race, 'parado')}" alt="${c.name}" draggable="false"></div>`;
 }
 
 /** Painel da carta escolhida: detalhes completos e a fusão (Atual → Resultado → Cópias). */

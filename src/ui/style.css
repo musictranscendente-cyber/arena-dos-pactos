@@ -2347,3 +2347,6 @@ body:not(.batalha) .som-painel{top:80px;left:66px}
 @media (prefers-reduced-motion:reduce){.cd-bicho,.ov.campanha .cp-fase .cp-fig{animation:none}}
 .cd-at{font-size:12px;padding:0 6px}
 .cd-ats-fig{gap:3px;flex-wrap:nowrap}
+/* coleção: só a criatura, sem moldura nem enfeites */
+.cd-carta.cd-fig{background:none;border:none;padding:0;width:150px;align-self:center;justify-content:center}
+.cd-fig .cd-bicho{max-height:170px;max-width:150px}
