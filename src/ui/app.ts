@@ -101,6 +101,8 @@ function emDia(): void {
 function mudarProgresso(p: Progresso): void { prog = p; salvarProgresso(p); }
 let telaPacotes: TelaPacotes = { aberto: null, qtd: 1, confirmar: false };
 let telaColecao: TelaColecao = { filtro: 'todas', sel: null, msg: '' };
+/** Trava para não fazer duas fusões ao mesmo tempo com as mesmas cópias. */
+let fundindo = false;
 /** Cartas recebidas mostradas por cima de tudo (pacote, prêmio). */
 let revela: string | null = null;
 let montagem: Montagem | null = null;
@@ -778,21 +780,38 @@ function menuClick(a: string | undefined, t: HTMLElement): boolean {
     case 'crar': telaColecao = proximoFiltro(telaColecao, 'rar'); render(); return true;
     case 'ctipo': telaColecao = proximoFiltro(telaColecao, 'tipo'); render(); return true;
     case 'cajuda': telaColecao = { ...telaColecao, ajuda: !telaColecao.ajuda }; render(); return true;
-    case 'ccarta': telaColecao = { ...telaColecao, sel: t.dataset.k!, msg: '' }; keepScroll(); return true;
+    case 'ccarta': telaColecao = { ...telaColecao, sel: t.dataset.k!, msg: '', confirmar: false, fundiu: undefined }; keepScroll(); return true;
+    case 'cfechar': telaColecao = { ...telaColecao, sel: null, msg: '', confirmar: false, fundiu: undefined }; keepScroll(); return true;
+    case 'cfundir-nao': telaColecao = { ...telaColecao, confirmar: false }; keepScroll(); return true;
     case 'cfundir': {
+      // 1º toque: confere os requisitos e pede confirmação (nada é gasto ainda)
       const k = telaColecao.sel, nv = Number(t.dataset.nv);
       if (!k) return true;
       const motivo = podeFundir(prog, baseCid(k), nv);
-      if (motivo === 'poeira') telaColecao.msg = T.semPoeira;
-      else if (!motivo) {
-        mudarProgresso(fundir(prog, baseCid(k), nv));
-        sincronizarDecks();
-        telaColecao.msg = T.fundiu(card(k).name, nv + 1);
-        // sem par no nível atual: mostra a carta nova (o nível de cima)
-        if (copiasNoNivel(prog, k) < 2) telaColecao.sel = comNivel(k, nv + 1);
-        tocar('buff');
-      }
+      telaColecao = { ...telaColecao, fundiu: undefined, msg: motivo === 'poeira' ? T.semPoeira : motivo ? T.precisaCopias : '', confirmar: !motivo };
       keepScroll();
+      return true;
+    }
+    case 'cfundir-ok': {
+      // confirmou: valida de novo e só então gasta as cópias e a Poeira (uma fusão por vez)
+      const k = telaColecao.sel, nv = Number(t.dataset.nv);
+      if (!k || fundindo) return true;
+      fundindo = true;
+      try {
+        if (podeFundir(prog, baseCid(k), nv)) { telaColecao = { ...telaColecao, confirmar: false, msg: T.fusaoInvalida }; keepScroll(); return true; }
+        const novo = fundir(prog, baseCid(k), nv);
+        if (novo === prog) { telaColecao = { ...telaColecao, confirmar: false, msg: T.fusaoInvalida }; keepScroll(); return true; }
+        mudarProgresso(novo);
+        sincronizarDecks();
+        const prox = comNivel(k, nv + 1);
+        // sem cópias no nível de antes: o painel passa a mostrar a carta nova
+        const sel = copiasNoNivel(prog, k) > 0 ? k : prox;
+        telaColecao = { ...telaColecao, sel, confirmar: false, fundiu: prox, msg: T.fundiu(card(k).name, nv + 1) };
+        tocar('buff');
+        keepScroll();
+        const marca = telaColecao;
+        window.setTimeout(() => { if (telaColecao === marca) telaColecao = { ...telaColecao, fundiu: undefined }; }, 1500);
+      } finally { fundindo = false; }
       return true;
     }
     case 'pver': telaPacotes = { aberto: t.dataset.r as Signo | 'estelar', qtd: 1, confirmar: false }; render(); return true;

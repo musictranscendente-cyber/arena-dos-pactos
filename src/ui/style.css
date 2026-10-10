@@ -1698,3 +1698,72 @@ body.rot .ov.rapida .nv-topo h2{font-size:clamp(34px,6.4vh,60px)}
 .ov.rapida .nivel b{font-family:var(--fonte-titulo);font-weight:800}
 .ov.rapida .nv-topo h2{background:linear-gradient(180deg,#fffbe6 5%,#ffe7a0 35%,#f6c95a 60%,#c88a2a 92%);-webkit-background-clip:text;background-clip:text;
   filter:drop-shadow(0 2px 0 #4a2200) drop-shadow(0 0 10px #f6c95a44) drop-shadow(0 4px 6px #000a)}
+
+/* ================= Coleção: painel da carta e fusão (só .colecao) ================= */
+.ov.montar.gal.colecao>.panel{flex-direction:row;gap:12px}
+.colecao .c-esq{flex:1 1 0;min-width:0;min-height:0;display:flex;flex-direction:column}
+.colecao .m-corpo{display:flex;flex:1 1 0;min-height:0;margin-top:6px}
+.colecao .m-corpo .ggrid{flex:1 1 0;min-width:0;height:100%}
+.colecao .c-dica{margin:6px 0 0;padding:4px 10px;font-size:12.5px}
+/* etiqueta "⚡ Fundir" (não depende só da cor verde) */
+.colecao .card{position:relative}
+.c-tag-fundir{position:absolute;left:50%;bottom:-7px;translate:-50% 0;z-index:5;white-space:nowrap;font-size:10px;font-weight:900;line-height:1;
+  color:#0c2a12;background:linear-gradient(180deg,#b6ffb8,#4fdc63);border:1px solid #1d5a26;border-radius:999px;padding:2px 7px;box-shadow:0 2px 4px #0008}
+/* painel da carta (à direita) */
+.c-det{position:relative;flex:0 0 52%;min-width:0;min-height:0;display:flex;align-items:flex-start;justify-content:center;overflow:hidden;
+  border-radius:14px;border:1.5px solid #e9c46a;background:radial-gradient(90% 60% at 50% 0%,color-mix(in srgb,var(--rc) 22%,#2a1866),#160c3c 70%);
+  box-shadow:0 0 0 1px #2a1606,inset 0 0 30px #0007}
+.c-det-in{width:440px;flex:none;padding:12px 14px 14px;box-sizing:border-box}
+.cd-topo{display:flex;align-items:center;gap:8px;margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid #e9c46a66}
+.cd-topo h3{flex:1;margin:0;font-family:var(--fonte-titulo);font-weight:800;font-size:26px;line-height:1.05;color:#ffe08a;text-shadow:0 2px 2px #000a}
+.cd-topo .m-fecha{flex:none}
+.cd-msg{margin:0 0 8px;padding:5px 10px;border-radius:9px;font-size:13.5px;font-weight:700;background:#1f5a2c;border:1px solid #6dff7e88;color:#eaffea;animation:cd-msg .4s ease-out}
+@keyframes cd-msg{from{opacity:0;translate:0 -4px}}
+.cd-cima{display:flex;gap:12px;align-items:flex-start}
+.cd-carta{flex:none;width:132px}
+.cd-carta .card,.cd-col .card{width:100%;height:auto;aspect-ratio:92/132;flex:none;pointer-events:none;min-height:0}
+.cd-txt{flex:1;min-width:0}
+.cd-info p{margin:0 0 4px;font-size:13.5px;line-height:1.3;color:#f1eaff}
+.cd-info span{color:#c9bde6}
+.cd-rar{color:var(--rr)}
+.cd-nv{margin-left:6px;font-size:12px;color:#ffe08a;border:1px solid #e9c46a88;border-radius:999px;padding:0 7px}
+.cd-info .c-nv{font-size:11px}
+.cd-hab{margin-top:6px;padding:6px 9px;border-radius:10px;background:#0d082899;border:1px solid #e9c46a44}
+.cd-hab h4,.cd-fusao h4{margin:0 0 3px;font-family:var(--fonte-titulo);font-weight:800;font-size:14px;letter-spacing:.5px;text-transform:uppercase;color:#f6d27a}
+.cd-hab .z-hab{list-style:none;margin:0;padding:0;font-size:13px;line-height:1.3}
+.cd-hab .z-hab li{margin:2px 0}.cd-hab b{color:#ffd57a}
+.cd-hab .z-magia{margin:0;font-size:13px;line-height:1.3}
+/* fusão: Atual ❯❯❯ Resultado | Cópias necessárias */
+.cd-fusao{margin-top:10px;padding:8px 10px 10px;border-radius:12px;border:1.5px solid #e9c46a;background:linear-gradient(180deg,#1c0f48,#120a30);box-shadow:inset 0 0 18px #0008}
+.cd-fusao h4{text-align:center;font-size:16px;margin-bottom:6px}
+.cd-fusao-linha{display:grid;grid-template-columns:86px auto 86px 1fr;align-items:center;gap:8px}
+.cd-col{display:flex;flex-direction:column;align-items:center;gap:4px;min-width:0}
+.cd-col>small{font-size:12px;color:#e6dcff;font-weight:700}
+.cd-ats{display:flex;gap:6px;font-size:13px;font-weight:900}
+.cd-ats .c-at i{font-style:normal;font-size:11px;margin-right:1px}
+.cd-ats.sobe{color:#9dffaa}
+.cd-seta{font-size:22px;font-weight:900;color:#f6d27a;letter-spacing:-6px;text-shadow:0 0 6px #f6c95a88}
+.cd-col .card.depois{box-shadow:0 0 0 2px #6dff7e,0 0 10px #3dff5a66}
+.cd-req{align-self:stretch;justify-content:center;padding:6px;border-radius:10px;background:#0d0828aa;border:1px solid #e9c46a55}
+.cd-qtd{font-family:var(--fonte-titulo);font-size:24px;color:#ff9a8a}
+.cd-qtd.ok{color:#7dff8e}
+.cd-custo{font-size:12.5px;color:#ff9a8a;font-weight:700}
+.cd-custo.ok{color:#ffe08a}
+.btn.cd-fundir{width:100%;min-height:38px;font-size:19px;padding:0 6px;margin-top:2px;text-transform:uppercase;letter-spacing:.5px}
+.btn.cd-fundir::before,.btn.cd-fundir::after{display:none}
+.cd-motivo{margin:6px 0 0;font-size:13px;text-align:center;color:#ffcfc4}
+/* animação curta quando a carta nova nasce */
+.cd-col .card.nasceu{animation:cd-nasce .9s ease-out}
+@keyframes cd-nasce{0%{transform:scale(.6);filter:brightness(3) saturate(0)}40%{transform:scale(1.12);filter:brightness(1.8)}100%{transform:none;filter:none}}
+/* confirmação por cima do painel */
+.cd-confirma{position:absolute;inset:0;z-index:10;display:grid;place-items:center;background:#07041acc;backdrop-filter:blur(2px);padding:12px}
+.cd-confirma-caixa{max-width:340px;padding:14px 16px;border-radius:14px;text-align:center;border:1.5px solid #e9c46a;background:linear-gradient(180deg,#2a1866,#160c3c);box-shadow:0 0 0 1px #2a1606,0 10px 24px #000c}
+.cd-confirma-caixa p{margin:0 0 12px;font-size:15px;line-height:1.4}
+.cd-confirma-bts{display:flex;gap:10px}.cd-confirma-bts .btn{flex:1;min-height:40px;font-size:16px}
+.cd-confirma-bts .btn.go::before,.cd-confirma-bts .btn.go::after{display:none}
+/* celular em pé sem girar: o painel vira janela por cima da coleção */
+@media (max-width:620px){body:not(.rot) .c-det{position:fixed;inset:8px;z-index:30;flex:none}}
+@media (prefers-reduced-motion:reduce){.cd-col .card.nasceu,.cd-msg{animation:none}}
+.cd-carta .card,.cd-col .card{height:auto !important;min-height:0 !important}
+.cd-carta .card{aspect-ratio:92/132}
+.c-det{flex-basis:50%}

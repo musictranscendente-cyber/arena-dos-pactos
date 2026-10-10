@@ -51,21 +51,25 @@ function compara(atual: number, original: number): string {
   return atual > original ? ' up' : atual < original ? ' down' : '';
 }
 
+/** Habilidades da carta explicadas (criatura: cada palavra-chave e o efeito ao entrar; magia: o efeito). */
+export function habilidadesHtml(cid: string): string {
+  const c = card(cid);
+  if (c.type !== 'unit') return `<p class="z-magia"><b>✨ ${T.magia}</b> ${cardText(c)}</p>`;
+  const habs = c.kw.map(k => `<li><b>${KW[k].i} ${KW[k].n}</b> ${KW[k].d}</li>`);
+  if (c.on) habs.push(`<li><b>⭐ ${T.aoEntrar}</b> ${cardText({ ...c, kw: [] })}</li>`);
+  return `<ul class="z-hab">${habs.length ? habs.join('') : `<li>${T.semHabilidade}</li>`}</ul>`;
+}
+
 export function zoomHtml(z: Zoom): string {
   const c = card(z.cid);
   const r = RACES[c.race];
   const img = ARTE[z.cid]
     ? `<img src="${artUrl(z.cid, c.race, 'parado')}" alt="">`
     : c.art ? `<img src="${c.art}" alt="">` : `<span class="z-emo">${c.e}</span>`;
-  let corpo: string;
-  if (c.type === 'unit') {
-    const habs = c.kw.map(k => `<li><b>${KW[k].i} ${KW[k].n}</b> ${KW[k].d}</li>`);
-    if (c.on) habs.push(`<li><b>⭐ ${T.aoEntrar}</b> ${cardText({ ...c, kw: [] })}</li>`);
-    corpo = `<div class="z-st"><span class="z-a"><b class="a${compara(z.atk ?? c.atk, c.atk)}">${z.atk ?? c.atk}</b> ${T.ataque}</span><span class="z-h"><b class="h${compara(z.hp ?? c.hp, c.hp)}">${z.hp ?? c.hp}</b> ${T.vida}</span></div>`
-      + `<ul class="z-hab">${habs.length ? habs.join('') : `<li>${T.semHabilidade}</li>`}</ul>`;
-  } else {
-    corpo = `<p class="z-magia"><b>✨ ${T.magia}</b> ${cardText(c)}</p>`;
-  }
+  const corpo = c.type === 'unit'
+    ? `<div class="z-st"><span class="z-a"><b class="a${compara(z.atk ?? c.atk, c.atk)}">${z.atk ?? c.atk}</b> ${T.ataque}</span><span class="z-h"><b class="h${compara(z.hp ?? c.hp, c.hp)}">${z.hp ?? c.hp}</b> ${T.vida}</span></div>`
+      + habilidadesHtml(z.cid)
+    : habilidadesHtml(z.cid);
   return `<div class="zoom lado-${z.lado} r-${c.r}" style="--rc:${r.c};--rr:${RARITY[c.r].col}" aria-live="polite">`
     + `<div class="z-topo"><span class="cost">${z.cost ?? c.cost}</span><span class="z-nome">${c.name}</span></div>`
     + elemHtml(c)
@@ -86,6 +90,13 @@ function encolher(z: HTMLElement, v: string, passou: () => boolean, min = 0.55):
  * 2) a carta inteira muda de escala para caber no lugar (painel do lado ou meio da arena).
  */
 export function ajustarZooms(root: ParentNode = document): void {
+  // painel da carta na Coleção: desenho de largura fixa, escala inteira para caber no espaço
+  root.querySelectorAll<HTMLElement>('.c-det-in').forEach(d => {
+    d.style.removeProperty('zoom');
+    const box = d.parentElement!;
+    const k = Math.min(box.clientWidth / d.offsetWidth, box.clientHeight / d.offsetHeight, 1.5);
+    d.style.setProperty('zoom', String(Math.max(0.4, Math.floor(k * 1000) / 1000)));
+  });
   root.querySelectorAll<HTMLElement>('.zoom').forEach(z => {
     z.style.removeProperty('zoom');
     const nome = z.querySelector<HTMLElement>('.z-nome'), rar = z.querySelector<HTMLElement>('.z-rar');

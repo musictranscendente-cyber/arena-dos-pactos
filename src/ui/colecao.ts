@@ -8,7 +8,8 @@ import { T } from '../data/textos';
 import {
   CARTAS_PACOTE, CHANCES, copiasNoNivel, CUSTO_FUSAO, MAX_PACOTES, niveisQueTem, podeFundir, PRECO_PACOTE, PRECO_PACOTE_SIGNO, precoPacote, type Progresso,
 } from '../meta/progresso';
-import { cardHtml, zoomHtml } from './desenho';
+import { cardHtml, habilidadesHtml } from './desenho';
+import { ELEMENTO } from '../data/signos';
 
 function fecha(): string {
   return `<button class="m-fecha" data-act="hub" aria-label="${T.sair}" title="${T.sair}">✕</button>`;
@@ -40,6 +41,10 @@ export interface TelaColecao {
   tipo?: 'todos' | 'unit' | 'spell';
   /** Explicação da fusão aberta (botão ⓘ). */
   ajuda?: boolean;
+  /** Janela de confirmação da fusão aberta. */
+  confirmar?: boolean;
+  /** Carta que acabou de nascer de uma fusão (toca a animação uma vez). */
+  fundiu?: string;
 }
 
 export const ORDEM_RAR: (Raridade | 'todas')[] = ['todas', 'c', 'r', 'e', 'l'];
@@ -74,30 +79,67 @@ export function colecaoHtml(p: Progresso, t: TelaColecao): string {
     + `<button class="c-aba c-ciclo${tipoF !== 'todos' ? ' on' : ''}" data-act="ctipo">${T.filtroTipo}: <b>${tipoF === 'todos' ? T.todos : tipoF === 'unit' ? T.criaturas : T.magiasTipo}</b></button>`
     + `<button class="c-aba c-info${t.ajuda ? ' on' : ''}" data-act="cajuda" aria-label="${T.comoFundir}" title="${T.comoFundir}">ⓘ</button>`;
   const cards = entradas.map(({ id, n }) => {
-    const cls = [n ? 'tenho' : 'bloq', t.sel === id ? 'sel' : '', n && !podeFundir(p, id, nivelDe(id)) ? 'fundivel' : ''].join(' ');
-    return cardHtml(card(id), card(id).cost, `data-act="ccarta" data-k="${id}" data-n="${n}" tabindex="0" role="button"`, cls, id);
+    const pode = n > 0 && !podeFundir(p, id, nivelDe(id));
+    const cls = [n ? 'tenho' : 'bloq', t.sel === id ? 'sel' : '', pode ? 'fundivel' : ''].join(' ');
+    // além do brilho verde, as que dá para fundir levam a etiqueta "⚡ Fundir"
+    const html = cardHtml(card(id), card(id).cost, `data-act="ccarta" data-k="${id}" data-n="${n}" tabindex="0" role="button"${pode ? ` aria-label="${card(id).name}: ${T.fundivelTag}"` : ''}`, cls, id);
+    return pode ? html.replace(/<\/div>$/, `<span class="c-tag-fundir">⚡ ${T.fundivelTag}</span></div>`) : html;
   }).join('') || `<p class="m-dica">${T.nenhumaCarta}</p>`;
-  let lado = `<p class="m-dica">${t.msg || T.toqueColecao}</p>`;
-  if (t.sel) {
-    const id = t.sel, nv = nivelDe(id), n = copiasNoNivel(p, id);
-    const outros = niveisQueTem(p, id).filter(x => x !== id).map(x => `<span class="c-nv"><b>Nv${nivelDe(x)}</b>×${copiasNoNivel(p, x)}</span>`).join('');
-    // fusão: mostra a carta como está e como fica depois (Nv atual → Nv seguinte)
-    let fusao = '';
-    if (n >= 2 && nv < NIVEL_MAX) {
-      const prox = comNivel(id, nv + 1), motivo = podeFundir(p, id, nv);
-      fusao = `<div class="c-fusao"><div class="c-f-carta">${cardHtml(card(id), card(id).cost, '', '', id)}<small>2×</small></div><span class="c-f-seta">➜</span>`
-        + `<div class="c-f-carta">${cardHtml(card(prox), card(prox).cost, '', 'depois', prox)}<small>1×</small></div></div>`
-        + `<button class="btn go c-fundir" data-act="cfundir" data-nv="${nv}" ${motivo ? 'disabled' : ''}>${T.fundir(nv, CUSTO_FUSAO[nv + 1])}</button>`;
-    }
-    lado = (t.msg ? `<p class="m-dica">${t.msg}</p>` : '')
-      + `<div class="c-resumo"><b>${n ? `${T.nivelN(nv)}: ×${n}` : T.naoTem}</b>${outros ? `<small>${T.outrosNiveis}</small>${outros}` : ''}</div>`
-      + (fusao || `<div class="m-detalhe">${zoomHtml({ cid: id, lado: 'p' })}</div>`);
-  }
+  const sel = t.sel;
+  const det = sel ? detalheHtml(p, sel, t) : '';
   const ajuda = t.ajuda ? `<div class="c-ajuda" data-act="cajuda"><p><b>${T.comoFundir}</b></p><p>${T.fusaoAjuda}</p><p>${T.bonusNivel}</p><p>${T.precisaCopias}</p></div>` : '';
-  return `<div class="ov montar gal colecao"><div class="panel wide"><div class="m-fixo">`
-    + `<div class="gtop"><h2>${T.colecao} <small>${tem}/360</small></h2><span class="m-topo-bts">${moedasHtml(p)}${fecha()}</span></div>`
-    + `<div class="c-abas">${abas}</div><div class="c-abas c-filtros">${filtros}</div></div>`
-    + `<div class="m-corpo"><div class="m-lado">${lado}</div><div class="ggrid">${cards}</div></div>${ajuda}</div></div>`;
+  return `<div class="ov montar gal colecao${sel ? ' com-sel' : ''}"><div class="panel wide"><div class="c-esq"><div class="m-fixo">`
+    + `<div class="gtop"><h2>${T.colecao} <small>${tem}/360</small></h2><span class="m-topo-bts">${moedasHtml(p)}${sel ? '' : fecha()}</span></div>`
+    + `<div class="c-abas">${abas}</div><div class="c-abas c-filtros">${filtros}</div>`
+    + (sel ? '' : `<p class="m-dica c-dica">${t.msg || T.toqueColecao}</p>`) + '</div>'
+    + `<div class="m-corpo"><div class="ggrid">${cards}</div></div></div>${det}${ajuda}</div></div>`;
+}
+
+/** Atributos que mudam entre dois níveis da mesma carta (ataque/vida da criatura ou o valor da magia). */
+function atributosHtml(id: string): string {
+  const c = card(id);
+  if (c.type === 'unit') return `<span class="c-at"><i>⚔️</i>${c.atk}</span><span class="c-at"><i>❤️</i>${c.hp}</span>`;
+  return 'v' in c && typeof c.v === 'number' ? `<span class="c-at"><i>✨</i>${c.v}</span>` : '';
+}
+
+/** Painel da carta escolhida: detalhes completos e a fusão (Atual → Resultado → Cópias). */
+function detalheHtml(p: Progresso, id: string, t: TelaColecao): string {
+  const c = card(id), nv = nivelDe(id), n = copiasNoNivel(p, id), r = RACES[c.race];
+  const outros = niveisQueTem(p, id).filter(x => x !== id).map(x => `<span class="c-nv"><b>Nv${nivelDe(x)}</b>×${copiasNoNivel(p, x)}</span>`).join('');
+  const info = `<div class="cd-info">`
+    + `<p><span>${T.rotTipo}:</span> ${c.type === 'unit' ? T.tipoCriatura : T.tipoMagia}</p>`
+    + `<p><span>${T.rotSigno}:</span> ${r.g} ${r.n} · ${ELEMENTO[r.el].i} ${r.el}</p>`
+    + `<p><span>${T.rotRaridade}:</span> <b class="cd-rar" style="--rr:${RARITY[c.r].col}">${RARITY[c.r].n}</b> <b class="cd-nv">Nv${nv} ${'★'.repeat(nv)}</b></p>`
+    + `<p><span>${T.rotCopias}:</span> <b>${n ? `×${n}` : T.naoTem}</b>${outros ? ` <small>${T.outrosNiveis}</small> ${outros}` : ''}</p></div>`;
+  const hab = `<div class="cd-hab"><h4>${c.type === 'unit' ? 'Habilidades' : T.tipoMagia}</h4>${habilidadesHtml(id)}</div>`;
+  // fusão: regras reais (2 cópias do mesmo nível + Poeira; até o nível máximo)
+  let fusao: string;
+  if (n > 0) {
+    let corpo: string;
+    if (nv >= NIVEL_MAX) corpo = `<p class="cd-motivo">${T.nivelMaximo}</p>`;
+    else {
+      const prox = comNivel(id, nv + 1), custo = CUSTO_FUSAO[nv + 1], motivo = podeFundir(p, id, nv);
+      const porque = motivo === 'copias' ? T.faltamCopias(2 - n) : motivo === 'poeira' ? T.faltaPoeira(custo - p.poeira) : '';
+      corpo = `<div class="cd-fusao-linha">`
+        + `<div class="cd-col"><small>${T.fusaoAtual}</small>${cardHtml(c, c.cost, '', '', id)}<span class="cd-ats">${atributosHtml(id)}</span></div>`
+        + `<span class="cd-seta" aria-hidden="true">❯❯❯</span>`
+        + `<div class="cd-col"><small>${T.fusaoResultado}</small>${cardHtml(card(prox), card(prox).cost, '', `depois${t.fundiu === prox ? ' nasceu' : ''}`, prox)}<span class="cd-ats sobe">${atributosHtml(prox)}</span></div>`
+        + `<div class="cd-col cd-req"><small>${T.fusaoCopias}</small><b class="cd-qtd${n >= 2 ? ' ok' : ''}">${n} / 2</b>`
+        + `<span class="cd-custo${p.poeira >= custo ? ' ok' : ''}">${T.fusaoCusto}: ✨ ${custo}</span>`
+        + `<button class="btn go cd-fundir" data-act="cfundir" data-nv="${nv}" ${motivo ? 'disabled aria-disabled="true"' : ''}>${T.fusaoBotao}</button></div></div>`
+        + (porque ? `<p class="cd-motivo">${porque}</p>` : '');
+    }
+    fusao = `<div class="cd-fusao"><h4>${T.fusaoTitulo}</h4>${corpo}</div>`;
+  } else fusao = `<p class="cd-motivo">${T.precisaCopias}</p>`;
+  const confirmar = t.confirmar && nv < NIVEL_MAX
+    ? `<div class="cd-confirma" role="dialog" aria-modal="true"><div class="cd-confirma-caixa"><p>${T.confirmarFusao(c.name, nv, CUSTO_FUSAO[nv + 1])}</p>`
+      + `<div class="cd-confirma-bts"><button class="btn rc" data-act="cfundir-nao">${T.cancelar}</button><button class="btn go" data-act="cfundir-ok" data-nv="${nv}">${T.confirmar}</button></div></div></div>`
+    : '';
+  return `<aside class="c-det" style="--rc:${r.c}" aria-label="${c.name}"><div class="c-det-in">`
+    + `<div class="cd-topo"><h3>${c.name}</h3><button class="m-fecha" data-act="cfechar" aria-label="${T.fechar}" title="${T.fechar}">✕</button></div>`
+    + (t.msg ? `<p class="cd-msg">${t.msg}</p>` : '')
+    + `<div class="cd-cima"><div class="cd-carta">${cardHtml(c, c.cost, '', '', id)}</div><div class="cd-txt">${info}${hab}</div></div>`
+    + fusao + '</div>' + confirmar + '</aside>';
 }
 
 export const NOMES_R: Record<Raridade, string> = { c: 'Comum', r: 'Rara', e: 'Épica', l: 'Lendária' };
