@@ -2071,3 +2071,29 @@ body.sem-giro .ov.conhecer>.panel,body.sem-giro .ov.missoes>.panel{width:100%;ma
 .hub-v2 .hub-bt-arte:hover,.hub-v2 .hub-bt-arte:focus-visible{filter:drop-shadow(0 4px 6px #000a) brightness(1.12)}
 .hub-v2 .hub-bt-arte .hub-alerta{top:0;right:4%}
 .hub-v2 .hub-col.esq,.hub-v2 .hub-base.esq{gap:.6cqh}
+/* figuras das ilhas um pouco menores */
+.hub-v2 .ilha.ilha-arte img{max-height:24cqh}
+.hub-v2 .ilha.ilha-arte{width:min(18cqw,40cqh)}
+.hub-v2 .ilha.ilha-arte.principal{width:min(20cqw,44cqh)}
+.hub-v2 .hub-bt.hub-bt-arte{width:min(20cqh,80px)}
+/* perfil e evento: largura certa, textos sem embolar */
+.hub-col.dir{width:min(56cqh,250px)}
+.hub-v2 .hub-perfil{padding:.6cqh 1.4cqh .6cqh .6cqh;gap:1.2cqh}
+.hub-v2 .hub-perfil .medal{width:min(11cqh,46px);height:min(11cqh,46px)}
+.hub-v2 .hub-perfil .medal span{font-size:min(6cqh,24px)}
+.hub-v2 .hub-nome b{font-size:min(4.4cqh,18px);line-height:1.1}
+.hub-v2 .hub-nome small{font-size:min(3cqh,12px);line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block;max-width:100%}
+.hub-v2 .hub-nome .moedas{display:flex;gap:.8cqh;margin-top:.4cqh;flex-wrap:nowrap}
+.hub-v2 .hub-nome .moedas span{padding:0 1cqh}
+.hub-v2 .hub-evento{display:flex;align-items:center;gap:1cqh;padding:.5cqh 1.2cqh .5cqh .5cqh;text-align:left}
+.hub-v2 .hub-evento .ilha-fig.mini{flex:none;height:min(9cqh,36px);margin:0}
+.hub-v2 .hub-evento>span{min-width:0;flex:1}
+.hub-v2 .hub-evento b,.hub-v2 .hub-evento small{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.15}
+.hub-v2 .hub-evento b{font-size:min(3.3cqh,13px)}
+.hub-v2 .hub-evento small{font-size:min(2.9cqh,11.5px)}
+/* campanha: base das fases na cor do signo (sem a faixa verde) */
+.ov.campanha .cp-fase::after{background:linear-gradient(180deg,color-mix(in srgb,var(--rc) 70%,#fff) 0 14%,color-mix(in srgb,var(--rc) 35%,#3a2e54) 16%,#2a2140 60%,#140d26)}
+.ov.campanha .cp-fase.bloq::after{background:linear-gradient(180deg,#8a84a0 0 14%,#4a4460 16%,#2a2140 60%,#140d26)}
+.ov.campanha .cp-fase.feita{background:radial-gradient(circle at 50% 35%,color-mix(in srgb,var(--rc) 80%,#fff),color-mix(in srgb,var(--rc) 75%,#1a0a40));border-color:#ffd76a}
+.ov.campanha .cp-trilha line{stroke:color-mix(in srgb,var(--rc) 50%,#e9c46a)}
+.ov.campanha .cp-trilha line.feito{stroke:#ffd76a}
