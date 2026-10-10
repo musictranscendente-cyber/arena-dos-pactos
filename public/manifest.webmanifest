@@ -1,17 +1,31 @@
 {
+  "id": "./cosmic-citadel",
   "name": "Cosmic Citadel",
   "short_name": "Cosmic Citadel",
   "description": "Card game de batalha dos 12 signos do zodíaco.",
   "lang": "pt-BR",
-  "start_url": "./",
+  "start_url": "./?app=cosmic-citadel",
   "scope": "./",
   "display": "fullscreen",
   "orientation": "landscape",
   "background_color": "#0b0722",
   "theme_color": "#1a1040",
   "icons": [
-    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png" },
-    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png" },
-    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
   ]
 }
