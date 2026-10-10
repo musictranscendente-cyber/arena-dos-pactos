@@ -3,13 +3,40 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#263041">
+<meta name="theme-color" content="#1a1040">
+<meta name="application-name" content="Cosmic Citadel">
+<meta name="apple-mobile-web-app-title" content="Cosmic Citadel">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="icon" type="image/png" href="./favicon.png">
+<link rel="apple-touch-icon" href="./apple-touch-icon.png">
 <title>Cosmic Citadel</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Grenze+Gotisch:wght@700;800&family=Alegreya+Sans:wght@400;700;800&family=Alegreya+SC:wght@700;800&display=swap" rel="stylesheet">
 </head>
 <body>
+<!-- tela de carregamento: aparece antes de tudo e some quando o jogo está pronto -->
+<div id="carregando" role="status" aria-label="Carregando Cosmic Citadel">
+  <div class="cg-logo"></div>
+  <div class="cg-barra"><i id="cg-prog"></i></div>
+  <p class="cg-txt">Carregando…</p>
+</div>
+<style>
+#carregando{position:fixed;inset:0;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:12px;padding-bottom:9vh;
+  background:radial-gradient(60% 50% at 50% 40%,transparent,#0b0722cc 90%),linear-gradient(0deg,#0b0722 0,transparent 45%),url('./carregar-fundo.webp') center 30%/cover no-repeat,#0b0722;
+  transition:opacity .5s ease}
+#carregando.sai{opacity:0;pointer-events:none}
+#carregando .cg-logo{width:min(62vw,560px,80vh);aspect-ratio:900/455;background:url('./logo.webp') center/contain no-repeat;filter:drop-shadow(0 6px 14px #000c);animation:cg-flut 3s ease-in-out infinite}
+#carregando .cg-barra{position:relative;width:min(56vw,480px);height:16px;border-radius:999px;background:#0d0828;border:2px solid #e9c46a;
+  box-shadow:0 0 0 1.5px #3a2206,0 0 12px #f6c95a55,inset 0 2px 6px #000a;overflow:hidden}
+#carregando .cg-barra::before,#carregando .cg-barra::after{content:'';position:absolute;top:50%;width:10px;height:10px;translate:0 -50%;rotate:45deg;background:#f6d27a}
+#carregando .cg-barra i{display:block;height:100%;width:5%;border-radius:999px;background:linear-gradient(180deg,#9fe0ff,#3b8ff0 55%,#1f4fc2);box-shadow:0 0 10px #58b4ff;transition:width .3s ease}
+#carregando .cg-txt{margin:0;font-family:Georgia,serif;font-variant:small-caps;letter-spacing:3px;font-size:16px;color:#ffe9b0;text-shadow:0 2px 3px #000}
+@keyframes cg-flut{50%{translate:0 -6px}}
+@media (orientation:portrait){#carregando .cg-logo{width:min(86vw,560px)}#carregando .cg-barra{width:min(80vw,480px)}}
+</style>
 <div id="app"></div>
 <script type="module" src="/src/main.ts"></script>
 </body>

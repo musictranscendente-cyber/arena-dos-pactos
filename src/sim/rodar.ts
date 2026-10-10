@@ -34,7 +34,7 @@ const linhas = ORDER.map(s => {
   return { s, taxa: (p.v + p.e / 2) / jogos, ...p };
 }).sort((x, y) => y.taxa - x.taxa);
 
-console.log(`\nArena dos Pactos — simulador IA vs IA`);
+console.log(`\nCosmic Citadel — simulador IA vs IA`);
 console.log(`${total} partidas (${N} por confronto, cada par nos dois lados), semente ${SEED}, ${(ms / 1000).toFixed(1)}s\n`);
 console.log('Signo          Vitória   V    D    E   ');
 console.log('-------------  -------  ---  ---  ---');

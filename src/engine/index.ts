@@ -1,4 +1,4 @@
-// Motor de regras do Arena dos Pactos: TypeScript puro, sem DOM, sem Math.random, sem relógio.
+// Motor de regras do Cosmic Citadel: TypeScript puro, sem DOM, sem Math.random, sem relógio.
 // Entra estado + ações; sai estado novo + quadros/eventos para a interface animar.
 export * from './types';
 export { newGame, applyAction, surrender, isValidTarget, type ActionResult, type NewGameOptions } from './round';

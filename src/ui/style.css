@@ -1953,3 +1953,36 @@ body.rot .ov.pk-det>.panel.pk-janela{width:96vh;max-width:min(980px,96vh);max-he
   body.rot .pk-ex{height:clamp(40px,12vw,56px)}body.rot .pkj-bloco h4{font-size:11.5px;margin-bottom:3px}
   body.rot .pkj-meio,body.rot .pkj-baixo{padding-top:4px}body.rot .pk-janela .btn.pk-total{min-height:34px;font-size:17px}
 }
+
+/* ===== tela inicial: placas no estilo da referência (moldura dourada dupla, gemas azuis e estrelas nas pontas) ===== */
+.hub-v2 .placa{min-width:44cqh;padding:1cqh 4.6cqh 1.2cqh;border-radius:3cqh;border:2px solid #f6d27a;
+  background:linear-gradient(180deg,#3a2378,#22124e 55%,#170b38);
+  box-shadow:0 0 0 1.5px #5a3a0a,0 0 0 4px #c9953a,0 0 0 5.5px #3a2206,0 0 14px #f6c95a55,0 6px 12px #000b,inset 0 1px 0 #ffffff33,inset 0 0 14px #0008}
+/* estrelas de quatro pontas nas duas pontas */
+.hub-v2 .placa::before,.hub-v2 .placa::after{width:3.4cqh;height:3.4cqh;rotate:0deg;border:0;box-shadow:none;
+  clip-path:polygon(50% 0,60% 40%,100% 50%,60% 60%,50% 100%,40% 60%,0 50%,40% 40%);
+  background:radial-gradient(circle,#fffbe6 0 18%,#ffe08a 35%,#d9a640 70%);filter:drop-shadow(0 0 4px #ffd76a)}
+.hub-v2 .placa::before{left:-2.2cqh}.hub-v2 .placa::after{right:-2.2cqh}
+/* gemas azuis no meio da moldura, em cima e embaixo */
+.pl-gema{position:absolute;left:50%;width:2cqh;height:2cqh;translate:-50% 0;rotate:45deg;font-style:normal;pointer-events:none;
+  background:linear-gradient(135deg,#e6f6ff,#58b4ff 45%,#1f4fc2);border:1.5px solid #f6d27a;box-shadow:0 0 0 1px #3a2206,0 0 6px #58b4ffaa}
+.pl-gema.c{top:-1.4cqh}.pl-gema.b{bottom:-1.4cqh}
+/* títulos em versalete dourado, subtítulo claro */
+.hub-v2 .placa b{font-variant:small-caps;font-weight:800;letter-spacing:.6px;font-size:min(5.6cqh,23px);
+  background:linear-gradient(180deg,#fffbe6 10%,#ffe08a 45%,#e0a43a 90%);-webkit-background-clip:text;background-clip:text;color:transparent;
+  filter:drop-shadow(0 1.5px 0 #3a1a00) drop-shadow(0 2px 3px #000a);text-shadow:none}
+.hub-v2 .placa small{font-size:min(3cqh,12px);color:#f1eaff}
+/* Partida Rápida: placa vermelho-alaranjada */
+.hub-v2 .ilha.principal .placa{min-width:58cqh;background:linear-gradient(180deg,#e0582a,#b8341c 55%,#7a1c10);
+  box-shadow:0 0 0 1.5px #5a2a0a,0 0 0 4px #e0a43a,0 0 0 5.5px #3a1806,0 0 18px #ff9a3c88,0 6px 12px #000b,inset 0 1px 0 #fff6,inset 0 0 14px #0006}
+.hub-v2 .ilha.principal .placa b{font-size:min(7cqh,29px);background:linear-gradient(180deg,#fffbe6 10%,#ffe7a0 50%,#f6c95a 90%);-webkit-background-clip:text;background-clip:text}
+/* "Em breve": mesma moldura, só mais apagada */
+.hub-v2 .ilha.breve .placa{min-width:40cqh;padding-top:1.2cqh;filter:saturate(.55) brightness(.85)}
+.hub-v2 .ilha.breve .placa::before,.hub-v2 .ilha.breve .placa::after{background:radial-gradient(circle,#fffbe6 0 18%,#ffe08a 35%,#d9a640 70%)}
+.hub-v2 .cadeado{z-index:6}
+.hub-v2 .placa{min-width:0;width:max-content;max-width:23cqw;padding:.8cqh 3.2cqh 1cqh}
+.hub-v2 .placa b{font-size:min(4.8cqh,2.3cqw,22px);white-space:nowrap}
+.hub-v2 .placa small{font-size:min(2.7cqh,1.3cqw,12px);white-space:nowrap}
+.hub-v2 .ilha.principal .placa{min-width:0;max-width:26cqw;padding:1cqh 4cqh 1.1cqh}
+.hub-v2 .ilha.principal .placa b{font-size:min(6.2cqh,2.9cqw,28px)}
+.hub-v2 .ilha.breve .placa{min-width:0}
