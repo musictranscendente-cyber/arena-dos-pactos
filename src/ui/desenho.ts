@@ -7,7 +7,7 @@ import { currentSign, ELEMENTO, ORDER, RACES } from '../data/signos';
 import { cardText, KW, T } from '../data/textos';
 import { pronta } from './precarga';
 import { isRanged } from './projetil';
-import { ic } from './icones';
+import { ic, sg as sgImg, sgUrl } from './icones';
 import { iconeSom } from './som';
 import { costOf, effAtk, isValidTarget, type GameState, type Side, type Target } from '../engine';
 
@@ -74,7 +74,7 @@ export function zoomHtml(z: Zoom): string {
   return `<div class="zoom lado-${z.lado} r-${c.r}" style="--rc:${r.c};--rr:${RARITY[c.r].col}" aria-live="polite">`
     + `<div class="z-topo"><span class="cost">${z.cost ?? c.cost}</span><span class="z-nome">${c.name}</span></div>`
     + elemHtml(c)
-    + `<div class="z-arte">${img}<span class="z-sg">${r.g}</span></div>`
+    + `<div class="z-arte">${img}${sgImg(c.race, 'z-sg')}</div>`
     + `<div class="z-rar">${gemaHtml(c)}${RARITY[c.r].n} · ${ELEMENTO[r.el].i} ${r.el}${z.cid !== 'eco' ? ` · <span class="z-nv">${T.nivelN(nivelDe(z.cid))} ${'★'.repeat(nivelDe(z.cid))}</span>` : ''}</div>${corpo}</div>`;
 }
 
@@ -235,8 +235,8 @@ function boardHtml(v: View): string {
   // quem perdeu: o lado dele desce, treme e racha (empate: os dois)
   const caiu = (side: Side) => s.phase === 'over' && v.fim && (s.result === 'draw' || (s.result !== null && s.result !== side));
   const fim = (['p', 'e'] as const).filter(caiu).map(x => ` desaba-${x}`).join('') + (v.fim === 'fixo' ? ' desabado' : '');
-  let h = `<div class="board${fim}" style="--prc:${pr.c};--erc:${er.c}"><div class="plat mine" data-g="${pr.g}\uFE0E" style="--rc:${pr.c}"><i class="racha"></i></div>`
-    + `<div class="chasm"></div><div class="plat theirs" data-g="${er.g}\uFE0E" style="--rc:${er.c}"><i class="racha"></i></div>`;
+  let h = `<div class="board${fim}" style="--prc:${pr.c};--erc:${er.c}"><div class="plat mine" style="--rc:${pr.c};--sgimg:url('${sgUrl(s.p.sign)}')"><i class="racha"></i></div>`
+    + `<div class="chasm"></div><div class="plat theirs" style="--rc:${er.c};--sgimg:url('${sgUrl(s.e.sign)}')"><i class="racha"></i></div>`;
   for (let l = 0; l < 3; l++) {
     for (let d = 0; d < 3; d++) h += cellHtml(v, 'p', l, d) + cellHtml(v, 'e', l, d);
   }
@@ -256,7 +256,7 @@ function heroCard(s: GameState, side: Side, nivel?: string): string {
   const sub = T.deck(H.deck.length) + (side === 'e' && nivel ? ` · <b class="nv-tag">${nivel}</b>` : '');
   const extra = side === 'e' ? `<span class="gem" title="Mana">${H.max}</span>` : '';
   return `<div class="hcard ${side === 'p' ? 'mine' : 'theirs'}" style="--rc:${r.c}">`
-    + `<div class="medal"><span>${r.g}</span>${H.sign2 ? `<i class="medal2" style="--rc2:${RACES[H.sign2].c}">${RACES[H.sign2].g}</i>` : ''}</div>`
+    + `<div class="medal">${sgImg(H.sign)}${H.sign2 ? `<i class="medal2" style="--rc2:${RACES[H.sign2].c}">${sgImg(H.sign2)}</i>` : ''}</div>`
     + (side === 'e' ? `<span class="maorival" title="${T.cartasNaMao(H.hand.length)}" aria-label="${T.cartasNaMao(H.hand.length)}"><i class="verso"></i><i class="verso"></i><b>${H.hand.length}</b></span>` : '')
     + (side === 'p' && s.phase !== 'over' ? `<button class="flagbtn" data-act="desistir" aria-label="${T.desistir}" title="${T.desistir}">${BANDEIRA}<span>${T.desistirCurto}</span></button>` : '')
     + `<div class="hinfo"><div class="hname">${name}</div><div class="hpbar${pct <= 30 ? ' low' : ''}"><i style="width:${pct}%"></i></div><div class="hsub">${sub}${extra}</div></div>`
@@ -295,7 +295,7 @@ export function cardHtml(c: Card, cost: number, attrs = '', cls = '', cid?: stri
     : `<span class="sp">${cardText(c)}</span>`;
   return `<div class="card ${c.type === 'spell' ? 'spell' : ''} r-${c.r}${cid && nivelDe(cid) >= 5 ? ' nivel5' : ''} ${cls}" style="--rc:${RACES[c.race].c};--rr:${RARITY[c.r].col}" ${attrs}><span class="cost">${cost}</span>`
     + elemHtml(c)
-    + `<span class="cart">${artOrEmoji(c, cid)}<span class="sg">${RACES[c.race].g}</span>${cid && cid !== 'eco' ? estrelasHtml(nivelDe(cid)) : ''}</span>`
+    + `<span class="cart">${artOrEmoji(c, cid)}${sgImg(c.race, 'sg')}${cid && cid !== 'eco' ? estrelasHtml(nivelDe(cid)) : ''}</span>`
     + `${gemaHtml(c)}<span class="cn">${c.name}</span>${body}</div>`;
 }
 
@@ -346,13 +346,13 @@ export function gameHtml(v: View): string {
 
 export function galleryHtml(sign: Signo, selected: string | null): string {
   const r = RACES[sign];
-  const tabs = ORDER.map(k => `<button class="gtab ${k === sign ? 'on' : ''}" data-act="gal" data-r="${k}" style="--rc:${RACES[k].c}" aria-label="${RACES[k].n}">${RACES[k].g}</button>`).join('');
+  const tabs = ORDER.map(k => `<button class="gtab ${k === sign ? 'on' : ''}" data-act="gal" data-r="${k}" style="--rc:${RACES[k].c}" aria-label="${RACES[k].n}">${sgImg(k)}</button>`).join('');
   const list = cardsOfSign(sign).sort((a, b) => CARDS[a].cost - CARDS[b].cost || (CARDS[a].type > CARDS[b].type ? 1 : -1));
   const cards = list.map(k => cardHtml(CARDS[k], CARDS[k].cost, `data-act="gcard" data-k="${k}" tabindex="0" role="button"`, selected === k ? 'sel' : '', k)).join('');
   // carta tocada: aberta grande no painel do lado (igual à Coleção e à Montagem)
   const lado = selected ? `<div class="m-detalhe">${zoomHtml({ cid: selected, lado: 'p' })}</div>` : `<p class="m-dica">${T.toqueCartaGaleria}</p>`;
   return `<div class="ov montar gal galeria"><div class="panel wide"><div class="m-fixo">`
-    + `<div class="gtop"><h2 style="color:${r.c}">${r.g} ${r.n}</h2><button class="btn rc" data-act="galback">${T.voltar}</button></div>`
+    + `<div class="gtop"><h2 style="color:${r.c}">${sgImg(sign)} ${r.n}</h2><button class="btn rc" data-act="galback">${T.voltar}</button></div>`
     + `<div class="gtabs">${tabs}</div></div>`
     + `<div class="m-corpo"><div class="m-lado">${lado}</div><div class="ggrid">${cards}</div></div></div></div>`;
 }
@@ -362,7 +362,7 @@ export function startHtml(now: Date): string {
   const signs = ORDER.map(k => {
     const r = RACES[k];
     return `<button class="sign" data-act="pick" data-r="${k}" style="--rc:${r.c}">${k === cur ? `<span class="tag">${T.temporada}</span>` : ''}`
-      + `<span class="g"><span>${r.g}</span></span><span class="sn">${r.n}</span><span class="sm">${r.el}, ${r.m}</span></button>`;
+      + `<span class="g">${sgImg(k)}</span><span class="sn">${r.n}</span><span class="sm">${r.el}, ${r.m}</span></button>`;
   }).join('');
   const legend = Object.values(KW).map(k => `<span>${k.i}</span><span>${k.n}: ${k.d}</span>`).join('') + `<span>⭐</span><span>${T.efeitoChegada}</span>`;
   return `<div class="ov conhecer"><div class="panel wide">

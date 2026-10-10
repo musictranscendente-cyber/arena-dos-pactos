@@ -3,6 +3,7 @@ import { baseCid, card, CARDS, nivelDe } from '../data/cards';
 import { ARTE, artUrl } from '../data/arte';
 import type { Signo } from '../data/schema';
 import { currentSign, ORDER, RACES } from '../data/signos';
+import { sg as sgImg } from './icones';
 import { iconeSom } from './som';
 import icColecao from './img/hub/colecao-ic.webp';
 import icPacotes from './img/hub/pacotes-ic.webp';
@@ -65,10 +66,10 @@ export function esc(t: string): string {
   return t.replace(/[&<>"']/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[ch]!);
 }
 
-/** Nome curto de um deck montado: "♈ Áries + ♌ Leão". */
+/** Nome curto de um deck montado: medalhão + "Áries + Leão". */
 export function nomeDeckMontado(d: DeckMontado): string {
   if (d.nome?.trim()) return esc(d.nome.trim());
-  return [...new Set(d.signos)].map(s => `${RACES[s].g} ${RACES[s].n}`).join(' + ');
+  return [...new Set(d.signos)].map(s => `${sgImg(s)} ${RACES[s].n}`).join(' + ');
 }
 
 export function hubHtml(now: Date, deck: DeckMontado | null, prog: Progresso, alerta = false): string {
@@ -92,10 +93,10 @@ export function hubHtml(now: Date, deck: DeckMontado | null, prog: Progresso, al
     + `<button class="hub-bt hub-bt-arte" data-act="pacotes"><img src="${icPacotes}" alt="" draggable="false"><b>${T.pacotes}</b></button></div>`
     + `<div class="hub-titulo" role="img" aria-label="${T.titulo}"></div>`
     // canto de cima à direita: perfil, evento da temporada e o som
-    + `<div class="hub-col dir"><div class="hub-perfil"><div class="medal"><span>${r.g}</span></div>`
+    + `<div class="hub-col dir"><div class="hub-perfil"><div class="medal">${sgImg(avatar)}</div>`
     + `<div class="hub-nome"><b>${T.invocador}</b><small>${deck ? nomeDeckMontado(deck) : T.semDeck}</small>${moedasHtml(prog)}</div></div>`
     + `<button class="hub-evento breve" data-act="evento" style="--rc:${RACES[tem].c}" aria-label="${T.eventoTemporada} (${T.emBreve})">`
-    + `${criatura(tem + '25', 'mini')}<span><b>${T.eventoTemporada}</b><small>${RACES[tem].g} ${RACES[tem].n} · ${T.emBreve}</small></span></button>`
+    + `${criatura(tem + '25', 'mini')}<span><b>${T.eventoTemporada}</b><small>${sgImg(tem)} ${RACES[tem].n} · ${T.emBreve}</small></span></button>`
     + `<button class="hub-som" data-act="som" aria-label="${T.som}" title="${T.som}">${iconeSom()}</button></div>`
     + ilhas.map(ilhaHtml).join('')
     // canto de baixo à esquerda: Missões e Como jogar
@@ -170,7 +171,7 @@ function meusDecksHtml(m: Montagem, decks: (DeckMontado | null)[], ativo: number
     const em = i === ativo;
     return `<div class="m-slot${em ? ' ativo' : ''}" style="--rc:${RACES[a].c};--rc2:${RACES[b].c}">`
       + `<b class="m-slot-n">${T.deckN(i + 1)}${em ? ` <em>${T.emUso}</em>` : ''}</b>`
-      + `<span class="m-slot-sg"><i>${RACES[a].g}</i>${a === b ? '' : `<i class="b">${RACES[b].g}</i>`}</span>`
+      + `<span class="m-slot-sg"><i>${sgImg(a)}</i>${a === b ? '' : `<i class="b">${sgImg(b)}</i>`}</span>`
       + `<span class="m-slot-nome">${nomeDeckMontado(d)}</span>`
       + (d.nome?.trim() ? `<span class="m-slot-sub">${a === b ? RACES[a].n : `${RACES[a].n} + ${RACES[b].n}`}</span>` : '')
       + `<span class="m-slot-bts">`
@@ -191,7 +192,7 @@ export function montarHtml(m: Montagem, decks: (DeckMontado | null)[], ativo: nu
       const r = RACES[k], on = m.signos.includes(k);
       return `<button class="sign${on ? ' on' : ''}" data-act="msigno" data-r="${k}" style="--rc:${r.c}" aria-pressed="${on}">`
         + (on ? `<span class="tag">${m.signos.indexOf(k) + 1}º</span>` : '')
-        + `<span class="g"><span>${r.g}</span></span><span class="sn">${r.n}</span><span class="sm">${r.el}, ${r.m}</span></button>`;
+        + `<span class="g">${sgImg(k)}</span><span class="sn">${r.n}</span><span class="sm">${r.el}, ${r.m}</span></button>`;
     }).join('');
     return `<div class="ov montar"><div class="panel wide">`
       + `<div class="gtop"><h2>${T.deckN(m.espaco + 1)}: ${T.escolhaOsSignos}</h2><span class="m-topo-bts"><button class="btn rc" data-act="mdecks">${T.voltar}</button>${fechaHtml()}</span></div>`
@@ -248,11 +249,11 @@ export function montarHtml(m: Montagem, decks: (DeckMontado | null)[], ativo: nu
       + `<div class="m-detalhe">${zoomHtml({ cid: k, lado: 'p' })}</div>`;
   }
   return `<div class="ov montar gal"><div class="panel wide"><div class="m-fixo">`
-    + `<div class="gtop"><div class="m-titulo"><span class="m-sg"><i style="--rc:${RACES[a].c}">${RACES[a].g}</i>${um ? '' : `<i style="--rc:${RACES[b].c}">${RACES[b].g}</i>`}</span>`
+    + `<div class="gtop"><div class="m-titulo"><span class="m-sg"><i style="--rc:${RACES[a].c}">${sgImg(a)}</i>${um ? '' : `<i style="--rc:${RACES[b].c}">${sgImg(b)}</i>`}</span>`
     + `<label class="m-nome"><small>${T.deckN(m.espaco + 1)} · ${T.nomeDoDeck}</small>`
     + `<input id="m-nome" type="text" maxlength="22" autocomplete="off" spellcheck="false" value="${esc(m.nome)}" placeholder="${um ? RACES[a].n : `${RACES[a].n} + ${RACES[b].n}`}"></label></div>`
     + `<span class="m-topo-bts"><button class="btn rc" data-act="mvoltar">${T.trocarSignos}</button>${fechaHtml()}</span></div>`
-    + `<div class="m-barra"><div class="m-conta${cheio ? ' cheio' : ''}"><b>${m.cartas.length}</b>/${DECK_SIZE}<small>${um ? T.umSigno : `${RACES[a].g} ${deA} · ${RACES[b].g} ${m.cartas.length - deA}`}</small></div>`
+    + `<div class="m-barra"><div class="m-conta${cheio ? ' cheio' : ''}"><b>${m.cartas.length}</b>/${DECK_SIZE}<small>${um ? T.umSigno : `${sgImg(a)} ${deA} · ${sgImg(b)} ${m.cartas.length - deA}`}</small></div>`
     + `<div class="m-curva" aria-label="${T.curvaMana}">${barras}</div>`
     + `<div class="m-bts"><button class="btn rc" data-act="mcompletar" ${cheio ? 'disabled' : ''}>${T.completar}</button>`
     + `<button class="btn rc" data-act="mlimpar" ${m.cartas.length ? '' : 'disabled'}>${T.limpar}</button>`

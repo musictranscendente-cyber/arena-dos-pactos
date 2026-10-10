@@ -27,3 +27,18 @@ export const ic = (nome: Icone, cls = '') => `<img class="ic${cls ? ' ' + cls : 
 
 /** Arte dos 7 dias da recompensa de login. */
 export const DIAS_LOGIN = [dia1, dia2, dia3, dia4, dia5, dia6, dia7];
+
+/* ---------- medalhões dos 12 signos ---------- */
+const SIGNOS_IMG = import.meta.glob('./img/signos/*.webp', { eager: true, import: 'default' }) as Record<string, string>;
+
+/** Endereço da arte do medalhão do signo. */
+export const sgUrl = (s: string) => SIGNOS_IMG[`./img/signos/${s}.webp`] ?? '';
+
+/** Medalhão do signo (o mesmo em todo o jogo). */
+export const sg = (s: string, cls = '') => `<img class="sgm${cls ? ' ' + cls : ''}" src="${sgUrl(s)}" alt="" draggable="false">`;
+
+/** Cor viva do miolo de cada medalhão (para pintar telas que giram em torno do signo). */
+export const COR_MEDALHAO: Record<string, string> = {
+  aries: '#e8321e', touro: '#4caf20', gemeos: '#f0a020', cancer: '#2a7ff0', leao: '#f08a10', virgem: '#3cc828',
+  libra: '#9a3ce0', escorpiao: '#18b4c0', sagitario: '#e83020', capricornio: '#7a3ce0', aquario: '#2a5cf0', peixes: '#e03cb4',
+};

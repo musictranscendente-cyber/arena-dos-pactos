@@ -2149,3 +2149,29 @@ body.rot .ov.campanha .cp-det>p:not(.cp-info):not(.nv-deck):not(.m-dica){margin:
 .ms-dia.feito .ms-arte{filter:grayscale(.6)}
 .ms-dia b .ic{height:1.2em}
 .acts-esq .btn .ic-bt{height:1.6em;margin-right:2px}
+
+/* ---------- medalhões dos signos (iguais em todo o jogo) ---------- */
+.sgm{display:inline-block;height:1.4em;width:auto;aspect-ratio:1;vertical-align:-.32em;object-fit:contain;filter:drop-shadow(0 1px 2px #000a);pointer-events:none}
+/* círculos que antes eram desenhados com cor + letra: agora o medalhão ocupa o lugar */
+.medal,.sign .g,.m-slot-sg i,.m-sg i,.df-sg i,.medal2,.ov.campanha .sg-ico{background:none !important;box-shadow:none !important;border:none !important}
+.medal>.sgm,.sign .g>.sgm,.m-slot-sg i>.sgm,.m-sg i>.sgm,.df-sg i>.sgm,.medal2>.sgm{width:118%;height:118%;max-width:none;vertical-align:0;
+  filter:drop-shadow(0 2px 4px #000a) drop-shadow(0 0 8px color-mix(in srgb,var(--rc,#fff) 45%,transparent))}
+.medal2>.sgm{width:120%;height:120%}
+.gtab{background:none;box-shadow:none;display:grid;place-items:center;padding:0}
+.gtab>.sgm{width:100%;height:100%;opacity:.75}
+.gtab.on{background:none;box-shadow:none}
+.gtab.on>.sgm{opacity:1;transform:scale(1.12);filter:drop-shadow(0 0 7px var(--rc))}
+.c-aba>.sgm{height:24px;vertical-align:middle}
+.ov.campanha .cp-mundo .sgm.sg-ico{width:auto;height:30px;font-size:inherit}
+.ov.campanha .gtop h2 small .sgm.sg-ico{height:24px;width:auto;margin:-4px 3px -4px -4px}
+.cart .sgm.sg{position:absolute;top:1px;right:2px;height:16px;width:16px;opacity:1}
+.zoom .sgm.z-sg{position:absolute;right:4px;top:4px;height:26px;width:26px}
+.sgm.pk-estrela{height:min(90px,14vh);width:auto}
+.sgm.pk-sg{height:1.5em;margin-right:4px}
+.pkj-selo>.sgm{width:100%;height:100%}
+.sgm.df-emoji{height:24vmin;width:auto}
+.hub-evento small .sgm,.hub-nome small .sgm,.nv-deck .sgm,.m-slot-nome .sgm,.m-conta small .sgm{height:1.5em}
+/* marca d'água do signo no tabuleiro */
+.plat::before,body.batalha .plat::before{content:'';-webkit-text-stroke:0;text-shadow:none;background:var(--sgimg) center/min(24vh,160px) no-repeat;opacity:.22;filter:saturate(.7)}
+.sgm.pk-sg{background:none;box-shadow:none;border-radius:0;width:auto;height:1.5em}
+.pkj-selo:has(.sgm){background:none;box-shadow:none;border:none}

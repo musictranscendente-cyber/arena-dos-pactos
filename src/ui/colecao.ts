@@ -5,7 +5,7 @@ import { RARITY } from '../data/raridades';
 import type { Raridade, Signo } from '../data/schema';
 import { ORDER, RACES } from '../data/signos';
 import { T } from '../data/textos';
-import { ic } from './icones';
+import { ic, sg as sgImg } from './icones';
 import {
   CARTAS_PACOTE, CHANCES, copiasNoNivel, CUSTO_FUSAO, MAX_PACOTES, niveisQueTem, podeFundir, PRECO_PACOTE, PRECO_PACOTE_SIGNO, precoPacote, type Progresso,
 } from '../meta/progresso';
@@ -26,7 +26,7 @@ export function inicialHtml(): string {
   const signs = ORDER.map(k => {
     const r = RACES[k];
     return `<button class="sign" data-act="inicial" data-r="${k}" style="--rc:${r.c}">`
-      + `<span class="g"><span>${r.g}</span></span><span class="sn">${r.n}</span><span class="sm">${r.el}, ${r.m}</span></button>`;
+      + `<span class="g">${sgImg(k)}</span><span class="sn">${r.n}</span><span class="sm">${r.el}, ${r.m}</span></button>`;
   }).join('');
   return `<div class="ov inicial"><div class="panel wide"><h2>${T.escolhaInicialTitulo}</h2><p>${T.escolhaInicialTexto}</p>`
     + `<div class="signs">${signs}</div></div></div>`;
@@ -74,7 +74,7 @@ export function colecaoHtml(p: Progresso, t: TelaColecao): string {
     || card(x.id).cost - card(y.id).cost || baseCid(x.id).localeCompare(baseCid(y.id)) || nivelDe(y.id) - nivelDe(x.id));
   const tem = Object.keys(p.cartas).length;
   const abas = [`<button class="c-aba${t.filtro === 'todas' ? ' on' : ''}" data-act="cfiltro" data-r="todas">${T.todas}</button>`]
-    .concat(ORDER.map(k => `<button class="c-aba${t.filtro === k ? ' on' : ''}" data-act="cfiltro" data-r="${k}" style="--rc:${RACES[k].c}" title="${RACES[k].n}">${RACES[k].g}</button>`)).join('');
+    .concat(ORDER.map(k => `<button class="c-aba${t.filtro === k ? ' on' : ''}" data-act="cfiltro" data-r="${k}" style="--rc:${RACES[k].c}" title="${RACES[k].n}">${sgImg(k)}</button>`)).join('');
   const filtros = `<button class="c-aba c-ciclo${nvF ? ' on' : ''}" data-act="cnivel">${T.filtroNivel}: <b>${nvF ? `Nv${nvF}` : T.todos}</b></button>`
     + `<button class="c-aba c-ciclo${rarF !== 'todas' ? ' on' : ''}" data-act="crar">${T.filtroRaridade}: <b>${rarF === 'todas' ? T.todas : NOMES_R[rarF]}</b></button>`
     + `<button class="c-aba c-ciclo${tipoF !== 'todos' ? ' on' : ''}" data-act="ctipo">${T.filtroTipo}: <b>${tipoF === 'todos' ? T.todos : tipoF === 'unit' ? T.criaturas : T.magiasTipo}</b></button>`
@@ -109,7 +109,7 @@ function detalheHtml(p: Progresso, id: string, t: TelaColecao): string {
   const outros = niveisQueTem(p, id).filter(x => x !== id).map(x => `<span class="c-nv"><b>Nv${nivelDe(x)}</b>×${copiasNoNivel(p, x)}</span>`).join('');
   const info = `<div class="cd-info">`
     + `<p><span>${T.rotTipo}:</span> ${c.type === 'unit' ? T.tipoCriatura : T.tipoMagia}</p>`
-    + `<p><span>${T.rotSigno}:</span> ${r.g} ${r.n} · ${ELEMENTO[r.el].i} ${r.el}</p>`
+    + `<p><span>${T.rotSigno}:</span> ${sgImg(c.race)} ${r.n} · ${ELEMENTO[r.el].i} ${r.el}</p>`
     + `<p><span>${T.rotRaridade}:</span> <b class="cd-rar" style="--rr:${RARITY[c.r].col}">${RARITY[c.r].n}</b> <b class="cd-nv">Nv${nv} ${'★'.repeat(nv)}</b></p>`
     + `<p><span>${T.rotCopias}:</span> <b>${n ? `×${n}` : T.naoTem}</b>${outros ? ` <small>${T.outrosNiveis}</small> ${outros}` : ''}</p></div>`;
   const hab = `<div class="cd-hab"><h4>${c.type === 'unit' ? 'Habilidades' : T.tipoMagia}</h4>${habilidadesHtml(id)}</div>`;
@@ -154,7 +154,7 @@ const signoDe = (id: Signo | 'estelar') => (id === 'estelar' ? undefined : id);
 function arteDoPacote(id: Signo | 'estelar'): string {
   if (id === 'estelar') return '<span class="pk-estrela">✦</span>';
   const cid = `${id}25`;
-  return ARTE[cid] ? `<img src="${artUrl(cid, id, 'parado')}" alt="" draggable="false">` : `<span class="pk-estrela">${RACES[id].g}</span>`;
+  return ARTE[cid] ? `<img src="${artUrl(cid, id, 'parado')}" alt="" draggable="false">` : sgImg(id, 'pk-estrela');
 }
 
 function nomePacote(id: Signo | 'estelar'): string {
@@ -169,7 +169,7 @@ export function pacotesHtml(p: Progresso, tp: TelaPacotes): string {
     + '<span class="pk-leque" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span>'
     + `<span class="pk-faixa-preco">✨ ${PRECO_PACOTE}</span><span class="btn go pk-faixa-bt">${T.comprar}</span></button>`;
   const quadros = ORDER.map(id => `<button class="pk-quad" data-act="pver" data-r="${id}" style="--rc:${RACES[id].c}" aria-label="${T.pacoteDe(RACES[id].n)}: ✨ ${PRECO_PACOTE_SIGNO}">`
-    + `<span class="pk-quad-nome"><i class="pk-sg">${RACES[id].g}</i>${RACES[id].n}</span><span class="pk-img">${arteDoPacote(id)}</span>`
+    + `<span class="pk-quad-nome">${sgImg(id, 'pk-sg')}${RACES[id].n}</span><span class="pk-img">${arteDoPacote(id)}</span>`
     + `<span class="pk-quad-preco">✨ ${PRECO_PACOTE_SIGNO}</span></button>`).join('');
   const detalhe = tp.aberto ? pacoteDetalheHtml(p, tp) : '';
   return `<div class="ov tela-pacotes loja"><div class="panel wide pacotes"><div class="gtop"><h2>${T.pacotes}</h2><span class="m-topo-bts">${moedasHtml(p)}${fecha()}</span></div>`
@@ -203,7 +203,7 @@ function pacoteDetalheHtml(p: Progresso, tp: TelaPacotes): string {
       + `<div class="acts2 pk-conf-bts"><button class="btn rc" data-act="pcancela">${T.cancelar}</button><button class="btn go" data-act="pconfirma">${T.confirmar}</button></div></div></div>`
     : '';
   return `<div class="ov pk-det"><div class="panel wide pk-janela" style="--rc:${cor}">`
-    + `<div class="pkj-topo"><span class="pkj-selo">${glifo}</span><div class="pkj-tit"><h2>${nomePacote(id)}</h2><p>${sg ? T.pacotesSignoDesc(CARTAS_PACOTE) : T.pacoteDesc(CARTAS_PACOTE)}</p></div>`
+    + `<div class="pkj-topo"><span class="pkj-selo">${sg ? sgImg(sg) : glifo}</span><div class="pkj-tit"><h2>${nomePacote(id)}</h2><p>${sg ? T.pacotesSignoDesc(CARTAS_PACOTE) : T.pacoteDesc(CARTAS_PACOTE)}</p></div>`
     + `<button class="m-fecha" data-act="pfecha" aria-label="${T.sair}">✕</button></div>`
     + `<div class="pkj-meio"><div class="pkj-arte"><span class="pkj-glifo" aria-hidden="true">${glifo}</span>${arteDoPacote(id)}</div>`
     + `<div class="pkj-info"><section class="pkj-bloco"><h4>${T.chancesRaridade}</h4><div class="pk-chances">${chances}</div></section>`

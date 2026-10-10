@@ -9,19 +9,19 @@ import {
 } from '../meta/campanha';
 import type { Progresso } from '../meta/progresso';
 import { moedasHtml } from './colecao';
-import { ic } from './icones';
+import { COR_MEDALHAO, ic, sg } from './icones';
 import { criatura, nomeDeckMontado } from './menu';
 
 export interface TelaCampanha { signo: Signo; fase: number; ajuda?: boolean }
 
 /** Símbolo do signo desenhado como texto, num círculo da cor do signo (igual em qualquer celular). */
-const sgIco = (s: Signo) => `<i class="sg-ico" style="--rc:${RACES[s].c}">${RACES[s].g}\uFE0E</i>`;
+const sgIco = (s: Signo) => sg(s, 'sg-ico');
 const estrelinhas = (n: number) => `<span class="cp-est">${[1, 2, 3].map(i => ic('estrela', i <= n ? 'on' : '')).join('')}</span>`;
 
 export function campanhaHtml(p: Progresso, t: TelaCampanha, deck: DeckMontado | null): string {
   const abas = MUNDOS.map(s => {
     const livre = mundoLiberado(p, s);
-    return `<button class="c-aba cp-mundo${t.signo === s ? ' on' : ''}${livre ? '' : ' bloq'}" data-act="cmundo" data-r="${s}" style="--rc:${RACES[s].c}" title="${RACES[s].n}">`
+    return `<button class="c-aba cp-mundo${t.signo === s ? ' on' : ''}${livre ? '' : ' bloq'}" data-act="cmundo" data-r="${s}" style="--rc:${COR_MEDALHAO[s]}" title="${RACES[s].n}">`
       + `${livre ? sgIco(s) : '🔒'}<small>${livre ? `${estrelasDoMundo(p, s)}★` : ''}</small></button>`;
   }).join('');
   const r = RACES[t.signo];
@@ -59,7 +59,7 @@ export function campanhaHtml(p: Progresso, t: TelaCampanha, deck: DeckMontado | 
     + '</div>';
   const ajuda = t.ajuda ? `<div class="c-ajuda" data-act="cpajuda"><p><b>${T.comoFunciona}</b></p><p>${T.criteriosEstrelas}</p>`
     + (lenda ? `<p>${T.lendaMeta(lenda.name, estrelasDoMundo(p, t.signo))}</p>` : '') + `<p>${T.legendaFase}</p><p>${T.ajudaCampanha(r.n)}</p></div>` : '';
-  return `<div class="ov montar gal campanha" style="--rc:${r.c}"><div class="panel wide"><div class="m-fixo">`
+  return `<div class="ov montar gal campanha" style="--rc:${COR_MEDALHAO[t.signo]}"><div class="panel wide"><div class="m-fixo">`
     + `<div class="gtop"><h2>${T.campanha} <small>${sgIco(t.signo)} ${T.mundo(r.n)}</small></h2><span class="m-topo-bts">${moedasHtml(p)}`
     + `<button class="m-fecha" data-act="hub" aria-label="${T.sair}">✕</button></span></div>`
     + `<div class="c-abas">${abas}</div></div>`
