@@ -127,7 +127,7 @@ export function dificuldadeHtml(deck: DeckMontado | null, ultimo: Nivel): string
 
 export function regrasHtml(teste: boolean): string {
   // modo teste e tutorial no alto, à vista sem precisar rolar
-  return `<div class="ov"><div class="panel wide"><div class="gtop"><h2>${T.comoJogar}</h2><button class="btn rc" data-act="fechar">${T.voltar}</button></div>`
+  return `<div class="ov regras"><div class="panel wide"><div class="gtop"><h2>${T.comoJogar}</h2><button class="btn rc" data-act="fechar">${T.voltar}</button></div>`
     + `<div class="acts2 regras-bts"><button class="btn rc teste${teste ? ' on' : ''}" data-act="teste" aria-pressed="${teste}">${T.modoTeste}: ${teste ? T.ligado : T.desligado}</button>`
     + (teste ? `<button class="btn rc" data-act="teste-poeira">${T.maisPoeira}</button>` : '')
     + `<button class="btn rc" data-act="rever-tut">${T.reverTutorial}</button></div>`

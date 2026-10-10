@@ -2175,3 +2175,9 @@ body.rot .ov.campanha .cp-det>p:not(.cp-info):not(.nv-deck):not(.m-dica){margin:
 .plat::before,body.batalha .plat::before{content:'';-webkit-text-stroke:0;text-shadow:none;background:var(--sgimg) center/min(24vh,160px) no-repeat;opacity:.22;filter:saturate(.7)}
 .sgm.pk-sg{background:none;box-shadow:none;border-radius:0;width:auto;height:1.5em}
 .pkj-selo:has(.sgm){background:none;box-shadow:none;border:none}
+
+/* fundo cósmico nos menus que não tinham cenário próprio */
+.ov.inicial,.ov.tela-pacotes,.ov.colecao,.ov.galeria,.ov.conhecer,.ov.rapida,.ov.regras,.ov.montar:not(.campanha){
+  background:radial-gradient(ellipse at center,#0b072200,#0b072266),url('./img/menu-fundo.webp') center/cover no-repeat,#0b0722;backdrop-filter:none}
+/* arena da batalha */
+body.batalha{--scene:url('./img/arena-fundo.webp')}
