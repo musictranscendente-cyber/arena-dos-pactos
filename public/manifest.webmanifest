@@ -1,10 +1,10 @@
 {
-  "id": "./cosmic-citadel",
+  "id": "./cosmic-citadel-2",
   "name": "Cosmic Citadel",
   "short_name": "Cosmic Citadel",
   "description": "Card game de batalha dos 12 signos do zodíaco.",
   "lang": "pt-BR",
-  "start_url": "./?app=cosmic-citadel",
+  "start_url": "./?app=cosmic-citadel-2",
   "scope": "./",
   "display": "fullscreen",
   "orientation": "landscape",
