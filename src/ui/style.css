@@ -1799,3 +1799,54 @@ body.batalha .hand{gap:18px;padding-left:14px;padding-right:14px}
 body.batalha.land .hand{gap:16px;padding-left:12px;padding-right:12px}
 body.batalha .hand .card.sel{box-shadow:0 0 0 2px #f6d27a,0 0 14px #f6c95a88}
 @media (prefers-reduced-motion:reduce){body.batalha .cell.ok{animation:none}}
+
+/* ================= Loja de pacotes: acabamento cósmico (só .ov.loja) ================= */
+.ov.loja>.panel.pacotes{background:linear-gradient(180deg,#1c1044f2,#120a30f5)}
+/* cabeçalho com o cenário atrás */
+.ov.loja>.panel>.gtop{margin:-20px -20px 10px;padding:14px 20px 10px;border-radius:18px 18px 0 0;
+  background:linear-gradient(180deg,#120a3044,#1c1044ee 92%),url('./img/hub.webp') center 20%/cover no-repeat;border-bottom:1px solid #e9c46a66}
+.ov.loja>.panel>.gtop h2{margin:0;text-transform:uppercase;letter-spacing:1.5px;font-weight:800;
+  background:linear-gradient(180deg,#fffbe6 8%,#ffe7a0 38%,#f6c95a 62%,#c88a2a 92%);-webkit-background-clip:text;background-clip:text;color:transparent;
+  filter:drop-shadow(0 2px 0 #4a2200) drop-shadow(0 3px 5px #000a)}
+/* Pacote Estelar: banner com nebulosa, leque de cartas e moldura dourada dupla */
+.ov.loja .pk-faixa{position:relative;overflow:hidden;border:1.5px solid #f6d27a;
+  background:linear-gradient(90deg,#1a0f48ee 0%,#2a1866aa 45%,#1a0f48ee 100%),url('./img/hub.webp') center 25%/cover no-repeat;
+  box-shadow:0 0 0 1px #2a1606,0 0 0 3.5px #c9a24e55,0 0 16px #f6c95a44,inset 0 0 24px #0008}
+.ov.loja .pk-faixa-img{border-radius:50%;background:radial-gradient(circle,#4a2c9a 0,#1a0f48 70%);box-shadow:0 0 0 1.5px #e9c46a,0 0 14px #f6d27a66}
+.ov.loja .pk-faixa-txt b{text-transform:uppercase;letter-spacing:1px;font-weight:800;
+  background:linear-gradient(180deg,#fffbe6 10%,#ffe08a 45%,#d9a640 90%);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 2px 0 #3a1a00)}
+.pk-leque{position:relative;flex:0 0 auto;width:min(150px,16vw);height:100%;min-height:44px;align-self:stretch;pointer-events:none}
+.pk-leque i{position:absolute;left:50%;bottom:-6%;width:30%;aspect-ratio:5/7;translate:-50% 0;transform-origin:50% 130%;border-radius:5px;
+  background:radial-gradient(circle at 50% 48%,#ffe8a8 0 7%,transparent 9%),radial-gradient(circle at 50% 48%,transparent 0 24%,#e9c46a 26% 29%,transparent 31%),linear-gradient(160deg,#5a3ab0,#22125a);
+  border:1.5px solid #e9c46a;box-shadow:0 2px 6px #000a}
+.pk-leque i:nth-child(1){rotate:-30deg}.pk-leque i:nth-child(2){rotate:-15deg}.pk-leque i:nth-child(3){rotate:0deg;z-index:2;box-shadow:0 0 12px #f6d27a99}.pk-leque i:nth-child(4){rotate:15deg}.pk-leque i:nth-child(5){rotate:30deg}
+.ov.loja .pk-faixa-preco{color:#ffe7a0;text-shadow:0 2px 2px #000a}
+/* pacotes de signo: céu estrelado na cor do signo, selo redondo, moldura dourada fina */
+.ov.loja .pk-quad{position:relative;overflow:hidden;border:1.5px solid color-mix(in srgb,var(--rc) 45%,#e9c46a);
+  background:
+    radial-gradient(1px 1px at 18% 22%,#fff,transparent),radial-gradient(1px 1px at 72% 18%,#fff,transparent),radial-gradient(1.4px 1.4px at 86% 64%,#ffe9b0,transparent),
+    radial-gradient(1px 1px at 30% 78%,#fff,transparent),radial-gradient(1px 1px at 55% 40%,#ffffffaa,transparent),
+    radial-gradient(70% 60% at 50% 62%,color-mix(in srgb,var(--rc) 55%,transparent),transparent 75%),
+    linear-gradient(180deg,color-mix(in srgb,var(--rc) 35%,#140a34),#120a2c);
+  box-shadow:0 0 0 1px #2a1606,inset 0 0 0 1px #ffffff14,inset 0 0 18px #0009,0 4px 10px #0009}
+.ov.loja .pk-quad::before{content:'';position:absolute;inset:4px;border:1px solid #e9c46a66;border-radius:8px;pointer-events:none}
+.ov.loja .pk-quad:hover,.ov.loja .pk-quad:focus-visible{border-color:#f6d27a;box-shadow:0 0 0 1px #2a1606,0 0 12px color-mix(in srgb,var(--rc) 60%,transparent),inset 0 0 18px #0009;outline:none}
+.ov.loja .pk-quad-nome{display:flex;align-items:center;justify-content:center;gap:5px;font-family:var(--fonte-titulo);font-weight:800;color:#fff3d6;text-shadow:0 1px 2px #000}
+.pk-sg{font-style:normal;display:grid;place-items:center;width:1.45em;height:1.45em;border-radius:50%;font-size:.95em;line-height:1;color:#fff;
+  background:radial-gradient(circle at 40% 35%,color-mix(in srgb,var(--rc) 70%,#fff),var(--rc) 60%,color-mix(in srgb,var(--rc) 60%,#000));box-shadow:0 0 0 1.5px #f6d27a,0 1px 3px #000a}
+.ov.loja .pk-quad .pk-img{background:none}
+.ov.loja .pk-quad .pk-img img{filter:drop-shadow(0 0 8px color-mix(in srgb,var(--rc) 70%,transparent)) drop-shadow(0 3px 3px #000a)}
+.ov.loja .pk-quad-preco{background:#0a0620d9;border:1px solid #e9c46a88;color:#fff;font-weight:900}
+.ov.loja .pk-sub-signo{color:#c9bde6}
+@media (max-width:620px){body:not(.rot) .pk-leque{display:none}}
+@media (max-width:430px){body.rot .pk-leque{display:none}}
+.ov.loja>.panel>.gtop{padding:8px 20px 6px;margin-bottom:8px}
+.ov.loja>.panel>.gtop h2{font-size:34px;line-height:1}
+.pk-leque{width:min(120px,13vw);min-height:0;height:auto;align-self:stretch}
+.pk-leque i{width:26%;bottom:-18%}
+.ov.loja .pk-faixa{padding-top:5px;padding-bottom:5px}
+@media (max-height:430px){.ov.loja>.panel>.gtop{padding:5px 16px 4px;margin-bottom:5px}.ov.loja>.panel>.gtop h2{font-size:28px}}
+.ov.loja>.panel.pacotes{padding-top:0;padding-bottom:12px}
+.ov.loja>.panel.pacotes>.gtop{margin-top:0}
+@media (max-width:430px){body.rot .ov.loja .pk-quad .pk-img{aspect-ratio:2.3}body.rot .ov.loja .pk-grade{gap:6px}body.rot .ov.loja>.panel>.gtop h2{font-size:26px}}
+@media (max-width:430px){body.rot .ov.loja .pk-quad .pk-img{aspect-ratio:3}body.rot .ov.loja .pk-faixa{padding-top:2px;padding-bottom:2px}body.rot .ov.loja>.panel>.gtop{padding:3px 14px 2px;margin-bottom:4px}body.rot .ov.loja .pk-sub-signo{margin:3px 0;font-size:11px}}

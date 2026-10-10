@@ -165,9 +165,10 @@ export function pacotesHtml(p: Progresso, tp: TelaPacotes): string {
   const estelar = `<button class="pk-faixa" data-act="pver" data-r="estelar">`
     + `<span class="pk-faixa-img">${arteDoPacote('estelar')}</span>`
     + `<span class="pk-faixa-txt"><b>${T.pacoteEstelar}</b><small>${T.pacoteDesc(CARTAS_PACOTE)}</small></span>`
+    + '<span class="pk-leque" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span>'
     + `<span class="pk-faixa-preco">✨ ${PRECO_PACOTE}</span><span class="btn go pk-faixa-bt">${T.comprar}</span></button>`;
-  const quadros = ORDER.map(id => `<button class="pk-quad" data-act="pver" data-r="${id}" style="--rc:${RACES[id].c}">`
-    + `<span class="pk-quad-nome">${RACES[id].g} ${RACES[id].n}</span><span class="pk-img">${arteDoPacote(id)}</span>`
+  const quadros = ORDER.map(id => `<button class="pk-quad" data-act="pver" data-r="${id}" style="--rc:${RACES[id].c}" aria-label="${T.pacoteDe(RACES[id].n)}: ✨ ${PRECO_PACOTE_SIGNO}">`
+    + `<span class="pk-quad-nome"><i class="pk-sg">${RACES[id].g}</i>${RACES[id].n}</span><span class="pk-img">${arteDoPacote(id)}</span>`
     + `<span class="pk-quad-preco">✨ ${PRECO_PACOTE_SIGNO}</span></button>`).join('');
   const detalhe = tp.aberto ? pacoteDetalheHtml(p, tp) : '';
   return `<div class="ov tela-pacotes loja"><div class="panel wide pacotes"><div class="gtop"><h2>${T.pacotes}</h2><span class="m-topo-bts">${moedasHtml(p)}${fecha()}</span></div>`
