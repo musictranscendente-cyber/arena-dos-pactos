@@ -2307,3 +2307,13 @@ body.batalha.rot #app::before{content:'';position:absolute;inset:-12px;z-index:-
 .hub-v2 .hub-linha .ic{height:1.2em}
 .hub-v2 .hub-col.dir{width:min(76cqh,310px)}
 .hub-v2 .hub-linha .hub-stats b,.hub-v2 .hub-linha .moedas b{font-size:min(3.1cqh,12.5px) !important;font-weight:900}
+
+/* lados trocados: perfil + evento à esquerda, os 4 atalhos à direita */
+.hub-v2 .hub-col.dir{right:auto;left:var(--margem)}
+.hub-v2 .hub-col.dir .hub-som{align-self:flex-start}
+.hub-v2 .hub-evento.hub-ev2{right:auto;left:var(--margem)}
+.hub-v2 .hub-col.esq{left:auto;right:var(--margem);align-items:flex-end}
+.hub-v2 .hub-base.esq{left:auto;right:var(--margem);align-items:flex-end}
+.hub-v2 .hub-evento.hub-ev2{width:min(23cqh,92px);top:50%;padding:.6cqh .5cqh .8cqh}
+.hub-v2 .hub-ev2 b{font-size:min(2.9cqh,11.5px)}
+.hub-v2 .hub-ev2 small{font-size:min(2.6cqh,10px)}
