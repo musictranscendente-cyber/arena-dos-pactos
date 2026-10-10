@@ -881,22 +881,9 @@ body:not(.land) .board{flex:0 0 auto;height:min(54vh,44vw)}
 .ov.montar.gal .m-copias small{font-size:9.5px;font-weight:600;white-space:nowrap}.ov.montar.gal .m-copias b{font-size:18px}
 .ov.montar.gal .m-lado .m-dica{margin:0;padding:5px 8px;font-size:12px}
 
-/* Partida Rápida: escolha da dificuldade */
-.nivel-painel .nv-deck{display:flex;align-items:center;gap:8px;flex-wrap:wrap;background:#ffffff10;border-radius:10px;padding:8px 10px}
 .btn.mini{width:auto;min-height:28px;padding:0 10px;font-size:12.5px}
-.niveis{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:8px}
-.nivel{font:inherit;color:#fff;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;padding:12px 10px 14px;border-radius:14px;
-  border:2px solid #6a5aa0;background:linear-gradient(180deg,#3a2a6e,#1c1240);box-shadow:0 4px 10px #0008;text-align:center}
-.nivel .nv-ic{font-size:34px;line-height:1;filter:drop-shadow(0 2px 2px #0008)}
-.nivel b{font-family:var(--fonte-titulo);font-size:26px;line-height:1;color:#ffe9a8}
-.nivel small{font-size:12px;color:#d9cdf5;line-height:1.25}
-.nivel.n-facil{background:linear-gradient(180deg,#2f6a4a,#163a28);border-color:#7fd69a}
-.nivel.n-normal{background:linear-gradient(180deg,#3a4a8a,#1c2450);border-color:#8fb0ff}
-.nivel.n-dificil{background:linear-gradient(180deg,#8a2f3a,#40141c);border-color:#ff8a7a}
-.nivel.ultimo{box-shadow:0 0 0 3px var(--gold),0 0 18px #f2b93b99}
-.nivel:hover,.nivel:focus-visible{filter:brightness(1.15)}
 .nv-tag{font-weight:800;color:#ffd666}
-.land .nivel b{font-size:22px}.land .nivel .nv-ic{font-size:28px}
+
 
 /* tela baixa (celular deitado): topo da montagem mais compacto para a carta aberta caber inteira */
 @media (max-height:430px){
@@ -1615,3 +1602,75 @@ body.rot .m-corpo{margin-top:5px}
   .ov.campanha .btn.cp-lutar{min-height:38px;font-size:19px}
   .ov.campanha .cp-chip{padding:2px 6px;font-size:11.5px}
 }
+
+/* ================= Partida Rápida: escolha da dificuldade (só .ov.rapida) ================= */
+.ov.rapida{background:radial-gradient(ellipse at center,#0d0828aa,#07041acc);backdrop-filter:blur(2px)}
+.ov.rapida>.panel.nivel-painel{max-width:min(860px,96vw);padding:0 0 18px;overflow:visible}
+/* faixa do título com o cenário cósmico atrás */
+.ov.rapida .nv-topo{position:relative;justify-content:center;padding:16px 56px 14px;margin:0 0 12px;border-radius:18px 18px 0 0;
+  background:linear-gradient(180deg,#120a3055,#1a104099 70%,#1a1040),url('./img/hub.webp') center 30%/cover no-repeat;
+  border-bottom:1px solid #e9c46a88;box-shadow:0 1px 0 #2a1606}
+.ov.rapida .nv-topo h2{margin:0;padding:0;font-size:clamp(28px,5.4vw,46px);letter-spacing:1px;text-transform:uppercase;line-height:1}
+.ov.rapida .nv-topo h2::after{display:none}
+.ov.rapida .nv-topo .m-fecha{position:absolute;right:12px;top:50%;translate:0 -50%}
+/* deck escolhido */
+.ov.rapida .nv-deck{display:flex;align-items:center;gap:12px;margin:0 18px 8px;padding:8px 10px 8px 12px;border-radius:12px;
+  background:linear-gradient(180deg,#24145a,#160c3c);border:1px solid #e9c46a77;box-shadow:inset 0 1px 0 #ffffff14}
+.nv-deck-ic{flex:none;width:30px;height:34px;position:relative}
+.nv-deck-ic::before,.nv-deck-ic::after{content:'';position:absolute;inset:0 4px;border-radius:4px;border:1.5px solid #e9c46a;
+  background:radial-gradient(circle at 50% 50%,#ffe08a 0 12%,transparent 15%),linear-gradient(160deg,#5a3aa0,#24125a)}
+.nv-deck-ic::before{rotate:-14deg;translate:-4px 1px;opacity:.85}.nv-deck-ic::after{rotate:8deg;translate:4px 0}
+.nv-deck-txt{flex:1;min-width:0;font-size:15px;color:#d9cdf5;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.nv-deck-txt b{font-family:var(--fonte-titulo);font-size:17px;color:#fff3d0;margin-left:4px}
+.ov.rapida .nv-deck .btn.mini{flex:none;min-height:32px;padding:0 16px;font-size:14px;border:1.5px solid #e9c46a}
+.ov.rapida .nv-escolha{margin:0 18px 10px;font-size:13.5px;color:#c9bde6;text-align:center}
+/* cartões das dificuldades: mesma altura, cor própria discreta, borda dourada fina */
+.ov.rapida .niveis{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:0 18px;align-items:stretch}
+.ov.rapida .nivel{font:inherit;color:#fff;cursor:pointer;display:flex;flex-direction:column;align-items:center;text-align:center;--cor:#8fb0ff;--fundo1:#1c2a5c;--fundo2:#0e1430;position:relative;gap:0;padding:0 0 12px;border-radius:14px;overflow:hidden;
+  border:1.5px solid #c9a24e;background:linear-gradient(180deg,var(--fundo1),var(--fundo2));
+  box-shadow:0 0 0 1px #2a1606,0 4px 10px #0009;transition:transform .12s,box-shadow .15s,border-color .15s;filter:none}
+.ov.rapida .nivel.n-facil{--cor:#7fe08a;--fundo1:#1d4a2e;--fundo2:#0c2416}
+.ov.rapida .nivel.n-normal{--cor:#8fc4ff;--fundo1:#1c2e66;--fundo2:#0c1434}
+.ov.rapida .nivel.n-dificil{--cor:#ff9a7a;--fundo1:#5a1824;--fundo2:#2a0a12}
+/* cena: céu da cor da dificuldade e o ícone num pedestal */
+.nv-cena{position:relative;display:grid;place-items:center;width:100%;aspect-ratio:16/9;margin-bottom:8px;
+  background:radial-gradient(60% 60% at 50% 70%,color-mix(in srgb,var(--cor) 35%,transparent),transparent 70%),
+    linear-gradient(180deg,#0a0620cc,transparent 60%),url('./img/hub.webp') center 40%/cover no-repeat;
+  border-bottom:1px solid #c9a24e88}
+.nv-cena::after{content:'';position:absolute;left:50%;bottom:12%;width:44%;height:16%;translate:-50% 0;border-radius:50%;
+  background:radial-gradient(ellipse at center,color-mix(in srgb,var(--cor) 55%,#000) 0 45%,#c9a24e 47% 54%,#2a1606 56%,transparent 60%)}
+.ov.rapida .nivel .nv-ic{position:relative;z-index:1;font-size:clamp(34px,6vw,52px);margin-bottom:12%;filter:drop-shadow(0 0 10px color-mix(in srgb,var(--cor) 70%,transparent)) drop-shadow(0 3px 3px #000a)}
+.ov.rapida .nivel b{font-size:clamp(22px,3.4vw,30px);letter-spacing:.5px;text-transform:uppercase;color:#ffe6a8;text-shadow:0 2px 2px #000a}
+.nv-div{display:block;width:70%;height:1px;margin:7px auto 8px;background:linear-gradient(90deg,transparent,#e9c46a,transparent);position:relative}
+.nv-div::after{content:'';position:absolute;left:50%;top:50%;width:7px;height:7px;translate:-50% -50%;rotate:45deg;background:var(--cor);border:1px solid #e9c46a}
+.ov.rapida .nivel small{font-family:'Alegreya Sans',system-ui,sans-serif;font-size:14px;line-height:1.35;color:#ece6f6;padding:0 12px}
+/* estados: passar o dedo/foco = borda mais clara; selecionado (última escolha) = borda e brilho da cor */
+.ov.rapida .nivel:hover,.ov.rapida .nivel:focus-visible{border-color:#f6d27a;transform:translateY(-2px);outline:none;filter:none}
+.ov.rapida .nivel:focus-visible{box-shadow:0 0 0 1px #2a1606,0 0 0 3px #fff8}
+.ov.rapida .nivel.ultimo{border:2px solid var(--cor);box-shadow:0 0 0 1px #2a1606,0 0 16px color-mix(in srgb,var(--cor) 55%,transparent),0 4px 10px #0009}
+.ov.rapida .nivel:active{transform:translateY(1px)}
+/* telas baixas: cena mais baixa; telas estreitas em pé: cartões um embaixo do outro */
+@media (max-height:430px){
+  .ov.rapida .nv-topo{padding:10px 52px 9px;margin-bottom:8px}
+  .nv-cena{aspect-ratio:2.6/1;margin-bottom:5px}
+  .ov.rapida .nivel small{font-size:12.5px;line-height:1.28}
+  .ov.rapida .nivel b{font-size:21px}
+  .nv-div{margin:4px auto 5px}
+  .ov.rapida .nv-deck{margin-bottom:6px;padding:5px 8px}
+  .ov.rapida .nv-escolha{display:none}
+}
+@media (max-width:560px){body:not(.rot) .ov.rapida .niveis{grid-template-columns:1fr}body:not(.rot) .nv-cena{aspect-ratio:3/1}}
+@media (prefers-reduced-motion:reduce){.ov.rapida .nivel{transition:none}}
+/* cena tingida com a cor de cada dificuldade */
+.nv-cena{background:radial-gradient(60% 60% at 50% 70%,color-mix(in srgb,var(--cor) 40%,transparent),transparent 70%),
+  linear-gradient(180deg,color-mix(in srgb,var(--fundo1) 55%,transparent),color-mix(in srgb,var(--fundo1) 70%,transparent)),url('./img/hub.webp') center 40%/cover no-repeat}
+/* celular em pé (tela girada): a largura útil é a altura da tela */
+body.rot .ov.rapida>.panel.nivel-painel{max-width:min(860px,96vh)}
+body.rot .ov.rapida .nv-topo h2{font-size:clamp(26px,5vh,46px)}
+body.rot .ov.rapida .nivel .nv-ic{font-size:clamp(30px,5.5vh,52px)}
+body.rot .ov.rapida .nivel b{font-size:clamp(20px,3.2vh,30px)}
+@media (max-width:430px){body.rot .ov.rapida .nv-topo{padding:10px 52px 9px;margin-bottom:8px}body.rot .nv-cena{aspect-ratio:2.6/1;margin-bottom:5px}
+  body.rot .ov.rapida .nivel small{font-size:12.5px;line-height:1.28}body.rot .nv-div{margin:4px auto 5px}body.rot .ov.rapida .nv-escolha{display:none}
+  body.rot .ov.rapida .nv-deck{margin-bottom:6px;padding:5px 8px}}
+@media (max-height:380px){.ov.rapida .nv-topo{padding:7px 52px 6px}.ov.rapida .nv-topo h2{font-size:28px}.nv-cena{aspect-ratio:3/1}.ov.rapida>.panel.nivel-painel{padding-bottom:12px}}
+@media (max-width:380px){body.rot .ov.rapida .nv-topo{padding:7px 52px 6px}body.rot .ov.rapida .nv-topo h2{font-size:28px}body.rot .nv-cena{aspect-ratio:3/1}body.rot .ov.rapida>.panel.nivel-painel{padding-bottom:12px}}

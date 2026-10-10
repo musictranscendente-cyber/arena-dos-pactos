@@ -88,14 +88,15 @@ export function avisoHtml(txt: string): string {
 
 /** Partida Rápida: escolhe a dificuldade do bot; mostra com qual deck você vai jogar. */
 export function dificuldadeHtml(deck: DeckMontado | null, ultimo: Nivel): string {
-  const nv = (n: Nivel, icone: string) => `<button class="nivel n-${n}${n === ultimo ? ' ultimo' : ''}" data-act="nivel" data-n="${n}">`
-    + `<span class="nv-ic">${icone}</span><b>${T.nivelNome[n]}</b><small>${T.nivelDesc[n]}</small></button>`;
+  // cartão de cada dificuldade: cena com o ícone no pedestal, nome, filete e descrição; a última escolhida fica destacada
+  const nv = (n: Nivel, icone: string) => `<button class="nivel n-${n}${n === ultimo ? ' ultimo' : ''}" data-act="nivel" data-n="${n}" aria-pressed="${n === ultimo}">`
+    + `<span class="nv-cena"><span class="nv-ic">${icone}</span></span><b>${T.nivelNome[n]}</b><i class="nv-div" aria-hidden="true"></i><small>${T.nivelDesc[n]}</small></button>`;
   const seu = deck
-    ? `<p class="nv-deck">${T.seuDeck}: <b>${nomeDeckMontado(deck)}</b> <button class="btn rc mini" data-act="montar">${T.trocar}</button></p>`
-    : `<p class="nv-deck">${T.semDeckAviso} <button class="btn rc mini" data-act="montar">${T.montarAgora}</button></p>`;
-  return `<div class="ov"><div class="panel wide nivel-painel"><div class="gtop"><h2>${T.partidaRapida}</h2>`
+    ? `<p class="nv-deck"><span class="nv-deck-ic" aria-hidden="true"></span><span class="nv-deck-txt">${T.seuDeck}: <b>${nomeDeckMontado(deck)}</b></span><button class="btn rc mini" data-act="montar">${T.trocar}</button></p>`
+    : `<p class="nv-deck"><span class="nv-deck-ic" aria-hidden="true"></span><span class="nv-deck-txt">${T.semDeckAviso}</span><button class="btn rc mini" data-act="montar">${T.montarAgora}</button></p>`;
+  return `<div class="ov rapida"><div class="panel wide nivel-painel"><div class="gtop nv-topo"><h2>${T.partidaRapida}</h2>`
     + `<button class="m-fecha" data-act="fechar" aria-label="${T.sair}">✕</button></div>`
-    + seu + `<p>${T.escolhaDificuldade}</p>`
+    + seu + `<p class="nv-escolha">${T.escolhaDificuldade}</p>`
     + `<div class="niveis">${nv('facil', '🌱')}${nv('normal', '⚔️')}${nv('dificil', '🔥')}</div></div></div>`;
 }
 
