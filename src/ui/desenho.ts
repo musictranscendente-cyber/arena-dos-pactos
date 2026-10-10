@@ -268,7 +268,7 @@ const BANDEIRA = ic('bandeira', 'ic-flag');
 
 function hudHtml(s: GameState, nivel?: string): string {
   return `<div class="hud">${heroCard(s, 'p')}`
-    + `<div class="vs"><span class="vs-bts"><button class="rotbtn" data-act="rot" aria-label="${T.alternarDeitado}">⟳</button><button class="rotbtn" data-act="som" aria-label="${T.som}" title="${T.som}">${iconeSom()}</button></span><span class="vsb">VS</span><span class="rd">${T.rodadaN(s.round)}<button class="infobtn" data-act="info" aria-label="${T.info}">i</button></span></div>`
+    + `<div class="vs"><span class="vs-bts"><button class="rotbtn" data-act="som" aria-label="${T.som}" title="${T.som}">${iconeSom()}</button></span><span class="vsb">VS</span><span class="rd">${T.rodadaN(s.round)}<button class="infobtn" data-act="info" aria-label="${T.info}">i</button></span></div>`
     + `${heroCard(s, 'e', nivel)}</div>`;
 }
 
