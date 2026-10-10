@@ -5,16 +5,16 @@ import {
 } from '../meta/missoes';
 import type { Progresso } from '../meta/progresso';
 import { moedasHtml } from './colecao';
+import { DIAS_LOGIN, ic } from './icones';
 
 function premioTexto(pr: PremioLogin): string {
   const partes: string[] = [];
-  if (pr.poeira) partes.push(`${pr.poeira} ✨`);
+  if (pr.poeira) partes.push(`${pr.poeira} ${ic('poeira')}`);
   if (pr.cartas) partes.push(pr.cartas.r === 'qualquer' ? T.nCartas(pr.cartas.n) : pr.cartas.r === 'c' ? T.cartaComum : pr.cartas.r === 'r' ? T.cartaRara : T.cartaEpica);
-  if (pr.gemas) partes.push(`${pr.gemas} 💎`);
+  if (pr.gemas) partes.push(`${pr.gemas} ${ic('gema')}`);
   return partes.join(' + ');
 }
 
-const icone = (pr: PremioLogin) => (pr.cartas ? (pr.cartas.r === 'e' ? '🟣' : pr.cartas.r === 'r' ? '🔷' : '🃏') : '✨');
 
 /** Há algo para coletar (para o aviso no botão de Missões). */
 export function temColeta(p: Progresso, dia: string): boolean {
@@ -26,7 +26,7 @@ export function missoesHtml(p: Progresso, dia: string): string {
   const dias = CALENDARIO.map((pr, i) => {
     const feito = i < p.login.passo || (!hoje && p.login.passo === 0);
     const atual = i === p.login.passo && hoje;
-    return `<div class="ms-dia${atual ? ' atual' : ''}${feito && !atual ? ' feito' : ''}"><small>${T.diaN(i + 1)}</small><span>${icone(pr)}</span><b>${premioTexto(pr)}</b>`
+    return `<div class="ms-dia${atual ? ' atual' : ''}${feito && !atual ? ' feito' : ''}"><small>${T.diaN(i + 1)}</small><img class="ms-arte" src="${DIAS_LOGIN[i]}" alt="" draggable="false"><b>${premioTexto(pr)}</b>`
       + (atual ? `<button class="btn go mini" data-act="login">${T.coletar}</button>` : feito ? `<i>${T.coletado}</i>` : '') + '</div>';
   }).join('');
   const lista = p.missoes.lista.map(md => {

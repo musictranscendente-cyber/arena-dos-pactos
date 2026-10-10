@@ -5,6 +5,7 @@ import { RARITY } from '../data/raridades';
 import type { Raridade, Signo } from '../data/schema';
 import { ORDER, RACES } from '../data/signos';
 import { T } from '../data/textos';
+import { ic } from './icones';
 import {
   CARTAS_PACOTE, CHANCES, copiasNoNivel, CUSTO_FUSAO, MAX_PACOTES, niveisQueTem, podeFundir, PRECO_PACOTE, PRECO_PACOTE_SIGNO, precoPacote, type Progresso,
 } from '../meta/progresso';
@@ -17,7 +18,7 @@ function fecha(): string {
 
 /** Moedas do jogador (canto da tela). */
 export function moedasHtml(p: Progresso): string {
-  return `<span class="moedas"><span title="${T.poeira}">✨ <b>${p.poeira}</b></span><span title="${T.gemas}">💎 <b>${p.gemas}</b></span></span>`;
+  return `<span class="moedas"><span title="${T.poeira}">${ic('poeira')}<b>${p.poeira}</b></span><span title="${T.gemas}">${ic('gema')}<b>${p.gemas}</b></span></span>`;
 }
 
 /** Primeira vez: escolher o signo inicial (ganha as 30 cartas dele). */

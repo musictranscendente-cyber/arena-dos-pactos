@@ -7,6 +7,7 @@ import { currentSign, ELEMENTO, ORDER, RACES } from '../data/signos';
 import { cardText, KW, T } from '../data/textos';
 import { pronta } from './precarga';
 import { isRanged } from './projetil';
+import { ic } from './icones';
 import { iconeSom } from './som';
 import { costOf, effAtk, isValidTarget, type GameState, type Side, type Target } from '../engine';
 
@@ -263,9 +264,7 @@ function heroCard(s: GameState, side: Side, nivel?: string): string {
 }
 
 /** Bandeira branca (desistir): mastro dourado e pano que tremula. */
-const BANDEIRA = '<svg viewBox="0 0 20 20" aria-hidden="true"><rect x="2.2" y="1.5" width="1.8" height="17" rx=".9" fill="#e9c77a" stroke="#4a2c0a" stroke-width=".6"/>'
-  + '<circle cx="3.1" cy="1.6" r="1.4" fill="#ffe08a" stroke="#4a2c0a" stroke-width=".5"/>'
-  + '<path class="pano" d="M4 3.2 C8 1.6 11 5 17.5 3.4 L17.5 11.4 C11 13 8 9.6 4 11.2 Z" fill="#fff" stroke="#2a1d3d" stroke-width=".8" stroke-linejoin="round"/></svg>';
+const BANDEIRA = ic('bandeira', 'ic-flag');
 
 function hudHtml(s: GameState, nivel?: string): string {
   return `<div class="hud">${heroCard(s, 'p')}`
@@ -281,12 +280,12 @@ function manaHtml(v: View): string {
 }
 
 function actsHtml(v: View): string {
-  return `<div class="acts"><button class="btn go" data-act="punch" ${v.canAct ? '' : 'disabled'}><span class="ico">⚔️</span>${T.batalha}</button></div>`;
+  return `<div class="acts"><button class="btn go" data-act="punch" ${v.canAct ? '' : 'disabled'}><span class="ico">${ic('lutar', 'ic-bt')}</span>${T.batalha}</button></div>`;
 }
 
 /** Voltar e queimar: logo à direita da mana. */
 function actsEsqHtml(v: View): string {
-  return `<div class="acts-esq"><button class="btn rc" data-act="recharge" ${v.canBurn ? '' : 'disabled'}>${T.queimar}</button>`
+  return `<div class="acts-esq"><button class="btn rc" data-act="recharge" ${v.canBurn ? '' : 'disabled'}>${ic('fogo', 'ic-bt')}${T.queimarCurto}</button>`
     + `<button class="btn un" data-act="undo" ${v.canUndo ? '' : 'disabled'} title="${T.desfazer}">↩</button></div>`;
 }
 

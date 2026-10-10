@@ -2125,3 +2125,27 @@ body.rot{height:100%;min-height:0;overflow:hidden;overscroll-behavior:none}
 .ov.campanha .cp-det .btn.cp-lutar{flex:none}
 @media (max-height:420px){.ov.campanha .cp-det>p:not(.cp-info):not(.nv-deck):not(.m-dica){margin:2px 0;padding:3px 8px}.ov.campanha .cp-det .nv-deck{margin:3px 0}}
 body.rot .ov.campanha .cp-det>p:not(.cp-info):not(.nv-deck):not(.m-dica){margin:2px 0;padding:3px 8px}body.rot .ov.campanha .cp-det .nv-deck{margin:3px 0}
+
+/* ícones desenhados (no lugar dos emojis) */
+.ic{display:inline-block;width:auto;height:1.25em;vertical-align:-.28em;object-fit:contain;filter:drop-shadow(0 1px 1px #0009);pointer-events:none}
+.ic.ic-g{height:1.5em;vertical-align:-.4em}
+.ic.ic-bt{height:1.45em;vertical-align:-.35em;margin-right:5px}
+.moedas .ic{height:1.35em}
+.cp-chip .ic{margin-right:3px}
+.cp-est .ic{height:1.15em;margin:0 -1px;filter:drop-shadow(0 1px 1px #000a) grayscale(.2) brightness(.8)}
+.cp-est .ic.on{filter:drop-shadow(0 0 3px #ffcf4d) sepia(1) saturate(6) hue-rotate(-12deg) brightness(1.55)}
+.cp-fase .cp-est .ic{height:15px}
+.cp-tit .c-info{padding:0 2px;background:none;border:none;box-shadow:none;min-width:0}
+.cp-tit .c-info .ic{height:28px}
+.cp-tit .c-info.on .ic{filter:drop-shadow(0 0 6px #ffe08a)}
+/* bandeira de desistir */
+.flagbtn .ic-flag{height:20px;vertical-align:middle;animation:tremula-img 1.8s ease-in-out infinite;transform-origin:15% 90%}
+.land .flagbtn .ic-flag{height:17px}
+.btn.desiste .ic-flag{height:26px}
+@keyframes tremula-img{50%{transform:rotate(-5deg) skewY(-2deg)}}
+@media (prefers-reduced-motion:reduce){.flagbtn .ic-flag{animation:none}}
+/* calendário de login */
+.ms-dia .ms-arte{height:58px;width:auto;max-width:100%;object-fit:contain;filter:drop-shadow(0 2px 3px #000a)}
+.ms-dia.feito .ms-arte{filter:grayscale(.6)}
+.ms-dia b .ic{height:1.2em}
+.acts-esq .btn .ic-bt{height:1.6em;margin-right:2px}
