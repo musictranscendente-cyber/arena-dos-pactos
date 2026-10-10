@@ -1549,3 +1549,69 @@ body.rot .m-corpo{margin-top:5px}
 .btn.go.mini::before,.btn.go.mini::after,.m-qtd .btn.go::before,.m-qtd .btn.go::after,.c-fundir::before,.c-fundir::after{display:none}
 /* botão Batalha! fica colado na borda da tela: losango só do lado de dentro */
 .acts .btn.go::after{display:none}
+
+/* ================= tela Campanha (repaginada) — só .ov.campanha ================= */
+.ov.campanha{--ouro:#e9c46a;--ouro-esc:#5a3a0a;background:url('./img/hub.webp') center/cover no-repeat;padding:min(2vh,10px) min(2vw,14px)}
+.ov.campanha::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at center,#0d082866,#0d0828cc);pointer-events:none}
+.ov.campanha>.panel.wide{position:relative;max-width:none;width:100%;height:100%;max-height:100%;padding:10px 14px 12px;
+  background:linear-gradient(180deg,#1c1044e6,#120a30ee)}
+/* título */
+.ov.campanha .gtop h2{font-family:var(--fonte-titulo);font-weight:800;text-transform:uppercase;letter-spacing:1px;font-size:30px;line-height:1;margin:0;
+  background:linear-gradient(180deg,#fff3c8 15%,#f6c95a 55%,#c47f1c 90%);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 2px 0 #4a2200)}
+.ov.campanha .gtop h2 small{font-family:var(--fonte-titulo);text-transform:none;letter-spacing:0;font-size:15px;-webkit-text-fill-color:#f3e6c4;color:#f3e6c4;margin-left:10px;
+  background:#1a1040cc;border:1px solid #e9c46a88;border-radius:999px;padding:2px 10px;filter:none;vertical-align:4px}
+/* barra dos 12 signos */
+.ov.campanha .c-abas{gap:5px;padding:5px;border-radius:12px;background:#0d082899;border:1px solid #e9c46a55}
+.ov.campanha .cp-mundo{flex:1 1 0;min-width:0;border:1px solid #e9c46a66;border-radius:9px;background:linear-gradient(180deg,#2e1c62,#1a1040);min-height:38px;padding:3px 2px}
+.ov.campanha .cp-mundo.on{border:2px solid var(--ouro);background:linear-gradient(180deg,#5a3a9a,#2a1660);box-shadow:0 0 10px #f6d27a77}
+.ov.campanha .cp-mundo small{font-size:10px;font-weight:700}
+/* mapa: cenário cósmico, trilha dourada, ilhas sob as fases */
+.ov.campanha .cp-corpo{gap:10px;grid-template-columns:1fr minmax(250px,36%)}
+.ov.campanha .cp-mapa{border:1.5px solid #e9c46a99;box-shadow:0 0 0 1px var(--ouro-esc),inset 0 0 40px #0008;
+  background:linear-gradient(180deg,#0d082855,#0d082899),url('./img/hub.webp') center 65%/cover no-repeat}
+.ov.campanha .cp-mapa::before{display:none}
+.cp-trilha{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0}
+.cp-trilha line{stroke:#e9c46a88;stroke-width:3;stroke-dasharray:6 6;vector-effect:non-scaling-stroke;stroke-linecap:round}
+.cp-trilha line.feito{stroke:#ffd76a;stroke-dasharray:none;filter:drop-shadow(0 0 3px #ffcf4d)}
+/* fases: ilha de pedra embaixo, moldura metálica */
+.ov.campanha .cp-fase{z-index:1;border:3px solid #c9a24e;background:radial-gradient(circle at 50% 35%,#5a3a9a,#24124e);
+  box-shadow:0 0 0 2px #2a1606,0 4px 8px #000a,inset 0 2px 0 #ffffff33}
+.ov.campanha .cp-fase::after{content:'';position:absolute;left:50%;top:62%;width:150%;height:62%;translate:-50% 0;z-index:-1;pointer-events:none;
+  clip-path:polygon(0 18%,100% 18%,88% 45%,70% 70%,52% 100%,34% 72%,14% 48%);
+  background:linear-gradient(180deg,#6fa04a 0 18%,#6b5a7e 19%,#3e3254 60%,#1c1430)}
+.ov.campanha .cp-fase.feita{border-color:#ffd76a;background:radial-gradient(circle at 50% 35%,#8fbf3a,#3f6a1a);box-shadow:0 0 0 2px #2a1606,0 0 10px #ffcf4d88,0 4px 8px #000a}
+.ov.campanha .cp-fase.livre:not(.feita){border-color:#ffd76a;background:radial-gradient(circle at 50% 35%,#7a4ad0,#33187a)}
+.ov.campanha .cp-fase.bloq{filter:none;border-color:#8a8296;background:radial-gradient(circle at 50% 35%,#4a4458,#1e1a2a)}
+.ov.campanha .cp-fase.bloq b{font-size:15px;filter:grayscale(1) brightness(1.4)}
+.ov.campanha .cp-fase.bloq .cp-fig{filter:grayscale(.7) brightness(.7) drop-shadow(0 3px 3px #000a)}
+.ov.campanha .cp-fase.sel{outline:none;border-color:#fff3c4;box-shadow:0 0 0 2px #2a1606,0 0 0 5px #ffd76acc,0 0 22px #ffcf4d,0 4px 8px #000a;scale:1.12}
+.ov.campanha .cp-fase b{font-family:var(--fonte-titulo)}
+/* painel lateral */
+.ov.campanha .cp-det{background:linear-gradient(180deg,#24145acc,#140a34e6);border:1.5px solid #e9c46a99;box-shadow:0 0 0 1px var(--ouro-esc),inset 0 1px 0 #ffffff1a;padding:10px 12px}
+.ov.campanha .cp-det h3{font-size:19px;color:#ffe08a;text-shadow:0 1px 2px #000}
+.ov.campanha .cp-chip{background:#0d082899;border:1px solid #e9c46a44;border-radius:8px;padding:3px 8px;font-size:12.5px}
+.ov.campanha .cp-det>p:not(.cp-info):not(.nv-deck):not(.m-dica){background:#0d082866;border:1px solid #e9c46a33;border-radius:9px;padding:5px 9px;margin:6px 0 4px;font-size:13px}
+.ov.campanha .cp-det .nv-deck{background:#0d082899;border:1px solid #e9c46a66;padding:5px 6px 5px 10px;margin:6px 0}
+.ov.campanha .cp-det .nv-deck .btn.mini{border:1.5px solid var(--ouro);min-height:28px;padding:0 12px;font-size:13px}
+.ov.campanha .btn.cp-lutar{height:auto;min-height:48px;font-size:24px;border-color:#fff0b8;
+  background:linear-gradient(180deg,#ffe08a,#f7a93a 40%,#ec7a22 75%,#b8461a);margin-top:auto}
+.ov.campanha .btn.cp-lutar::before{left:-7px}.ov.campanha .btn.cp-lutar::after{right:-7px}
+/* telas baixas */
+@media (max-height:420px){
+  .ov.campanha .gtop h2{font-size:24px}.ov.campanha .gtop h2 small{font-size:13px}
+  .ov.campanha .cp-mundo{min-height:32px}
+  .ov.campanha .btn.cp-lutar{min-height:42px;font-size:21px}
+  .ov.campanha .cp-det h3{font-size:16px}
+}
+.ov.campanha .cp-fase::after{top:86%;width:118%;height:46%;clip-path:polygon(0 0,100% 0,86% 38%,66% 66%,50% 100%,34% 66%,14% 38%);
+  background:linear-gradient(180deg,#5d8a3e 0 14%,#5a4a70 16%,#33284a 60%,#170f2a);opacity:.9}
+.ov.campanha .cp-fase .cp-est{z-index:3;bottom:-16px}
+@media (max-height:380px){
+  .ov.campanha>.panel.wide{padding:8px 10px 8px}
+  .ov.campanha .gtop h2{font-size:21px}
+  .ov.campanha .cp-det{padding:7px 9px}
+  .ov.campanha .cp-det>p:not(.cp-info):not(.nv-deck):not(.m-dica){margin:3px 0 2px;padding:3px 8px}
+  .ov.campanha .cp-det .nv-deck{margin:3px 0;padding:3px 5px 3px 8px}
+  .ov.campanha .btn.cp-lutar{min-height:38px;font-size:19px}
+  .ov.campanha .cp-chip{padding:2px 6px;font-size:11.5px}
+}

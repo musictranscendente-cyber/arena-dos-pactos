@@ -22,12 +22,17 @@ export function campanhaHtml(p: Progresso, t: TelaCampanha, deck: DeckMontado | 
       + `${livre ? RACES[s].g : '🔒'}<small>${livre ? `${estrelasDoMundo(p, s)}★` : ''}</small></button>`;
   }).join('');
   const r = RACES[t.signo];
+  // caminho em zigue-zague: fases 1-5 em cima (esquerda→direita), 6-10 embaixo (direita→esquerda)
+  const pos = Array.from({ length: FASES }, (_, i) => ({ x: i < 5 ? 10 + i * 20 : 10 + (9 - i) * 20, y: (i < 5 ? 30 : 74) + (i % 2 ? -7 : 7) }));
+  // trilha dourada ligando as fases: trecho já vencido sólido, o resto tracejado
+  const trilha = '<svg class="cp-trilha" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">'
+    + pos.slice(1).map((q, i) => `<line x1="${pos[i].x}" y1="${pos[i].y}" x2="${q.x}" y2="${q.y}" class="${estrelas(p, t.signo, i + 1) ? 'feito' : ''}"/>`).join('')
+    + '</svg>';
   const nos = Array.from({ length: FASES }, (_, i) => {
     const n = i + 1, f = fase(t.signo, n), est = estrelas(p, t.signo, n), livre = faseLiberada(p, t.signo, n);
     const cls = ['cp-fase', `t-${f.tipo}`, est ? 'feita' : livre ? 'livre' : 'bloq', t.fase === n ? 'sel' : ''].join(' ');
     const fig = f.tipo === 'chefe' ? criatura(`${t.signo}25`, 'cp-fig') : f.tipo === 'guardiao' ? criatura(`${t.signo}23`, 'cp-fig') : '';
-    // caminho em zigue-zague: fases 1-5 em cima (esquerda→direita), 6-10 embaixo (direita→esquerda)
-    const x = i < 5 ? 10 + i * 20 : 10 + (9 - i) * 20, y = (i < 5 ? 30 : 74) + (i % 2 ? -7 : 7);
+    const { x, y } = pos[i];
     return `<button class="${cls}" data-act="cfase" data-n="${n}" style="left:${x}%;top:${y}%">${fig}<b>${livre ? n : '🔒'}</b>${est ? estrelinhas(est) : ''}</button>`;
   }).join('');
   // detalhes da fase escolhida
@@ -55,5 +60,5 @@ export function campanhaHtml(p: Progresso, t: TelaCampanha, deck: DeckMontado | 
     + `<div class="gtop"><h2>${T.campanha} <small>${r.g} ${T.mundo(r.n)}</small></h2><span class="m-topo-bts">${moedasHtml(p)}`
     + `<button class="m-fecha" data-act="hub" aria-label="${T.sair}">✕</button></span></div>`
     + `<div class="c-abas">${abas}</div></div>`
-    + `<div class="m-corpo cp-corpo"><div class="cp-mapa">${nos}</div>${det}</div>${ajuda}</div></div>`;
+    + `<div class="m-corpo cp-corpo"><div class="cp-mapa">${trilha}${nos}</div>${det}</div>${ajuda}</div></div>`;
 }
