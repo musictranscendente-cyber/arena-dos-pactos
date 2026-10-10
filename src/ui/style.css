@@ -2063,3 +2063,11 @@ body.sem-giro .ov.conhecer>.panel,body.sem-giro .ov.missoes>.panel{width:100%;ma
 }
 /* em pé, o menu atrás não gira: fundo cósmico opaco para ele não aparecer */
 @media (orientation:portrait){body.sem-giro .ov.conhecer,body.sem-giro .ov.missoes{background:linear-gradient(180deg,#0b0722cc,#0b0722ee),url('./img/hub.webp') center/cover no-repeat,#0b0722}}
+/* botões dos cantos: ilustração em cima e o nome (texto traduzível) numa plaquinha dourada embaixo */
+.hub-v2 .hub-bt.hub-bt-arte{width:min(24cqh,92px);height:auto;padding:0;gap:0;border:0;background:none;box-shadow:none;overflow:visible;filter:drop-shadow(0 4px 6px #000a)}
+.hub-v2 .hub-bt-arte img{display:block;width:100%;height:auto;pointer-events:none}
+.hub-v2 .hub-bt-arte b{margin-top:-1.4cqh;position:relative;z-index:1;padding:.3cqh 1.4cqh .4cqh;border-radius:999px;white-space:nowrap;font-size:min(3.2cqh,12.5px);
+  border:1.5px solid #f6d27a;background:linear-gradient(180deg,#3a2378,#1c0f44);box-shadow:0 0 0 1px #3a2206,0 2px 4px #000a;color:#ffe9b0}
+.hub-v2 .hub-bt-arte:hover,.hub-v2 .hub-bt-arte:focus-visible{filter:drop-shadow(0 4px 6px #000a) brightness(1.12)}
+.hub-v2 .hub-bt-arte .hub-alerta{top:0;right:4%}
+.hub-v2 .hub-col.esq,.hub-v2 .hub-base.esq{gap:.6cqh}

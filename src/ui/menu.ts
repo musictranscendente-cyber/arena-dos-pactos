@@ -4,6 +4,10 @@ import { ARTE, artUrl } from '../data/arte';
 import type { Signo } from '../data/schema';
 import { currentSign, ORDER, RACES } from '../data/signos';
 import { iconeSom } from './som';
+import icColecao from './img/hub/colecao-ic.webp';
+import icPacotes from './img/hub/pacotes-ic.webp';
+import icMissoes from './img/hub/missoes-ic.webp';
+import icRegras from './img/hub/regras-ic.webp';
 import arteConhecer from './img/hub/conhecer-arte.webp';
 import arteCampanha from './img/hub/campanha-arte.webp';
 import arteTorneio from './img/hub/torneio-arte.webp';
@@ -84,8 +88,8 @@ export function hubHtml(now: Date, deck: DeckMontado | null, prog: Progresso, al
   return `<div class="hub hub-v2" style="--rc:${r.c}">`
     + '<div class="hub-ceu"></div><div class="hub-brilho"></div>'
     // canto de cima à esquerda: Coleção e Pacotes; no meio, a logo
-    + `<div class="hub-col esq"><button class="hub-bt" data-act="colecao"><span>🗂️</span><b>${T.colecao}</b></button>`
-    + `<button class="hub-bt" data-act="pacotes"><span>📦</span><b>${T.pacotes}</b></button></div>`
+    + `<div class="hub-col esq"><button class="hub-bt hub-bt-arte" data-act="colecao"><img src="${icColecao}" alt="" draggable="false"><b>${T.colecao}</b></button>`
+    + `<button class="hub-bt hub-bt-arte" data-act="pacotes"><img src="${icPacotes}" alt="" draggable="false"><b>${T.pacotes}</b></button></div>`
     + `<div class="hub-titulo" role="img" aria-label="${T.titulo}"></div>`
     // canto de cima à direita: perfil, evento da temporada e o som
     + `<div class="hub-col dir"><div class="hub-perfil"><div class="medal"><span>${r.g}</span></div>`
@@ -95,8 +99,8 @@ export function hubHtml(now: Date, deck: DeckMontado | null, prog: Progresso, al
     + `<button class="hub-som" data-act="som" aria-label="${T.som}" title="${T.som}">${iconeSom()}</button></div>`
     + ilhas.map(ilhaHtml).join('')
     // canto de baixo à esquerda: Missões e Como jogar
-    + `<div class="hub-base esq"><button class="hub-bt${alerta ? ' alerta' : ''}" data-act="missoes"><span>📜</span><b>${T.missoes}</b>${alerta ? `<i class="hub-alerta" aria-label="${T.temPremio}">!</i>` : ''}</button>`
-    + `<button class="hub-bt" data-act="regras"><span>📖</span><b>${T.comoJogar}</b></button>`
+    + `<div class="hub-base esq"><button class="hub-bt hub-bt-arte${alerta ? ' alerta' : ''}" data-act="missoes"><img src="${icMissoes}" alt="" draggable="false"><b>${T.missoes}</b>${alerta ? `<i class="hub-alerta" aria-label="${T.temPremio}">!</i>` : ''}</button>`
+    + `<button class="hub-bt hub-bt-arte" data-act="regras"><img src="${icRegras}" alt="" draggable="false"><b>${T.comoJogar}</b></button>`
     + '</div>'
     + '</div>';
 }
