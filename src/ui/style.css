@@ -2350,3 +2350,6 @@ body:not(.batalha) .som-painel{top:80px;left:66px}
 /* coleção: só a criatura, sem moldura nem enfeites */
 .cd-carta.cd-fig{background:none;border:none;padding:0;width:150px;align-self:center;justify-content:center}
 .cd-fig .cd-bicho{max-height:170px;max-width:150px}
+
+/* tela inicial: fundo levemente desfocado e mais escuro para os botões se destacarem */
+.hub-v2 .hub-ceu{filter:blur(2px) brightness(.68) saturate(.95);inset:-4%}
