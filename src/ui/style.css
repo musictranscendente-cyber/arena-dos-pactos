@@ -2352,7 +2352,7 @@ body:not(.batalha) .som-painel{top:80px;left:66px}
 .cd-fig .cd-bicho{max-height:170px;max-width:150px}
 
 /* tela inicial: fundo levemente desfocado e mais escuro para os botões se destacarem */
-.hub-v2 .hub-ceu{filter:blur(2px) brightness(.68) saturate(.95);inset:-4%}
+.hub-v2 .hub-ceu{filter:blur(1px) brightness(.74) saturate(.95);inset:-4%}
 
 /* medalhão do perfil vira botão de Configurações (com engrenagem) */
 .hub-v2 .medal.medal-bt{font:inherit;color:inherit;padding:0;cursor:pointer;position:relative}
