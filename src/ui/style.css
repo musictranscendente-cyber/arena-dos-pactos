@@ -1431,3 +1431,13 @@ body.rot .m-corpo{margin-top:5px}
 .c-f-carta .card,.land .c-f-carta .card{min-height:0;max-height:none}
 .c-f-carta .card,.land .c-f-carta .card{width:84px;height:auto;aspect-ratio:92/132;flex:none}
 .c-fusao{gap:8px}
+/* tela de vitória da campanha com as cartas ganhas */
+.ov.fim .panel p{margin:4px 0}
+.fim-cartas{margin:6px 0 10px;gap:8px}
+.fim-cartas .rv-c{width:76px}
+.fim-cartas .rv-c .card,.land .fim-cartas .rv-c .card{width:76px;height:auto;aspect-ratio:92/132;flex:none}
+.ov.fim.com-cartas .panel h2{margin:0 0 4px}
+.ov.fim.com-cartas .panel{display:grid;grid-template-columns:minmax(0,1fr) auto;column-gap:16px;align-items:start;max-width:min(680px,94%);width:auto}
+.ov.fim.com-cartas .panel>*{grid-column:1}
+.ov.fim.com-cartas .fim-cartas{grid-column:2;grid-row:1 / span 5;align-self:center;margin:0;flex-wrap:wrap;max-width:260px;justify-content:center}
+.ov.fim.com-cartas .acts2{margin-top:6px}

@@ -26,7 +26,7 @@ import { desafioHtml, TEMPO_DESAFIO } from './desafio';
 import { deckDaFase, fase as dadosFase, FASES, faseLiberada, mundoAtual, nivelMedioDeck, vencerFase } from '../meta/campanha';
 import { abrirBau, BAU_POEIRA, coletar, coletarLogin, garantirDia, loginDisponivel, registrar, trocar, type Contagem } from '../meta/missoes';
 import { missoesHtml, temColeta } from './missoes';
-import { colecaoHtml, inicialHtml, pacotesHtml, proximoFiltro, revelarHtml, type TelaColecao, type TelaPacotes } from './colecao';
+import { colecaoHtml, inicialHtml, pacotesHtml, proximoFiltro, cartasGanhasHtml, revelarHtml, type TelaColecao, type TelaPacotes } from './colecao';
 import { lerNivel, salvarNivel } from '../services/preferencias';
 
 /** Nome da raridade em minúsculas, para os avisos. */
@@ -76,6 +76,8 @@ interface Match {
   premio?: string;
   /** Cartas ganhas para mostrar ao sair da partida. */
   revelaDepois?: string;
+  /** Cartas ganhas na campanha, mostradas na própria tela de vitória. */
+  cartasFim?: string;
   /** O que o jogador fez na partida (para as missões). */
   cont: Partial<Record<Contagem, number>>;
 }
@@ -583,7 +585,7 @@ function render(): void {
   const tut = M.confirma || M.g.phase === 'over' ? { html: '' }
     : tutorialHtml({ rodada: M.g.round, ocupado: M.busy, selecionou: M.sel !== null, jogou: M.plan.length > 0,
       podeInvocar: M.g.p.hand.some(h => card(h.cid).type === 'unit' && costOf(M!.g.p, h.cid) <= M!.g.p.mana) });
-  root.innerHTML = gameHtml(v) + tut.html + (M.confirma ? desistirHtml() : '') + (M.g.phase === 'over' && M.fim === 'pronto' ? endHtml(M.g, M.premio, botoesFim(M)) : '');
+  root.innerHTML = gameHtml(v) + tut.html + (M.confirma ? desistirHtml() : '') + (M.g.phase === 'over' && M.fim === 'pronto' ? endHtml(M.g, M.premio, botoesFim(M), M.cartasFim) : '');
   root.insertAdjacentHTML('beforeend', somHtml() + (revela ?? ''));
   if (tut.alvo) root.querySelectorAll(tut.alvo).forEach(el => el.classList.add('tut-alvo'));
   reporMortos();
@@ -671,8 +673,9 @@ function premioDaPartida(m: Match): string | undefined {
     const partes = ['⭐'.repeat(r.estrelas), `+${r.poeira} ✨`];
     if (r.gemas) partes.push(`+${r.gemas} 💎`);
     if (r.cartas.length) {
-      partes.push(r.cartas.map(c => card(c).name).join(', '));
-      m.revelaDepois = revelarHtml(r.lenda ? T.lendaGanha(card(`${signo}25`).name) : T.cartasGanhas, r.cartas, r.novas);
+      if (r.lenda) partes.push(T.lendaGanha(card(`${signo}25`).name));
+      // as cartas aparecem na própria tela de vitória (não depois, por cima da próxima luta)
+      m.cartasFim = cartasGanhasHtml(r.cartas, r.novas);
     }
     return partes.join(' · ');
   }

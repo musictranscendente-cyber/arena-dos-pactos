@@ -373,12 +373,13 @@ export function desistirHtml(): string {
     + `<div class="acts2"><button class="btn rc desiste" data-act="desistir-sim">${BANDEIRA}${T.desistirCurto}</button><button class="btn go" data-act="desistir-nao">${T.desistirNao}</button></div></div></div>`;
 }
 
-export function endHtml(s: GameState, premio?: string, botoes?: string): string {
+export function endHtml(s: GameState, premio?: string, botoes?: string, cartas?: string): string {
   const t = s.result === 'p' ? T.vitoria : s.result === 'draw' ? T.empate : T.derrota;
   const p = s.surrendered === 'p' ? T.voceDesistiu : s.surrendered === 'e' ? T.rivalDesistiu
     : s.result === 'p' ? T.venceu(nomeLado(s.p), nomeLado(s.e))
     : s.result === 'draw' ? T.caíramJuntos : T.rivalVenceu(nomeLado(s.e));
-  return `<div class="ov"><div class="panel"><h2>${t}</h2><p>${p}</p><p>${T.rodadasJogadas(s.round)}</p>`
+  return `<div class="ov fim${cartas ? ' com-cartas' : ''}"><div class="panel"><h2>${t}</h2><p>${p}</p><p>${T.rodadasJogadas(s.round)}</p>`
     + (premio ? `<p class="fim-premio">${T.premio}: <b>${premio}</b></p>` : '')
+    + (cartas ? `<div class="rv-cartas fim-cartas">${cartas}</div>` : '')
     + `<div class="acts2">${botoes ?? `<button class="btn go" data-act="again">${T.revanche}</button><button class="btn rc" data-act="menu">${T.menuPrincipal}</button>`}</div></div></div>`;
 }

@@ -163,13 +163,15 @@ function pacoteDetalheHtml(p: Progresso, tp: TelaPacotes): string {
 /** Cartas recebidas (pacote, prêmio): aparecem viradas e desviram uma a uma. */
 const PESO_R: Record<Raridade, number> = { l: 0, e: 1, r: 2, c: 3 };
 
-export function revelarHtml(titulo: string, cartas0: readonly string[], novas: readonly string[], extra = ''): string {
-  // da mais rara para a mais comum (e por custo dentro da mesma raridade)
+/** As cartas ganhas, da mais rara para a mais comum, com "NOVA!" na primeira vez que cada uma aparece. */
+export function cartasGanhasHtml(cartas0: readonly string[], novas: readonly string[]): string {
   const cartas = [...cartas0].sort((a, b) => PESO_R[card(a).r] - PESO_R[card(b).r] || card(b).cost - card(a).cost);
-  // "NOVA!" só na primeira vez que a carta aparece (a repetida já não é nova)
-  const cs = cartas.map((k, i) => `<div class="rv-c" style="--i:${Math.min(i, 14)}">${novas.includes(k) && cartas.indexOf(k) === i ? `<span class="rv-nova">${T.novaCarta}</span>` : ''}`
+  return cartas.map((k, i) => `<div class="rv-c" style="--i:${Math.min(i, 14)}">${novas.includes(k) && cartas.indexOf(k) === i ? `<span class="rv-nova">${T.novaCarta}</span>` : ''}`
     + cardHtml(card(k), card(k).cost, '', '', k) + '</div>').join('');
-  return `<div class="ov revela"><div class="panel wide"><h2>${titulo}</h2>${extra ? `<p class="rv-extra">${extra}</p>` : ''}<div class="rv-cartas">${cs}</div>`
+}
+
+export function revelarHtml(titulo: string, cartas: readonly string[], novas: readonly string[], extra = ''): string {
+  return `<div class="ov revela"><div class="panel wide"><h2>${titulo}</h2>${extra ? `<p class="rv-extra">${extra}</p>` : ''}<div class="rv-cartas">${cartasGanhasHtml(cartas, novas)}</div>`
     + `<button class="btn go" data-act="rv-ok">${T.continuar}</button></div></div>`;
 }
 
