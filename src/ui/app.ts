@@ -554,6 +554,8 @@ function somHtml(): string {
 
 function render(): void {
   const root = app();
+  // cenário e tabuleiro cósmicos só durante a partida
+  document.body.classList.toggle('batalha', !!M);
   trilha(M ? 'batalha' : 'menu');
   if (!M) {
     emDia();

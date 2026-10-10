@@ -9,6 +9,7 @@
   --glass:rgba(22,16,48,.72); --line:rgba(255,226,160,.35);
   --ch:78px;
   --scene:url('./img/arena.webp');
+  --laje:url('./img/laje.webp');
 }
 *,*::before,*::after{box-sizing:inherit}
 html{scroll-padding-top:env(safe-area-inset-top,0px)}
@@ -395,9 +396,9 @@ body.rot.land #app{height:auto}
   color:#c9a24a2e;-webkit-text-stroke:2px #c9a24ab0;text-shadow:0 0 22px color-mix(in srgb,var(--rc) 60%,transparent);opacity:.7;pointer-events:none;font-family:'DejaVu Sans',sans-serif}
 .chasm{background:linear-gradient(90deg,transparent,#ffe9a855 35%,#fffbe8aa 50%,#ffe9a855 65%,transparent);box-shadow:0 0 26px #ffd77a99;opacity:.9}
 /* casas: lajes de mármore esculpido em relevo (borda chanfrada, constelações em ouro) */
-.cell{background:url('./img/laje.webp') center/100% 100% no-repeat;border-radius:8px;
+.cell{background:var(--laje) center/100% 100% no-repeat;border-radius:8px;
   box-shadow:0 3px 0 #8e7fb0,0 4px 6px #0005}
-.cell.front{background:url('./img/laje.webp') center/100% 100% no-repeat;box-shadow:0 3px 0 #8e7fb0,0 4px 6px #0005}
+.cell.front{background:var(--laje) center/100% 100% no-repeat;box-shadow:0 3px 0 #8e7fb0,0 4px 6px #0005}
 .cell.ok{box-shadow:inset 0 0 0 3px var(--gold),0 0 14px var(--gold),inset 0 0 22px #ffd77aaa}
 .cell.mine{--sc:var(--prc)}
 .cell.theirs{--sc:var(--erc)}
@@ -588,9 +589,9 @@ body:not(.land) .board{flex:0 0 auto;height:min(54vh,44vw)}
 .board.desaba-e .plat.theirs,.board.desaba-e .cell.theirs{animation:desaba 1.9s cubic-bezier(.3,0,.6,1) forwards}
 .board.desaba-p .plat.mine .racha,.board.desaba-e .plat.theirs .racha{animation:racha 1.9s ease-out forwards}
 /* cada laje também racha, por baixo da criatura */
-.board.desaba-p .cell.mine,.board.desaba-e .cell.theirs{background-image:url('./img/racha.svg'),url('./img/laje.webp');background-size:0 0,100% 100%;background-position:center;background-repeat:no-repeat}
+.board.desaba-p .cell.mine,.board.desaba-e .cell.theirs{background-image:url('./img/racha.svg'),var(--laje);background-size:0 0,100% 100%;background-position:center;background-repeat:no-repeat}
 .board.desaba-p .cell.mine:nth-child(odd),.board.desaba-e .cell.theirs:nth-child(odd){animation-delay:.08s}
-.board.desaba-p .cell.mine:nth-child(4n),.board.desaba-e .cell.theirs:nth-child(4n+1){background-image:url('./img/racha2.svg'),url('./img/laje.webp')}
+.board.desaba-p .cell.mine:nth-child(4n),.board.desaba-e .cell.theirs:nth-child(4n+1){background-image:url('./img/racha2.svg'),var(--laje)}
 .board.desaba-p .cell.mine{animation-name:desaba,laje-racha}.board.desaba-e .cell.theirs{animation-name:desaba,laje-racha}
 .board.desaba-p .cell.mine .unit,.board.desaba-e .cell.theirs .unit{animation:apaga 1.9s ease-in forwards}
 /* depois que o resultado aparece, fica parado no estado final (sem repetir a animação) */
@@ -1774,3 +1775,27 @@ body.rot .ov.rapida .nv-topo h2{font-size:clamp(34px,6.4vh,60px)}
 .cd-msg{animation:cd-toast 3.2s ease forwards;pointer-events:none}
 @keyframes cd-toast{0%{opacity:0;translate:0 -6px}8%{opacity:1;translate:0 0}80%{opacity:1}100%{opacity:0;visibility:hidden}}
 @media (prefers-reduced-motion:reduce){.cd-msg{animation:cd-toast 3.2s steps(1,end) forwards}}
+
+/* ================= campo de batalha cósmico (só durante a partida: body.batalha) ================= */
+body.batalha{--scene:url('./img/hub.webp');--laje:url('./img/casa.svg')}
+body.batalha::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:-1;
+  background:radial-gradient(70% 55% at 50% 40%,transparent,#0b0722aa 85%),linear-gradient(0deg,#0b0722cc,transparent 30%)}
+body.batalha.rot #app{background:radial-gradient(70% 55% at 50% 40%,transparent,#0b0722aa 85%),linear-gradient(0deg,#0b0722cc,transparent 30%),var(--scene) center top/cover no-repeat,var(--page)}
+/* plataformas: pedra escura com aro prateado e filete dourado */
+body.batalha .plat{background:
+    radial-gradient(120% 90% at 50% 0,#4a4482aa,transparent 60%),
+    linear-gradient(180deg,#2c2858,#1a1738 60%,#120f28);
+  box-shadow:inset 0 0 0 2px #d9a640,inset 0 0 0 4px #c9c6dc,inset 0 0 0 5px #4a466a,inset 0 0 30px color-mix(in srgb,var(--rc) 30%,transparent),
+    0 0 0 1px #0a0818,0 0 18px #6a5adc44}
+body.batalha .plat::before{color:#c9a24a14;-webkit-text-stroke:1.5px #c9a24a66;opacity:.6}
+body.batalha .plat::after{filter:brightness(.55) saturate(.6) hue-rotate(10deg);box-shadow:inset 0 3px 0 #c9c6dc,inset 0 -6px 10px #0008,0 10px 18px #000a,0 18px 50px color-mix(in srgb,var(--rc) 45%,transparent)}
+/* casas: painel azul-violeta escuro com moldura metálica; destaque de alvo em dourado, sem exagero */
+body.batalha .cell,body.batalha .cell.front{box-shadow:0 3px 0 #0a0818,0 4px 8px #0008}
+body.batalha .cell.ok{box-shadow:0 0 0 2px #f6d27a,0 0 12px #f6c95a99,inset 0 0 18px #f6d27a55;animation:casa-ok 1.4s ease-in-out infinite}
+@keyframes casa-ok{50%{box-shadow:0 0 0 2px #fff0b8,0 0 18px #f6c95acc,inset 0 0 22px #f6d27a77}}
+body.batalha .chasm{opacity:.75}
+/* mão: cartas mais separadas; a selecionada sobe com filete dourado */
+body.batalha .hand{gap:18px;padding-left:14px;padding-right:14px}
+body.batalha.land .hand{gap:16px;padding-left:12px;padding-right:12px}
+body.batalha .hand .card.sel{box-shadow:0 0 0 2px #f6d27a,0 0 14px #f6c95a88}
+@media (prefers-reduced-motion:reduce){body.batalha .cell.ok{animation:none}}
