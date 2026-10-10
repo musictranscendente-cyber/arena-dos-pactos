@@ -52,7 +52,7 @@ export function cardText(c: Card): string {
 }
 
 export const T = {
-  titulo: 'Cosmic Clash',
+  titulo: 'Cosmic Citadel',
   invocador: 'Invocador',
   semDeck: 'Nenhum deck montado',
   emBreve: 'Em breve',
@@ -320,7 +320,7 @@ export const T = {
     compartilhar: () => 'Compartilhe o jogo com alguém',
   } as Record<string, (n: number) => string>,
   compartilharBt: '📤 Compartilhar',
-  compartilharTitulo: 'Cosmic Clash',
+  compartilharTitulo: 'Cosmic Citadel',
   compartilharTexto: 'Joga comigo! Card game dos 12 signos do zodíaco, partidas rápidas no celular:',
   linkCopiado: 'Link copiado! Cole no WhatsApp ou onde quiser.',
   cartaComum: '1 carta comum',

@@ -1445,3 +1445,5 @@ body.rot .m-corpo{margin-top:5px}
 .ilha.deck .ilha-figs{align-items:flex-end}
 .ilha.deck .ilha-fig.frente{position:relative;z-index:3;margin-left:calc(var(--w) * -5cqh)}
 .ilha.deck .leque{z-index:1}
+/* logo do jogo no topo do hub */
+.hub-titulo{width:min(46cqh,230px);aspect-ratio:900/455;font-size:0;background:url('./img/logo.webp') center/contain no-repeat;filter:drop-shadow(0 4px 8px #000a);margin-top:-1cqh}

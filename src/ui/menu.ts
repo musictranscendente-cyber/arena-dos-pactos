@@ -64,7 +64,7 @@ export function hubHtml(now: Date, deck: DeckMontado | null, prog: Progresso, al
     + '<div class="hub-ceu"></div><div class="hub-brilho"></div>'
     + `<div class="hub-topo"><div class="hub-perfil"><div class="medal"><span>${r.g}</span></div>`
     + `<div class="hub-nome"><b>${T.invocador}</b><small>${deck ? nomeDeckMontado(deck) : T.semDeck}</small>${moedasHtml(prog)}</div></div>`
-    + `<div class="hub-titulo">${T.titulo}</div>`
+    + `<div class="hub-titulo" role="img" aria-label="${T.titulo}"></div>`
     + `<span class="hub-dir"><button class="hub-som" data-act="som" aria-label="${T.som}" title="${T.som}">${iconeSom()}</button>`
     + `<button class="hub-evento breve" data-act="evento" style="--rc:${RACES[tem].c}" aria-label="${T.eventoTemporada} (${T.emBreve})">`
     + `${criatura(tem + '25', 'mini')}<span><b>${T.eventoTemporada}</b><small>${RACES[tem].g} ${RACES[tem].n} · ${T.emBreve}</small></span></button></span></div>`
