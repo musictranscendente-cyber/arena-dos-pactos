@@ -2010,3 +2010,28 @@ body.batalha.rot #app{background:linear-gradient(0deg,#0b072233,transparent 25%)
 body.batalha .plat{background:radial-gradient(120% 90% at 50% 0,#ffffff55,transparent 60%),linear-gradient(180deg,#b9b4c8,#8f88a6 60%,#6f6888);
   box-shadow:inset 0 0 0 2px #d9a640,inset 0 0 0 4px #ece8f6,inset 0 0 0 5px #6a6488,0 0 0 1px #2a2440,0 0 18px #c9b8ff55}
 body.batalha .plat::after{filter:brightness(.9) saturate(.8)}
+
+/* ===== Campanha: textos mais vivos e cor de cada signo (--rc) no fundo, no mapa e nos detalhes ===== */
+.ov.campanha .gtop h2{background:linear-gradient(180deg,#fffdf0 5%,#ffeaa6 40%,#ffd060 70%,#e8a13a 95%);-webkit-background-clip:text;background-clip:text;
+  filter:drop-shadow(0 2px 0 #4a2200) drop-shadow(0 0 8px #ffd76a55)}
+.ov.campanha .gtop h2 small{-webkit-text-fill-color:#fff;color:#fff;border-color:var(--rc);background:color-mix(in srgb,var(--rc) 35%,#1a1040);font-weight:800}
+.ov.campanha .cp-det h3{color:#fff1c2;text-shadow:0 1px 2px #000,0 0 8px color-mix(in srgb,var(--rc) 60%,transparent)}
+.ov.campanha .cp-det,.ov.campanha .cp-det p,.ov.campanha .cp-chip,.ov.campanha .nv-deck{color:#fff}
+.ov.campanha .cp-chip b,.ov.campanha .nv-deck b{color:#fff3d0}
+.ov.campanha .cp-mundo small{color:#ffe7a0}
+/* fundo da tela e do painel tingidos com a cor do signo */
+.ov.campanha::before{background:radial-gradient(ellipse at 30% 40%,color-mix(in srgb,var(--rc) 40%,transparent),transparent 65%),radial-gradient(ellipse at center,#0d082855,#0d0828bb)}
+.ov.campanha>.panel.wide{background:radial-gradient(80% 70% at 20% 0%,color-mix(in srgb,var(--rc) 30%,transparent),transparent 70%),linear-gradient(180deg,#1c1044e6,#120a30ee)}
+.ov.campanha .cp-mapa{background:radial-gradient(70% 60% at 50% 55%,color-mix(in srgb,var(--rc) 38%,transparent),transparent 75%),linear-gradient(180deg,#0d082833,#0d082877),url('./img/hub.webp') center 65%/cover no-repeat;
+  border-color:color-mix(in srgb,var(--rc) 55%,#e9c46a)}
+.ov.campanha .cp-det{background:linear-gradient(180deg,color-mix(in srgb,var(--rc) 30%,#24145a),#140a34e6);border-color:color-mix(in srgb,var(--rc) 55%,#e9c46a)}
+.ov.campanha .cp-chip{border-color:color-mix(in srgb,var(--rc) 60%,transparent)}
+.ov.campanha .cp-mundo.on{background:linear-gradient(180deg,color-mix(in srgb,var(--rc) 70%,#3a2378),color-mix(in srgb,var(--rc) 35%,#1a1040));box-shadow:0 0 12px color-mix(in srgb,var(--rc) 70%,transparent)}
+/* fases liberadas e a escolhida na cor do signo; bloqueadas mais visíveis */
+.ov.campanha .cp-fase.livre:not(.feita){background:radial-gradient(circle at 50% 35%,color-mix(in srgb,var(--rc) 75%,#fff),color-mix(in srgb,var(--rc) 70%,#1a0a40))}
+.ov.campanha .cp-fase.sel{box-shadow:0 0 0 2px #2a1606,0 0 0 5px #ffd76acc,0 0 22px var(--rc),0 4px 8px #000a}
+.ov.campanha .cp-fase.bloq{background:radial-gradient(circle at 50% 35%,#5a5470,#2a2540);border-color:#a8a0bc}
+.ov.campanha .cp-fase.bloq b{filter:none;opacity:.95}
+.ov.campanha .cp-fase b{color:#fff;text-shadow:0 2px 2px #000}
+.ov.campanha .cp-mapa{background:linear-gradient(180deg,color-mix(in srgb,var(--rc) 22%,transparent),color-mix(in srgb,var(--rc) 32%,transparent)),radial-gradient(70% 60% at 50% 55%,color-mix(in srgb,var(--rc) 30%,transparent),transparent 75%),url('./img/hub.webp') center 65%/cover no-repeat;background-blend-mode:normal}
+.ov.campanha .gtop h2{color:#ffe7a0}
