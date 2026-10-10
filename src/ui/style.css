@@ -2035,3 +2035,31 @@ body.batalha .plat::after{filter:brightness(.9) saturate(.8)}
 .ov.campanha .cp-fase b{color:#fff;text-shadow:0 2px 2px #000}
 .ov.campanha .cp-mapa{background:linear-gradient(180deg,color-mix(in srgb,var(--rc) 22%,transparent),color-mix(in srgb,var(--rc) 32%,transparent)),radial-gradient(70% 60% at 50% 55%,color-mix(in srgb,var(--rc) 30%,transparent),transparent 75%),url('./img/hub.webp') center 65%/cover no-repeat;background-blend-mode:normal}
 .ov.campanha .gtop h2{color:#ffe7a0}
+
+/* ===== Conhecer os Decks e Missões em pé (body.sem-giro): sem girar, rolagem vertical, 2 colunas ===== */
+*,*::before,*::after{box-sizing:border-box}
+body.sem-giro .ov.conhecer,body.sem-giro .ov.missoes{position:fixed;inset:0;min-height:100dvh;display:block;overflow-x:hidden;overflow-y:auto;-webkit-overflow-scrolling:touch;
+  padding:max(10px,env(safe-area-inset-top)) max(10px,env(safe-area-inset-right)) max(14px,env(safe-area-inset-bottom)) max(10px,env(safe-area-inset-left))}
+body.sem-giro .ov.conhecer>.panel,body.sem-giro .ov.missoes>.panel{width:100%;max-width:min(720px,100%);height:auto;max-height:none;margin:12px auto;overflow:visible;padding:16px 12px 18px}
+@media (orientation:portrait){
+  body.sem-giro .ov.conhecer .gtop h2,body.sem-giro .ov.missoes .gtop h2{font-size:clamp(26px,8vw,36px);margin:0}
+  /* Conhecer os Decks: 12 signos em 2 colunas */
+  body.sem-giro .ov.conhecer .signs{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+  body.sem-giro .ov.conhecer .sign{min-height:96px;padding:10px 6px}
+  body.sem-giro .ov.conhecer .sign .sn{font-size:16px}
+  body.sem-giro .ov.conhecer .sign .sm{font-size:12px;white-space:normal}
+  body.sem-giro .ov.conhecer>.panel>.btn{min-height:48px}
+  /* Missões: topo alinhado, 7 dias em 2 colunas, missões em cartões horizontais */
+  body.sem-giro .ov.missoes .gtop{flex-wrap:wrap;gap:8px}
+  body.sem-giro .ov.missoes .m-topo-bts{margin-left:auto}
+  body.sem-giro .ov.missoes .ms-dias{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+  body.sem-giro .ov.missoes .ms-dia{min-height:96px;flex-direction:column;justify-content:center}
+  body.sem-giro .ov.missoes .ms-dia:last-child{grid-column:1/-1}
+  body.sem-giro .ov.missoes .ms-m{flex-wrap:wrap;gap:8px 10px}
+  body.sem-giro .ov.missoes .ms-txt{flex:1 1 100%;min-width:0}
+  body.sem-giro .ov.missoes .ms-premio{margin-right:auto}
+  body.sem-giro .ov.missoes .ms-m .btn.mini{min-height:38px;padding:0 14px}
+  body.sem-giro .ov.missoes .ms-bau{flex-wrap:wrap}
+}
+/* em pé, o menu atrás não gira: fundo cósmico opaco para ele não aparecer */
+@media (orientation:portrait){body.sem-giro .ov.conhecer,body.sem-giro .ov.missoes{background:linear-gradient(180deg,#0b0722cc,#0b0722ee),url('./img/hub.webp') center/cover no-repeat,#0b0722}}

@@ -6,7 +6,8 @@ try { rotPref = localStorage.getItem('rotPref') !== 'off'; } catch { /* sem arma
 export function applyOrient(): void {
   const app = document.getElementById('app')!;
   const W = window.innerWidth, H = window.innerHeight;
-  const rot = rotPref && H > W;
+  // telas de leitura (Conhecer os Decks, Missões) seguem o celular em pé, sem girar
+  const rot = rotPref && H > W && !document.body.classList.contains('sem-giro');
   document.body.classList.toggle('rot', rot);
   document.body.classList.toggle('land', rot || H <= 520);
   if (rot) { app.style.width = H + 'px'; app.style.height = W + 'px'; }

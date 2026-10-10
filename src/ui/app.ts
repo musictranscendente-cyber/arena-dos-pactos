@@ -9,7 +9,7 @@ import {
   type Action, type Frame, type GameEvent, type GameState, type Side, type Target,
 } from '../engine';
 import { ajustarZooms, ATK_MS, desistirHtml, endHtml, galleryHtml, gameHtml, startHtml, zoomHtml, type View, type Zoom } from './desenho';
-import { toggleRot, tryLandscape } from './orientacao';
+import { applyOrient, toggleRot, tryLandscape } from './orientacao';
 import { efeitoGeral, efeitosDeMagia, EXTRA_GERAL_MS, MAGIA_MS } from './efeitoMagia';
 import { precarregarVisiveis } from './precarga';
 import { launch, shotsOf } from './projetil';
@@ -557,6 +557,9 @@ function render(): void {
   // cenário e tabuleiro cósmicos só durante a partida
   document.body.classList.toggle('batalha', !!M);
   trilha(M ? 'batalha' : 'menu');
+  // Conhecer os Decks e Missões acompanham o celular em pé (sem girar o jogo); o resto do jogo continua deitado
+  const semGiro = !M && !gal && (tela === 'conhecer' || dialogo === 'missoes');
+  if (document.body.classList.contains('sem-giro') !== semGiro) { document.body.classList.toggle('sem-giro', semGiro); applyOrient(); }
   if (!M) {
     emDia();
     const dlg = dialogo === 'nivel' ? dificuldadeHtml(deckAtivo(meus), nivel) : dialogo === 'regras' ? regrasHtml(prog.teste)

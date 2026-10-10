@@ -366,7 +366,7 @@ export function startHtml(now: Date): string {
       + `<span class="g"><span>${r.g}</span></span><span class="sn">${r.n}</span><span class="sm">${r.el}, ${r.m}</span></button>`;
   }).join('');
   const legend = Object.values(KW).map(k => `<span>${k.i}</span><span>${k.n}: ${k.d}</span>`).join('') + `<span>⭐</span><span>${T.efeitoChegada}</span>`;
-  return `<div class="ov"><div class="panel wide">
+  return `<div class="ov conhecer"><div class="panel wide">
     <div class="gtop"><h2>${T.conhecerDecks}</h2><button class="btn rc" data-act="hub">${T.voltar}</button></div>
     <p>${T.escolhaSigno}</p>
     <div class="signs">${signs}</div>
