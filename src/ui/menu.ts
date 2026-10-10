@@ -51,27 +51,31 @@ export function hubHtml(now: Date, deck: DeckMontado | null, prog: Progresso, al
   const tem = currentSign(now);
   const avatar = deck ? deck.signos[0] : tem;
   // a ilha de montar deck usa um signo que não aparece em outra ilha nem no evento da temporada
+  // disposição: 3 ilhas em cima (Conhecer, Campanha, Torneio) e 3 embaixo (Montar, Partida Rápida, Ranqueada)
   const ilhas: Ilha[] = [
-    { act: 'campanha', nome: T.campanha, sub: T.campSub, x: 40, y: 35, w: .8, figs: criatura('capricornio25') + criatura('capricornio22', 'peq', true) },
-    { act: 'torneio', nome: T.torneio, x: 67, y: 34, w: .72, breve: true, figs: criatura('sagitario25') },
-    { act: 'conhecer', nome: T.conhecerDecks, sub: T.conhecerSub, x: 14, y: 47, w: .8, figs: criatura('peixes25') + criatura('gemeos25', 'peq', true) },
-    { act: 'ranqueada', nome: T.ranqueada, x: 85, y: 58, w: .85, breve: true, figs: criatura('touro25') + criatura('escorpiao25', '', true) },
-    { act: 'montar', nome: T.montarDeck, sub: deck ? nomeDeckMontado(deck) : T.montarSub, x: 35, y: 73, w: .92, cls: 'deck', figs: '<span class="leque"><i></i><i></i><i></i></span>' + criatura(tem === 'aquario' ? 'cancer25' : 'aquario25', 'peq frente') },
-    { act: 'rapida', nome: T.partidaRapida, sub: T.rapidaSub, x: 60, y: 74, w: 1.15, cls: 'principal', figs: criatura('aries25') + criatura('leao25', '', true) },
+    { act: 'conhecer', nome: T.conhecerDecks, sub: T.conhecerSub, x: 27, y: 47, w: .64, figs: criatura('peixes25') + criatura('gemeos25', 'peq', true) },
+    { act: 'campanha', nome: T.campanha, sub: T.campSub, x: 50, y: 46, w: .66, figs: criatura('capricornio25') + criatura('capricornio22', 'peq', true) },
+    { act: 'torneio', nome: T.torneio, x: 75, y: 47, w: .6, breve: true, figs: criatura('sagitario25') },
+    { act: 'montar', nome: T.montarDeck, sub: deck ? nomeDeckMontado(deck) : T.montarSub, x: 30, y: 75, w: .64, cls: 'deck', figs: '<span class="leque"><i></i><i></i><i></i></span>' + criatura(tem === 'aquario' ? 'cancer25' : 'aquario25', 'peq frente') },
+    { act: 'rapida', nome: T.partidaRapida, sub: T.rapidaSub, x: 52, y: 77, w: .86, cls: 'principal', figs: criatura('aries25') + criatura('leao25', '', true) },
+    { act: 'ranqueada', nome: T.ranqueada, x: 74, y: 75, w: .62, breve: true, figs: criatura('touro25') + criatura('escorpiao25', '', true) },
   ];
   const r = RACES[avatar];
-  return `<div class="hub" style="--rc:${r.c}">`
+  return `<div class="hub hub-v2" style="--rc:${r.c}">`
     + '<div class="hub-ceu"></div><div class="hub-brilho"></div>'
-    + `<div class="hub-topo"><div class="hub-perfil"><div class="medal"><span>${r.g}</span></div>`
-    + `<div class="hub-nome"><b>${T.invocador}</b><small>${deck ? nomeDeckMontado(deck) : T.semDeck}</small>${moedasHtml(prog)}</div></div>`
-    + `<div class="hub-titulo" role="img" aria-label="${T.titulo}"></div>`
-    + `<span class="hub-dir"><button class="hub-som" data-act="som" aria-label="${T.som}" title="${T.som}">${iconeSom()}</button>`
-    + `<button class="hub-evento breve" data-act="evento" style="--rc:${RACES[tem].c}" aria-label="${T.eventoTemporada} (${T.emBreve})">`
-    + `${criatura(tem + '25', 'mini')}<span><b>${T.eventoTemporada}</b><small>${RACES[tem].g} ${RACES[tem].n} · ${T.emBreve}</small></span></button></span></div>`
-    + ilhas.map(ilhaHtml).join('')
-    + `<div class="hub-base esq"><button class="hub-bt" data-act="colecao"><span>🗂️</span><b>${T.colecao}</b></button>`
+    // canto de cima à esquerda: Coleção e Pacotes; no meio, a logo
+    + `<div class="hub-col esq"><button class="hub-bt" data-act="colecao"><span>🗂️</span><b>${T.colecao}</b></button>`
     + `<button class="hub-bt" data-act="pacotes"><span>📦</span><b>${T.pacotes}</b></button></div>`
-    + `<div class="hub-base"><button class="hub-bt${alerta ? ' alerta' : ''}" data-act="missoes"><span>📜</span><b>${T.missoes}</b>${alerta ? `<i class="hub-alerta" aria-label="${T.temPremio}">!</i>` : ''}</button>`
+    + `<div class="hub-titulo" role="img" aria-label="${T.titulo}"></div>`
+    // canto de cima à direita: perfil, evento da temporada e o som
+    + `<div class="hub-col dir"><div class="hub-perfil"><div class="medal"><span>${r.g}</span></div>`
+    + `<div class="hub-nome"><b>${T.invocador}</b><small>${deck ? nomeDeckMontado(deck) : T.semDeck}</small>${moedasHtml(prog)}</div></div>`
+    + `<button class="hub-evento breve" data-act="evento" style="--rc:${RACES[tem].c}" aria-label="${T.eventoTemporada} (${T.emBreve})">`
+    + `${criatura(tem + '25', 'mini')}<span><b>${T.eventoTemporada}</b><small>${RACES[tem].g} ${RACES[tem].n} · ${T.emBreve}</small></span></button>`
+    + `<button class="hub-som" data-act="som" aria-label="${T.som}" title="${T.som}">${iconeSom()}</button></div>`
+    + ilhas.map(ilhaHtml).join('')
+    // canto de baixo à esquerda: Missões e Como jogar
+    + `<div class="hub-base esq"><button class="hub-bt${alerta ? ' alerta' : ''}" data-act="missoes"><span>📜</span><b>${T.missoes}</b>${alerta ? `<i class="hub-alerta" aria-label="${T.temPremio}">!</i>` : ''}</button>`
     + `<button class="hub-bt" data-act="regras"><span>📖</span><b>${T.comoJogar}</b></button>`
     + '</div>'
     + '</div>';
