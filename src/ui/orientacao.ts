@@ -31,6 +31,9 @@ export async function tryLandscape(): Promise<void> {
 }
 
 export function watchOrient(): void {
+  // no primeiro toque em qualquer lugar: tenta tela cheia e travar deitado (o navegador só deixa depois de um toque)
+  const primeiro = () => { void tryLandscape(); };
+  window.addEventListener('pointerdown', primeiro, { once: true });
   window.addEventListener('resize', applyOrient);
   window.addEventListener('orientationchange', () => setTimeout(applyOrient, 150));
   applyOrient();
