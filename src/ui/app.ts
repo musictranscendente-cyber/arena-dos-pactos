@@ -71,6 +71,8 @@ interface Match {
   abortado?: boolean;
   /** Criatura do tabuleiro aberta grande para ver os detalhes. */
   inspect: Target | null;
+  /** Carta aberta grande enquanto o jogador segura o dedo nela. */
+  segura?: Zoom | null;
   /** Dificuldade do bot nesta partida. */
   nivel: Nivel;
   /** Prêmio ganho no fim (mostrado na tela de resultado). */
@@ -627,17 +629,21 @@ function atualizarZoom(m: Match): void {
 
 /** Carta aberta grande: a selecionada na mão, ou a criatura tocada no tabuleiro (também durante a Batalha). */
 function zoomAtual(m: Match): Zoom | null {
-  if (m.busy) return zoomCriatura(m, m.shown);
-  if (m.g.phase !== 'plan') return null;
-  if (m.sel !== null) {
-    const h = m.g.p.hand[m.sel];
-    if (!h) return null;
+  // a descrição só aparece segurando o dedo (um toque simples não abre nada, para não atrapalhar)
+  return m.segura ?? null;
+}
+
+/** Carta que abre grande ao segurar o dedo: da mão, ou criatura do tabuleiro. */
+function zoomDoAlvo(m: Match, t: HTMLElement): Zoom | null {
+  if (t.dataset.act === 'hand') {
+    const h = m.g.p.hand[Number(t.dataset.i)];
+    if (!h || m.busy || m.g.phase !== 'plan') return null;
     const c = card(h.cid);
-    // aparece na metade da arena que não vai ser tocada: criatura e magia em aliado vão para o seu lado
     const miraInimigo = c.type === 'spell' && ['dmg', 'poison', 'lane', 'face'].includes(c.sp);
     return { cid: h.cid, cost: costOf(m.g.p, h.cid), lado: miraInimigo ? 'p' : 'e' };
   }
-  return zoomCriatura(m, m.g);
+  const alvo: Match = { ...m, inspect: { side: t.dataset.side as Side, l: Number(t.dataset.l), d: Number(t.dataset.d) } };
+  return zoomCriatura(alvo, m.busy ? m.shown : m.g);
 }
 
 function zoomCriatura(m: Match, s: GameState): Zoom | null {
@@ -1031,7 +1037,35 @@ function faixaRodada(n: number): void {
 
 /* ---------- toques ---------- */
 
+/* ---------- segurar o dedo numa carta (mão ou tabuleiro) abre a descrição; soltar fecha ---------- */
+const SEGURAR_MS = 380;
+let seguraTimer = 0, seguraXY: [number, number] = [0, 0], engoleClique = false;
+function soltarSegura(): void {
+  clearTimeout(seguraTimer);
+  if (M?.segura) { M.segura = null; atualizarZoom(M); }
+}
+function onPointerDown(ev: PointerEvent): void {
+  const t = (ev.target as HTMLElement).closest<HTMLElement>('[data-act=hand],[data-act=cell]');
+  engoleClique = false;
+  if (!t || !M) return;
+  const m = M;
+  seguraXY = [ev.clientX, ev.clientY];
+  clearTimeout(seguraTimer);
+  seguraTimer = window.setTimeout(() => {
+    const z = zoomDoAlvo(m, t);
+    if (!z || M !== m) return;
+    m.segura = z;
+    engoleClique = true;
+    atualizarZoom(m);
+  }, SEGURAR_MS);
+}
+function onPointerMove(ev: PointerEvent): void {
+  if (Math.hypot(ev.clientX - seguraXY[0], ev.clientY - seguraXY[1]) > 12) clearTimeout(seguraTimer);
+}
+
 function onClick(ev: Event): void {
+  // o toque que terminou um "segurar" não conta como clique
+  if (engoleClique) { engoleClique = false; return; }
   const t = (ev.target as HTMLElement).closest<HTMLElement>('[data-act]');
   if (!t) return;
   const a = t.dataset.act;
@@ -1082,14 +1116,6 @@ function onClick(ev: Event): void {
   }
 
   const m = M;
-  // durante a Batalha: tocar numa criatura abre os detalhes dela (sem redesenhar a arena, a animação segue)
-  if (m && m.busy && a === 'cell') {
-    const side = t.dataset.side as Side, l = Number(t.dataset.l), d = Number(t.dataset.d);
-    const mesma = m.inspect && m.inspect.side === side && m.inspect.l === l && m.inspect.d === d;
-    m.inspect = mesma ? null : { side, l, d };
-    atualizarZoom(m);
-    return;
-  }
   if (!m || m.busy || m.g.phase !== 'plan') return;
   const P = m.g.p;
   if (a !== 'cell') m.inspect = null;
@@ -1213,6 +1239,11 @@ export function startApp(): void {
   emDia();
   if (prog.inicial && loginDisponivel(prog, hoje())) dialogo = 'missoes';
   app().addEventListener('click', onClick);
+  app().addEventListener('pointerdown', onPointerDown);
+  app().addEventListener('pointermove', onPointerMove);
+  for (const ev of ['pointerup', 'pointercancel', 'pointerleave'] as const) app().addEventListener(ev, soltarSegura);
+  // segurar o dedo não abre o menu do navegador
+  app().addEventListener('contextmenu', e => { if ((e.target as HTMLElement).closest('[data-act=hand],[data-act=cell]')) e.preventDefault(); });
   // nome do deck: guarda enquanto digita, sem redesenhar (o teclado não fecha)
   app().addEventListener('input', e => {
     const t = e.target as HTMLInputElement;

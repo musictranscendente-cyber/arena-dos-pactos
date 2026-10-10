@@ -2321,3 +2321,8 @@ body.batalha.rot #app::before{content:'';position:absolute;inset:-12px;z-index:-
 /* painel de som: na tela inicial o botão fica à esquerda, então o painel abre à esquerda */
 body:not(.batalha) .som-painel{right:auto;left:12px;top:auto}
 body:not(.batalha) .som-painel{top:80px;left:66px}
+
+/* fundo da tela inicial */
+.hub-v2 .hub-ceu{background:url('./img/hub-fundo.webp') center 35%/cover no-repeat}
+/* segurar o dedo na carta não abre o menu do celular */
+.hand [data-act=hand],.cell{-webkit-touch-callout:none}
