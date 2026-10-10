@@ -194,7 +194,7 @@ export function montarHtml(m: Montagem, decks: (DeckMontado | null)[], ativo: nu
         + (on ? `<span class="tag">${m.signos.indexOf(k) + 1}º</span>` : '')
         + `<span class="g">${sgImg(k)}</span><span class="sn">${r.n}</span><span class="sm">${r.el}, ${r.m}</span></button>`;
     }).join('');
-    return `<div class="ov montar"><div class="panel wide">`
+    return `<div class="ov montar m-signos"><div class="panel wide">`
       + `<div class="gtop"><h2>${T.deckN(m.espaco + 1)}: ${T.escolhaOsSignos}</h2><span class="m-topo-bts"><button class="btn rc" data-act="mdecks">${T.voltar}</button>${fechaHtml()}</span></div>`
       + `<p>${T.escolha2Signos} <b>${m.signos.length}/2</b></p><div class="signs">${signs}</div>`
       + `<button class="btn go" data-act="mseguir" ${m.signos.length ? '' : 'disabled'} style="width:100%">${T.escolherCartas}</button>`

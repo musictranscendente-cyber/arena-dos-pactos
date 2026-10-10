@@ -177,12 +177,6 @@ export function pacotesHtml(p: Progresso, tp: TelaPacotes): string {
     + `<div class="pk-grade">${quadros}</div></div>${detalhe}</div>`;
 }
 
-/** Exemplos de cartas do pacote (uma lendária, uma épica, duas raras e uma comum, as mais caras de cada raridade). */
-function exemplosDoPacote(lista: string[]): string[] {
-  const por = (r: Raridade, n: number) => lista.filter(k => CARDS[k].r === r && ARTE[k]).sort((a, b) => CARDS[b].cost - CARDS[a].cost).slice(0, n);
-  return [...por('l', 1), ...por('e', 1), ...por('r', 2), ...por('c', 1)];
-}
-
 /** Janela de compra: a mesma para os 12 signos e o Estelar; tudo vem do pacote escolhido. */
 function pacoteDetalheHtml(p: Progresso, tp: TelaPacotes): string {
   const id = tp.aberto!, sg = signoDe(id), preco = precoPacote(sg);
@@ -195,7 +189,6 @@ function pacoteDetalheHtml(p: Progresso, tp: TelaPacotes): string {
     const n = lista.filter(k => CARDS[k].r === r).length;
     return `<div class="pk-ch-q" style="--rr:${RARITY[r].col}"><b>${(CHANCES[r] * 100).toFixed(0)}%</b><span>${NOMES_R[r]}</span><small>${T.cartasPossiveis(n)}</small></div>`;
   }).join('');
-  const ex = exemplosDoPacote(lista).map(k => `<div class="pk-ex" style="--rr:${RARITY[CARDS[k].r].col}"><img src="${artUrl(k, CARDS[k].race, 'parado')}" alt="${CARDS[k].name}" draggable="false"><span>${NOMES_R[CARDS[k].r]}</span></div>`).join('');
   const sobre = (sg ? T.sobreSigno(CARTAS_PACOTE, RACES[sg].n) : T.sobreEstelar(CARTAS_PACOTE)).map(x => `<li>${x}</li>`).join('');
   const conf = tp.confirmar
     ? `<div class="ov pk-conf"><div class="panel"><h3>${T.notificacao}</h3><p class="pk-custa">${T.custa} <b>✨ ${total}</b> ${T.continuarPergunta}</p>`
@@ -207,9 +200,9 @@ function pacoteDetalheHtml(p: Progresso, tp: TelaPacotes): string {
     + `<button class="m-fecha" data-act="pfecha" aria-label="${T.sair}">✕</button></div>`
     + `<div class="pkj-meio"><div class="pkj-arte"><span class="pkj-glifo" aria-hidden="true">${glifo}</span>${arteDoPacote(id)}</div>`
     + `<div class="pkj-info"><section class="pkj-bloco"><h4>${T.chancesRaridade}</h4><div class="pk-chances">${chances}</div></section>`
-    + (ex ? `<section class="pkj-bloco"><h4>${T.exemplosCartas}</h4><div class="pk-exs">${ex}</div><small class="pkj-aviso">${T.exemplosAviso}</small></section>` : '')
+    + `<section class="pkj-bloco pkj-sobre"><h4>ⓘ ${T.sobrePacote}</h4><ul>${sobre}</ul></section>`
     + '</div></div>'
-    + `<div class="pkj-baixo"><section class="pkj-bloco pkj-sobre"><h4>ⓘ ${T.sobrePacote}</h4><ul>${sobre}</ul></section>`
+    + `<div class="pkj-baixo">`
     + `<section class="pkj-bloco pkj-compra"><div class="pkj-qtd"><small>${T.quantidade}</small><div class="pk-qtd-linha">`
     + `<button class="btn rc pk-q" data-act="pmenos" ${qtd <= 1 ? 'disabled' : ''} aria-label="−">−</button><span class="pk-qn">${qtd}</span>`
     + `<button class="btn rc pk-q" data-act="pmais" ${qtd >= max ? 'disabled' : ''} aria-label="+">+</button><button class="btn rc pk-max" data-act="pmax" ${qtd >= max ? 'disabled' : ''}>${T.maximo}</button></div>`

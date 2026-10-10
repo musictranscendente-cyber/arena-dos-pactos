@@ -2181,3 +2181,37 @@ body.rot .ov.campanha .cp-det>p:not(.cp-info):not(.nv-deck):not(.m-dica){margin:
   background:radial-gradient(ellipse at center,#0b072200,#0b072266),url('./img/menu-fundo.webp') center/cover no-repeat,#0b0722;backdrop-filter:none}
 /* arena da batalha */
 body.batalha{--scene:url('./img/arena-fundo.webp')}
+
+/* títulos dourados: cor sólida clara + contorno (o degradê recortado no texto ficava escuro em alguns celulares) */
+.ov.campanha .gtop h2,.ov.rapida .nv-topo h2,.ov.loja>.panel>.gtop h2,.ov.loja .pk-faixa-txt b,.hub-v2 .placa b,.hub-v2 .ilha.principal .placa b{
+  background:none;-webkit-background-clip:border-box;background-clip:border-box;color:#ffe7a3;-webkit-text-fill-color:#ffe7a3;
+  filter:none;text-shadow:0 1px 0 #fff6d6,0 2px 0 #7a4a08,0 3px 0 #4a2200,0 0 12px #f6c95a88,0 4px 8px #000c}
+.hub-v2 .placa b{text-shadow:0 1.5px 0 #6a3a00,0 0 8px #f6c95a77,0 2px 4px #000c}
+.ov:not(.montar):not(.gal)>.panel>h2:first-child{background:linear-gradient(90deg,transparent,#f6d27a 30%,#f6d27a 70%,transparent) bottom/80% 1.5px no-repeat;
+  -webkit-background-clip:border-box;background-clip:border-box;color:#ffe7a3;-webkit-text-fill-color:#ffe7a3;filter:none;
+  text-shadow:0 1px 0 #fff6d6,0 2px 0 #7a4a08,0 3px 0 #4a2200,0 0 14px #f6c95a88,0 5px 10px #000c}
+
+/* janela do pacote sem os exemplos: chances crescem e o "Sobre o pacote" ocupa o resto da coluna */
+.pkj-info{justify-content:stretch}
+.pkj-info>.pkj-bloco:first-child{flex:1 1 auto;display:flex;flex-direction:column;min-height:0}
+.pkj-info .pk-chances{flex:1 1 auto;align-items:stretch}
+.pkj-info .pk-ch-q{justify-content:center;gap:1px}
+.pkj-info .pk-ch-q b{font-size:clamp(18px,4.2vmin,28px)}
+.pkj-info .pk-ch-q span{font-size:clamp(13px,3vmin,17px);font-weight:800}
+.pkj-info .pk-ch-q small{display:block;font-size:clamp(10px,2.3vmin,12px);opacity:.85}
+.pkj-info .pkj-sobre{display:block !important;flex:0 0 auto}
+.pkj-info .pkj-sobre ul{font-size:clamp(11px,2.6vmin,13px);line-height:1.3}
+.pkj-baixo{grid-template-columns:1fr !important}
+
+/* montar deck, passo 1 (escolher signos): tudo cabe na tela, sem rolar */
+.ov.m-signos{overflow:hidden;padding:8px}
+.ov.m-signos>.panel{max-height:100%;display:flex;flex-direction:column;overflow:hidden;padding:10px 16px 12px}
+.ov.m-signos .gtop{margin:0}
+.ov.m-signos .gtop h2{font-size:clamp(22px,5.4vmin,34px);margin:0;line-height:1.1}
+.ov.m-signos>.panel>p{margin:4px 0 6px;font-size:clamp(11.5px,2.9vmin,14px);line-height:1.3}
+.ov.m-signos .signs{flex:1 1 auto;min-height:0;margin:0 0 8px;gap:clamp(4px,1.4vmin,8px);grid-auto-rows:1fr}
+.ov.m-signos .sign{padding:4px 3px 5px;justify-content:center;min-height:0}
+.ov.m-signos .sign .g{width:clamp(28px,8.5vmin,44px);height:clamp(28px,8.5vmin,44px)}
+.ov.m-signos .sign .sn{font-size:clamp(12px,3vmin,15px)}
+.ov.m-signos .sign .sm{font-size:clamp(9.5px,2.4vmin,11.5px)}
+.ov.m-signos .btn.go{flex:none;min-height:clamp(34px,9vmin,46px)}
