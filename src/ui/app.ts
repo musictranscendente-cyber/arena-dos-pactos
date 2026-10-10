@@ -15,6 +15,7 @@ import { precarregarVisiveis } from './precarga';
 import { launch, shotsOf } from './projetil';
 import { alternarSom, desbloquear, iconeSom, prefsSom, tocar, trilha, type Efeito } from './som';
 import { reverTutorial, tutorialEntendi, tutorialFimDePartida, tutorialHtml, tutorialNovaPartida, tutorialPular } from './tutorial';
+import { ic } from './icones';
 import { avisoHtml, dificuldadeHtml, hubHtml, montarHtml, regrasHtml, type Montagem } from './menu';
 import { deckAtivo, lerDecks, salvarDecks } from '../services/deckSalvo';
 import { lerProgresso, salvarProgresso } from '../services/progresso';
@@ -1004,7 +1005,7 @@ function keepScroll(): void {
   if (sc) sc.scrollTop = top;
 }
 
-function emBreve(): void { aviso(T.emBreveAviso); }
+function emBreve(): void { aviso(`${ic('cadeado')} ${T.emBreveAviso}`); }
 
 /** Aviso que aparece no meio da tela e some sozinho. */
 function aviso(txt: string): void {

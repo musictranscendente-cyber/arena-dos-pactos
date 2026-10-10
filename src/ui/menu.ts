@@ -52,13 +52,13 @@ function ilhaHtml(i: Ilha, k: number): string {
     return `<button class="ilha ilha-arte ${i.cls ?? ''}${i.breve ? ' breve' : ''}" data-act="${i.act}" style="--x:${i.x}%;--y:${i.y}%;--d:${(k % 4) * -1.3}s" aria-label="${i.nome}${i.sub ? `: ${i.sub}` : ''}${i.breve ? ` (${T.emBreve})` : ''}">`
       + `<img src="${arte}" alt="" draggable="false">`
       + `<span class="placa"><i class="pl-gema c" aria-hidden="true"></i><i class="pl-gema b" aria-hidden="true"></i><b>${i.nome}</b>${i.sub ? `<small>${i.sub}</small>` : ''}</span>`
-      + (i.breve ? `<span class="cadeado" aria-hidden="true">🔒<small>${T.emBreve}</small></span>` : '')
+      + (i.breve ? `<span class="cadeado" aria-hidden="true">${ic('cadeado')}<small>${T.emBreve}</small></span>` : '')
       + '</button>';
   }
   return `<button class="ilha ${i.cls ?? ''}${i.breve ? ' breve' : ''}" data-act="${i.act}" style="--x:${i.x}%;--y:${i.y}%;--w:${i.w};--d:${(k % 4) * -1.3}s" aria-label="${i.nome}${i.breve ? ` (${T.emBreve})` : ''}">`
     + `<span class="ilha-figs">${i.figs}</span><span class="ilha-rocha"><i></i></span>`
     + `<span class="placa"><i class="pl-gema c" aria-hidden="true"></i><i class="pl-gema b" aria-hidden="true"></i><b>${i.nome}</b>${i.sub ? `<small>${i.sub}</small>` : ''}</span>`
-    + (i.breve ? `<span class="cadeado" aria-hidden="true">🔒<small>${T.emBreve}</small></span>` : '')
+    + (i.breve ? `<span class="cadeado" aria-hidden="true">${ic('cadeado')}<small>${T.emBreve}</small></span>` : '')
     + '</button>';
 }
 
@@ -97,12 +97,12 @@ export function hubHtml(now: Date, deck: DeckMontado | null, prog: Progresso, al
     // canto de cima à direita: perfil, evento da temporada e o som
     + `<div class="hub-col dir"><div class="hub-perfil perfil-v3"><div class="medal">${sgImg(avatar)}</div>`
     + `<div class="hub-nome"><b>${T.invocador}</b><small>${deck ? nomeDeckMontado(deck) : T.semDeck}</small>`
-    + `<span class="hub-stats"><span title="${T.estrelasCampanha}">${ic('trofeu')}<b>${estrelasTotais}★</b></span><span title="${T.cartasNaColecao}">${ic('carta')}<b>${cartasTem}/360</b></span></span>`
-    + `${moedasHtml(prog)}</div></div>`
+    + `<span class="hub-linha"><span class="hub-stats"><span title="${T.estrelasCampanha}">${ic('trofeu')}<b>${estrelasTotais}★</b></span><span title="${T.cartasNaColecao}">${ic('carta')}<b>${cartasTem}/360</b></span></span>`
+    + `${moedasHtml(prog)}</span></div></div>`
     + `<button class="hub-som" data-act="som" aria-label="${T.som}" title="${T.som}">${iconeSom()}</button></div>`
-    // meio da coluna da esquerda: evento da temporada (lendária do signo da vez)
-    + `<button class="hub-bt hub-bt-arte hub-ev breve" data-act="evento" style="--rc:${RACES[tem].c}" aria-label="${T.eventoTemporada}: ${RACES[tem].n} (${T.emBreve})">`
-    + `${criatura(tem + '25', 'ev-fig')}<i class="ev-sg">${sgImg(tem)}</i><b>${T.evento}</b><em>${T.emBreve}</em></button>`
+    // lado direito, mais embaixo: evento da temporada (lendária do signo da vez)
+    + `<button class="hub-evento hub-ev2 breve" data-act="evento" style="--rc:${RACES[tem].c}" aria-label="${T.eventoTemporada} (${T.emBreve})">`
+    + `${criatura(tem + '25', 'mini')}<span><b>${T.eventoTemporada}</b><small>${sgImg(tem)} ${RACES[tem].n} · ${T.emBreve}</small></span></button>`
     + ilhas.map(ilhaHtml).join('')
     // canto de baixo à esquerda: Missões e Como jogar
     + `<div class="hub-base esq"><button class="hub-bt hub-bt-arte${alerta ? ' alerta' : ''}" data-act="missoes"><img src="${icMissoes}" alt="" draggable="false"><b>${T.missoes}</b>${alerta ? `<i class="hub-alerta" aria-label="${T.temPremio}">!</i>` : ''}</button>`

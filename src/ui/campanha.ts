@@ -22,7 +22,7 @@ export function campanhaHtml(p: Progresso, t: TelaCampanha, deck: DeckMontado | 
   const abas = MUNDOS.map(s => {
     const livre = mundoLiberado(p, s);
     return `<button class="c-aba cp-mundo${t.signo === s ? ' on' : ''}${livre ? '' : ' bloq'}" data-act="cmundo" data-r="${s}" style="--rc:${COR_MEDALHAO[s]}" title="${RACES[s].n}">`
-      + `${livre ? sgIco(s) : '🔒'}<small>${livre ? `${estrelasDoMundo(p, s)}★` : ''}</small></button>`;
+      + `${livre ? sgIco(s) : ic('cadeado', 'ic-cad')}<small>${livre ? `${estrelasDoMundo(p, s)}★` : ''}</small></button>`;
   }).join('');
   const r = RACES[t.signo];
   // caminho em zigue-zague: fases 1-5 em cima (esquerda→direita), 6-10 embaixo (direita→esquerda)
@@ -36,7 +36,7 @@ export function campanhaHtml(p: Progresso, t: TelaCampanha, deck: DeckMontado | 
     const cls = ['cp-fase', `t-${f.tipo}`, est ? 'feita' : livre ? 'livre' : 'bloq', t.fase === n ? 'sel' : ''].join(' ');
     const fig = f.tipo === 'chefe' ? criatura(`${t.signo}25`, 'cp-fig') : f.tipo === 'guardiao' ? criatura(`${t.signo}23`, 'cp-fig') : '';
     const { x, y } = pos[i];
-    return `<button class="${cls}" data-act="cfase" data-n="${n}" style="left:${x}%;top:${y}%">${fig}<b>${livre ? n : '🔒'}</b>${est ? estrelinhas(est) : ''}</button>`;
+    return `<button class="${cls}" data-act="cfase" data-n="${n}" style="left:${x}%;top:${y}%">${fig}<b>${livre ? n : ic('cadeado', 'ic-cad')}</b>${est ? estrelinhas(est) : ''}</button>`;
   }).join('');
   // detalhes da fase escolhida
   const f = fase(t.signo, t.fase, deck ? nivelMedioDeck(deck.cartas) : 1), est = estrelas(p, t.signo, t.fase), livre = faseLiberada(p, t.signo, t.fase);
@@ -55,7 +55,7 @@ export function campanhaHtml(p: Progresso, t: TelaCampanha, deck: DeckMontado | 
     + premio
     + `<p class="nv-deck">${T.seuDeck}: <b>${deck ? nomeDeckMontado(deck) : T.semDeck}</b> <button class="btn rc mini" data-act="montar">${T.trocar}</button></p>`
     + (livre ? `<button class="btn go cp-lutar" data-act="clutar">${ic('lutar', 'ic-bt')}${T.lutarCurto}</button>`
-      : `<p class="m-dica">${mundoLiberado(p, t.signo) ? T.bloqueada : T.mundoBloqueado(RACES[MUNDOS[MUNDOS.indexOf(t.signo) - 1]].n)}</p>`)
+      : `<p class="m-dica">${ic('cadeado')} ${mundoLiberado(p, t.signo) ? T.bloqueada : T.mundoBloqueado(RACES[MUNDOS[MUNDOS.indexOf(t.signo) - 1]].n)}</p>`)
     + '</div>';
   const ajuda = t.ajuda ? `<div class="c-ajuda" data-act="cpajuda"><p><b>${T.comoFunciona}</b></p><p>${T.criteriosEstrelas}</p>`
     + (lenda ? `<p>${T.lendaMeta(lenda.name, estrelasDoMundo(p, t.signo))}</p>` : '') + `<p>${T.legendaFase}</p><p>${T.ajudaCampanha(r.n)}</p></div>` : '';

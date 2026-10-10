@@ -1,5 +1,6 @@
 // Ícones desenhados do jogo (substituem os emojis nos lugares principais).
 import bandeira from './img/ic/bandeira.webp';
+import cadeado from './img/ic/cadeado.webp';
 import carta from './img/ic/carta.webp';
 import dia1 from './img/ic/dia1.webp';
 import dia2 from './img/ic/dia2.webp';
@@ -19,7 +20,7 @@ import premio from './img/ic/premio.webp';
 import trofeu from './img/ic/trofeu.webp';
 import vida from './img/ic/vida.webp';
 
-const ICONES = { bandeira, carta, dificuldade, estrela, fogo, gema, info, lutar, poeira, premio, trofeu, vida };
+const ICONES = { bandeira, cadeado, carta, dificuldade, estrela, fogo, gema, info, lutar, poeira, premio, trofeu, vida };
 export type Icone = keyof typeof ICONES;
 
 /** Ícone desenhado, do tamanho da letra (ajuste com uma classe extra). */
