@@ -100,7 +100,11 @@ export function colecaoHtml(p: Progresso, t: TelaColecao): string {
 function atributosHtml(id: string): string {
   const c = card(id);
   if (c.type === 'unit') return `<span class="c-at"><i>⚔️</i>${c.atk}</span><span class="c-at"><i>❤️</i>${c.hp}</span>`;
-  return 'v' in c && typeof c.v === 'number' ? `<span class="c-at"><i>✨</i>${c.v}</span>` : '';
+  // magia: mostra o que muda com o nível (efeito, bônus do fortalecer ou o custo)
+  const custo = `<span class="c-at"><i>💧</i>${c.cost}</span>`;
+  if (c.sp === 'buff') return `<span class="c-at"><i>⚔️</i>+${c.a}</span><span class="c-at"><i>❤️</i>+${c.h}</span>`;
+  if (c.sp === 'shield' || c.sp === 'poison' || c.sp === 'draw') return custo;
+  return 'v' in c && typeof c.v === 'number' ? `<span class="c-at"><i>✨</i>${c.v}</span>` : custo;
 }
 
 /** Topo do painel: a criatura em pé respirando (como no tabuleiro) com custo, ataque e vida; sem arte, a carta. */
