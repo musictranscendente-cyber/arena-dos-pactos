@@ -29,14 +29,14 @@ function figuraJogador(d: DeckMontado, evitar: string): string {
   return ids[0] ?? '';
 }
 
-export function desafioHtml(signo: Signo, n: number, deck: DeckMontado): string {
+export function desafioHtml(signo: Signo, n: number, deck: DeckMontado, saindo = false): string {
   const f = fase(signo, n, nivelMedioDeck(deck.cartas)), r = RACES[signo];
   const titulo = f.tipo === 'chefe' ? T.desafioChefe : f.tipo === 'guardiao' ? T.desafioGuardiao : T.proximoDesafio;
   const rival = f.tipo === 'normal' ? T.rivalDoMundo(r.n) : f.rival;
   const [a, b] = deck.signos;
   const sg = (s: Signo) => `<i style="--rc:${RACES[s].c}">${sgImg(s)}</i>`;
   const fr = figuraRival(signo, n), fj = figuraJogador(deck, fr);
-  return `<div class="desafio t-${f.tipo}" data-act="desafio-ir" style="--rc:${r.c};--tempo:${TEMPO_DESAFIO}ms" role="dialog" aria-label="${titulo}">`
+  return `<div class="desafio t-${f.tipo}${saindo ? ' sai' : ''}" data-act="desafio-ir" style="--rc:${r.c};--tempo:${TEMPO_DESAFIO}ms" role="dialog" aria-label="${titulo}">`
     + '<div class="df-raios"></div><div class="df-faixa"></div>'
     + `<div class="df-topo"><small>${sgImg(signo)} ${T.mundo(r.n)} · ${T.faseN(n)}/${FASES}</small><b>${titulo}</b></div>`
     + `<div class="df-lado df-voce"><div class="df-fig">${fj ? criatura(fj, 'df-img') : ''}</div>`

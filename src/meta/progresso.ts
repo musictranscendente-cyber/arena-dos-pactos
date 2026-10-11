@@ -27,6 +27,8 @@ export interface Progresso {
   missoes: EstadoMissoes;
   /** Calendário de 7 dias: último dia em que coletou e qual o próximo prêmio (0..6). */
   login: { dia: string; passo: number };
+  /** Cartas que acabaram de entrar na coleção e o jogador ainda não viu (mostram "NOVA" piscando). */
+  novas: string[];
 }
 
 export interface MissaoDia { id: string; prog: number; coletada: boolean }
@@ -38,6 +40,7 @@ export function novoProgresso(): Progresso {
     rapida: { dia: '', vitorias: 0 },
     missoes: { dia: '', lista: [], trocou: false, bau: false },
     login: { dia: '', passo: 0 },
+    novas: [],
   };
 }
 
@@ -72,6 +75,7 @@ export function normalizar(raw: unknown): Progresso {
     };
   }
   if (r.login && typeof r.login.dia === 'string') p.login = { dia: r.login.dia, passo: num(r.login.passo) % 7 };
+  if (Array.isArray(r.novas)) p.novas = [...new Set(r.novas.filter(k => typeof k === 'string' && p.cartas[k]))];
   return p;
 }
 
@@ -119,9 +123,17 @@ export function darCarta(p: Progresso, cid: string, nivel = 1): Progresso {
   const q = structuredClone(p);
   const k = baseCid(cid);
   const c = copiasDe(q, k);
+  if (c.every(n => n === 0) && !q.novas.includes(k)) q.novas.push(k);
   c[Math.max(1, Math.min(NIVEL_MAX, nivel)) - 1]++;
   q.cartas[k] = [...c] as Copias;
   return q;
+}
+
+/** O jogador viu essas cartas (na coleção ou montando deck): tira o "NOVA". */
+export function marcarVistas(p: Progresso, cids: readonly string[]): Progresso {
+  const fora = new Set(cids.map(baseCid));
+  if (!p.novas.some(k => fora.has(k))) return p;
+  return { ...p, novas: p.novas.filter(k => !fora.has(k)) };
 }
 
 /** Começo do jogo: escolhe o signo e ganha as 30 cartas dele (nível 1) e um pouco de Poeira. */
@@ -130,6 +142,7 @@ export function escolherInicial(p: Progresso, signo: Signo): Progresso {
   if (p.inicial) return p;
   let q: Progresso = { ...structuredClone(p), inicial: signo };
   for (const cid of cardsOfSign(signo)) q = darCarta(q, cid);
+  q.novas = [];
   q.poeira += POEIRA_INICIAL;
   return q;
 }

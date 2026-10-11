@@ -84,7 +84,8 @@ export function colecaoHtml(p: Progresso, t: TelaColecao): string {
     const cls = [n ? 'tenho' : 'bloq', t.sel === id ? 'sel' : '', pode ? 'fundivel' : ''].join(' ');
     // além do brilho verde, as que dá para fundir levam a etiqueta "⚡ Fundir"
     const html = cardHtml(card(id), card(id).cost, `data-act="ccarta" data-k="${id}" data-n="${n}" tabindex="0" role="button"${pode ? ` aria-label="${card(id).name}: ${T.fundivelTag}"` : ''}`, cls, id);
-    return pode ? html.replace(/<\/div>$/, `<span class="c-tag-fundir">⚡ ${T.fundivelTag}</span></div>`) : html;
+    const nova = n > 0 && p.novas.includes(baseCid(id)) ? `<span class="tag-nova">${T.novaTag}</span>` : '';
+    return pode || nova ? html.replace(/<\/div>$/, `${pode ? `<span class="c-tag-fundir">⚡ ${T.fundivelTag}</span>` : ''}${nova}</div>`) : html;
   }).join('') || `<p class="m-dica">${T.nenhumaCarta}</p>`;
   const sel = t.sel;
   const det = sel ? detalheHtml(p, sel, t) : '';
@@ -231,12 +232,13 @@ const PESO_R: Record<Raridade, number> = { l: 0, e: 1, r: 2, c: 3 };
 /** As cartas ganhas, da mais rara para a mais comum, com "NOVA!" na primeira vez que cada uma aparece. */
 export function cartasGanhasHtml(cartas0: readonly string[], novas: readonly string[]): string {
   const cartas = [...cartas0].sort((a, b) => PESO_R[card(a).r] - PESO_R[card(b).r] || card(b).cost - card(a).cost);
-  return cartas.map((k, i) => `<div class="rv-c" style="--i:${Math.min(i, 14)}">${novas.includes(k) && cartas.indexOf(k) === i ? `<span class="rv-nova">${T.novaCarta}</span>` : ''}`
+  return cartas.map((k, i) => `<div class="rv-c" style="--i:${Math.min(i, 14)}" data-act="rv-zoom" data-k="${k}" role="button" tabindex="0" aria-label="${card(k).name}">${novas.includes(k) && cartas.indexOf(k) === i ? `<span class="rv-nova">${T.novaCarta}</span>` : ''}`
     + cardHtml(card(k), card(k).cost, '', '', k) + '</div>').join('');
 }
 
 export function revelarHtml(titulo: string, cartas: readonly string[], novas: readonly string[], extra = ''): string {
   return `<div class="ov revela"><div class="panel wide"><h2>${titulo}</h2>${extra ? `<p class="rv-extra">${extra}</p>` : ''}<div class="rv-cartas">${cartasGanhasHtml(cartas, novas)}</div>`
+    + `<p class="rv-dica">${T.verCartaToque}</p>`
     + `<button class="btn go" data-act="rv-ok">${T.continuar}</button></div></div>`;
 }
 

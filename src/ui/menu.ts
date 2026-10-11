@@ -157,6 +157,10 @@ export interface Montagem {
   fNv?: number;
   fRar?: 'todas' | 'c' | 'r' | 'e' | 'l';
   fMana?: number;
+  /** Filtro por signo (deck de 2 signos): null = os dois. */
+  fSg?: Signo | null;
+  /** Mostrar também as cartas que o jogador ainda não tem (apagadas). */
+  fTodas?: boolean;
 }
 
 const RAR_NOME: Record<string, string> = { c: 'Comum', r: 'Rara', e: 'Épica', l: 'Lendária' };
@@ -222,16 +226,20 @@ export function montarHtml(m: Montagem, decks: (DeckMontado | null)[], ativo: nu
   entradas.sort((x, y) => (x.tem ? 0 : 1) - (y.tem ? 0 : 1) || card(x.id).cost - card(y.id).cost
     || (card(x.id).race === a ? 0 : 1) - (card(y.id).race === a ? 0 : 1) || baseCid(x.id).localeCompare(baseCid(y.id)) || nivelDe(y.id) - nivelDe(x.id));
   const fNv = m.fNv ?? 0, fRar = m.fRar ?? 'todas', fMana = m.fMana ?? -1;
-  const visiveis = entradas.filter(({ id, tem }) => (!fNv || (tem && nivelDe(id) === fNv))
+  const fSg = m.fSg ?? null, fTodas = m.fTodas ?? false;
+  const visiveis = entradas.filter(({ id, tem }) => (tem || fTodas) && (!fSg || card(id).race === fSg) && (!fNv || (tem && nivelDe(id) === fNv))
     && (fRar === 'todas' || card(id).r === fRar)
     && (fMana < 0 || (fMana >= 7 ? card(id).cost >= 7 : card(id).cost === fMana)));
-  const filtros = `<button class="c-aba c-ciclo${fNv ? ' on' : ''}" data-act="mfnivel">${T.filtroNivel}: <b>${fNv ? `Nv${fNv}` : T.todos}</b></button>`
+  const filtros = (um ? '' : `<button class="c-aba c-ciclo m-fsg${fSg ? ' on' : ''}" data-act="mfsigno">${T.filtroSigno}: <b>${fSg ? `${sgImg(fSg)} ${RACES[fSg].n}` : T.todos}</b></button>`)
+    + `<button class="c-aba c-ciclo${fTodas ? ' on' : ''}" data-act="mftodas">${T.filtroMostrar}: <b>${fTodas ? T.todas : T.soMinhas}</b></button>`
+    + `<button class="c-aba c-ciclo${fNv ? ' on' : ''}" data-act="mfnivel">${T.filtroNivel}: <b>${fNv ? `Nv${fNv}` : T.todos}</b></button>`
     + `<button class="c-aba c-ciclo${fRar !== 'todas' ? ' on' : ''}" data-act="mfrar">${T.filtroRaridade}: <b>${fRar === 'todas' ? T.todas : NOMES_R[fRar]}</b></button>`
     + `<button class="c-aba c-ciclo${fMana >= 0 ? ' on' : ''}" data-act="mfmana">${T.filtroMana}: <b>${fMana < 0 ? T.todos : fMana >= 7 ? '7+' : fMana}</b></button>`;
   const cards = visiveis.map(({ id, tem }) => {
     const n = qtd.get(id) ?? 0;
     const cls = [n ? 'no-deck' : 'fora-deck', tem ? '' : 'bloq', m.info === id ? 'sel' : ''].join(' ');
-    return cardHtml(card(id), card(id).cost, `data-act="mcarta" data-k="${id}" data-n="${n}" tabindex="0" role="button" aria-label="${card(id).name} ${T.nivelN(nivelDe(id))}: ${n}"`, cls, id);
+    const html = cardHtml(card(id), card(id).cost, `data-act="mcarta" data-k="${id}" data-n="${n}" tabindex="0" role="button" aria-label="${card(id).name} ${T.nivelN(nivelDe(id))}: ${n}"`, cls, id);
+    return tem && prog.novas.includes(baseCid(id)) ? html.replace(/<\/div>$/, `<span class="tag-nova">${T.novaTag}</span></div>`) : html;
   }).join('') || `<p class="m-dica">${T.nenhumaCarta}</p>`;
   // curva de mana do deck: quantas cartas de cada custo (7+ juntas)
   const curva = [0, 0, 0, 0, 0, 0, 0, 0];

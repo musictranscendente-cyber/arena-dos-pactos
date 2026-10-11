@@ -24,7 +24,9 @@ import { deckAtivo, lerDecks, salvarDecks } from '../services/deckSalvo';
 import { lerProgresso, salvarProgresso } from '../services/progresso';
 import {
   abrirPacotes, ajustarDeck, completarDeck, copiasNoNivel, copiasParaDeck, MAX_PACOTES, precoPacote, deckComNiveis, diaDe, escolherInicial, faltando, fundir, podeFundir, premioRapida, type Progresso,
+  marcarVistas,
 } from '../meta/progresso';
+import { cartasDisponiveis } from '../engine';
 import { campanhaHtml, type TelaCampanha } from './campanha';
 import { desafioHtml, TEMPO_DESAFIO } from './desafio';
 import { deckDaFase, fase as dadosFase, FASES, faseLiberada, mundoAtual, nivelMedioDeck, vencerFase } from '../meta/campanha';
@@ -162,15 +164,13 @@ function entrarDesafio(): void {
   if (!d || d.saindo) return;
   d.saindo = true;
   clearTimeout(d.timer);
-  app().querySelector('.desafio')?.classList.add('sai');
   tocar('batalha');
+  // a arena já é montada embaixo do desafio, que some por cima dela (antes aparecia o fundo da campanha no meio)
+  startMatch(d.cfg);
   window.setTimeout(() => {
     if (desafio !== d) return;
     desafio = null;
-    startMatch(d.cfg);
-    const root = app();
-    root.classList.add('arena-entra');
-    window.setTimeout(() => root.classList.remove('arena-entra'), 700);
+    app().querySelector('.desafio')?.remove();
   }, 450);
 }
 
@@ -558,7 +558,20 @@ function somHtml(): string {
     + bt('som-musica', T.somMusica, p.musica) + bt('som-efeitos', T.somEfeitos, p.efeitos) + '</div>';
 }
 
+/** Tela de cartas aberta antes (coleção ou montagem): ao sair dela, as cartas vistas perdem o "NOVA". */
+let vistaAntes: string[] | null = null;
+function marcarNovasVistas(): void {
+  const agora = tela === 'colecao' && !M ? Object.keys(prog.cartas)
+    : tela === 'montar' && montagem?.passo === 2 && !M ? cartasDisponiveis(montagem.signos[0], montagem.signos[1] ?? montagem.signos[0]) : null;
+  if (vistaAntes && (!agora || agora.join() !== vistaAntes.join())) {
+    const q = marcarVistas(prog, vistaAntes);
+    if (q !== prog) mudarProgresso(q);
+  }
+  vistaAntes = agora;
+}
+
 function render(): void {
+  marcarNovasVistas();
   const root = app();
   // cenário e tabuleiro cósmicos só durante a partida
   document.body.classList.toggle('batalha', !!M);
@@ -574,7 +587,7 @@ function render(): void {
       : tela === 'campanha' ? campanhaHtml(prog, telaCamp, deckAtivo(meus))
       : tela === 'pacotes' ? hubHtml(new Date(), deckAtivo(meus), prog, temColeta(prog, hoje()), perfil.nome) + pacotesHtml(prog, telaPacotes)
       : hubHtml(new Date(), deckAtivo(meus), prog, temColeta(prog, hoje()), perfil.nome) + dlg + (prog.inicial ? '' : inicialHtml());
-    root.insertAdjacentHTML('beforeend', somHtml() + (revela ?? '') + (desafio ? desafioHtml(desafio.cfg.signo, desafio.cfg.fase, desafio.cfg.deck) : ''));
+    root.insertAdjacentHTML('beforeend', somHtml() + (revela ?? '') + (desafio ? desafioHtml(desafio.cfg.signo, desafio.cfg.fase, desafio.cfg.deck, desafio.saindo) : ''));
     ajustarZooms(root);
     return;
   }
@@ -596,7 +609,7 @@ function render(): void {
     : tutorialHtml({ rodada: M.g.round, ocupado: M.busy, selecionou: M.sel !== null, jogou: M.plan.length > 0,
       podeInvocar: M.g.p.hand.some(h => card(h.cid).type === 'unit' && costOf(M!.g.p, h.cid) <= M!.g.p.mana) });
   root.innerHTML = gameHtml(v) + tut.html + (M.confirma ? desistirHtml() : '') + (M.g.phase === 'over' && M.fim === 'pronto' ? endHtml(M.g, M.premio, botoesFim(M), M.cartasFim) : '');
-  root.insertAdjacentHTML('beforeend', somHtml() + (revela ?? ''));
+  root.insertAdjacentHTML('beforeend', somHtml() + (revela ?? '') + (desafio ? desafioHtml(desafio.cfg.signo, desafio.cfg.fase, desafio.cfg.deck, desafio.saindo) : ''));
   if (tut.alvo) root.querySelectorAll(tut.alvo).forEach(el => el.classList.add('tut-alvo'));
   reporMortos();
   const h2 = root.querySelector('.hand');
@@ -896,6 +909,8 @@ function menuClick(a: string | undefined, t: HTMLElement): boolean {
     // tocar numa carta abre ela no painel; os botões do painel colocam e tiram cópias
     case 'mcarta': mg.info = t.dataset.k!; mg.msg = ''; keepScroll(); return true;
     case 'mfnivel': mg.fNv = ((mg.fNv ?? 0) + 1) % 6; render(); return true;
+    case 'mfsigno': { const [sa, sb] = mg.signos; mg.fSg = !mg.fSg ? sa : mg.fSg === sa && sb && sb !== sa ? sb : null; render(); return true; }
+    case 'mftodas': mg.fTodas = !mg.fTodas; render(); return true;
     case 'mfrar': { const o = ['todas', 'c', 'r', 'e', 'l'] as const; mg.fRar = o[(o.indexOf(mg.fRar ?? 'todas') + 1) % o.length]; render(); return true; }
     case 'mfmana': {
       // barra da curva: escolhe esse custo (ou tira o filtro); botão: passa para o próximo custo
@@ -1054,6 +1069,22 @@ function onClick(ev: Event): void {
   if (a === 'som') { somAberto = !somAberto; tocar('clique'); render(); return; }
   if (a === 'som-musica' || a === 'som-efeitos') { alternarSom(a === 'som-musica' ? 'musica' : 'efeitos'); tocar('clique'); render(); return; }
   if (a === 'rv-ok') { revela = null; render(); return; }
+  // carta ganha: toque abre ela inteira por cima; outro toque fecha
+  if (a === 'rv-zoom' && t.dataset.k) {
+    app().querySelector('.rv-zoom-ov')?.remove();
+    app().insertAdjacentHTML('beforeend', `<div class="rv-zoom-ov" data-act="rv-zoom-fecha" role="dialog">${zoomHtml({ cid: t.dataset.k, lado: 'p' })}</div>`);
+    ajustarZooms(app());
+    // cabe na tela inteira (com uma folga), maior que na arena
+    const ov = app().querySelector<HTMLElement>('.rv-zoom-ov'), z = ov?.querySelector<HTMLElement>('.zoom');
+    if (ov && z) {
+      z.style.removeProperty('zoom');
+      const k = Math.min((ov.clientHeight * 0.9) / z.offsetHeight, (ov.clientWidth * 0.9) / z.offsetWidth, 1.6);
+      z.style.setProperty('zoom', String(Math.max(0.4, Math.floor(k * 1000) / 1000)));
+    }
+    tocar('clique');
+    return;
+  }
+  if (a === 'rv-zoom-fecha') { app().querySelector('.rv-zoom-ov')?.remove(); return; }
   if (a === 'tut-ok') { tutorialEntendi(); tocar('clique'); render(); return; }
   if (a === 'tut-pular') { tutorialPular(); tocar('clique'); render(); return; }
   if (a === 'rever-tut') { reverTutorial(); dialogo = null; render(); aviso(T.tutorialVolta); return; }
