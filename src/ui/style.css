@@ -2407,3 +2407,22 @@ body:not(.batalha) .som-painel{top:80px;left:66px}
 .tag-nova{top:34%;z-index:20;font-size:12px;padding:1px 9px}
 @keyframes nova-pisca{50%{opacity:.6;transform:scale(1.08)}}
 .rv-zoom-ov .zoom{position:relative !important;transform:none !important;animation:none !important}
+
+/* fundos já desfocados/escurecidos na imagem (o celular não precisa calcular o desfoque a cada quadro) */
+body.batalha{--scene:url('./img/arena-fundo-escuro.webp')}
+body.batalha:not(.rot)::before{filter:none;inset:0}
+body.batalha.rot #app::before{filter:none;inset:0}
+.hub-v2 .hub-ceu{background-image:url('./img/hub-fundo-escuro.webp');filter:none}
+
+/* campanha: fase ESCOLHIDA = anel branco firme + seta dourada pulando em cima (sem piscar) */
+.ov.campanha .cp-fase.sel{animation:none;scale:1.12;border-color:#fff;box-shadow:0 0 0 2px #2a1606,0 0 0 5px #fff,0 0 0 7px #2a1606,0 4px 8px #000a}
+.cp-seta{position:absolute;left:50%;bottom:calc(100% + 4px);translate:-50% 0;z-index:5;width:26px;height:21px;pointer-events:none;
+  background:linear-gradient(180deg,#fff6cf,#f2c75a 55%,#b9801f);clip-path:polygon(0 0,100% 0,50% 100%);filter:drop-shadow(0 2px 2px #000c);animation:cp-seta-pula .9s ease-in-out infinite}
+.cp-fase.t-chefe .cp-seta,.cp-fase.t-guardiao .cp-seta{bottom:calc(100% + 18px)}
+@keyframes cp-seta-pula{50%{transform:translateY(-6px)}}
+/* PRÓXIMA fase a jogar = pulso na cor do signo + etiqueta "Jogar!" */
+.ov.campanha .cp-fase.proxima:not(.sel){animation:cp-pulsa2 1.3s ease-in-out infinite}
+@keyframes cp-pulsa2{50%{box-shadow:0 0 0 4px var(--rc),0 0 20px var(--rc)}}
+.cp-prox{position:absolute;left:50%;top:calc(100% + 2px);translate:-50% 0;z-index:5;font-style:normal;font-size:10.5px;font-weight:900;white-space:nowrap;
+  color:#2a1606;background:linear-gradient(180deg,#fff3c4,#e9b84a);border:1px solid #4a2c0a;border-radius:999px;padding:0 7px;box-shadow:0 2px 3px #000a;pointer-events:none}
+@media (prefers-reduced-motion:reduce){.cp-seta,.ov.campanha .cp-fase.proxima{animation:none}}

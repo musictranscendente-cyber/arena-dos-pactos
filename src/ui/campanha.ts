@@ -36,7 +36,10 @@ export function campanhaHtml(p: Progresso, t: TelaCampanha, deck: DeckMontado | 
     const cls = ['cp-fase', `t-${f.tipo}`, est ? 'feita' : livre ? 'livre' : 'bloq', t.fase === n ? 'sel' : ''].join(' ');
     const fig = f.tipo === 'chefe' ? criatura(`${t.signo}25`, 'cp-fig') : f.tipo === 'guardiao' ? criatura(`${t.signo}23`, 'cp-fig') : '';
     const { x, y } = pos[i];
-    return `<button class="${cls}" data-act="cfase" data-n="${n}" style="left:${x}%;top:${y}%">${fig}<b>${livre ? n : ic('cadeado', 'ic-cad')}</b>${est ? estrelinhas(est) : ''}</button>`;
+    // escolhida: seta dourada pulando em cima; próxima a jogar: etiqueta "Jogar" pulsando
+    const proxima = livre && !est;
+    return `<button class="${cls}${proxima ? ' proxima' : ''}" data-act="cfase" data-n="${n}" style="left:${x}%;top:${y}%">${fig}<b>${livre ? n : ic('cadeado', 'ic-cad')}</b>${est ? estrelinhas(est) : ''}`
+      + (t.fase === n ? '<i class="cp-seta" aria-hidden="true"></i>' : '') + (proxima ? `<em class="cp-prox">${T.faseProxima}</em>` : '') + '</button>';
   }).join('');
   // detalhes da fase escolhida
   const f = fase(t.signo, t.fase, deck ? nivelMedioDeck(deck.cartas) : 1), est = estrelas(p, t.signo, t.fase), livre = faseLiberada(p, t.signo, t.fase);

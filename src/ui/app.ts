@@ -11,7 +11,8 @@ import {
 import { ajustarZooms, ATK_MS, desistirHtml, endHtml, galleryHtml, gameHtml, startHtml, zoomHtml, type View, type Zoom } from './desenho';
 import { toggleRot, tryLandscape } from './orientacao';
 import { efeitoGeral, efeitosDeMagia, EXTRA_GERAL_MS, MAGIA_MS } from './efeitoMagia';
-import { precarregarVisiveis } from './precarga';
+import { precarregar, precarregarVisiveis } from './precarga';
+import arenaFundo from './img/arena-fundo-escuro.webp';
 import { launch, shotsOf } from './projetil';
 import { alternarSom, desbloquear, iconeSom, prefsSom, tocar, trilha, type Efeito } from './som';
 import { reverTutorial, tutorialEntendi, tutorialFimDePartida, tutorialHtml, tutorialNovaPartida, tutorialPular } from './tutorial';
@@ -154,6 +155,9 @@ let desafio: { cfg: ModoCampanha; timer: number; saindo: boolean } | null = null
 function mostrarDesafio(cfg: ModoCampanha): void {
   if (desafio) clearTimeout(desafio.timer);
   desafio = { cfg, timer: window.setTimeout(entrarDesafio, TEMPO_DESAFIO), saindo: false };
+  // enquanto o desafio aparece, já carrega o fundo da arena e as cartas do deck (a entrada fica sem travadinha)
+  const fundo = new Image(); fundo.src = arenaFundo; void fundo.decode().catch(() => {});
+  precarregar(cfg.deck.cartas);
   tocar('rodada');
   render();
 }

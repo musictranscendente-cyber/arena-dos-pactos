@@ -273,6 +273,7 @@ export const T = {
   tipoCriatura: 'Criatura',
   tipoMagia: 'Magia',
   rotTipo: 'Tipo',
+  faseProxima: 'Jogar!',
   novaTag: 'NOVA',
   filtroSigno: 'Signo',
   filtroMostrar: 'Mostrar',
