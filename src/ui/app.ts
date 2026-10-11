@@ -29,11 +29,11 @@ import {
 import { cartasDisponiveis } from '../engine';
 import { campanhaHtml, type TelaCampanha } from './campanha';
 import { desafioHtml, TEMPO_DESAFIO } from './desafio';
-import { deckDaFase, fase as dadosFase, FASES, faseLiberada, mundoAtual, nivelMedioDeck, vencerFase } from '../meta/campanha';
+import { deckDaFase, fase as dadosFase, FASES, faseLiberada, mundoAtual, mundoLiberado, MUNDOS, nivelMedioDeck, vencerFase } from '../meta/campanha';
 import { abrirBau, BAU_POEIRA, coletar, coletarLogin, garantirDia, loginDisponivel, registrar, trocar, type Contagem } from '../meta/missoes';
 import { missoesHtml, temColeta } from './missoes';
 import { colecaoHtml, inicialHtml, pacotesHtml, proximoFiltro, cartasGanhasHtml, revelarHtml, type TelaColecao, type TelaPacotes } from './colecao';
-import { lerNivel, salvarNivel } from '../services/preferencias';
+import { lerNivel, lerTelaCampanha, salvarNivel, salvarTelaCampanha } from '../services/preferencias';
 
 /** Nome da raridade em minúsculas, para os avisos. */
 const RARIDADE_NOME: Record<string, string> = { c: 'comum', r: 'rara', e: 'épica', l: 'lendária' };
@@ -572,6 +572,7 @@ function marcarNovasVistas(): void {
 
 function render(): void {
   marcarNovasVistas();
+  if (tela === 'campanha' && !M) salvarTelaCampanha(telaCamp.signo, telaCamp.fase);
   const root = app();
   // cenário e tabuleiro cósmicos só durante a partida
   document.body.classList.toggle('batalha', !!M);
@@ -986,8 +987,15 @@ function deckPronto(): DeckMontado | null {
 function abrirCampanha(): void {
   dialogo = null;
   tela = 'campanha';
-  telaCamp = { signo: mundoAtual(prog), fase: 1 };
-  ultimaFaseLivre();
+  // volta no último mundo e fase que o jogador deixou aberto (se ainda estiverem liberados)
+  const ult = lerTelaCampanha();
+  if (ult && MUNDOS.includes(ult.signo as Signo) && mundoLiberado(prog, ult.signo as Signo)) {
+    telaCamp = { signo: ult.signo as Signo, fase: Math.max(1, Math.min(FASES, ult.fase)) };
+    if (!faseLiberada(prog, telaCamp.signo, telaCamp.fase)) ultimaFaseLivre();
+  } else {
+    telaCamp = { signo: mundoAtual(prog), fase: 1 };
+    ultimaFaseLivre();
+  }
   render();
 }
 
