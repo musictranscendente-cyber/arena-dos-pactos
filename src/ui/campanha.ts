@@ -22,7 +22,7 @@ export function campanhaHtml(p: Progresso, t: TelaCampanha, deck: DeckMontado | 
   const abas = MUNDOS.map(s => {
     const livre = mundoLiberado(p, s);
     return `<button class="c-aba cp-mundo${t.signo === s ? ' on' : ''}${livre ? '' : ' bloq'}" data-act="cmundo" data-r="${s}" style="--rc:${COR_MEDALHAO[s]}" title="${RACES[s].n}">`
-      + `${livre ? sgIco(s) : ic('cadeado', 'ic-cad')}<small>${livre ? `${estrelasDoMundo(p, s)}★` : ''}</small></button>`;
+      + `${livre ? sgIco(s) : ic('cadeado', 'ic-cad')}<small>${livre ? `${estrelasDoMundo(p, s)}★` : ''}</small>${estrelas(p, s, FASES) ? `<i class="cp-ok" title="${T.mundoFeito}">✓</i>` : ''}</button>`;
   }).join('');
   const r = RACES[t.signo];
   // caminho em zigue-zague: fases 1-5 em cima (esquerda→direita), 6-10 embaixo (direita→esquerda)
@@ -63,7 +63,7 @@ export function campanhaHtml(p: Progresso, t: TelaCampanha, deck: DeckMontado | 
   const ajuda = t.ajuda ? `<div class="c-ajuda" data-act="cpajuda"><p><b>${T.comoFunciona}</b></p><p>${T.criteriosEstrelas}</p>`
     + (lenda ? `<p>${T.lendaMeta(lenda.name, estrelasDoMundo(p, t.signo))}</p>` : '') + `<p>${T.legendaFase}</p><p>${T.ajudaCampanha(r.n)}</p></div>` : '';
   return `<div class="ov montar gal campanha" style="--rc:${COR_MEDALHAO[t.signo]}"><div class="panel wide"><div class="m-fixo">`
-    + `<div class="gtop"><h2>${T.campanha} <small>${sgIco(t.signo)} ${T.mundo(r.n)}</small></h2><span class="m-topo-bts">${moedasHtml(p)}`
+    + `<div class="gtop"><h2>${T.campanha} <small>${sgIco(t.signo)} ${T.mundo(r.n)}${estrelas(p, t.signo, FASES) ? ` <i class="cp-feito">✓ ${T.mundoFeito}</i>` : ''}</small></h2><span class="m-topo-bts">${moedasHtml(p)}`
     + `<button class="m-fecha" data-act="hub" aria-label="${T.sair}">✕</button></span></div>`
     + `<div class="c-abas">${abas}</div></div>`
     + `<div class="m-corpo cp-corpo"><div class="cp-mapa">${trilha}${nos}</div>${det}</div>${ajuda}</div></div>`;

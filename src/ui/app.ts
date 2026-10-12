@@ -30,7 +30,7 @@ import {
 import { cartasDisponiveis } from '../engine';
 import { campanhaHtml, type TelaCampanha } from './campanha';
 import { desafioHtml, TEMPO_DESAFIO } from './desafio';
-import { deckDaFase, fase as dadosFase, FASES, faseLiberada, mundoAtual, mundoLiberado, MUNDOS, nivelMedioDeck, vencerFase } from '../meta/campanha';
+import { deckDaFase, fase as dadosFase, FASES, estrelas, faseLiberada, mundoAtual, mundoLiberado, MUNDOS, nivelMedioDeck, vencerFase } from '../meta/campanha';
 import { abrirBau, BAU_POEIRA, coletar, coletarLogin, garantirDia, loginDisponivel, registrar, trocar, type Contagem } from '../meta/missoes';
 import { missoesHtml, temColeta } from './missoes';
 import { colecaoHtml, inicialHtml, pacotesHtml, proximoFiltro, cartasGanhasHtml, revelarHtml, type TelaColecao, type TelaPacotes } from './colecao';
@@ -85,6 +85,8 @@ interface Match {
   revelaDepois?: string;
   /** Cartas ganhas na campanha, mostradas na própria tela de vitória. */
   cartasFim?: string;
+  /** Venceu a fase 10 do mundo pela primeira vez (mostra "Mundo concluído"). */
+  concluiu?: boolean;
   /** O que o jogador fez na partida (para as missões). */
   cont: Partial<Record<Contagem, number>>;
 }
@@ -169,13 +171,15 @@ function entrarDesafio(): void {
   d.saindo = true;
   clearTimeout(d.timer);
   tocar('batalha');
-  // a arena já é montada embaixo do desafio, que some por cima dela (antes aparecia o fundo da campanha no meio)
+  // o desafio sai do jogo e fica por cima, sumindo uma vez só; a arena é montada embaixo dele
+  // (antes ele era redesenhado junto com a arena e a animação recomeçava, dando um pisca-pisca)
+  const el = app().querySelector<HTMLElement>('.desafio');
+  if (el) { document.body.appendChild(el); el.classList.add('sai'); }
   startMatch(d.cfg);
   window.setTimeout(() => {
-    if (desafio !== d) return;
-    desafio = null;
-    app().querySelector('.desafio')?.remove();
-  }, 450);
+    el?.remove();
+    if (desafio === d) desafio = null;
+  }, 500);
 }
 
 const who = (side: Side) => (side === 'p' ? T.voce : 'O rival');
@@ -592,7 +596,7 @@ function render(): void {
       : tela === 'campanha' ? campanhaHtml(prog, telaCamp, deckAtivo(meus))
       : tela === 'pacotes' ? hubHtml(new Date(), deckAtivo(meus), prog, temColeta(prog, hoje()), perfil.nome) + pacotesHtml(prog, telaPacotes)
       : hubHtml(new Date(), deckAtivo(meus), prog, temColeta(prog, hoje()), perfil.nome) + dlg + (prog.inicial ? '' : inicialHtml());
-    root.insertAdjacentHTML('beforeend', somHtml() + (revela ?? '') + (desafio ? desafioHtml(desafio.cfg.signo, desafio.cfg.fase, desafio.cfg.deck, desafio.saindo) : ''));
+    root.insertAdjacentHTML('beforeend', somHtml() + (revela ?? '') + (desafio && !desafio.saindo ? desafioHtml(desafio.cfg.signo, desafio.cfg.fase, desafio.cfg.deck) : ''));
     ajustarZooms(root);
     return;
   }
@@ -614,7 +618,7 @@ function render(): void {
     : tutorialHtml({ rodada: M.g.round, ocupado: M.busy, selecionou: M.sel !== null, jogou: M.plan.length > 0,
       podeInvocar: M.g.p.hand.some(h => card(h.cid).type === 'unit' && costOf(M!.g.p, h.cid) <= M!.g.p.mana) });
   root.innerHTML = gameHtml(v) + tut.html + (M.confirma ? desistirHtml() : '') + (M.g.phase === 'over' && M.fim === 'pronto' ? endHtml(M.g, M.premio, botoesFim(M), M.cartasFim) : '');
-  root.insertAdjacentHTML('beforeend', somHtml() + (revela ?? '') + (desafio ? desafioHtml(desafio.cfg.signo, desafio.cfg.fase, desafio.cfg.deck, desafio.saindo) : ''));
+  root.insertAdjacentHTML('beforeend', somHtml() + (revela ?? '') + (desafio && !desafio.saindo ? desafioHtml(desafio.cfg.signo, desafio.cfg.fase, desafio.cfg.deck) : ''));
   if (tut.alvo) root.querySelectorAll(tut.alvo).forEach(el => el.classList.add('tut-alvo'));
   reporMortos();
   const h2 = root.querySelector('.hand');
@@ -626,7 +630,12 @@ function render(): void {
 function botoesFim(m: Match): string | undefined {
   if (ultimo?.modo !== 'campanha') return undefined;
   const prox = m.g.result === 'p' && ultimo.fase < FASES;
-  return (prox ? `<button class="btn go" data-act="proxfase">${T.proximaFase}</button>` : `<button class="btn go" data-act="again">${m.g.result === 'p' ? T.revanche : T.tentarDeNovo}</button>`)
+  // venceu o chefe (fase 10) pela primeira vez: mundo concluído e atalho para o próximo mundo
+  const i = MUNDOS.indexOf(ultimo.signo), seguinte = i >= 0 && i < MUNDOS.length - 1 ? MUNDOS[i + 1] : null;
+  const concluido = m.concluiu ? `<p class="fim-concluido">${T.mundoConcluido(RACES[ultimo.signo].n)}</p>` : '';
+  return concluido + (prox ? `<button class="btn go" data-act="proxfase">${T.proximaFaseN(ultimo.fase + 1)}</button>`
+    : m.concluiu && seguinte ? `<button class="btn go" data-act="proxmundo" data-r="${seguinte}">${T.proximoMundo(RACES[seguinte].n)}</button>`
+    : `<button class="btn go" data-act="again">${m.g.result === 'p' ? T.revanche : T.tentarDeNovo}</button>`)
     + `<button class="btn rc" data-act="mapa">${T.mapa}</button>`;
 }
 
@@ -696,6 +705,7 @@ function premioDaPartida(m: Match): string | undefined {
   if (ultimo?.modo === 'campanha') {
     if (m.g.result !== 'p') return undefined;
     const { signo, fase: n } = ultimo;
+    if (n === FASES && !estrelas(prog, signo, n)) m.concluiu = true;
     const r = vencerFase(prog, signo, n, m.g.p.hp, new Rng(randomSeed()));
     mudarProgresso(r.p);
     const partes = ['⭐'.repeat(r.estrelas), `+${r.poeira} ✨`];
@@ -994,8 +1004,8 @@ function abrirCampanha(): void {
   // volta no último mundo e fase que o jogador deixou aberto (se ainda estiverem liberados)
   const ult = lerTelaCampanha();
   if (ult && MUNDOS.includes(ult.signo as Signo) && mundoLiberado(prog, ult.signo as Signo)) {
-    telaCamp = { signo: ult.signo as Signo, fase: Math.max(1, Math.min(FASES, ult.fase)) };
-    if (!faseLiberada(prog, telaCamp.signo, telaCamp.fase)) ultimaFaseLivre();
+    telaCamp = { signo: ult.signo as Signo, fase: 1 };
+    ultimaFaseLivre();
   } else {
     telaCamp = { signo: mundoAtual(prog), fase: 1 };
     ultimaFaseLivre();
@@ -1005,8 +1015,10 @@ function abrirCampanha(): void {
 
 /** No mapa, já deixa escolhida a próxima fase a jogar do mundo. */
 function ultimaFaseLivre(): void {
+  // a primeira fase liberada que ainda não foi vencida; mundo todo vencido: a última liberada
   let n = 1;
   for (let i = 1; i <= FASES; i++) if (faseLiberada(prog, telaCamp.signo, i)) n = i;
+  for (let i = 1; i <= FASES; i++) if (faseLiberada(prog, telaCamp.signo, i) && !estrelas(prog, telaCamp.signo, i)) { n = i; break; }
   telaCamp.fase = n;
 }
 
@@ -1109,12 +1121,13 @@ function onClick(ev: Event): void {
   if (a === 'galback') { gal = null; tela = 'conhecer'; render(); return; }
   if (a === 'pick') { void tryLandscape(); startMatch({ modo: 'signo', sign: t.dataset.r as Signo }); return; }
   if (a === 'again' && M && ultimo) { revela = M.revelaDepois ?? null; startMatch(ultimo); render(); return; }
-  if ((a === 'mapa' || a === 'proxfase') && M && ultimo?.modo === 'campanha') {
+  if ((a === 'mapa' || a === 'proxfase' || a === 'proxmundo') && M && ultimo?.modo === 'campanha') {
     const u = ultimo;
     revela = M.revelaDepois ?? null;
     M = null;
     tela = 'campanha';
-    telaCamp = { signo: u.signo, fase: u.fase };
+    telaCamp = { signo: a === 'proxmundo' ? t.dataset.r as Signo : u.signo, fase: u.fase };
+    if (a !== 'proxfase') ultimaFaseLivre();
     if (a === 'proxfase' && u.fase < FASES) {
       const d = deckPronto();
       telaCamp.fase = u.fase + 1;

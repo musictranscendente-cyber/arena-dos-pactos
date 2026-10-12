@@ -2426,3 +2426,21 @@ body.batalha.rot #app::before{filter:none;inset:0}
 .cp-prox{position:absolute;left:50%;top:calc(100% + 2px);translate:-50% 0;z-index:5;font-style:normal;font-size:10.5px;font-weight:900;white-space:nowrap;
   color:#2a1606;background:linear-gradient(180deg,#fff3c4,#e9b84a);border:1px solid #4a2c0a;border-radius:999px;padding:0 7px;box-shadow:0 2px 3px #000a;pointer-events:none}
 @media (prefers-reduced-motion:reduce){.cp-seta,.ov.campanha .cp-fase.proxima{animation:none}}
+
+/* mundo concluído (venceu o chefe) */
+.ov.campanha .cp-mundo{position:relative}
+.cp-ok{position:absolute;top:2px;right:3px;font-style:normal;font-size:10px;font-weight:900;line-height:1;color:#fff;background:#3dbb55;border-radius:50%;width:15px;height:15px;display:grid;place-items:center;box-shadow:0 0 0 1px #fff8,0 1px 2px #000a}
+.cp-feito{font-style:normal;font-size:.8em;color:#bfffc8;margin-left:4px}
+.fim-concluido{font-family:var(--fonte-titulo);font-size:20px;color:#ffe7a3;text-shadow:0 2px 0 #4a2200,0 0 12px #f6c95a99;margin:4px 0 6px}
+/* guardião e chefe: a criatura fica DENTRO do círculo (não cobre as outras fases); o número vai num selo embaixo */
+.ov.campanha .cp-fase.t-chefe,.ov.campanha .cp-fase.t-guardiao{overflow:visible}
+.ov.campanha .cp-fase .cp-fig{position:absolute;left:50%;top:50%;bottom:auto;translate:-50% -54%;height:86%;width:auto;max-width:92%;object-fit:contain;
+  clip-path:circle(50% at 50% 50%);z-index:1}
+.ov.campanha .cp-fase.t-chefe>b,.ov.campanha .cp-fase.t-guardiao>b{position:absolute;left:50%;bottom:-6px;translate:-50% 0;z-index:3;font-size:13px;min-width:22px;height:22px;
+  display:grid;place-items:center;border-radius:50%;background:linear-gradient(180deg,#ffe9a8,#d9a640);color:#2a1606;text-shadow:none;box-shadow:0 0 0 1.5px #4a2c0a,0 2px 3px #000a}
+.ov.campanha .cp-fase.t-chefe .cp-est,.ov.campanha .cp-fase.t-guardiao .cp-est{bottom:-30px}
+.ov.campanha .cp-fase.t-chefe>b .ic-cad,.ov.campanha .cp-fase.t-guardiao>b .ic-cad{height:15px}
+/* saída do desafio: some suave, sem clarão */
+@keyframes df-sai{0%{opacity:1;scale:1}100%{opacity:0;scale:1.08}}
+.desafio.sai{animation:df-sai .45s ease-in forwards;pointer-events:none}
+body.rot>.desafio{transform-origin:top left;transform:rotate(90deg) translateY(-100%);width:100vh;height:100vw;inset:auto;top:0;left:0}
