@@ -11,7 +11,7 @@ import { cartaDaRaridade, darCartas, sortearCarta, type Progresso } from './prog
 
 export const FASES = 10;
 export const MUNDOS: readonly Signo[] = ORDER;
-export const VIDA_CHEFE = 55;
+export const VIDA_CHEFE = 45;
 
 export const chave = (signo: Signo, fase: number) => `${signo}-${fase}`;
 const chaveLenda = (signo: Signo) => `${signo}-lenda`;
@@ -67,15 +67,15 @@ export const DIFICULDADE: readonly { ia: Nivel; nv: number; forte: boolean; vida
   // 1 a 4: aprendizado, sobe aos poucos
   { ia: 'facil', nv: 1, forte: false, vida: 30 },
   { ia: 'normal', nv: 1, forte: false, vida: 30 },
+  { ia: 'normal', nv: 1, forte: false, vida: 30 },
   { ia: 'normal', nv: 2, forte: false, vida: 30 },
-  { ia: 'dificil', nv: 2, forte: false, vida: 30 },
-  // 5 em diante: deck forte, cartas de nível alto e mais vida
-  { ia: 'dificil', nv: 3, forte: true, vida: 35 }, // guardião
-  { ia: 'dificil', nv: 3, forte: true, vida: 40 },
-  { ia: 'dificil', nv: 3, forte: true, vida: 45 },
-  { ia: 'dificil', nv: 4, forte: true, vida: 45 },
-  { ia: 'dificil', nv: 4, forte: true, vida: 50 },
-  { ia: 'dificil', nv: 5, forte: true, vida: VIDA_CHEFE }, // chefe
+  // 5 em diante: rival no difícil, cartas de nível mais alto e mais vida a cada fase
+  { ia: 'dificil', nv: 2, forte: false, vida: 30 }, // guardião
+  { ia: 'dificil', nv: 2, forte: false, vida: 35 },
+  { ia: 'dificil', nv: 2, forte: false, vida: 40 },
+  { ia: 'dificil', nv: 2, forte: false, vida: 45 },
+  { ia: 'dificil', nv: 3, forte: false, vida: 40 },
+  { ia: 'dificil', nv: 2, forte: true, vida: VIDA_CHEFE }, // chefe
 ];
 
 /** Nível médio das cartas de um deck (1 a 5). */

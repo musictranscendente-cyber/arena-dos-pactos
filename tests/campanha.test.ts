@@ -57,13 +57,13 @@ describe('campanha', () => {
     expect(fase('peixes', 10).nivelIA).toBe('dificil');
     const d = deckDaFase(fase('peixes', 8), new Rng(1));
     expect(d).toHaveLength(30);
-    expect(d.every(c => nivelDe(c) === 4)).toBe(true);
+    expect(d.every(c => nivelDe(c) === 2)).toBe(true);
     expect(fase('peixes', 6).vidaRival).toBeGreaterThan(fase('peixes', 4).vidaRival);
   });
   it('rival acompanha o nível médio do deck do jogador (até o Nv5)', () => {
     expect(fase('aries', 1, 1).nivelCartas).toBe(1);
     expect(fase('aries', 1, 2.4).nivelCartas).toBe(2);
-    expect(fase('aries', 8, 3).nivelCartas).toBe(5);
+    expect(fase('aries', 8, 3).nivelCartas).toBe(4);
     expect(fase('aries', 4, 1).nivelCartas).toBe(2);
     expect(fase('aries', 10, 5).nivelCartas).toBe(5);
     expect(nivelMedioDeck(['aries01', 'aries02*3'])).toBe(2);
