@@ -16,6 +16,17 @@ export function salvarNivel(n: Nivel): void {
   try { localStorage.setItem(CHAVE_NIVEL, n); } catch { /* sem armazenamento */ }
 }
 
+const CHAVE_DEV = 'arena-dos-pactos:dev';
+
+/** Modo desenvolvedor (mostra o Modo teste). Liga tocando 7 vezes na versão, nas Configurações. */
+export function lerDev(): boolean {
+  try { return localStorage.getItem(CHAVE_DEV) === '1'; } catch { return false; }
+}
+
+export function salvarDev(v: boolean): void {
+  try { if (v) localStorage.setItem(CHAVE_DEV, '1'); else localStorage.removeItem(CHAVE_DEV); } catch { /* sem armazenamento */ }
+}
+
 const CHAVE_CONVIDADO = 'arena-dos-pactos:convidado';
 
 /** O jogador escolheu jogar sem conta (não mostra a tela de entrada de novo). */

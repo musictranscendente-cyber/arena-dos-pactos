@@ -36,7 +36,7 @@ import { deckDaFase, fase as dadosFase, FASES, estrelas, faseLiberada, mundoAtua
 import { abrirBau, BAU_POEIRA, coletar, coletarLogin, garantirDia, loginDisponivel, registrar, trocar, type Contagem } from '../meta/missoes';
 import { missoesHtml, temColeta } from './missoes';
 import { colecaoHtml, inicialHtml, pacotesHtml, proximoFiltro, cartasGanhasHtml, revelarHtml, type TelaColecao, type TelaPacotes } from './colecao';
-import { lerConvidado, lerNivel, lerTelaCampanha, salvarConvidado, salvarNivel, salvarTelaCampanha } from '../services/preferencias';
+import { lerConvidado, lerDev, lerNivel, salvarDev, lerTelaCampanha, salvarConvidado, salvarNivel, salvarTelaCampanha } from '../services/preferencias';
 
 /** Nome da raridade em minúsculas, para os avisos. */
 const RARIDADE_NOME: Record<string, string> = { c: 'comum', r: 'rara', e: 'épica', l: 'lendária' };
@@ -126,6 +126,8 @@ let perfil = lerPerfil(), avisoCfg = '';
 let entrarComEmail = false;
 /** Escolheu jogar sem conta (dá para entrar depois pelas Configurações). */
 let convidado = lerConvidado();
+/** Modo desenvolvedor: mostra o Modo teste (7 toques na versão, nas Configurações). */
+let dev = lerDev(), toquesVersao = 0;
 /** Última dificuldade escolhida na Partida Rápida. */
 let nivel: Nivel = lerNivel();
 /** Os 3 espaços de deck e qual está em uso. */
@@ -600,7 +602,7 @@ function render(): void {
   trilha(M ? 'batalha' : 'menu');
   if (!M) {
     emDia();
-    const dlg = dialogo === 'nivel' ? dificuldadeHtml(deckAtivo(meus), nivel) : dialogo === 'regras' ? regrasHtml(prog.teste)
+    const dlg = dialogo === 'nivel' ? dificuldadeHtml(deckAtivo(meus), nivel) : dialogo === 'regras' ? regrasHtml(prog.teste, dev)
       : dialogo === 'missoes' ? missoesHtml(prog, hoje()) : dialogo === 'config' ? configHtml(perfil, avisoCfg) : '';
     root.innerHTML = gal ? galleryHtml(gal, galSel)
       : tela === 'montar' && montagem ? montarHtml(montagem, meus.decks, meus.ativo, prog)
@@ -751,6 +753,14 @@ function menuClick(a: string | undefined, t: HTMLElement): boolean {
     case 'regras': dialogo = 'regras'; render(); return true;
     case 'config': avisoCfg = ''; dialogo = 'config'; tocar('clique'); render(); return true;
     case 'cfg-giro': toggleRot(); render(); return true;
+    case 'cfg-versao':
+      if (++toquesVersao >= 7) {
+        toquesVersao = 0; dev = !dev; salvarDev(dev);
+        // saindo do modo desenvolvedor: desliga o Modo teste
+        if (!dev && prog.teste) mudarProgresso({ ...prog, teste: false });
+        aviso(dev ? T.devLigado : T.devDesligado);
+      }
+      return true;
     case 'cfg-google': void entrarGoogle(); return true;
     case 'cfg-email': {
       const email = (app().querySelector<HTMLInputElement>('#cfg-email')?.value ?? '').trim();
@@ -1301,6 +1311,8 @@ function hintFor(cid: string): string {
 }
 
 export function startApp(): void {
+  // jogador comum nunca fica com o Modo teste ligado
+  if (!dev && prog.teste) mudarProgresso({ ...prog, teste: false });
   anotar('abriu');
   // primeiro acesso do dia: já abre as missões com o prêmio do calendário
   emDia();

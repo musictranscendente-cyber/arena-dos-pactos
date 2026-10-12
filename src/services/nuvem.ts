@@ -1,6 +1,6 @@
 // Conta e progresso na nuvem (Supabase). Sem as chaves configuradas, o jogo segue só no aparelho.
 // Guarda numa linha por jogador: progresso, decks e perfil (o mesmo que fica no localStorage).
-import { createClient, type SupabaseClient, type User } from '@supabase/supabase-js';
+import type { SupabaseClient, User } from '@supabase/supabase-js';
 
 const URL = import.meta.env.VITE_SUPABASE_URL as string | undefined;
 const CHAVE = import.meta.env.VITE_SUPABASE_ANON_KEY as string | undefined;
@@ -73,6 +73,8 @@ async function sincronizar(): Promise<void> {
 export async function iniciarNuvem(onMudou: () => void, recarregar: () => void): Promise<void> {
   avisar = onMudou; aplicar = recarregar;
   if (!URL || !CHAVE) return;
+  // a biblioteca do Supabase só é baixada depois que o jogo já apareceu (abre mais rápido)
+  const { createClient } = await import('@supabase/supabase-js');
   sb = createClient(URL, CHAVE, { auth: { persistSession: true, detectSessionInUrl: true, flowType: 'pkce' } });
   sb.auth.onAuthStateChange((ev, sessao) => {
     const antes = usuario?.id;

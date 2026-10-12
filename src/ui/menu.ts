@@ -130,11 +130,13 @@ export function dificuldadeHtml(deck: DeckMontado | null, ultimo: Nivel): string
     + `<div class="niveis">${nv('facil', '🌱')}${nv('normal', '⚔️')}${nv('dificil', '🔥')}</div></div></div>`;
 }
 
-export function regrasHtml(teste: boolean): string {
+export function regrasHtml(teste: boolean, dev = false): string {
   // modo teste e tutorial no alto, à vista sem precisar rolar
   return `<div class="ov regras"><div class="panel wide"><div class="gtop"><h2>${T.comoJogar}</h2><button class="btn rc" data-act="fechar">${T.voltar}</button></div>`
-    + `<div class="acts2 regras-bts"><button class="btn rc teste${teste ? ' on' : ''}" data-act="teste" aria-pressed="${teste}">${T.modoTeste}: ${teste ? T.ligado : T.desligado}</button>`
-    + (teste ? `<button class="btn rc" data-act="teste-poeira">${T.maisPoeira}</button>` : '')
+    + `<div class="acts2 regras-bts">`
+    // Modo teste só para o desenvolvedor (jogadores não veem)
+    + (dev ? `<button class="btn rc teste${teste ? ' on' : ''}" data-act="teste" aria-pressed="${teste}">${T.modoTeste}: ${teste ? T.ligado : T.desligado}</button>` : '')
+    + (dev && teste ? `<button class="btn rc" data-act="teste-poeira">${T.maisPoeira}</button>` : '')
     + `<button class="btn rc" data-act="rever-tut">${T.reverTutorial}</button></div>`
     + `<ul>${T.regras.map(x => `<li>${x}</li>`).join('')}</ul></div></div>`;
 }

@@ -280,6 +280,8 @@ export const T = {
   soMinhas: 'Minhas',
   verCartaToque: 'Toque numa carta para ver ela inteira.',
   config: 'Configurações',
+  devLigado: '🛠️ Modo desenvolvedor ligado (Modo teste aparece em Como jogar).',
+  devDesligado: 'Modo desenvolvedor desligado.',
   entrarTitulo: 'Bem-vindo à Cosmic Citadel',
   entrarTexto: 'Entre com sua conta Google para salvar seu progresso na nuvem e jogar em qualquer celular.',
   entrarOutro: 'Não tem Google? Entrar com e-mail',

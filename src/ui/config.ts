@@ -32,6 +32,6 @@ export function configHtml(perfil: Perfil, aviso: string): string {
     + `<button class="cfg-op" data-act="som-efeitos"><span>💥 Efeitos</span>${chave(s.efeitos)}</button></section>`
     + `<section class="cfg-bloco"><h4>${T.cfgTela}</h4><button class="cfg-op" data-act="cfg-giro"><span>${T.cfgGiro}</span>${chave(giroLigado())}</button></section>`
     + `<section class="cfg-bloco"><h4>${T.cfgAjuda}</h4><button class="btn rc" data-act="regras">${T.comoJogar}</button> <button class="btn rc" data-act="rever-tut">${T.reverTutorial}</button>`
-    + `<p class="cfg-dica">${T.cfgVersao} ${__VERSAO__}</p></section>`
+    + `<p class="cfg-dica cfg-versao" data-act="cfg-versao">${T.cfgVersao} ${__VERSAO__}</p></section>`
     + '</div></div></div>';
 }
