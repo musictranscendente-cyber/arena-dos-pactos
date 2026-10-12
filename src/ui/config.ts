@@ -1,11 +1,16 @@
 // Janela de Configurações (abre tocando no medalhão do perfil): conta/nuvem, nome, som, tela e ajuda.
 import { T } from '../data/textos';
-import { emailConta, logado, nuvemAtiva, situacaoNuvem } from '../services/nuvem';
+import { emailConta, listarBackups, logado, nuvemAtiva, situacaoNuvem } from '../services/nuvem';
 import type { Perfil } from '../services/perfil';
 import { giroLigado } from './orientacao';
 import { prefsSom } from './som';
 
 const esc = (t: string) => t.replace(/[&<>"']/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[ch]!);
+/** Resumo de uma cópia: cartas e Poeira. */
+function resumo(d: Record<string, unknown>): string {
+  const p = d.progresso as { cartas?: Record<string, unknown>; poeira?: number } | undefined;
+  return `${Object.keys(p?.cartas ?? {}).length} ${T.cartasMin} · ${p?.poeira ?? 0} ✨`;
+}
 const chave = (on: boolean) => `<b class="cfg-chave${on ? ' on' : ''}">${on ? T.ligado : T.desligado}</b>`;
 
 export function configHtml(perfil: Perfil, aviso: string): string {
@@ -31,6 +36,9 @@ export function configHtml(perfil: Perfil, aviso: string): string {
     + `<section class="cfg-bloco"><h4>${T.cfgSom}</h4><button class="cfg-op" data-act="som-musica"><span>🎵 Música</span>${chave(s.musica)}</button>`
     + `<button class="cfg-op" data-act="som-efeitos"><span>💥 Efeitos</span>${chave(s.efeitos)}</button></section>`
     + `<section class="cfg-bloco"><h4>${T.cfgTela}</h4><button class="cfg-op" data-act="cfg-giro"><span>${T.cfgGiro}</span>${chave(giroLigado())}</button></section>`
+    + (listarBackups().length ? `<section class="cfg-bloco"><h4>${T.cfgBackups}</h4><p class="cfg-dica">${T.cfgBackupsDica}</p>`
+      + listarBackups().map((b, i) => `<button class="cfg-op" data-act="cfg-restaurar" data-i="${i}"><span>${new Date(b.quando).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' })} · ${resumo(b.dados)}</span><b class="cfg-chave">${T.cfgRestaurar}</b></button>`).join('')
+      + '</section>' : '')
     + `<section class="cfg-bloco"><h4>${T.cfgAjuda}</h4><button class="btn rc" data-act="regras">${T.comoJogar}</button> <button class="btn rc" data-act="rever-tut">${T.reverTutorial}</button>`
     + `<p class="cfg-dica cfg-versao" data-act="cfg-versao">${T.cfgVersao} ${__VERSAO__}</p></section>`
     + '</div></div></div>';

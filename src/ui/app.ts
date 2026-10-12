@@ -18,7 +18,7 @@ import { alternarSom, desbloquear, iconeSom, prefsSom, tocar, trilha, type Efeit
 import { reverTutorial, tutorialEntendi, tutorialFimDePartida, tutorialHtml, tutorialNovaPartida, tutorialPular } from './tutorial';
 import { ic } from './icones';
 import { configHtml } from './config';
-import { entrarEmail, entrarGoogle, iniciarNuvem, logado, nuvemAtiva, sair } from '../services/nuvem';
+import { entrarEmail, entrarGoogle, iniciarNuvem, logado, nuvemAtiva, restaurarBackup, sair } from '../services/nuvem';
 import { entrarHtml } from './entrar';
 import { anotar } from '../services/estatisticas';
 import { lerPerfil, salvarPerfil } from '../services/perfil';
@@ -753,6 +753,7 @@ function menuClick(a: string | undefined, t: HTMLElement): boolean {
     case 'regras': dialogo = 'regras'; render(); return true;
     case 'config': avisoCfg = ''; dialogo = 'config'; tocar('clique'); render(); return true;
     case 'cfg-giro': toggleRot(); render(); return true;
+    case 'cfg-restaurar': if (restaurarBackup(Number(t.dataset.i))) avisoCfg = T.cfgRestaurado; render(); return true;
     case 'cfg-versao':
       if (++toquesVersao >= 7) {
         toquesVersao = 0; dev = !dev; salvarDev(dev);
