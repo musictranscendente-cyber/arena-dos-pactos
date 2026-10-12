@@ -2444,3 +2444,9 @@ body.batalha.rot #app::before{filter:none;inset:0}
 @keyframes df-sai{0%{opacity:1;scale:1}100%{opacity:0;scale:1.08}}
 .desafio.sai{animation:df-sai .45s ease-in forwards;pointer-events:none}
 body.rot>.desafio{transform-origin:top left;transform:rotate(90deg) translateY(-100%);width:100vh;height:100vw;inset:auto;top:0;left:0}
+/* círculos das fases do tamanho do mapa (em celular baixo não se encostam) */
+.ov.campanha .cp-mapa{container-type:size}
+.ov.campanha .cp-fase{width:min(46px,19cqh);height:min(46px,19cqh)}
+.ov.campanha .cp-fase.t-guardiao{width:min(58px,23cqh);height:min(58px,23cqh)}
+.ov.campanha .cp-fase.t-chefe{width:min(66px,26cqh);height:min(66px,26cqh)}
+.ov.campanha .cp-fase>b{font-size:min(18px,7.5cqh)}

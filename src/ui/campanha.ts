@@ -26,7 +26,8 @@ export function campanhaHtml(p: Progresso, t: TelaCampanha, deck: DeckMontado | 
   }).join('');
   const r = RACES[t.signo];
   // caminho em zigue-zague: fases 1-5 em cima (esquerda→direita), 6-10 embaixo (direita→esquerda)
-  const pos = Array.from({ length: FASES }, (_, i) => ({ x: i < 5 ? 10 + i * 20 : 10 + (9 - i) * 20, y: (i < 5 ? 30 : 74) + (i % 2 ? -7 : 7) }));
+  // fileira de cima sobe nas pares, a de baixo desce nas ímpares: fase 1 e fase 10 ficam bem longe uma da outra
+  const pos = Array.from({ length: FASES }, (_, i) => ({ x: i < 5 ? 10 + i * 20 : 10 + (9 - i) * 20, y: i < 5 ? (i % 2 ? 36 : 19) : (i % 2 ? 75 : 59) }));
   // trilha dourada ligando as fases: trecho já vencido sólido, o resto tracejado
   const trilha = '<svg class="cp-trilha" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">'
     + pos.slice(1).map((q, i) => `<line x1="${pos[i].x}" y1="${pos[i].y}" x2="${q.x}" y2="${q.y}" class="${estrelas(p, t.signo, i + 1) ? 'feito' : ''}"/>`).join('')
