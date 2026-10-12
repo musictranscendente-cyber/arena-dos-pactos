@@ -2450,3 +2450,25 @@ body.rot>.desafio{transform-origin:top left;transform:rotate(90deg) translateY(-
 .ov.campanha .cp-fase.t-guardiao{width:min(58px,23cqh);height:min(58px,23cqh)}
 .ov.campanha .cp-fase.t-chefe{width:min(66px,26cqh);height:min(66px,26cqh)}
 .ov.campanha .cp-fase>b{font-size:min(18px,7.5cqh)}
+
+/* ---------- tela de entrada (login obrigatório) ---------- */
+.entrar{position:fixed;inset:0;z-index:500;display:grid;place-items:center;padding:12px;overflow:hidden}
+#app .entrar{position:absolute}
+.en-ceu{position:absolute;inset:0;background:radial-gradient(ellipse at center,#0b072233,#0b0722cc),url('./img/hub-fundo-escuro.webp') center/cover no-repeat,#0b0722}
+.en-caixa{position:relative;width:min(440px,92%);max-height:100%;overflow:auto;box-sizing:border-box;text-align:center;padding:14px 22px 14px;border-radius:18px;
+  background:linear-gradient(180deg,#2a1a5ef2,#140a34f5);border:2px solid #f6d27a;box-shadow:0 0 0 1.5px #5a3a0a,0 10px 40px #000c,0 0 30px #8a5aff44}
+.en-logo{width:min(220px,60%);aspect-ratio:900/455;margin:0 auto 2px;background:url('./img/logo.webp') center/contain no-repeat;filter:drop-shadow(0 4px 8px #000a)}
+.en-caixa h2{margin:2px 0 4px;font-family:var(--fonte-titulo);font-size:clamp(20px,5vmin,26px);color:#ffe7a3;text-shadow:0 2px 0 #4a2200}
+.en-caixa p{margin:4px 0 10px;font-size:14px;line-height:1.35;color:#efe4ff}
+.btn.en-google{width:100%;min-height:50px;font-size:19px;display:flex;align-items:center;justify-content:center;gap:10px}
+.en-google .cfg-g{width:28px;height:28px;font-size:19px}
+.en-outro{margin-top:8px;font:inherit;font-size:13px;color:#cfc2ff;background:none;border:none;text-decoration:underline;cursor:pointer;padding:4px}
+.en-email{display:flex;gap:6px;margin-top:10px}
+.en-email input{flex:1;min-width:0;font:inherit;font-size:15px;color:#fff;background:#0007;border:1.5px solid #e9c46a88;border-radius:9px;padding:6px 10px;user-select:text;-webkit-user-select:text}
+.en-email .btn{flex:none;width:auto;padding:0 12px}
+.en-sit{font-weight:800;color:#ffe7a3 !important}
+.en-aviso{background:#ffffff14;border-radius:10px;padding:6px 10px;font-size:13px !important}
+.en-legal{font-size:11px !important;color:#bfb2e0 !important;margin:10px 0 0 !important}
+.en-legal a{color:#9fd0ff}
+.en-convidado{display:block;margin:10px auto 0;font:inherit;font-size:13px;font-weight:700;color:#e6dbff;background:#ffffff12;border:1px solid #ffffff33;border-radius:999px;padding:5px 16px;cursor:pointer}
+.en-dica{font-size:11px !important;color:#bfb2e0 !important;margin:4px 0 0 !important}

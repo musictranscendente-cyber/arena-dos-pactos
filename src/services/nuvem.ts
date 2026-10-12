@@ -10,11 +10,11 @@ const CHAVES = { progresso: 'arena-dos-pactos:progresso', decks: 'arena-dos-pact
 const SALVO_EM = 'arena-dos-pactos:salvoEm';
 const ESPERA_MS = 2500;
 
-export type Situacao = 'desligada' | 'fora' | 'entrando' | 'salvando' | 'salvo' | 'erro';
+export type Situacao = 'desligada' | 'iniciando' | 'fora' | 'entrando' | 'salvando' | 'salvo' | 'erro';
 
 let sb: SupabaseClient | null = null;
 let usuario: User | null = null;
-let situacao: Situacao = URL && CHAVE ? 'fora' : 'desligada';
+let situacao: Situacao = URL && CHAVE ? 'iniciando' : 'desligada';
 let timer = 0;
 let avisar: () => void = () => {};
 let aplicar: () => void = () => {};
@@ -23,6 +23,8 @@ export const nuvemAtiva = () => situacao !== 'desligada';
 export const situacaoNuvem = () => situacao;
 export const emailConta = () => usuario?.email ?? null;
 export const logado = () => !!usuario;
+/** Ainda descobrindo se há uma sessão salva (logo ao abrir o jogo). */
+export const verificandoConta = () => situacao === 'iniciando';
 
 function mudar(s: Situacao): void { situacao = s; avisar(); }
 
@@ -78,7 +80,7 @@ export async function iniciarNuvem(onMudou: () => void, recarregar: () => void):
     if (!usuario) { mudar('fora'); return; }
     if (usuario.id !== antes || ev === 'SIGNED_IN') void sincronizar();
   });
-  const { data } = await sb.auth.getSession();
+  const { data } = await sb.auth.getSession().catch(() => ({ data: { session: null } }));
   usuario = data.session?.user ?? null;
   if (usuario) await sincronizar(); else mudar('fora');
   // tira o código do login do endereço depois de entrar

@@ -18,7 +18,8 @@ import { alternarSom, desbloquear, iconeSom, prefsSom, tocar, trilha, type Efeit
 import { reverTutorial, tutorialEntendi, tutorialFimDePartida, tutorialHtml, tutorialNovaPartida, tutorialPular } from './tutorial';
 import { ic } from './icones';
 import { configHtml } from './config';
-import { entrarEmail, entrarGoogle, iniciarNuvem, sair } from '../services/nuvem';
+import { entrarEmail, entrarGoogle, iniciarNuvem, logado, nuvemAtiva, sair } from '../services/nuvem';
+import { entrarHtml } from './entrar';
 import { lerPerfil, salvarPerfil } from '../services/perfil';
 import { avisoHtml, dificuldadeHtml, hubHtml, montarHtml, regrasHtml, type Montagem } from './menu';
 import { deckAtivo, lerDecks, salvarDecks } from '../services/deckSalvo';
@@ -34,7 +35,7 @@ import { deckDaFase, fase as dadosFase, FASES, estrelas, faseLiberada, mundoAtua
 import { abrirBau, BAU_POEIRA, coletar, coletarLogin, garantirDia, loginDisponivel, registrar, trocar, type Contagem } from '../meta/missoes';
 import { missoesHtml, temColeta } from './missoes';
 import { colecaoHtml, inicialHtml, pacotesHtml, proximoFiltro, cartasGanhasHtml, revelarHtml, type TelaColecao, type TelaPacotes } from './colecao';
-import { lerNivel, lerTelaCampanha, salvarNivel, salvarTelaCampanha } from '../services/preferencias';
+import { lerConvidado, lerNivel, lerTelaCampanha, salvarConvidado, salvarNivel, salvarTelaCampanha } from '../services/preferencias';
 
 /** Nome da raridade em minúsculas, para os avisos. */
 const RARIDADE_NOME: Record<string, string> = { c: 'comum', r: 'rara', e: 'épica', l: 'lendária' };
@@ -118,6 +119,10 @@ let montagem: Montagem | null = null;
 let dialogo: 'nivel' | 'regras' | 'missoes' | 'config' | null = null;
 /** Nome de invocador e mensagem curta da janela de Configurações. */
 let perfil = lerPerfil(), avisoCfg = '';
+/** Tela de entrada: mostrando o campo de e-mail? */
+let entrarComEmail = false;
+/** Escolheu jogar sem conta (dá para entrar depois pelas Configurações). */
+let convidado = lerConvidado();
 /** Última dificuldade escolhida na Partida Rápida. */
 let nivel: Nivel = lerNivel();
 /** Os 3 espaços de deck e qual está em uso. */
@@ -579,6 +584,11 @@ function marcarNovasVistas(): void {
 }
 
 function render(): void {
+  // login obrigatório: sem conta, só aparece a tela de entrada
+  if (nuvemAtiva() && !logado() && !convidado && !M) {
+    app().innerHTML = entrarHtml(entrarComEmail, avisoCfg);
+    return;
+  }
   marcarNovasVistas();
   if (tela === 'campanha' && !M) salvarTelaCampanha(telaCamp.signo, telaCamp.fase);
   const root = app();
@@ -739,7 +749,9 @@ function menuClick(a: string | undefined, t: HTMLElement): boolean {
       void entrarEmail(email).then(ok => { avisoCfg = ok ? T.cfgEmailEnviado : ''; render(); });
       return true;
     }
-    case 'cfg-sair': void sair().then(() => { avisoCfg = T.cfgSaiu; render(); }); return true;
+    case 'cfg-sair': void sair().then(() => { avisoCfg = ''; dialogo = null; tela = 'hub'; render(); }); return true;
+    case 'en-convidado': convidado = true; salvarConvidado(true); avisoCfg = ''; render(); return true;
+    case 'en-email': entrarComEmail = true; render(); app().querySelector<HTMLInputElement>('#cfg-email')?.focus(); return true;
     case 'torneio': case 'ranqueada': case 'evento': emBreve(); return true;
     case 'missoes': emDia(); dialogo = 'missoes'; render(); return true;
     case 'login': {
@@ -1285,7 +1297,7 @@ export function startApp(): void {
   if (prog.inicial && loginDisponivel(prog, hoje())) dialogo = 'missoes';
   app().addEventListener('click', onClick);
   // conta na nuvem: atualiza a janela de Configurações; ao entrar, relê o que veio da nuvem
-  void iniciarNuvem(() => { if (dialogo === 'config' && !M) render(); }, () => {
+  void iniciarNuvem(() => { if (!M && (dialogo === 'config' || (!logado() && !convidado) || app().querySelector('.entrar'))) render(); }, () => {
     prog = lerProgresso(); meus = lerDecks(); perfil = lerPerfil(); avisoCfg = T.cfgEntrou;
     if (!M) render();
   });

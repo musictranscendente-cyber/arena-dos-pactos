@@ -16,6 +16,17 @@ export function salvarNivel(n: Nivel): void {
   try { localStorage.setItem(CHAVE_NIVEL, n); } catch { /* sem armazenamento */ }
 }
 
+const CHAVE_CONVIDADO = 'arena-dos-pactos:convidado';
+
+/** O jogador escolheu jogar sem conta (não mostra a tela de entrada de novo). */
+export function lerConvidado(): boolean {
+  try { return localStorage.getItem(CHAVE_CONVIDADO) === '1'; } catch { return false; }
+}
+
+export function salvarConvidado(v: boolean): void {
+  try { if (v) localStorage.setItem(CHAVE_CONVIDADO, '1'); else localStorage.removeItem(CHAVE_CONVIDADO); } catch { /* sem armazenamento */ }
+}
+
 const CHAVE_CAMP = 'arena-dos-pactos:campanha-tela';
 
 /** Último mundo e fase abertos na campanha (para voltar no mesmo lugar). */
