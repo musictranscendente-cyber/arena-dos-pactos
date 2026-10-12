@@ -20,6 +20,7 @@ import { ic } from './icones';
 import { configHtml } from './config';
 import { entrarEmail, entrarGoogle, iniciarNuvem, logado, nuvemAtiva, sair } from '../services/nuvem';
 import { entrarHtml } from './entrar';
+import { anotar } from '../services/estatisticas';
 import { lerPerfil, salvarPerfil } from '../services/perfil';
 import { avisoHtml, dificuldadeHtml, hubHtml, montarHtml, regrasHtml, type Montagem } from './menu';
 import { deckAtivo, lerDecks, salvarDecks } from '../services/deckSalvo';
@@ -78,6 +79,8 @@ interface Match {
   abortado?: boolean;
   /** Criatura do tabuleiro aberta grande para ver os detalhes. */
   inspect: Target | null;
+  /** Quando a partida começou (para medir a duração). */
+  inicio?: number;
   /** Dificuldade do bot nesta partida. */
   nivel: Nivel;
   /** Prêmio ganho no fim (mostrado na tela de resultado). */
@@ -218,7 +221,7 @@ function startMatch(cfg: Modo): void {
     // cada carta do deck já tem o seu nível (escolhido na Montagem)
     state = newGame({ pSign: pa, pSign2: pb === pa ? undefined : pb, pDeck: [...cfg.deck.cartas], eSign: ea, eSign2: eb, eDeck, seed, record: false }).state;
   }
-  M = { g: state, shown: state, sel: null, busy: false, msg: '', active: null, striking: null, aiRng: new Rng(seed ^ 0x5bd1e995), base: state, plan: [], inspect: null, cont: {}, nivel: cfg.modo === 'rapida' ? cfg.nivel : cfg.modo === 'campanha' ? dadosFase(cfg.signo, cfg.fase).nivelIA : 'normal' };
+  M = { g: state, shown: state, sel: null, busy: false, msg: '', active: null, striking: null, aiRng: new Rng(seed ^ 0x5bd1e995), base: state, plan: [], inspect: null, cont: {}, inicio: Date.now(), nivel: cfg.modo === 'rapida' ? cfg.nivel : cfg.modo === 'campanha' ? dadosFase(cfg.signo, cfg.fase).nivelIA : 'normal' };
   beginPlanning([]);
 }
 
@@ -693,6 +696,12 @@ function zoomCriatura(m: Match, s: GameState): Zoom | null {
 /** Fim de partida: primeiro o lado de quem perdeu desce, treme e racha; depois aparece o resultado. */
 function fimDeJogo(m: Match): void {
   m.fim = 'caindo';
+  anotar('partida', {
+    modo: ultimo?.modo, fase: ultimo?.modo === 'campanha' ? `${ultimo.signo}-${ultimo.fase}` : undefined, nivel: m.nivel,
+    signo: m.g.p.sign, signo2: m.g.p.sign2, rival: m.g.e.sign, rival2: m.g.e.sign2,
+    resultado: m.g.surrendered === 'p' ? 'desistiu' : m.g.result === 'p' ? 'venceu' : m.g.result === 'draw' ? 'empate' : 'perdeu',
+    rodadas: m.g.round, segundos: Math.round((Date.now() - (m.inicio ?? Date.now())) / 1000), logado: logado(),
+  });
   m.premio = premiar(m);
   tutorialFimDePartida();
   tocar(m.g.result === 'p' ? 'vitoria' : 'derrota');
@@ -1292,6 +1301,7 @@ function hintFor(cid: string): string {
 }
 
 export function startApp(): void {
+  anotar('abriu');
   // primeiro acesso do dia: já abre as missões com o prêmio do calendário
   emDia();
   if (prog.inicial && loginDisponivel(prog, hoje())) dialogo = 'missoes';
