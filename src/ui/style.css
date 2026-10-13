@@ -2522,3 +2522,4 @@ body.palco .hub-v2 .hub-col.dir{width:min(76cqh,288px)}
   background:linear-gradient(180deg,#fff,#d8cfe8);border:1px solid #4a2c0a;border-radius:4px;padding:2px 4px;box-shadow:0 2px 0 #4a2c0a}}
 .acts .btn{position:relative}
 body.palco #app .desafio{zoom:var(--zinv,1)}
+.acts .btn .tecla{text-shadow:none !important;-webkit-text-stroke:0 !important;filter:none !important;box-shadow:0 1px 0 #4a2c0a !important;letter-spacing:.3px;font-weight:800;color:#2a1606;-webkit-text-fill-color:#2a1606}
