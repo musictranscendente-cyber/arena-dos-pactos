@@ -204,8 +204,10 @@ const name = (cid: string) => card(cid).name;
 /* ---------- anúncios (só dentro do CrazyGames) ---------- */
 const POEIRA_ANUNCIO = 50, ANUNCIOS_POR_SESSAO = 6;
 let anunciosVistos = 0, partidasDesdeAnuncio = 0;
+/** O portal recusou um anúncio (ex.: lançamento básico do CrazyGames, sem anúncios): para de oferecer nesta visita. */
+let semAnuncio = false;
 function botaoAnuncio(m: Match): string {
-  if (!temAnuncios() || m.anuncio || anunciosVistos >= ANUNCIOS_POR_SESSAO) return '';
+  if (!temAnuncios() || semAnuncio || m.anuncio || anunciosVistos >= ANUNCIOS_POR_SESSAO) return '';
   return `<button class="btn rc fim-anuncio" data-act="anuncio-premio">${T.anuncioBt(POEIRA_ANUNCIO)}</button>`;
 }
 /** Saindo da tela final: a cada 3 partidas o portal pode mostrar um anúncio de intervalo. */
@@ -1176,7 +1178,7 @@ function onClick(ev: Event): void {
     m.anuncio = true; render();
     void anuncioRecompensa().then(ok => {
       if (ok) { anunciosVistos++; mudarProgresso({ ...prog, poeira: prog.poeira + POEIRA_ANUNCIO }); aviso(T.anuncioGanhou(POEIRA_ANUNCIO)); }
-      else { m.anuncio = false; aviso(T.anuncioFalhou); }
+      else { semAnuncio = true; aviso(T.anuncioFalhou); }
       if (M === m) render();
     });
     return;
