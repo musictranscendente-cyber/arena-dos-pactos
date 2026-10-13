@@ -285,6 +285,8 @@ export const T = {
   anuncioBt: (n: number) => `🎬 Assista e ganhe +${n} ✨`,
   anuncioGanhou: (n: number) => `+${n} ✨ Obrigado por assistir!`,
   anuncioFalhou: 'Nenhum anúncio disponível agora. Tente mais tarde.',
+  aberturaPular: 'Pular',
+  aberturaSom: 'Ligar ou desligar o som da abertura',
   cfgBackups: 'Recuperar progresso anterior',
   cfgBackupsDica: 'Cópias guardadas antes de o progresso deste aparelho ser trocado pelo da nuvem. Toque para voltar uma delas.',
   cfgRestaurar: 'Voltar',

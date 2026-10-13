@@ -29,8 +29,17 @@
   background:url('./carregar.webp') center/100% 100% no-repeat}
 #carregando .cg-barra{position:absolute;left:32.7%;top:87.35%;width:34.6%;height:3.7%;border-radius:999px;overflow:hidden;background:linear-gradient(180deg,#140a3a,#2a1660)}
 #carregando .cg-barra i{display:block;height:100%;width:5%;border-radius:999px;background:linear-gradient(180deg,#9fe8ff,#2f8cff 50%,#1a4fd0);box-shadow:0 0 10px #58b4ff,inset 0 1px 0 #fff8;transition:width .3s ease}
+/* abertura (vídeo): por cima da tela de carregamento */
+#abertura{position:fixed;inset:0;z-index:10000;background:#000;transition:opacity .5s ease}
+#abertura.sai{opacity:0;pointer-events:none}
+#abertura video{width:100%;height:100%;object-fit:cover;display:block}
+#abertura button{position:absolute;bottom:4%;border:1px solid #ffffff55;border-radius:999px;background:#0008;color:#fff;
+  font:800 clamp(13px,2.4vmin,18px)/1 'Alegreya Sans',sans-serif;padding:.6em 1.1em;cursor:pointer;backdrop-filter:blur(4px)}
+#abertura .ab-pular{right:3%}
+#abertura .ab-som{left:3%;font-size:clamp(16px,3vmin,22px);padding:.4em .6em}
 /* celular em pé: a tela já aparece deitada, igual ao jogo */
-@media (orientation:portrait){#carregando{inset:auto;top:0;left:0;width:100vh;height:100vw;transform-origin:top left;transform:rotate(90deg) translateY(-100%)}
+@media (orientation:portrait){#abertura{inset:auto;top:0;left:0;width:100vh;height:100vw;transform-origin:top left;transform:rotate(90deg) translateY(-100%)}
+#carregando{inset:auto;top:0;left:0;width:100vh;height:100vw;transform-origin:top left;transform:rotate(90deg) translateY(-100%)}
   #carregando .cg-palco{width:max(100vh,100vw * 1672 / 941)}}
 </style>
 <div id="app"></div>

@@ -1,10 +1,12 @@
 import './ui/style.css';
 import { startApp } from './ui/app';
 import { watchOrient } from './ui/orientacao';
+import { mostrarAbertura } from './ui/abertura';
 
 watchOrient();
 startApp();
 esconderCarregamento();
+mostrarAbertura();
 
 /** Tela de carregamento: a barra enche enquanto as imagens principais e as fontes chegam; depois some. */
 function esconderCarregamento(): void {
