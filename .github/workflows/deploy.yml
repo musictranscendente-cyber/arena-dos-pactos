@@ -27,6 +27,9 @@ jobs:
       - run: npm ci
       - run: npm test
       - run: npm run build
+      # versão para o CrazyGames: gera o zip e deixa para baixar em /baixar/cosmic-citadel-crazygames.zip
+      - run: npm run build:crazy
+      - run: mkdir -p dist/baixar && cd dist-crazygames && zip -qr ../dist/baixar/cosmic-citadel-crazygames.zip .
       - uses: actions/upload-pages-artifact@v3
         with:
           path: dist
