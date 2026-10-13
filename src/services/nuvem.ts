@@ -1,7 +1,12 @@
 // Conta e progresso na nuvem (Supabase). Sem as chaves configuradas, o jogo segue só no aparelho.
 // Guarda numa linha por jogador: progresso, decks e perfil (o mesmo que fica no localStorage).
 import type { SupabaseClient, User } from '@supabase/supabase-js';
+import { Capacitor } from '@capacitor/core';
 import { espelharNoPortal } from './anuncios';
+
+/** No app Android o login abre no navegador do celular (o Google não deixa entrar dentro de apps) e volta por este endereço. */
+const NATIVO = Capacitor.isNativePlatform();
+const VOLTA_APP = 'com.cosmiccitadel.game://login';
 
 const URL = import.meta.env.VITE_SUPABASE_URL as string | undefined;
 const CHAVE = import.meta.env.VITE_SUPABASE_ANON_KEY as string | undefined;
@@ -129,7 +134,8 @@ export async function iniciarNuvem(onMudou: () => void, recarregar: () => void):
   if (!URL || !CHAVE) return;
   // a biblioteca do Supabase só é baixada depois que o jogo já apareceu (abre mais rápido)
   const { createClient } = await import('@supabase/supabase-js');
-  sb = createClient(URL, CHAVE, { auth: { persistSession: true, detectSessionInUrl: true, flowType: 'pkce' } });
+  sb = createClient(URL, CHAVE, { auth: { persistSession: true, detectSessionInUrl: !NATIVO, flowType: 'pkce' } });
+  if (NATIVO) void ouvirVoltaDoLogin();
   sb.auth.onAuthStateChange((ev, sessao) => {
     const antes = usuario?.id;
     usuario = sessao?.user ?? null;
@@ -143,13 +149,36 @@ export async function iniciarNuvem(onMudou: () => void, recarregar: () => void):
   if (/[?&#](code|access_token)=/.test(location.href)) history.replaceState(null, '', location.pathname);
 }
 
-const voltarPara = () => location.origin + location.pathname;
+const voltarPara = () => NATIVO ? VOLTA_APP : location.origin + location.pathname;
+
+/** App Android: o navegador volta para o app com o código do login; troca o código pela sessão. */
+async function ouvirVoltaDoLogin(): Promise<void> {
+  const [{ App }, { Browser }] = await Promise.all([import('@capacitor/app'), import('@capacitor/browser')]);
+  const tratar = async (url: string | undefined) => {
+    if (!sb || !url?.startsWith(VOLTA_APP)) return;
+    void Browser.close().catch(() => undefined);
+    const p = new URLSearchParams(url.split(/[?#]/)[1] ?? '');
+    const codigo = p.get('code');
+    if (!codigo) { mudar(p.get('error') ? 'erro' : 'fora'); return; }
+    mudar('entrando');
+    const { error } = await sb.auth.exchangeCodeForSession(codigo);
+    if (error) mudar('erro');
+  };
+  void App.addListener('appUrlOpen', e => { void tratar(e.url); });
+  // app aberto pelo link (ex.: link do e-mail com o app fechado)
+  const inicio = await App.getLaunchUrl().catch(() => undefined);
+  await tratar(inicio?.url);
+}
 
 export async function entrarGoogle(): Promise<void> {
   if (!sb) return;
   mudar('entrando');
-  const { error } = await sb.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: voltarPara() } });
-  if (error) mudar('erro');
+  const { data, error } = await sb.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: voltarPara(), skipBrowserRedirect: NATIVO } });
+  if (error) { mudar('erro'); return; }
+  if (NATIVO && data.url) {
+    const { Browser } = await import('@capacitor/browser');
+    await Browser.open({ url: data.url });
+  }
 }
 
 /** Manda um link de entrada para o e-mail. Devolve true se enviou. */

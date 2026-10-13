@@ -5,7 +5,11 @@ const URL = import.meta.env.VITE_SUPABASE_URL as string | undefined;
 const CHAVE = import.meta.env.VITE_SUPABASE_ANON_KEY as string | undefined;
 const CHAVE_APARELHO = 'arena-dos-pactos:aparelho';
 
-const ligado = () => !!URL && !!CHAVE && typeof location !== 'undefined' && !/^(localhost|127\.|192\.168\.|10\.)/.test(location.hostname);
+import { Capacitor } from '@capacitor/core';
+
+// o app Android também roda em "localhost", mas é jogo de verdade: conta
+const ligado = () => !!URL && !!CHAVE && typeof location !== 'undefined'
+  && (Capacitor.isNativePlatform() || !/^(localhost|127\.|192\.168\.|10\.)/.test(location.hostname));
 
 function aparelho(): string {
   try {
@@ -19,7 +23,7 @@ function aparelho(): string {
 function plataforma(): string {
   const app = matchMedia?.('(display-mode: fullscreen), (display-mode: standalone)').matches;
   const cel = /Android|iPhone|iPad|Mobile/i.test(navigator.userAgent);
-  return app ? 'app' : cel ? 'celular' : 'computador';
+  return Capacitor.isNativePlatform() ? 'android' : app ? 'app' : cel ? 'celular' : 'computador';
 }
 
 export function anotar(tipo: 'abriu' | 'partida', dados: Record<string, unknown> = {}): void {
