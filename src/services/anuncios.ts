@@ -5,6 +5,7 @@ interface SdkCrazy {
   environment: 'local' | 'crazygames' | 'disabled';
   ad: { requestAd(tipo: 'midgame' | 'rewarded', cb: { adStarted?: () => void; adFinished?: () => void; adError?: (e: unknown) => void }): void };
   game: { gameplayStart(): void; gameplayStop(): void; loadingStart(): void; loadingStop(): void };
+  data?: { getItem(k: string): string | null; setItem(k: string, v: string): void; removeItem(k: string): void };
 }
 declare global { interface Window { CrazyGames?: { SDK: SdkCrazy } } }
 
@@ -25,7 +26,7 @@ export function noCrazyGames(): boolean {
 }
 
 /** Carrega o SDK do portal (só dentro dele). `mudo` silencia/volta o som durante os anúncios. */
-export async function iniciarAnuncios(mudo: (s: boolean) => void): Promise<void> {
+export async function iniciarAnuncios(mudo: (s: boolean) => void, recarregar: () => void = () => {}): Promise<void> {
   silenciar = mudo;
   if (!noCrazyGames()) return;
   try {
@@ -40,7 +41,43 @@ export async function iniciarAnuncios(mudo: (s: boolean) => void): Promise<void>
     await c.init();
     sdk = c;
     pronto = c.environment !== 'disabled';
+    if (trazerDoPortal()) recarregar();
   } catch { sdk = null; pronto = false; }
+}
+
+/* ---------- progresso salvo pelo CrazyGames (módulo de dados do SDK) ---------- */
+const PREFIXO = 'arena-dos-pactos:';
+const FORA = new Set(['arena-dos-pactos:aparelho', 'arena-dos-pactos:salvoEm']);
+const nossas = () => Object.keys(localStorage).filter(k => k.startsWith(PREFIXO) && !FORA.has(k));
+
+/**
+ * Ao abrir no portal: traz para o aparelho o que o CrazyGames guardou (conta do jogador).
+ * Devolve true se algo mudou (o jogo relê o progresso).
+ */
+function trazerDoPortal(): boolean {
+  const d = sdk?.data;
+  if (!d) return false;
+  let mudou = false;
+  try {
+    const lista = JSON.parse(d.getItem(PREFIXO + 'chaves') ?? '[]') as string[];
+    for (const k of lista) {
+      const v = d.getItem(k);
+      if (v !== null && localStorage.getItem(k) !== v) { localStorage.setItem(k, v); mudou = true; }
+    }
+    if (!lista.length) espelharNoPortal(); // primeira vez: o portal recebe o que já está no aparelho
+  } catch { /* sem armazenamento */ }
+  return mudou;
+}
+
+/** Copia o progresso do aparelho para o CrazyGames (chamado sempre que o jogo salva). */
+export function espelharNoPortal(): void {
+  const d = sdk?.data;
+  if (!d) return;
+  try {
+    const ks = nossas();
+    for (const k of ks) { const v = localStorage.getItem(k); if (v !== null && d.getItem(k) !== v) d.setItem(k, v); }
+    d.setItem(PREFIXO + 'chaves', JSON.stringify(ks));
+  } catch { /* ignora */ }
 }
 
 /** Dá para oferecer "assista e ganhe"? */

@@ -1345,7 +1345,7 @@ export function startApp(): void {
   // jogador comum nunca fica com o Modo teste ligado
   if (!dev && prog.teste) mudarProgresso({ ...prog, teste: false });
   anotar('abriu');
-  void iniciarAnuncios(pausarSom).then(() => { avisarCarregou(); if (temAnuncios() && M?.fim) render(); });
+  void iniciarAnuncios(pausarSom, () => { prog = lerProgresso(); meus = lerDecks(); perfil = lerPerfil(); if (!M) render(); }).then(() => { avisarCarregou(); if (temAnuncios() && M?.fim) render(); });
   // primeiro acesso do dia: já abre as missões com o prêmio do calendário
   emDia();
   if (prog.inicial && loginDisponivel(prog, hoje())) dialogo = 'missoes';
