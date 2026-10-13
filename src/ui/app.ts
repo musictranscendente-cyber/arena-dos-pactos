@@ -1361,6 +1361,27 @@ export function startApp(): void {
     if (t.id === 'm-nome' && montagem) montagem.nome = t.value;
     if (t.id === 'cfg-nome') { perfil = { nome: t.value }; salvarPerfil(perfil); }
   });
+  // atalhos de teclado (computador): Espaço = Batalha!, 1-8 = carta da mão, Q = queimar, Z = desfazer, Esc = fechar
+  window.addEventListener('keydown', e => {
+    if (e.ctrlKey || e.metaKey || e.altKey || (e.target as HTMLElement).matches('input, textarea')) return;
+    const clicar = (sel: string): boolean => {
+      const el = app().querySelector<HTMLElement>(sel);
+      if (!el || (el as HTMLButtonElement).disabled) return false;
+      el.click(); return true;
+    };
+    let feito = false;
+    if (e.key === 'Escape') {
+      feito = clicar('.rv-zoom-ov') || clicar('[data-act=desistir-nao]') || clicar('[data-act=cfundir-nao]') || clicar('[data-act=pcancela]')
+        || clicar('[data-act=pfecha]') || clicar('[data-act=cfechar]') || clicar('.som-painel [data-act=som]') || clicar('[data-act=fechar]')
+        || clicar('[data-act=rv-ok]') || clicar('.m-fecha') || clicar('[data-act=galback]') || (!M && tela !== 'hub' && clicar('[data-act=hub]'));
+    } else if (M && !app().querySelector('.ov')) {
+      if (e.key === ' ' || e.key === 'Enter') feito = clicar('[data-act=punch]');
+      else if (e.key === 'q' || e.key === 'Q') feito = clicar('[data-act=recharge]');
+      else if (e.key === 'z' || e.key === 'Z') feito = clicar('[data-act=undo]');
+      else if (/^[1-8]$/.test(e.key)) feito = clicar(`.hand [data-act=hand][data-i="${Number(e.key) - 1}"]`);
+    } else if (M?.fim === 'pronto' && (e.key === ' ' || e.key === 'Enter')) feito = clicar('.ov.fim .btn.go:not(.fim-anuncio)');
+    if (feito) e.preventDefault();
+  });
   app().addEventListener('keydown', e => {
     if ((e.key === 'Enter' || e.key === ' ') && (e.target as HTMLElement).matches('[role="button"]')) {
       e.preventDefault();

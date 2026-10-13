@@ -1,4 +1,5 @@
 // Projéteis: quem ataca de longe lança algo que voa até o alvo (flecha, bola de fogo, água...).
+import { escalaPalco } from './orientacao';
 import { baseCid, card } from '../data/cards';
 import { RACES } from '../data/signos';
 import type { GameEvent, Side } from '../engine';
@@ -82,8 +83,9 @@ export function center(el: HTMLElement, root: HTMLElement, up = 0): { x: number;
     // o "para cima" do jogo é o "para a direita" da tela
     return { x: Y, y: root.offsetHeight - X - r.width * up };
   }
-  const a = root.getBoundingClientRect();
-  return { x: X - a.left, y: Y - a.top - r.height * up };
+  // no computador o #app está ampliado: a posição na tela é dividida pela ampliação
+  const a = root.getBoundingClientRect(), k = escalaPalco();
+  return { x: (X - a.left) / k, y: (Y - a.top - r.height * up) / k };
 }
 
 export function launch(root: HTMLElement, shot: Shot, delayMs: number, durMs: number): void {

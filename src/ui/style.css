@@ -2492,3 +2492,32 @@ body.rot>.desafio{transform-origin:top left;transform:rotate(90deg) translateY(-
 .ov.campanha .cp-fase.sel{scale:1.06}
 /* chefe/guardião: "Jogar!" dentro do círculo, logo acima do selo do número (não passa da borda do mapa) */
 .cp-fase.t-chefe .cp-prox,.cp-fase.t-guardiao .cp-prox{top:auto;bottom:16px;z-index:6}
+
+/* ---------- computador: palco ampliado ---------- */
+body.palco{overflow:hidden}
+body.palco #app{position:fixed;top:0;left:0;max-width:none;margin:0;transform-origin:top left;overflow:hidden}
+/* no computador o palco é mais largo que o celular: as janelas usam a largura toda */
+body.palco .ov>.panel.wide{max-width:min(96%,1180px);width:96%}
+
+/* mouse (computador): destaque ao passar por cima */
+@media (hover:hover) and (pointer:fine){
+  .hand [data-act=hand]{transition:transform .12s ease,filter .12s ease}
+  .hand [data-act=hand]:hover{transform:translateY(-6px);filter:brightness(1.12) drop-shadow(0 0 8px #ffe08a99)}
+  .cell.ok:hover{filter:brightness(1.18);box-shadow:inset 0 0 0 3px #fff3c4,0 0 16px #ffd76a}
+  .cell:has(.unit):hover{filter:brightness(1.08)}
+  .btn:not(:disabled):hover{filter:brightness(1.12)}
+  .ggrid .card:hover,.rv-c:hover,.pk-quad:hover,.sign:hover,.cp-mundo:hover{filter:brightness(1.12)}
+  .cp-fase.livre:hover,.cp-fase.feita:hover{scale:1.08}
+  .hub-v2 .ilha:hover{filter:brightness(1.1)}
+  [data-act]{cursor:pointer}
+}
+/* dica dos atalhos na batalha (só no computador) */
+.atalhos{display:none}
+
+body.palco .hub-v2 .hub-col.dir{width:min(76cqh,288px)}
+
+/* tecla do atalho no botão Batalha (só com mouse/teclado) */
+.tecla{display:none}
+@media (hover:hover) and (pointer:fine){body.palco .acts .btn .tecla{display:block;position:absolute;top:-9px;right:-6px;font:700 9px/1 system-ui,sans-serif;color:#2a1606;
+  background:linear-gradient(180deg,#fff,#d8cfe8);border:1px solid #4a2c0a;border-radius:4px;padding:2px 4px;box-shadow:0 2px 0 #4a2c0a}}
+.acts .btn{position:relative}

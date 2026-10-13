@@ -280,6 +280,8 @@ export const T = {
   soMinhas: 'Minhas',
   verCartaToque: 'Toque numa carta para ver ela inteira.',
   config: 'Configurações',
+  teclaEspaco: 'Espaço',
+  atalhos: 'Teclado: Espaço = Batalha · 1–8 = cartas · Q = queimar · Z = desfazer · Esc = fechar',
   anuncioBt: (n: number) => `🎬 Assista e ganhe +${n} ✨`,
   anuncioGanhou: (n: number) => `+${n} ✨ Obrigado por assistir!`,
   anuncioFalhou: 'Nenhum anúncio disponível agora. Tente mais tarde.',

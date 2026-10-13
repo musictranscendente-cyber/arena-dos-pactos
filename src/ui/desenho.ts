@@ -280,13 +280,13 @@ function manaHtml(v: View): string {
 }
 
 function actsHtml(v: View): string {
-  return `<div class="acts"><button class="btn go" data-act="punch" ${v.canAct ? '' : 'disabled'}><span class="ico">${ic('lutar', 'ic-bt')}</span>${T.batalha}</button></div>`;
+  return `<div class="acts"><button class="btn go" data-act="punch" title="${T.atalhos}" ${v.canAct ? '' : 'disabled'}><span class="ico">${ic('lutar', 'ic-bt')}</span>${T.batalha}<kbd class="tecla">${T.teclaEspaco}</kbd></button></div>`;
 }
 
 /** Voltar e queimar: logo à direita da mana. */
 function actsEsqHtml(v: View): string {
-  return `<div class="acts-esq"><button class="btn rc" data-act="recharge" ${v.canBurn ? '' : 'disabled'}>${ic('fogo', 'ic-bt')}${T.queimarCurto}</button>`
-    + `<button class="btn un" data-act="undo" ${v.canUndo ? '' : 'disabled'} title="${T.desfazer}">↩</button></div>`;
+  return `<div class="acts-esq"><button class="btn rc" data-act="recharge" title="Q" ${v.canBurn ? '' : 'disabled'}>${ic('fogo', 'ic-bt')}${T.queimarCurto}</button>`
+    + `<button class="btn un" data-act="undo" ${v.canUndo ? '' : 'disabled'} title="${T.desfazer} (Z)">↩</button></div>`;
 }
 
 export function cardHtml(c: Card, cost: number, attrs = '', cls = '', cid?: string): string {

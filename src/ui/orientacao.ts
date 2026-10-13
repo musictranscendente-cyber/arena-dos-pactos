@@ -1,6 +1,11 @@
 // Modo deitado: se a tela estiver em pé, o jogo é desenhado girado 90°. O botão ⟳ liga/desliga.
 
 let rotPref = true;
+/** Altura do palco no computador (como um celular deitado); a tela inteira é uma ampliação dele. */
+const ALTURA_PALCO = 480;
+let escala = 1;
+/** Quanto o palco está ampliado (1 no celular). */
+export const escalaPalco = () => escala;
 try { rotPref = localStorage.getItem('rotPref') !== 'off'; } catch { /* sem armazenamento */ }
 
 export function applyOrient(): void {
@@ -8,10 +13,18 @@ export function applyOrient(): void {
   const W = window.innerWidth, H = window.innerHeight;
   // telas de leitura (Conhecer os Decks, Missões) seguem o celular em pé, sem girar
   const rot = rotPref && H > W && !document.body.classList.contains('sem-giro');
+  // computador/tablet (tela grande e deitada): o jogo é desenhado num palco com a altura de um celular deitado
+  // e ampliado por inteiro; tudo cresce junto, na mesma proporção (antes sobrava espaço e tudo ficava pequeno)
+  const palco = !rot && W >= 1000 && H >= 560;
+  escala = palco ? H / ALTURA_PALCO : 1;
   document.body.classList.toggle('rot', rot);
-  document.body.classList.toggle('land', rot || H <= 520);
-  if (rot) { app.style.width = H + 'px'; app.style.height = W + 'px'; }
-  else { app.style.width = ''; app.style.height = ''; }
+  document.body.classList.toggle('palco', palco);
+  document.body.classList.toggle('land', rot || palco || H <= 520);
+  if (rot) { app.style.width = H + 'px'; app.style.height = W + 'px'; app.style.transform = ''; }
+  else if (palco) {
+    app.style.width = Math.round(W / escala) + 'px'; app.style.height = ALTURA_PALCO + 'px';
+    app.style.transform = `scale(${escala})`;
+  } else { app.style.width = ''; app.style.height = ''; app.style.transform = ''; }
 }
 
 /** O jogo gira sozinho quando o celular está em pé? */
