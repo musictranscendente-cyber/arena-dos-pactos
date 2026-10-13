@@ -375,3 +375,9 @@ function tocarTrilha(): void {
     }
   }
 }
+
+/** Silencia tudo (durante um anúncio) e volta depois. */
+export function pausarSom(pausar: boolean): void {
+  if (!ctx) return;
+  void (pausar ? ctx.suspend() : ctx.resume()).catch(() => { /* ignora */ });
+}

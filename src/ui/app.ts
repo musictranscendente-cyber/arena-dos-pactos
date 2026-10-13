@@ -14,13 +14,14 @@ import { efeitoGeral, efeitosDeMagia, EXTRA_GERAL_MS, MAGIA_MS } from './efeitoM
 import { precarregar, precarregarVisiveis } from './precarga';
 import arenaFundo from './img/arena-fundo-escuro.webp';
 import { launch, shotsOf } from './projetil';
-import { alternarSom, desbloquear, iconeSom, prefsSom, tocar, trilha, type Efeito } from './som';
+import { alternarSom, desbloquear, iconeSom, pausarSom, prefsSom, tocar, trilha, type Efeito } from './som';
 import { reverTutorial, tutorialEntendi, tutorialFimDePartida, tutorialHtml, tutorialNovaPartida, tutorialPular } from './tutorial';
 import { ic } from './icones';
 import { configHtml } from './config';
 import { entrarEmail, entrarGoogle, iniciarNuvem, logado, nuvemAtiva, restaurarBackup, sair } from '../services/nuvem';
 import { entrarHtml } from './entrar';
 import { anotar } from '../services/estatisticas';
+import { noCrazyGames, anuncioIntervalo, anuncioRecompensa, avisarCarregou, avisarJogando, iniciarAnuncios, temAnuncios } from '../services/anuncios';
 import { lerPerfil, salvarPerfil } from '../services/perfil';
 import { avisoHtml, dificuldadeHtml, hubHtml, montarHtml, regrasHtml, type Montagem } from './menu';
 import { deckAtivo, lerDecks, salvarDecks } from '../services/deckSalvo';
@@ -79,6 +80,8 @@ interface Match {
   abortado?: boolean;
   /** Criatura do tabuleiro aberta grande para ver os detalhes. */
   inspect: Target | null;
+  /** Já assistiu o anúncio com recompensa desta partida. */
+  anuncio?: boolean;
   /** Quando a partida começou (para medir a duração). */
   inicio?: number;
   /** Dificuldade do bot nesta partida. */
@@ -125,7 +128,8 @@ let perfil = lerPerfil(), avisoCfg = '';
 /** Tela de entrada: mostrando o campo de e-mail? */
 let entrarComEmail = false;
 /** Escolheu jogar sem conta (dá para entrar depois pelas Configurações). */
-let convidado = lerConvidado();
+// dentro do CrazyGames não há login próprio (regra do portal): joga direto, progresso no aparelho
+let convidado = lerConvidado() || noCrazyGames();
 /** Modo desenvolvedor: mostra o Modo teste (7 toques na versão, nas Configurações). */
 let dev = lerDev(), toquesVersao = 0;
 /** Última dificuldade escolhida na Partida Rápida. */
@@ -197,7 +201,20 @@ const name = (cid: string) => card(cid).name;
 
 /* ---------- partida ---------- */
 
+/* ---------- anúncios (só dentro do CrazyGames) ---------- */
+const POEIRA_ANUNCIO = 50, ANUNCIOS_POR_SESSAO = 6;
+let anunciosVistos = 0, partidasDesdeAnuncio = 0;
+function botaoAnuncio(m: Match): string {
+  if (!temAnuncios() || m.anuncio || anunciosVistos >= ANUNCIOS_POR_SESSAO) return '';
+  return `<button class="btn rc fim-anuncio" data-act="anuncio-premio">${T.anuncioBt(POEIRA_ANUNCIO)}</button>`;
+}
+/** Saindo da tela final: a cada 3 partidas o portal pode mostrar um anúncio de intervalo. */
+function intervalo(): void {
+  if (temAnuncios() && partidasDesdeAnuncio >= 3) { partidasDesdeAnuncio = 0; anuncioIntervalo(); }
+}
+
 function startMatch(cfg: Modo): void {
+  avisarJogando(true);
   ultimo = cfg;
   tutorialNovaPartida();
   const seed = randomSeed();
@@ -632,7 +649,7 @@ function render(): void {
   const tut = M.confirma || M.g.phase === 'over' ? { html: '' }
     : tutorialHtml({ rodada: M.g.round, ocupado: M.busy, selecionou: M.sel !== null, jogou: M.plan.length > 0,
       podeInvocar: M.g.p.hand.some(h => card(h.cid).type === 'unit' && costOf(M!.g.p, h.cid) <= M!.g.p.mana) });
-  root.innerHTML = gameHtml(v) + tut.html + (M.confirma ? desistirHtml() : '') + (M.g.phase === 'over' && M.fim === 'pronto' ? endHtml(M.g, M.premio, botoesFim(M), M.cartasFim) : '');
+  root.innerHTML = gameHtml(v) + tut.html + (M.confirma ? desistirHtml() : '') + (M.g.phase === 'over' && M.fim === 'pronto' ? endHtml(M.g, M.premio, botoesFim(M), M.cartasFim, botaoAnuncio(M)) : '');
   root.insertAdjacentHTML('beforeend', somHtml() + (revela ?? '') + (desafio && !desafio.saindo ? desafioHtml(desafio.cfg.signo, desafio.cfg.fase, desafio.cfg.deck) : ''));
   if (tut.alvo) root.querySelectorAll(tut.alvo).forEach(el => el.classList.add('tut-alvo'));
   reporMortos();
@@ -698,6 +715,8 @@ function zoomCriatura(m: Match, s: GameState): Zoom | null {
 /** Fim de partida: primeiro o lado de quem perdeu desce, treme e racha; depois aparece o resultado. */
 function fimDeJogo(m: Match): void {
   m.fim = 'caindo';
+  avisarJogando(false);
+  partidasDesdeAnuncio++;
   anotar('partida', {
     modo: ultimo?.modo, fase: ultimo?.modo === 'campanha' ? `${ultimo.signo}-${ultimo.fase}` : undefined, nivel: m.nivel,
     signo: m.g.p.sign, signo2: m.g.p.sign2, rival: m.g.e.sign, rival2: m.g.e.sign2,
@@ -1152,6 +1171,17 @@ function onClick(ev: Event): void {
   if (a === 'gcard') { galSel = t.dataset.k!; keepScroll(); return; }
   if (a === 'galback') { gal = null; tela = 'conhecer'; render(); return; }
   if (a === 'pick') { void tryLandscape(); startMatch({ modo: 'signo', sign: t.dataset.r as Signo }); return; }
+  if (a === 'anuncio-premio' && M && !M.anuncio) {
+    const m = M;
+    m.anuncio = true; render();
+    void anuncioRecompensa().then(ok => {
+      if (ok) { anunciosVistos++; mudarProgresso({ ...prog, poeira: prog.poeira + POEIRA_ANUNCIO }); aviso(T.anuncioGanhou(POEIRA_ANUNCIO)); }
+      else { m.anuncio = false; aviso(T.anuncioFalhou); }
+      if (M === m) render();
+    });
+    return;
+  }
+  if ((a === 'again' || a === 'menu' || a === 'mapa' || a === 'proxfase' || a === 'proxmundo') && M?.fim) intervalo();
   if (a === 'again' && M && ultimo) { revela = M.revelaDepois ?? null; startMatch(ultimo); render(); return; }
   if ((a === 'mapa' || a === 'proxfase' || a === 'proxmundo') && M && ultimo?.modo === 'campanha') {
     const u = ultimo;
@@ -1315,6 +1345,7 @@ export function startApp(): void {
   // jogador comum nunca fica com o Modo teste ligado
   if (!dev && prog.teste) mudarProgresso({ ...prog, teste: false });
   anotar('abriu');
+  void iniciarAnuncios(pausarSom).then(() => { avisarCarregou(); if (temAnuncios() && M?.fim) render(); });
   // primeiro acesso do dia: já abre as missões com o prêmio do calendário
   emDia();
   if (prog.inicial && loginDisponivel(prog, hoje())) dialogo = 'missoes';

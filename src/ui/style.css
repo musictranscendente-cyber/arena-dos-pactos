@@ -2472,3 +2472,5 @@ body.rot>.desafio{transform-origin:top left;transform:rotate(90deg) translateY(-
 .en-legal a{color:#9fd0ff}
 .en-convidado{display:block;margin:10px auto 0;font:inherit;font-size:13px;font-weight:700;color:#e6dbff;background:#ffffff12;border:1px solid #ffffff33;border-radius:999px;padding:5px 16px;cursor:pointer}
 .en-dica{font-size:11px !important;color:#bfb2e0 !important;margin:4px 0 0 !important}
+.btn.fim-anuncio{width:100%;margin:6px 0 2px;min-height:40px;font-size:17px}
+.btn.fim-anuncio{background:linear-gradient(180deg,#7a4ad0,#3d1f8a);border-color:#cdb4ff;color:#fff;box-shadow:0 0 12px #9a6aff88}
