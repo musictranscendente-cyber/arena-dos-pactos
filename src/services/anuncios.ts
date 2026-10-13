@@ -15,6 +15,8 @@ let silenciar: (s: boolean) => void = () => {};
 
 /** O jogo está dentro do CrazyGames? (em iframe vindo de crazygames.*, ou com ?portal=crazygames para testar) */
 export function noCrazyGames(): boolean {
+  // versão gerada para o portal (npm run build:crazy): sempre no modo CrazyGames
+  if (import.meta.env.VITE_PORTAL === 'crazygames') return true;
   try {
     if (new URLSearchParams(location.search).get('portal') === 'crazygames') return true;
     const ref = document.referrer || (window.top !== window ? document.referrer : '');
