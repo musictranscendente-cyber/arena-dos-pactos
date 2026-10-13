@@ -2474,3 +2474,21 @@ body.rot>.desafio{transform-origin:top left;transform:rotate(90deg) translateY(-
 .en-dica{font-size:11px !important;color:#bfb2e0 !important;margin:4px 0 0 !important}
 .btn.fim-anuncio{width:100%;margin:6px 0 2px;min-height:40px;font-size:17px}
 .btn.fim-anuncio{background:linear-gradient(180deg,#7a4ad0,#3d1f8a);border-color:#cdb4ff;color:#fff;box-shadow:0 0 12px #9a6aff88}
+
+/* campanha: tamanho das fases calculado pela altura do mapa (H): cada fileira tem H/2 de espaço;
+   precisa caber seta (≈26px) + círculo + estrelas/"Jogar!" (≈24px) → círculo ≤ 40cqh − 40px */
+.ov.campanha .cp-fase{--d:clamp(26px,calc(40cqh - 40px),46px);width:var(--d);height:var(--d)}
+.ov.campanha .cp-fase.t-guardiao,.ov.campanha .cp-fase.t-chefe{width:calc(var(--d) * 1.22);height:calc(var(--d) * 1.22)}
+.ov.campanha .cp-fase>b{font-size:calc(var(--d) * .4)}
+.ov.campanha .cp-fase .cp-est{bottom:-15px}
+.ov.campanha .cp-fase .cp-est .ic{height:13px}
+.ov.campanha .cp-fase.t-chefe .cp-est,.ov.campanha .cp-fase.t-guardiao .cp-est{bottom:-22px}
+.ov.campanha .cp-fase.t-chefe>b,.ov.campanha .cp-fase.t-guardiao>b{width:20px;min-width:20px;height:20px;font-size:12px;bottom:-4px}
+.cp-prox{top:calc(100% + 1px);font-size:10px;padding:0 6px;line-height:15px}
+.cp-fase.t-chefe .cp-prox,.cp-fase.t-guardiao .cp-prox{top:calc(100% + 15px)}
+.cp-seta{width:20px;height:16px;bottom:calc(100% + 3px)}
+.cp-fase.t-chefe .cp-seta,.cp-fase.t-guardiao .cp-seta{bottom:calc(100% + 3px)}
+@keyframes cp-seta-pula{50%{transform:translateY(-4px)}}
+.ov.campanha .cp-fase.sel{scale:1.06}
+/* chefe/guardião: "Jogar!" dentro do círculo, logo acima do selo do número (não passa da borda do mapa) */
+.cp-fase.t-chefe .cp-prox,.cp-fase.t-guardiao .cp-prox{top:auto;bottom:16px;z-index:6}
