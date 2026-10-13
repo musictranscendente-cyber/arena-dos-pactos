@@ -11,7 +11,7 @@
     "test:watch": "vitest",
     "lint": "eslint .",
     "sim": "tsx src/sim/rodar.ts",
-    "build:crazy": "tsc --noEmit && vite build --mode crazygames --outDir dist-crazygames"
+    "build:crazy": "tsc --noEmit && vite build --mode crazygames --outDir dist-crazygames && node ferramentas/enxugar-crazygames.mjs"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

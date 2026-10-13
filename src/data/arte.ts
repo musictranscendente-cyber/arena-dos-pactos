@@ -29,7 +29,15 @@ export function artUrl(cid: string, race: string, pose: Pose): string {
 export interface Tira { n: number; w: number; h: number; ax: number; by: number }
 
 /** Cartas com animação quadro a quadro (public/art/<signo>/<id>-idle-anim.webp e -ataque-anim.webp). */
-export const ANIM = porBase(animJson as Record<string, { idle: Tira; ataque: Tira; s?: number }>);
+type Anim = Record<string, { idle: Tira; ataque: Tira; s?: number }>;
+/**
+ * Versão leve (CrazyGames): sem as tiras das cartas que têm imagem parada, para o pacote ter menos
+ * arquivos (o upload do portal não aguenta ~1.400). As criaturas usam a imagem parada, como no PC.
+ */
+const LEVE = import.meta.env.VITE_LEVE === '1';
+export const ANIM = porBase(LEVE
+  ? Object.fromEntries(Object.entries(animJson as Anim).filter(([k]) => !(k in arteJson))) as Anim
+  : animJson as Anim);
 
 export function animUrl(cid: string, race: string, kind: 'idle' | 'ataque'): string {
   return `art/${race}/${baseCid(cid)}-${kind}-anim.webp`;
