@@ -19,12 +19,15 @@ export function applyOrient(): void {
   escala = palco ? H / ALTURA_PALCO : 1;
   document.body.classList.toggle('rot', rot);
   document.body.classList.toggle('palco', palco);
+  // telas que já se medem pela janela (ex.: "Próximo desafio") desfazem a ampliação
+  document.body.style.setProperty('--zinv', String(1 / escala));
   document.body.classList.toggle('land', rot || palco || H <= 520);
-  if (rot) { app.style.width = H + 'px'; app.style.height = W + 'px'; app.style.transform = ''; }
+  if (rot) { app.style.width = H + 'px'; app.style.height = W + 'px'; app.style.transform = ''; app.style.removeProperty('zoom'); }
   else if (palco) {
+    // "zoom" (e não transform: scale): o navegador desenha tudo já no tamanho final, então texto e imagens ficam nítidos
     app.style.width = Math.round(W / escala) + 'px'; app.style.height = ALTURA_PALCO + 'px';
-    app.style.transform = `scale(${escala})`;
-  } else { app.style.width = ''; app.style.height = ''; app.style.transform = ''; }
+    app.style.transform = ''; app.style.setProperty('zoom', String(escala));
+  } else { app.style.width = ''; app.style.height = ''; app.style.transform = ''; app.style.removeProperty('zoom'); }
 }
 
 /** O jogo gira sozinho quando o celular está em pé? */

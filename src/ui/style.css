@@ -2521,3 +2521,4 @@ body.palco .hub-v2 .hub-col.dir{width:min(76cqh,288px)}
 @media (hover:hover) and (pointer:fine){body.palco .acts .btn .tecla{display:block;position:absolute;top:-9px;right:-6px;font:700 9px/1 system-ui,sans-serif;color:#2a1606;
   background:linear-gradient(180deg,#fff,#d8cfe8);border:1px solid #4a2c0a;border-radius:4px;padding:2px 4px;box-shadow:0 2px 0 #4a2c0a}}
 .acts .btn{position:relative}
+body.palco #app .desafio{zoom:var(--zinv,1)}

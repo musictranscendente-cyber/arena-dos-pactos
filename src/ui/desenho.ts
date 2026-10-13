@@ -8,6 +8,7 @@ import { cardText, KW, T } from '../data/textos';
 import { pronta } from './precarga';
 import { isRanged } from './projetil';
 import { ic, sg as sgImg, sgUrl } from './icones';
+import { escalaPalco } from './orientacao';
 import { iconeSom } from './som';
 import { costOf, effAtk, isValidTarget, type GameState, type Side, type Target } from '../engine';
 
@@ -143,15 +144,18 @@ function tiraHtml(src: string, t: Tira, base: number, extra: string, cls: string
 }
 
 /** Fator de tamanho (--s) da figura no campo, para cartas com arte; null = emoji. */
+/** No computador (tela ampliada) as tiras animadas (120px) ficam borradas: usa a imagem parada, que tem o dobro de resolução. */
+const tiraAnimada = (cid: string): boolean => !!ANIM[cid] && !(escalaPalco() > 1.25 && ARTE[cid]);
+
 function escalaFig(c: Card, cid: string): number | null {
-  const an = ANIM[cid], ar = ARTE[cid];
+  const an = tiraAnimada(cid) ? ANIM[cid] : undefined, ar = ARTE[cid];
   if (an) return escalaCampo((an.s ?? 1) * porte(cid, c.cost, c.r));
   if (ar) return escalaCampo((ar[2] ?? 1) * porte(cid, c.cost, c.r));
   return null;
 }
 
 function figHtml(c: Card, cid: string, cell: { atk: boolean; strike: boolean }, uid: number): string {
-  const an = ANIM[cid];
+  const an = tiraAnimada(cid) ? ANIM[cid] : undefined;
   if (an) {
     const base = an.idle.h;
     // centro visível do desenho no meio da casa (na horizontal); os pés ficam logo acima dos números
@@ -196,7 +200,7 @@ function cellHtml(v: View, side: Side, l: number, d: number): string {
   const pose = { atk: here(v.active), strike: here(v.striking) };
   if (pose.atk) cls.push('atk');
   if ((pose.atk || pose.strike) && u && isRanged(u.cid)) cls.push('ranged');
-  if ((pose.atk || pose.strike) && u && ANIM[u.cid]) cls.push('animated');
+  if ((pose.atk || pose.strike) && u && tiraAnimada(u.cid)) cls.push('animated');
   if (pose.strike) cls.push('strike');
   // Ícone das magias que o jogador já preparou neste alvo (magia de fileira marca a fileira toda).
   const pend = s.p.queue

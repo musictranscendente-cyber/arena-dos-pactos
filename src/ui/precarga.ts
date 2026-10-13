@@ -2,6 +2,7 @@
 // imagem do golpe ainda está chegando e o personagem "some" por um instante. Para aguentar muitas cartas,
 // só pede o que está na mão ou em campo (cada carta é pedida uma vez só).
 import { card } from '../data/cards';
+import { escalaPalco } from './orientacao';
 import { ANIM, animUrl, ARTE, artUrl, MAGIA, magiaUrl } from '../data/arte';
 
 const prontas = new Set<string>();
@@ -12,10 +13,11 @@ export function precarregar(cids: Iterable<string>): void {
   for (const cid of cids) {
     const race = card(cid).race;
     const urls: string[] = [];
-    if (ANIM[cid]) urls.push(animUrl(cid, race, 'idle'), animUrl(cid, race, 'ataque'));
+    const tira = ANIM[cid] && !(escalaPalco() > 1.25 && ARTE[cid]);
+    if (tira) urls.push(animUrl(cid, race, 'idle'), animUrl(cid, race, 'ataque'));
     if (ARTE[cid]) urls.push(artUrl(cid, race, 'parado'));
     if (MAGIA[cid]) urls.push(magiaUrl(cid, race));
-    if (ARTE[cid] && !ANIM[cid] && card(cid).type === 'unit') urls.push(artUrl(cid, race, 'ataque'));
+    if (ARTE[cid] && !tira && card(cid).type === 'unit') urls.push(artUrl(cid, race, 'ataque'));
     for (const u of urls) {
       if (pedidas.has(u)) continue;
       pedidas.add(u);
