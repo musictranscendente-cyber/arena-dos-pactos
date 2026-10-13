@@ -11,9 +11,11 @@
     "test:watch": "vitest",
     "lint": "eslint .",
     "sim": "tsx src/sim/rodar.ts",
-    "build:crazy": "tsc --noEmit && vite build --mode crazygames --outDir dist-crazygames && node ferramentas/enxugar-crazygames.mjs"
+    "build:crazy": "tsc --noEmit && vite build --mode crazygames --outDir dist-crazygames && node ferramentas/enxugar-crazygames.mjs",
+    "build:android": "tsc --noEmit && vite build --mode android --outDir dist-android && cap sync android"
   },
   "devDependencies": {
+    "@capacitor/cli": "^8.5.3",
     "@eslint/js": "^10.0.1",
     "@types/node": "^26.6.3",
     "eslint": "^10.11.0",
@@ -25,6 +27,8 @@
     "vitest": "^5.0.3"
   },
   "dependencies": {
+    "@capacitor/android": "^8.5.3",
+    "@capacitor/core": "^8.5.3",
     "@supabase/supabase-js": "^2.117.3",
     "zod": "^4.6.5"
   }

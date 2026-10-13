@@ -30,6 +30,14 @@ jobs:
       # versão para o CrazyGames: gera o zip e deixa para baixar em /baixar/cosmic-citadel-crazygames.zip
       - run: npm run build:crazy
       - run: mkdir -p dist/baixar && cd dist-crazygames && zip -qr ../dist/baixar/cosmic-citadel-crazygames.zip .
+      # app Android de teste (APK): fica para baixar em /baixar/cosmic-citadel.apk
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+      - run: npm run build:android
+      - run: cd android && chmod +x gradlew && ./gradlew assembleDebug --no-daemon
+      - run: cp android/app/build/outputs/apk/debug/app-debug.apk dist/baixar/cosmic-citadel.apk
       - uses: actions/upload-pages-artifact@v3
         with:
           path: dist
