@@ -2523,3 +2523,7 @@ body.palco .hub-v2 .hub-col.dir{width:min(76cqh,288px)}
 .acts .btn{position:relative}
 body.palco #app .desafio{zoom:var(--zinv,1)}
 .acts .btn .tecla{text-shadow:none !important;-webkit-text-stroke:0 !important;filter:none !important;box-shadow:0 1px 0 #4a2c0a !important;letter-spacing:.3px;font-weight:800;color:#2a1606;-webkit-text-fill-color:#2a1606}
+/* Configurações: escolha de idioma */
+.cfg-idiomas{display:flex;gap:6px}
+.cfg-idiomas .cfg-op{flex:1;justify-content:center}
+.cfg-idiomas .cfg-op.on{outline:2px solid #ffd76a;outline-offset:-2px;background:#ffd76a22}

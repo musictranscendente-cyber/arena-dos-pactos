@@ -19,14 +19,26 @@
 <body>
 <!-- tela de carregamento: aparece antes de tudo e some quando o jogo está pronto -->
 <div id="carregando" role="status" aria-label="Carregando Cosmic Citadel">
-  <div class="cg-palco"><div class="cg-barra"><i id="cg-prog"></i></div></div>
+  <div class="cg-palco"><div class="cg-barra"><i id="cg-prog"></i></div><span class="cg-txt" id="cg-txt">CARREGANDO…</span></div>
 </div>
+<script>
+/* mesmo critério de src/data/idioma.ts: escolha salva, ?lang=, ou idioma do navegador */
+(function () {
+  var l = null;
+  try { l = localStorage.getItem('arena-dos-pactos:idioma'); } catch (e) { /* sem armazenamento */ }
+  if (l !== 'pt' && l !== 'en') { var q = /[?&]lang=(pt|en)\b/.exec(location.search); l = q ? q[1] : null; }
+  if (l !== 'pt' && l !== 'en') { var ls = navigator.languages && navigator.languages.length ? navigator.languages : [navigator.language || '']; l = ls.some(function (x) { return /^pt\b/i.test(x || ''); }) ? 'pt' : 'en'; }
+  if (l === 'en') { document.documentElement.lang = 'en'; document.getElementById('cg-txt').textContent = 'LOADING…'; document.getElementById('carregando').setAttribute('aria-label', 'Loading Cosmic Citadel'); }
+})();
+</script>
 <style>
 /* tela de carregamento: arte com os personagens; a barra de verdade fica por cima da barra desenhada */
 #carregando{position:fixed;inset:0;z-index:9999;overflow:hidden;background:#0b0722;transition:opacity .5s ease}
 #carregando.sai{opacity:0;pointer-events:none}
 #carregando .cg-palco{position:absolute;left:50%;bottom:0;translate:-50% 0;aspect-ratio:1672/941;width:max(100vw,100vh * 1672 / 941);
   background:url('./carregar.webp') center/100% 100% no-repeat}
+#carregando .cg-palco{container-type:inline-size}
+#carregando .cg-txt{position:absolute;left:50%;top:94.4%;translate:-50% -50%;white-space:nowrap;font:700 1.75cqw/1 'Alegreya SC',Georgia,serif;letter-spacing:.08em;color:#f2d79c;text-shadow:0 0 .4em #000,0 0 .15em #c98a2b}
 #carregando .cg-barra{position:absolute;left:32.7%;top:87.35%;width:34.6%;height:3.7%;border-radius:999px;overflow:hidden;background:linear-gradient(180deg,#140a3a,#2a1660)}
 #carregando .cg-barra i{display:block;height:100%;width:5%;border-radius:999px;background:linear-gradient(180deg,#9fe8ff,#2f8cff 50%,#1a4fd0);box-shadow:0 0 10px #58b4ff,inset 0 1px 0 #fff8;transition:width .3s ease}
 /* abertura (vídeo): por cima da tela de carregamento */

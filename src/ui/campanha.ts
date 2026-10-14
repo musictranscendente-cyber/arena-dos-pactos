@@ -54,7 +54,7 @@ export function campanhaHtml(p: Progresso, t: TelaCampanha, deck: DeckMontado | 
   const det = `<div class="cp-det"><div class="cp-tit"><h3>${T.faseN(t.fase)} · ${titulo}</h3>`
     + `<button class="c-aba c-info${t.ajuda ? ' on' : ''}" data-act="cpajuda" aria-label="${T.comoFunciona}" title="${T.comoFunciona}">${ic('info', 'ic-g')}</button></div>`
     + `<p class="cp-info"><span class="cp-chip" title="${T.dificuldade}">${ic('dificuldade')}<b>${T.nivelNome[f.nivelIA]}</b></span>`
-    + `<span class="cp-chip" title="${T.cartasRival}">${ic('carta')}<b>Nv${f.nivelCartas}</b></span><span class="cp-chip" title="${T.vidaRival}">${ic('vida')}<b>${f.vidaRival}</b></span>`
+    + `<span class="cp-chip" title="${T.cartasRival}">${ic('carta')}<b>${T.nv}${f.nivelCartas}</b></span><span class="cp-chip" title="${T.vidaRival}">${ic('vida')}<b>${f.vidaRival}</b></span>`
     + `${estrelinhas(est)}${lenda ? `<span class="cp-chip cp-meta" title="${lenda.name}">${ic('trofeu')}${estrelasDoMundo(p, t.signo)}/30</span>` : ''}</p>`
     + premio
     + `<p class="nv-deck">${T.seuDeck}: <b>${deck ? nomeDeckMontado(deck) : T.semDeck}</b> <button class="btn rc mini" data-act="montar">${T.trocar}</button></p>`

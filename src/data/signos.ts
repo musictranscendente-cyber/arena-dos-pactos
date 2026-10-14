@@ -1,5 +1,6 @@
 import type { Signo } from './schema';
 import { SIGNOS } from './schema';
+import { EN } from './idioma';
 
 export interface InfoSigno {
   n: string;
@@ -35,6 +36,18 @@ export const RACES: Record<Signo, InfoSigno> = {
   aquario: { n: 'Aquário', g: '♒', el: 'Ar', c: '#2e9cc8', m: 'Feitiços', dt: [1, 20] },
   peixes: { n: 'Peixes', g: '♓', el: 'Água', c: '#4a6fd6', m: 'Ilusão', dt: [2, 19] },
 };
+
+/** Em inglês: nome do signo, mecânica e elemento (o campo `el` continua em português: é usado como chave). */
+const EN_SIGNO: Record<Signo, [string, string]> = {
+  aries: ['Aries', 'Ram'], touro: ['Taurus', 'Steadfast'], gemeos: ['Gemini', 'Duplicate'], cancer: ['Cancer', 'Armor'],
+  leao: ['Leo', 'Leadership'], virgem: ['Virgo', 'Heal'], libra: ['Libra', 'Judgment'], escorpiao: ['Scorpio', 'Final Sting'],
+  sagitario: ['Sagittarius', 'True Aim'], capricornio: ['Capricorn', 'Ascend'], aquario: ['Aquarius', 'Spells'], peixes: ['Pisces', 'Illusion'],
+};
+if (EN) for (const k of ORDER) { RACES[k].n = EN_SIGNO[k][0]; RACES[k].m = EN_SIGNO[k][1]; }
+
+const EL_EN: Record<InfoSigno['el'], string> = { Fogo: 'Fire', Terra: 'Earth', Ar: 'Air', 'Água': 'Water' };
+/** Nome do elemento para mostrar na tela. */
+export const nomeElemento = (el: InfoSigno['el']): string => (EN ? EL_EN[el] : el);
 
 /** Signo da temporada atual para a data informada. */
 export function currentSign(date: Date): Signo {

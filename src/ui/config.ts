@@ -1,4 +1,5 @@
 // Janela de Configurações (abre tocando no medalhão do perfil): conta/nuvem, nome, som, tela e ajuda.
+import { EN, IDIOMA } from '../data/idioma';
 import { T } from '../data/textos';
 import { emailConta, listarBackups, logado, nuvemAtiva, situacaoNuvem } from '../services/nuvem';
 import type { Perfil } from '../services/perfil';
@@ -35,11 +36,14 @@ export function configHtml(perfil: Perfil, aviso: string): string {
     + (conta ? `<section class="cfg-bloco"><h4>${T.cfgConta}</h4>${conta}</section>` : '')
     + `<section class="cfg-bloco"><h4>${T.cfgPerfil}</h4><label class="cfg-campo"><small>${T.cfgNome}</small>`
     + `<input id="cfg-nome" type="text" maxlength="16" autocomplete="off" spellcheck="false" value="${esc(perfil.nome)}" placeholder="${T.invocador}"></label><small class="cfg-dica">${T.cfgNomeDica}</small></section>`
-    + `<section class="cfg-bloco"><h4>${T.cfgSom}</h4><button class="cfg-op" data-act="som-musica"><span>🎵 Música</span>${chave(s.musica)}</button>`
-    + `<button class="cfg-op" data-act="som-efeitos"><span>💥 Efeitos</span>${chave(s.efeitos)}</button></section>`
+    + `<section class="cfg-bloco"><h4>${T.cfgSom}</h4><button class="cfg-op" data-act="som-musica"><span>${T.somMusica}</span>${chave(s.musica)}</button>`
+    + `<button class="cfg-op" data-act="som-efeitos"><span>${T.somEfeitos}</span>${chave(s.efeitos)}</button></section>`
     + `<section class="cfg-bloco"><h4>${T.cfgTela}</h4><button class="cfg-op" data-act="cfg-giro"><span>${T.cfgGiro}</span>${chave(giroLigado())}</button></section>`
+    + `<section class="cfg-bloco"><h4>🌐 ${T.cfgIdioma}</h4><div class="cfg-idiomas">`
+    + `<button class="cfg-op${IDIOMA === 'pt' ? ' on' : ''}" data-act="cfg-idioma" data-l="pt"><span>🇧🇷 Português</span></button>`
+    + `<button class="cfg-op${IDIOMA === 'en' ? ' on' : ''}" data-act="cfg-idioma" data-l="en"><span>🇺🇸 English</span></button></div></section>`
     + (listarBackups().length ? `<section class="cfg-bloco"><h4>${T.cfgBackups}</h4><p class="cfg-dica">${T.cfgBackupsDica}</p>`
-      + listarBackups().map((b, i) => `<button class="cfg-op" data-act="cfg-restaurar" data-i="${i}"><span>${new Date(b.quando).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' })} · ${resumo(b.dados)}</span><b class="cfg-chave">${T.cfgRestaurar}</b></button>`).join('')
+      + listarBackups().map((b, i) => `<button class="cfg-op" data-act="cfg-restaurar" data-i="${i}"><span>${new Date(b.quando).toLocaleString(EN ? 'en-US' : 'pt-BR', { dateStyle: 'short', timeStyle: 'short' })} · ${resumo(b.dados)}</span><b class="cfg-chave">${T.cfgRestaurar}</b></button>`).join('')
       + '</section>' : '')
     + `<section class="cfg-bloco"><h4>${T.cfgAjuda}</h4><button class="btn rc" data-act="regras">${T.comoJogar}</button> <button class="btn rc" data-act="rever-tut">${T.reverTutorial}</button>`
     + `<p class="cfg-dica cfg-versao" data-act="cfg-versao">${T.cfgVersao} ${__VERSAO__}</p></section>`

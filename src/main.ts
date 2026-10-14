@@ -2,7 +2,9 @@ import './ui/style.css';
 import { startApp } from './ui/app';
 import { watchOrient } from './ui/orientacao';
 import { mostrarAbertura } from './ui/abertura';
+import { IDIOMA } from './data/idioma';
 
+document.documentElement.lang = IDIOMA === 'en' ? 'en' : 'pt-BR';
 watchOrient();
 startApp();
 esconderCarregamento();

@@ -165,7 +165,6 @@ export interface Montagem {
   fTodas?: boolean;
 }
 
-const RAR_NOME: Record<string, string> = { c: 'Comum', r: 'Rara', e: 'Épica', l: 'Lendária' };
 
 function fechaHtml(): string {
   return `<button class="m-fecha" data-act="hub" aria-label="${T.sair}" title="${T.sair}">✕</button>`;
@@ -234,7 +233,7 @@ export function montarHtml(m: Montagem, decks: (DeckMontado | null)[], ativo: nu
     && (fMana < 0 || (fMana >= 7 ? card(id).cost >= 7 : card(id).cost === fMana)));
   const filtros = (um ? '' : `<button class="c-aba c-ciclo m-fsg${fSg ? ' on' : ''}" data-act="mfsigno">${T.filtroSigno}: <b>${fSg ? `${sgImg(fSg)} ${RACES[fSg].n}` : T.todos}</b></button>`)
     + `<button class="c-aba c-ciclo${fTodas ? ' on' : ''}" data-act="mftodas">${T.filtroMostrar}: <b>${fTodas ? T.todas : T.soMinhas}</b></button>`
-    + `<button class="c-aba c-ciclo${fNv ? ' on' : ''}" data-act="mfnivel">${T.filtroNivel}: <b>${fNv ? `Nv${fNv}` : T.todos}</b></button>`
+    + `<button class="c-aba c-ciclo${fNv ? ' on' : ''}" data-act="mfnivel">${T.filtroNivel}: <b>${fNv ? `${T.nv}${fNv}` : T.todos}</b></button>`
     + `<button class="c-aba c-ciclo${fRar !== 'todas' ? ' on' : ''}" data-act="mfrar">${T.filtroRaridade}: <b>${fRar === 'todas' ? T.todas : NOMES_R[fRar]}</b></button>`
     + `<button class="c-aba c-ciclo${fMana >= 0 ? ' on' : ''}" data-act="mfmana">${T.filtroMana}: <b>${fMana < 0 ? T.todos : fMana >= 7 ? '7+' : fMana}</b></button>`;
   const cards = visiveis.map(({ id, tem }) => {
@@ -258,7 +257,7 @@ export function montarHtml(m: Montagem, decks: (DeckMontado | null)[], ativo: nu
     // quantidade e botões em cima (sempre à vista); a carta grande logo abaixo
     // tudo numa linha só (tirar · quantas no deck · colocar) para sobrar altura para a carta
     lado = `<div class="m-qtd"><button class="btn rc" data-act="mmenos" ${n ? '' : 'disabled'} aria-label="${T.tirar}">－ ${T.tirar}</button>`
-      + `<p class="m-copias" title="${RAR_NOME[card(k).r]}"><small>${T.noDeck}</small><span><b>${n}</b>/${mx}</span></p>`
+      + `<p class="m-copias" title="${NOMES_R[card(k).r]}"><small>${T.noDeck}</small><span><b>${n}</b>/${mx}</span></p>`
       + `<button class="btn go" data-act="mmais" ${n < mx && !cheio ? '' : 'disabled'} aria-label="${T.colocar}">＋ ${T.colocar}</button></div>`
       + `<p class="m-dica m-tem">${m.msg || T.semCopiasNivel(prog.teste && nivelDe(k) === 1 ? maxCopias(k) : copiasNoNivel(prog, k), nivelDe(k))}</p>`
       + `<div class="m-detalhe">${zoomHtml({ cid: k, lado: 'p' })}</div>`;

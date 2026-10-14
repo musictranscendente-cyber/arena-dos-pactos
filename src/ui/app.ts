@@ -1,8 +1,10 @@
 // Controla as telas e a partida contra a IA. Toda regra vem do motor; aqui só desenha e anima.
+import { IDIOMA, trocarIdioma } from '../data/idioma';
 import { baseCid, card, cardsOfSign, comNivel, nivelDe } from '../data/cards';
 import type { Signo } from '../data/schema';
 import { ORDER, RACES } from '../data/signos';
-import { cardText, T } from '../data/textos';
+import { cardText, KW, T } from '../data/textos';
+import { rarMinusc } from '../data/raridades';
 import {
   applyAction, costOf, deckAleatorio, deckForte, doisSignos, DECK_SIZE, effAtk, newGame, resolveBattle, Rng, surrender,
   maxCopias, planTurnNivel, type DeckMontado, type Nivel,
@@ -40,7 +42,6 @@ import { colecaoHtml, inicialHtml, pacotesHtml, proximoFiltro, cartasGanhasHtml,
 import { lerConvidado, lerDev, lerNivel, salvarDev, lerTelaCampanha, salvarConvidado, salvarNivel, salvarTelaCampanha } from '../services/preferencias';
 
 /** Nome da raridade em minúsculas, para os avisos. */
-const RARIDADE_NOME: Record<string, string> = { c: 'comum', r: 'rara', e: 'épica', l: 'lendária' };
 
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const sleep = (ms: number) => new Promise(r => setTimeout(r, reduce ? ms * 0.4 : ms));
@@ -446,12 +447,12 @@ function fxText(e: GameEvent): [string, string, string] | null {
     case 'Damage': return [cell(e.side, e.l, e.d), `-${e.amount}${e.poisoned ? ' 🧪' : ''}${e.fury ? ' 💢' : ''}`, 'dmg'];
     case 'ShieldBroken': return [cell(e.side, e.l, e.d), '🛡️', 'sh'];
     case 'ArmorBlocked': return [cell(e.side, e.l, e.d), '🐚 0', 'sh'];
-    case 'ShieldGained': return [cell(e.side, e.l, e.d), '🛡️ Escudo!', 'sh ganho'];
+    case 'ShieldGained': return [cell(e.side, e.l, e.d), `🛡️ ${KW.escudo.n}!`, 'sh ganho'];
     case 'Poisoned': return [cell(e.side, e.l, e.d), '🧪', 'dmg'];
     case 'PoisonTick': return [cell(e.side, e.l, e.d), '-1 🧪', 'dmg'];
     case 'Buffed': return [cell(e.side, e.l, e.d), `⬆ +${e.atk}/+${e.hp}`, 'buff'];
     case 'UnitHealed': return [cell(e.side, e.l, e.d), `+${e.amount}`, 'heal'];
-    case 'UnitReturnedToHand': return [cell(e.side, e.l, e.d), '🫧 volta', 'sh'];
+    case 'UnitReturnedToHand': return [cell(e.side, e.l, e.d), `🫧 ${T.volta}`, 'sh'];
     case 'UnitPlaced': return e.token ? [cell(e.side, e.l, e.d), 'Eco!', 'heal'] : null;
     case 'UnitPushed': return [cell(e.side, e.l, e.to), '🐏 empurrado!', 'sh'];
     case 'HeroDamaged': return [`hero-${e.side}`, `-${e.amount}`, 'dmg heroi'];
@@ -774,6 +775,7 @@ function menuClick(a: string | undefined, t: HTMLElement): boolean {
     case 'regras': dialogo = 'regras'; render(); return true;
     case 'config': avisoCfg = ''; dialogo = 'config'; tocar('clique'); render(); return true;
     case 'cfg-giro': toggleRot(); render(); return true;
+    case 'cfg-idioma': if (t.dataset.l !== IDIOMA) trocarIdioma(t.dataset.l === 'en' ? 'en' : 'pt'); return true;
     case 'cfg-restaurar': if (restaurarBackup(Number(t.dataset.i))) avisoCfg = T.cfgRestaurado; render(); return true;
     case 'cfg-versao':
       if (++toquesVersao >= 7) {
@@ -995,7 +997,7 @@ function menuClick(a: string | undefined, t: HTMLElement): boolean {
       const tem = copiasParaDeck(prog, k);
       if (mg.cartas.length >= DECK_SIZE) mg.msg = T.deckCheio;
       else if (tem === 0) mg.msg = T.semCopias(0);
-      else if (n + outros >= maxCopias(k)) mg.msg = T.limiteCopias(maxCopias(k), RARIDADE_NOME[card(k).r]);
+      else if (n + outros >= maxCopias(k)) mg.msg = T.limiteCopias(maxCopias(k), rarMinusc(card(k).r));
       else if (n >= tem) mg.msg = T.semCopiasNivel(tem, nivelDe(k));
       else { mg.cartas.push(k); mg.msg = ''; }
       keepScroll(); return true;

@@ -10,7 +10,7 @@ import {
   CARTAS_PACOTE, CHANCES, copiasNoNivel, CUSTO_FUSAO, MAX_PACOTES, niveisQueTem, podeFundir, PRECO_PACOTE, PRECO_PACOTE_SIGNO, precoPacote, type Progresso,
 } from '../meta/progresso';
 import { cardHtml, habilidadesHtml } from './desenho';
-import { ELEMENTO } from '../data/signos';
+import { ELEMENTO, nomeElemento } from '../data/signos';
 
 function fecha(): string {
   return `<button class="m-fecha" data-act="hub" aria-label="${T.sair}" title="${T.sair}">✕</button>`;
@@ -26,7 +26,7 @@ export function inicialHtml(): string {
   const signs = ORDER.map(k => {
     const r = RACES[k];
     return `<button class="sign" data-act="inicial" data-r="${k}" style="--rc:${r.c}">`
-      + `<span class="g">${sgImg(k)}</span><span class="sn">${r.n}</span><span class="sm">${r.el}, ${r.m}</span></button>`;
+      + `<span class="g">${sgImg(k)}</span><span class="sn">${r.n}</span><span class="sm">${nomeElemento(r.el)}, ${r.m}</span></button>`;
   }).join('');
   return `<div class="ov inicial"><div class="panel wide"><h2>${T.escolhaInicialTitulo}</h2><p>${T.escolhaInicialTexto}</p>`
     + `<div class="signs">${signs}</div></div></div>`;
@@ -75,7 +75,7 @@ export function colecaoHtml(p: Progresso, t: TelaColecao): string {
   const tem = Object.keys(p.cartas).length;
   const abas = [`<button class="c-aba${t.filtro === 'todas' ? ' on' : ''}" data-act="cfiltro" data-r="todas">${T.todas}</button>`]
     .concat(ORDER.map(k => `<button class="c-aba${t.filtro === k ? ' on' : ''}" data-act="cfiltro" data-r="${k}" style="--rc:${RACES[k].c}" title="${RACES[k].n}">${sgImg(k)}</button>`)).join('');
-  const filtros = `<button class="c-aba c-ciclo${nvF ? ' on' : ''}" data-act="cnivel">${T.filtroNivel}: <b>${nvF ? `Nv${nvF}` : T.todos}</b></button>`
+  const filtros = `<button class="c-aba c-ciclo${nvF ? ' on' : ''}" data-act="cnivel">${T.filtroNivel}: <b>${nvF ? `${T.nv}${nvF}` : T.todos}</b></button>`
     + `<button class="c-aba c-ciclo${rarF !== 'todas' ? ' on' : ''}" data-act="crar">${T.filtroRaridade}: <b>${rarF === 'todas' ? T.todas : NOMES_R[rarF]}</b></button>`
     + `<button class="c-aba c-ciclo${tipoF !== 'todos' ? ' on' : ''}" data-act="ctipo">${T.filtroTipo}: <b>${tipoF === 'todos' ? T.todos : tipoF === 'unit' ? T.criaturas : T.magiasTipo}</b></button>`
     + `<button class="c-aba c-info${t.ajuda ? ' on' : ''}" data-act="cajuda" aria-label="${T.comoFundir}" title="${T.comoFundir}">ⓘ</button>`;
@@ -118,14 +118,14 @@ function figuraDetalhe(id: string): string {
 /** Painel da carta escolhida: detalhes completos e a fusão (Atual → Resultado → Cópias). */
 function detalheHtml(p: Progresso, id: string, t: TelaColecao): string {
   const c = card(id), nv = nivelDe(id), n = copiasNoNivel(p, id), r = RACES[c.race];
-  const outros = niveisQueTem(p, id).filter(x => x !== id).map(x => `<span class="c-nv"><b>Nv${nivelDe(x)}</b>×${copiasNoNivel(p, x)}</span>`).join('');
+  const outros = niveisQueTem(p, id).filter(x => x !== id).map(x => `<span class="c-nv"><b>${T.nv}${nivelDe(x)}</b>×${copiasNoNivel(p, x)}</span>`).join('');
   const info = `<div class="cd-info">`
     + `<p><span>${T.rotTipo}:</span> ${c.type === 'unit' ? T.tipoCriatura : T.tipoMagia}</p>`
-    + `<p><span>${T.rotSigno}:</span> ${sgImg(c.race)} ${r.n} · ${ELEMENTO[r.el].i} ${r.el}</p>`
+    + `<p><span>${T.rotSigno}:</span> ${sgImg(c.race)} ${r.n} · ${ELEMENTO[r.el].i} ${nomeElemento(r.el)}</p>`
     + `<p><span>${T.rotAtributos}:</span> <b>${T.custo} ${c.cost}</b>${c.type === 'unit' ? ` · <b>⚔️ ${c.atk}</b> · <b>❤️ ${c.hp}</b>` : 'v' in c && typeof c.v === 'number' ? ` · <b>✨ ${c.v}</b>` : ''}</p>`
-    + `<p><span>${T.rotRaridade}:</span> <b class="cd-rar" style="--rr:${RARITY[c.r].col}">${RARITY[c.r].n}</b> <b class="cd-nv">Nv${nv} ${'★'.repeat(nv)}</b></p>`
+    + `<p><span>${T.rotRaridade}:</span> <b class="cd-rar" style="--rr:${RARITY[c.r].col}">${RARITY[c.r].n}</b> <b class="cd-nv">${T.nv}${nv} ${'★'.repeat(nv)}</b></p>`
     + `<p><span>${T.rotCopias}:</span> <b>${n ? `×${n}` : T.naoTem}</b>${outros ? ` <small>${T.outrosNiveis}</small> ${outros}` : ''}</p></div>`;
-  const hab = `<div class="cd-hab"><h4>${c.type === 'unit' ? 'Habilidades' : T.tipoMagia}</h4>${habilidadesHtml(id)}</div>`;
+  const hab = `<div class="cd-hab"><h4>${c.type === 'unit' ? T.habilidades : T.tipoMagia}</h4>${habilidadesHtml(id)}</div>`;
   // fusão: regras reais (2 cópias do mesmo nível + Poeira; até o nível máximo)
   let fusao: string;
   if (n > 0) {
@@ -156,7 +156,7 @@ function detalheHtml(p: Progresso, id: string, t: TelaColecao): string {
     + fusao + '</div>' + confirmar + '</aside>';
 }
 
-export const NOMES_R: Record<Raridade, string> = { c: 'Comum', r: 'Rara', e: 'Épica', l: 'Lendária' };
+export const NOMES_R: Record<Raridade, string> = { c: RARITY.c.n, r: RARITY.r.n, e: RARITY.e.n, l: RARITY.l.n };
 
 /** Loja de pacotes: vitrine que corre para os lados; tocar abre os detalhes; comprar pede confirmação. */
 export interface TelaPacotes { aberto: Signo | 'estelar' | null; qtd: number; confirmar: boolean }

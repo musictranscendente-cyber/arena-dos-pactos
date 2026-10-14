@@ -3,7 +3,7 @@ import { card, cardsOfSign, CARDS, nivelDe } from '../data/cards';
 import { ANIM, animUrl, ARTE, artUrl, CENTRO, escalaCampo, porte, type Tira } from '../data/arte';
 import { RARITY } from '../data/raridades';
 import type { Card, Signo } from '../data/schema';
-import { currentSign, ELEMENTO, ORDER, RACES } from '../data/signos';
+import { currentSign, ELEMENTO, nomeElemento, ORDER, RACES } from '../data/signos';
 import { cardText, KW, T } from '../data/textos';
 import { pronta } from './precarga';
 import { isRanged } from './projetil';
@@ -76,7 +76,7 @@ export function zoomHtml(z: Zoom): string {
     + `<div class="z-topo"><span class="cost">${z.cost ?? c.cost}</span><span class="z-nome">${c.name}</span></div>`
     + elemHtml(c)
     + `<div class="z-arte">${img}${sgImg(c.race, 'z-sg')}</div>`
-    + `<div class="z-rar">${gemaHtml(c)}${RARITY[c.r].n} · ${ELEMENTO[r.el].i} ${r.el}${z.cid !== 'eco' ? ` · <span class="z-nv">${T.nivelN(nivelDe(z.cid))} ${'★'.repeat(nivelDe(z.cid))}</span>` : ''}</div>${corpo}</div>`;
+    + `<div class="z-rar">${gemaHtml(c)}${RARITY[c.r].n} · ${ELEMENTO[r.el].i} ${nomeElemento(r.el)}${z.cid !== 'eco' ? ` · <span class="z-nv">${T.nivelN(nivelDe(z.cid))} ${'★'.repeat(nivelDe(z.cid))}</span>` : ''}</div>${corpo}</div>`;
 }
 
 /** Diminui a variável de fonte `v` (1 → mínimo) enquanto `passou()` for verdade. */
@@ -217,10 +217,10 @@ function cellHtml(v: View, side: Side, l: number, d: number): string {
     const esc = escalaFig(c, u.cid);
     // habilidades e estados em fichas pequenas no canto de cima da casa, longe dos pés da criatura
     const fichas = [
-      ...(u.shield ? ['<i class="f-escudo" title="Escudo">🛡️</i>'] : []),
+      ...(u.shield ? ['<i class="f-escudo" title="${KW.escudo.n}">🛡️</i>'] : []),
       ...u.kw.filter(k => k !== 'escudo').map(k => `<i title="${KW[k].n}">${KW[k].i}</i>`),
-      ...(c.type === 'unit' && c.on ? ['<i title="Efeito de chegada">⭐</i>'] : []),
-      ...(u.poison ? ['<i class="f-veneno" title="Envenenada">🤢</i>'] : []),
+      ...(c.type === 'unit' && c.on ? ['<i title="${T.efeitoChegada}">⭐</i>'] : []),
+      ...(u.poison ? ['<i class="f-veneno" title="${T.envenenada}">🤢</i>'] : []),
     ];
     inner = `<div class="unit ${side === 'e' ? 'foe' : ''} r-${c.r}${esc ? ' com-arte' : ''}" style="--rc:${RACES[c.race].c}${esc ? `;--s:${esc}` : ''}">`
       + '<span class="aura"></span>'
@@ -305,7 +305,7 @@ export function cardHtml(c: Card, cost: number, attrs = '', cls = '', cid?: stri
 
 /** Estrelinhas do nível da carta (só a partir do nível 2). */
 export function estrelasHtml(nv: number): string {
-  return `<span class="nv nv-${nv}" title="${T.nivelN(nv)}" aria-label="${T.nivelN(nv)}"><b>Nv${nv}</b>${'★'.repeat(nv)}</span>`;
+  return `<span class="nv nv-${nv}" title="${T.nivelN(nv)}" aria-label="${T.nivelN(nv)}"><b>${T.nv}${nv}</b>${'★'.repeat(nv)}</span>`;
 }
 
 /** Medalhão do elemento no canto de cima da carta. */

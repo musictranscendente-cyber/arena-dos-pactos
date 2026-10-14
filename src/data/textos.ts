@@ -1,7 +1,10 @@
-// Todos os textos de regras/cartas que aparecem no jogo ficam aqui (facilita traduzir depois).
+// Todos os textos de regras/cartas que aparecem no jogo ficam aqui. A versão em inglês fica em textos-en.ts;
+// as exportações do fim deste arquivo (T, KW, ON, cardText...) já entregam o idioma escolhido (idioma.ts).
 import type { Card, Chegada, Keyword, SpellCard } from './schema';
+import { EN } from './idioma';
+import { KW_EN, ON_EN, spellTextEn, T_EN } from './textos-en';
 
-export const KW: Record<Keyword, { i: string; n: string; d: string }> = {
+const KW_PT: Record<Keyword, { i: string; n: string; d: string }> = {
   escudo: { i: '🛡️', n: 'Escudo', d: 'ignora o primeiro dano que receber.' },
   perfurar: { i: '🗡️', n: 'Perfurar', d: 'o dano que sobrar passa para a próxima carta da linha ou para o herói.' },
   distancia: { i: '🎯', n: 'Distância', d: 'ataca a carta mais ao fundo da linha inimiga.' },
@@ -23,7 +26,7 @@ export const KW: Record<Keyword, { i: string; n: string; d: string }> = {
   mira: { i: '🏹', n: 'Mira Certeira', d: 'seus ataques atravessam Escudo e Carapaça.' },
 };
 
-export const ON: Record<Chegada, string> = {
+const ON_PT: Record<Chegada, string> = {
   volley: 'Chegada: 2 de dano em uma criatura inimiga aleatória.',
   draw: 'Chegada: compre 1 carta.',
   face1: 'Chegada: 1 de dano no herói inimigo.',
@@ -31,7 +34,7 @@ export const ON: Record<Chegada, string> = {
   twin: 'Chegada: cria um Eco 1/1 na mesma linha (Duplicar).',
 };
 
-export function spellText(c: SpellCard): string {
+function spellTextPt(c: SpellCard): string {
   switch (c.sp) {
     case 'dmg': return `${c.v} de dano em uma criatura inimiga que já estava em campo.`;
     case 'buff': return `+${c.a}/+${c.h} em uma criatura sua que já estava em campo.`;
@@ -44,14 +47,7 @@ export function spellText(c: SpellCard): string {
   }
 }
 
-export function cardText(c: Card): string {
-  if (c.type === 'spell') return spellText(c);
-  const parts = c.kw.map(k => `${KW[k].n}: ${KW[k].d}`);
-  if (c.on) parts.push(ON[c.on]);
-  return parts.length ? parts.join(' ') : 'Sem habilidade especial.';
-}
-
-export const T = {
+const T_PT = {
   titulo: 'Cosmic Citadel',
   invocador: 'Invocador',
   semDeck: 'Nenhum deck montado',
@@ -286,6 +282,11 @@ export const T = {
   anuncioGanhou: (n: number) => `+${n} ✨ Obrigado por assistir!`,
   anuncioFalhou: 'Nenhum anúncio disponível agora. Tente mais tarde.',
   aberturaPular: 'Pular',
+  volta: 'volta',
+  nv: 'Nv',
+  habilidades: 'Habilidades',
+  envenenada: 'Envenenada',
+  cfgIdioma: 'Idioma',
   aberturaSom: 'Ligar ou desligar o som da abertura',
   cfgBackups: 'Recuperar progresso anterior',
   cfgBackupsDica: 'Cópias guardadas antes de o progresso deste aparelho ser trocado pelo da nuvem. Toque para voltar uma delas.',
@@ -438,3 +439,18 @@ export const T = {
     pular: 'Pular tutorial',
   },
 };
+
+export type TextosPT = typeof T_PT;
+export type KeywordsPT = typeof KW_PT;
+
+export const T: TextosPT = EN ? T_EN : T_PT;
+export const KW: Record<Keyword, { i: string; n: string; d: string }> = EN ? KW_EN : KW_PT;
+export const ON: Record<Chegada, string> = EN ? ON_EN : ON_PT;
+export const spellText: (c: SpellCard) => string = EN ? spellTextEn : spellTextPt;
+
+export function cardText(c: Card): string {
+  if (c.type === 'spell') return spellText(c);
+  const parts = c.kw.map(k => `${KW[k].n}: ${KW[k].d}`);
+  if (c.on) parts.push(ON[c.on]);
+  return parts.length ? parts.join(' ') : T.semHabilidade;
+}

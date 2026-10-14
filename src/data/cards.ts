@@ -1,8 +1,12 @@
 import raw from './cartas.json';
+import nomesEn from './nomes-en.json';
+import { EN } from './idioma';
 import { CardDbSchema, type Card, type Signo } from './schema';
 
 /** Todas as cartas do jogo, validadas pelo schema ao carregar. Um erro aqui = cartas.json quebrado. */
 export const CARDS: Readonly<Record<string, Card>> = CardDbSchema.parse(raw);
+// em inglês, troca só o nome (o id, que vai no progresso salvo, continua o mesmo)
+if (EN) for (const [id, c] of Object.entries(CARDS)) { const n = (nomesEn as Record<string, string>)[id]; if (n) (c as { name: string }).name = n; }
 
 export const ECO_ID = 'eco';
 
