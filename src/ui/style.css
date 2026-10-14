@@ -2527,3 +2527,8 @@ body.palco #app .desafio{zoom:var(--zinv,1)}
 .cfg-idiomas{display:flex;gap:6px}
 .cfg-idiomas .cfg-op{flex:1;justify-content:center}
 .cfg-idiomas .cfg-op.on{outline:2px solid #ffd76a;outline-offset:-2px;background:#ffd76a22}
+/* tutorial: mãozinha apontando onde tocar */
+.tut-mao{position:absolute;left:50%;bottom:100%;translate:-50% 0;font-size:34px;line-height:1;pointer-events:none;z-index:60;
+  filter:drop-shadow(0 2px 3px #000a);animation:tut-mao .8s ease-in-out infinite alternate}
+@keyframes tut-mao{from{transform:translateY(-8px)}to{transform:translateY(2px)}}
+.hand .tut-mao{bottom:auto;top:-30px}

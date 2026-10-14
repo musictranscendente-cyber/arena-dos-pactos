@@ -17,7 +17,7 @@ import { precarregar, precarregarVisiveis } from './precarga';
 import arenaFundo from './img/arena-fundo-escuro.webp';
 import { launch, shotsOf } from './projetil';
 import { alternarSom, desbloquear, iconeSom, pausarSom, prefsSom, tocar, trilha, type Efeito } from './som';
-import { reverTutorial, tutorialEntendi, tutorialFimDePartida, tutorialHtml, tutorialNovaPartida, tutorialPular } from './tutorial';
+import { reverTutorial, tutorialEntendi, tutorialFimDePartida, tutorialHtml, tutorialNovaPartida, tutorialPendente, tutorialPular } from './tutorial';
 import { ic } from './icones';
 import { configHtml } from './config';
 import { entrarEmail, entrarGoogle, iniciarNuvem, logado, nuvemAtiva, restaurarBackup, sair } from '../services/nuvem';
@@ -161,7 +161,7 @@ function sincronizarDecks(): void {
 }
 sincronizarDecks();
 /** Como foi a última partida (para a Revanche repetir igual). */
-type Modo = { modo: 'signo'; sign: Signo } | { modo: 'rapida'; deck: DeckMontado; nivel: Nivel } | { modo: 'campanha'; deck: DeckMontado; signo: Signo; fase: number };
+type Modo = { modo: 'signo'; sign: Signo } | { modo: 'tutorial'; sign: Signo } | { modo: 'rapida'; deck: DeckMontado; nivel: Nivel } | { modo: 'campanha'; deck: DeckMontado; signo: Signo; fase: number };
 let ultimo: Modo | null = null;
 const app = () => document.getElementById('app')!;
 
@@ -197,7 +197,7 @@ function entrarDesafio(): void {
   }, 500);
 }
 
-const who = (side: Side) => (side === 'p' ? T.voce : 'O rival');
+const who = (side: Side) => (side === 'p' ? T.voce : T.oRival);
 const name = (cid: string) => card(cid).name;
 
 /* ---------- partida ---------- */
@@ -217,12 +217,15 @@ function intervalo(): void {
 }
 
 function startMatch(cfg: Modo): void {
+  // a partida guiada só existe enquanto o tutorial não foi feito (a revanche dela já é uma partida normal)
+  if (cfg.modo === 'tutorial' && !tutorialPendente()) cfg = { modo: 'signo', sign: cfg.sign };
   avisarJogando(true);
   ultimo = cfg;
   tutorialNovaPartida();
   const seed = randomSeed();
   let state: GameState;
-  if (cfg.modo === 'signo') {
+  if (cfg.modo === 'tutorial') state = partidaGuiada(cfg.sign, seed);
+  else if (cfg.modo === 'signo') {
     const foes = ORDER.filter(k => k !== cfg.sign);
     const foe = foes[Math.floor(Math.random() * foes.length)];
     state = newGame({ pSign: cfg.sign, eSign: foe, seed, record: false }).state;
@@ -243,8 +246,29 @@ function startMatch(cfg: Modo): void {
     // cada carta do deck já tem o seu nível (escolhido na Montagem)
     state = newGame({ pSign: pa, pSign2: pb === pa ? undefined : pb, pDeck: [...cfg.deck.cartas], eSign: ea, eSign2: eb, eDeck, seed, record: false }).state;
   }
-  M = { g: state, shown: state, sel: null, busy: false, msg: '', active: null, striking: null, aiRng: new Rng(seed ^ 0x5bd1e995), base: state, plan: [], inspect: null, cont: {}, inicio: Date.now(), nivel: cfg.modo === 'rapida' ? cfg.nivel : cfg.modo === 'campanha' ? dadosFase(cfg.signo, cfg.fase).nivelIA : 'normal' };
+  M = { g: state, shown: state, sel: null, busy: false, msg: '', active: null, striking: null, aiRng: new Rng(seed ^ 0x5bd1e995), base: state, plan: [], inspect: null, cont: {}, inicio: Date.now(), nivel: cfg.modo === 'rapida' ? cfg.nivel : cfg.modo === 'campanha' ? dadosFase(cfg.signo, cfg.fase).nivelIA : cfg.modo === 'tutorial' ? 'facil' : 'normal' };
   beginPlanning([]);
+}
+
+/**
+ * Primeira partida (guiada pelo tutorial): curta e fácil, para aprender jogando.
+ * Você joga com o seu signo, com a mão e as compras em ordem de custo (sempre tem o que invocar);
+ * o rival só tem criaturas baratas, pouca vida e joga no nível fácil.
+ */
+const VIDA_RIVAL_GUIADA = 12;
+function partidaGuiada(sign: Signo, seed: number): GameState {
+  const foes = ORDER.filter(k => k !== sign);
+  const foe = foes[Math.abs(seed) % foes.length];
+  const baratas = cardsOfSign(foe).filter(k => { const c = card(k); return c.type === 'unit' && c.cost <= 3; });
+  const eDeck = Array.from({ length: 30 }, (_, i) => baratas[i % baratas.length]);
+  const state = newGame({ pSign: sign, eSign: foe, eDeck, eHp: VIDA_RIVAL_GUIADA, seed, record: false }).state;
+  const P = state.p;
+  const todas = [...P.hand.map(h => h.cid), ...P.deck].sort((a, b) => card(a).cost - card(b).cost);
+  const mao = todas.filter(k => card(k).type === 'unit').slice(0, P.hand.length);
+  for (const k of mao) todas.splice(todas.indexOf(k), 1);
+  P.hand = P.hand.map((h, i) => ({ ...h, cid: mao[i] }));
+  P.deck = todas.reverse(); // compra pelo fim: a próxima é a mais barata
+  return state;
 }
 
 /** Rival planeja em segredo e o jogador recebe a vez. */
@@ -428,7 +452,7 @@ function contarRodada(m: Match, frames: Frame[]): void {
 function frameMsg(f: Frame): string | null {
   for (const e of f.events) {
     switch (e.t) {
-      case 'Reveal': return T.invocou('O rival', name(e.cid));
+      case 'Reveal': return T.invocou(T.oRival, name(e.cid));
       case 'SpellResolved': return T.usou(who(e.side), name(e.cid));
       case 'SpellFizzled': return T.perdeuAlvo(name(e.cid), e.side === 'p' ? '(sua)' : 'do rival');
       case 'ArrivalResolved': return T.chegada(name(e.cid), e.side === 'p' ? 'seu' : 'do rival');
@@ -651,10 +675,20 @@ function render(): void {
   };
   const tut = M.confirma || M.g.phase === 'over' ? { html: '' }
     : tutorialHtml({ rodada: M.g.round, ocupado: M.busy, selecionou: M.sel !== null, jogou: M.plan.length > 0,
-      podeInvocar: M.g.p.hand.some(h => card(h.cid).type === 'unit' && costOf(M!.g.p, h.cid) <= M!.g.p.mana) });
+      podeInvocar: M.g.p.hand.some(h => card(h.cid).type === 'unit' && costOf(M!.g.p, h.cid) <= M!.g.p.mana),
+      carta: ((P: typeof v.s.p) => { const i = P.hand.findIndex(h => card(h.cid).type === 'unit' && costOf(P, h.cid) <= P.mana); return i < 0 ? null : i; })(v.s.p) });
   root.innerHTML = gameHtml(v) + tut.html + (M.confirma ? desistirHtml() : '') + (M.g.phase === 'over' && M.fim === 'pronto' ? endHtml(M.g, M.premio, botoesFim(M), M.cartasFim, botaoAnuncio(M)) : '');
   root.insertAdjacentHTML('beforeend', somHtml() + (revela ?? '') + (desafio && !desafio.saindo ? desafioHtml(desafio.cfg.signo, desafio.cfg.fase, desafio.cfg.deck) : ''));
-  if (tut.alvo) root.querySelectorAll(tut.alvo).forEach(el => el.classList.add('tut-alvo'));
+  if (tut.alvo) {
+    const alvos = [...root.querySelectorAll<HTMLElement>(tut.alvo)];
+    alvos.forEach(el => el.classList.add('tut-alvo'));
+    // mãozinha: na casa do meio da frente, se der; senão no primeiro alvo
+    const el = alvos.find(x => x.id === 'c-p-1-0') ?? alvos.find(x => /^c-p-\d-0$/.test(x.id)) ?? alvos[0];
+    if (tut.mao && el) {
+      if (getComputedStyle(el).position === 'static') el.style.position = 'relative';
+      el.insertAdjacentHTML('beforeend', '<span class="tut-mao" aria-hidden="true">👇</span>');
+    }
+  }
   reporMortos();
   const h2 = root.querySelector('.hand');
   if (h2) h2.scrollLeft = sl;
@@ -734,6 +768,7 @@ function fimDeJogo(m: Match): void {
 }
 
 /** Prêmio do fim da partida (Partida Rápida: Poeira; desistir não dá prêmio). Devolve o texto para a tela final. */
+const PREMIO_GUIADA = 100;
 function premiar(m: Match): string | undefined {
   // missões: tudo o que fez conta; partida e vitória só sem desistir
   emDia();
@@ -759,6 +794,11 @@ function premioDaPartida(m: Match): string | undefined {
       m.cartasFim = cartasGanhasHtml(r.cartas, r.novas);
     }
     return partes.join(' · ');
+  }
+  if (ultimo?.modo === 'tutorial') {
+    if (m.g.result !== 'p') return undefined;
+    mudarProgresso({ ...prog, poeira: prog.poeira + PREMIO_GUIADA });
+    return `+${PREMIO_GUIADA} ✨`;
   }
   if (ultimo?.modo !== 'rapida' || m.g.surrendered === 'p') return undefined;
   const r = premioRapida(prog, m.g.result === 'p', diaDe(new Date()));
@@ -866,6 +906,8 @@ function menuClick(a: string | undefined, t: HTMLElement): boolean {
         salvarDecks(meus);
       }
       tocar('vitoria');
+      // jogador novo: vai direto para a partida guiada (aprende jogando, antes de ver o menu cheio de opções)
+      if (tutorialPendente()) { void tryLandscape(); startMatch({ modo: 'tutorial', sign: s }); render(); return true; }
       render();
       aviso(T.bemVindoSigno(RACES[s].n));
       return true;

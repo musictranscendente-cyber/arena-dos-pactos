@@ -284,6 +284,7 @@ const T_PT = {
   aberturaPular: 'Pular',
   volta: 'volta',
   nv: 'Nv',
+  oRival: 'O rival',
   habilidades: 'Habilidades',
   envenenada: 'Envenenada',
   cfgIdioma: 'Idioma',
@@ -426,18 +427,19 @@ const T_PT = {
   nCartas: (n: number) => `${n} cartas`,
   temPremio: 'Tem prêmio para coletar!',
   tut: {
-    bemVindo: 'Bem-vindo à Arena! Você é o herói da <b>esquerda</b>. Derrube a vida do rival de 30 até 0.',
-    mana: 'Esta é a sua <b>mana</b>. Cada carta custa mana (o número azul). Ela aumenta 1 por rodada, até 9.',
-    escolha: 'Toque numa <b>carta da sua mão</b> que caiba na sua mana.',
-    casa: 'Agora toque numa <b>casa brilhante</b> do seu lado para invocar a criatura.',
-    batalha: 'Pronto! Aperte <b>Batalha!</b> O rival jogou em segredo ao mesmo tempo que você.',
-    ataque: 'Na Batalha, cada criatura ataca a primeira inimiga da <b>mesma fileira</b>. Fileira vazia = dano direto no herói!',
-    queimar: 'Faltou mana? <b>Queime</b> uma carta da mão: ganha +1 de mana nesta rodada (uma vez por rodada).',
-    detalhes: 'Toque numa criatura ou carta para ver os detalhes. Magias de cura e de comprar são preparadas direto da mão. Boa sorte!',
+    bemVindo: 'Bem-vindo à Arena! Você é o herói da <b>esquerda</b>. Zere os ❤️ do rival para vencer.',
+    escolha: 'Toque nesta <b>carta</b> para escolher a criatura.',
+    casa: 'Agora toque numa <b>casa brilhante</b> para invocá-la.',
+    batalha: 'Aperte <b>Batalha!</b> O rival jogou em segredo, ao mesmo tempo que você.',
+    ataque: 'Cada criatura ataca a inimiga da <b>mesma fileira</b>. Fileira vazia = dano direto no herói!',
+    mana: 'Sua <b>mana</b> sobe +1 a cada rodada: dá para jogar cartas mais fortes. Cada carta mostra o custo no número azul.',
+    queimar: 'Faltou mana? <b>Queime</b> uma carta da mão: +1 de mana nesta rodada (uma vez por rodada).',
+    detalhes: 'Toque numa criatura ou carta para ver o que ela faz. Agora é com você!',
     entendi: 'Entendi',
     fim: 'Vamos lá!',
     pular: 'Pular tutorial',
   },
+
 };
 
 export type TextosPT = typeof T_PT;
