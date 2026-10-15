@@ -1,4 +1,5 @@
 // Controla as telas e a partida contra a IA. Toda regra vem do motor; aqui só desenha e anima.
+import { baixarAtualizacao, temVersaoNova } from '../services/atualizacao';
 import { IDIOMA, trocarIdioma } from '../data/idioma';
 import { baseCid, card, cardsOfSign, comNivel, nivelDe } from '../data/cards';
 import type { Signo } from '../data/schema';
@@ -1175,6 +1176,16 @@ function keepScroll(): void {
 
 function emBreve(): void { aviso(`${ic('cadeado')} ${T.emBreveAviso}`); }
 
+/** Faixa "Nova versão disponível" (app Android pelo APK). Fica fora do #app para não sumir quando a tela é redesenhada. */
+function mostrarAtualizacao(): void {
+  const el = document.createElement('div');
+  el.className = 'atualizar';
+  el.innerHTML = `<span>🆕 ${T.novaVersao}</span><button class="btn go" type="button">${T.atualizar}</button><button class="at-fecha" type="button" aria-label="${T.fechar}">✕</button>`;
+  el.querySelector('.btn')!.addEventListener('click', () => { void baixarAtualizacao(); });
+  el.querySelector('.at-fecha')!.addEventListener('click', () => el.remove());
+  document.body.appendChild(el);
+}
+
 /** Aviso que aparece no meio da tela e some sozinho. */
 function aviso(txt: string): void {
   app().querySelector('.hub-aviso')?.remove();
@@ -1408,6 +1419,7 @@ export function startApp(): void {
   // jogador comum nunca fica com o Modo teste ligado
   if (!dev && prog.teste) mudarProgresso({ ...prog, teste: false });
   anotar('abriu');
+  void temVersaoNova().then(nova => { if (nova) mostrarAtualizacao(); });
   void iniciarAnuncios(pausarSom, () => { prog = lerProgresso(); meus = lerDecks(); perfil = lerPerfil(); if (!M) render(); }).then(() => { avisarCarregou(); if (temAnuncios() && M?.fim) render(); });
   // primeiro acesso do dia: já abre as missões com o prêmio do calendário
   emDia();

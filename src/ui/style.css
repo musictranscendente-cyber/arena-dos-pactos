@@ -2532,3 +2532,8 @@ body.palco #app .desafio{zoom:var(--zinv,1)}
   filter:drop-shadow(0 2px 3px #000a);animation:tut-mao .8s ease-in-out infinite alternate}
 @keyframes tut-mao{from{transform:translateY(-8px)}to{transform:translateY(2px)}}
 .hand .tut-mao{bottom:auto;top:-30px}
+/* app Android: faixa de versão nova */
+.atualizar{position:fixed;top:8px;left:50%;translate:-50% 0;z-index:9000;display:flex;align-items:center;gap:10px;padding:8px 10px 8px 14px;
+  border-radius:14px;background:linear-gradient(180deg,#3a1f78,#1d0f45);border:2px solid #e8b54a;color:#fff;font-weight:800;font-size:14px;box-shadow:0 6px 18px #000a;white-space:nowrap}
+.atualizar .btn{padding:6px 14px;font-size:14px}
+.atualizar .at-fecha{background:none;border:0;color:#fffa;font-size:16px;cursor:pointer;padding:4px}

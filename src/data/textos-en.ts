@@ -285,6 +285,8 @@ export const T_EN: TextosPT = {
   volta: 'returns',
   nv: 'Lv',
   oRival: 'The rival',
+  novaVersao: 'A new version of the game is available!',
+  atualizar: 'Update',
   dono: { seu: 'yours', sua: 'yours', rival: "rival's" },
   habilidades: 'Abilities',
   envenenada: 'Poisoned',
