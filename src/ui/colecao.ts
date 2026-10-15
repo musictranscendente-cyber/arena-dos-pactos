@@ -33,7 +33,8 @@ export function inicialHtml(): string {
 }
 
 export interface TelaColecao {
-  filtro: Signo | 'todas';
+  /** 'deck': só as cartas do deck em uso. */
+  filtro: Signo | 'todas' | 'deck';
   sel: string | null;
   msg: string;
   /** Filtros extras: nível (0 = todos), raridade e tipo. */
@@ -57,23 +58,28 @@ export function proximoFiltro(t: TelaColecao, qual: 'nivel' | 'rar' | 'tipo'): T
   return { ...t, tipo: ORDEM_TIPO[(ORDEM_TIPO.indexOf(t.tipo ?? 'todos') + 1) % ORDEM_TIPO.length] };
 }
 
-export function colecaoHtml(p: Progresso, t: TelaColecao): string {
+/** `deck`: cartas do deck em uso (com o nível de cada cópia), para o filtro "No deck". */
+export function colecaoHtml(p: Progresso, t: TelaColecao, deck: readonly string[] = []): string {
   const nvF = t.nivel ?? 0, rarF = t.rar ?? 'todas', tipoF = t.tipo ?? 'todos';
-  const bases = (t.filtro === 'todas' ? Object.keys(CARDS).filter(k => k !== ECO_ID) : cardsOfSign(t.filtro))
-    .filter(k => (rarF === 'todas' || CARDS[k].r === rarF) && (tipoF === 'todos' || CARDS[k].type === tipoF));
+  const doDeck = new Set(deck);
+  const lista = t.filtro === 'todas' ? Object.keys(CARDS).filter(k => k !== ECO_ID)
+    : t.filtro === 'deck' ? [...new Set(deck.map(baseCid))] : cardsOfSign(t.filtro);
+  const bases = lista.filter(k => (rarF === 'todas' || CARDS[k].r === rarF) && (tipoF === 'todos' || CARDS[k].type === tipoF));
   // cada nível que o jogador tem é uma carta separada (Basilisco Nv1 ×3 e Basilisco Nv2 ×1 são duas)
   const entradas: { id: string; n: number }[] = [];
+  const mostra = (id: string) => (!nvF || nivelDe(id) === nvF) && (t.filtro !== 'deck' || doDeck.has(id));
   for (const k of bases) {
     const ids = niveisQueTem(p, k);
-    if (ids.length) { for (const id of ids) if (!nvF || nivelDe(id) === nvF) entradas.push({ id, n: copiasNoNivel(p, id) }); }
-    else if (!nvF) entradas.push({ id: k, n: 0 });
+    if (ids.length) { for (const id of ids) if (mostra(id)) entradas.push({ id, n: copiasNoNivel(p, id) }); }
+    else if (mostra(k)) entradas.push({ id: k, n: 0 });
   }
   // as que dá para fundir agora primeiro, depois as que têm par, as que tem e as que faltam
   const peso = (e: { id: string; n: number }) => (!e.n ? 3 : !podeFundir(p, e.id, nivelDe(e.id)) ? 0 : e.n >= 2 && nivelDe(e.id) < NIVEL_MAX ? 1 : 2);
   entradas.sort((x, y) => peso(x) - peso(y) || ORDER.indexOf(card(x.id).race) - ORDER.indexOf(card(y.id).race)
     || card(x.id).cost - card(y.id).cost || baseCid(x.id).localeCompare(baseCid(y.id)) || nivelDe(y.id) - nivelDe(x.id));
   const tem = Object.keys(p.cartas).length;
-  const abas = [`<button class="c-aba${t.filtro === 'todas' ? ' on' : ''}" data-act="cfiltro" data-r="todas">${T.todas}</button>`]
+  const abas = (deck.length ? [`<button class="c-aba c-aba-deck${t.filtro === 'deck' ? ' on' : ''}" data-act="cfiltro" data-r="deck" title="${T.noDeck}">🃏 Deck</button>`] : [])
+    .concat(`<button class="c-aba${t.filtro === 'todas' ? ' on' : ''}" data-act="cfiltro" data-r="todas">${T.todas}</button>`)
     .concat(ORDER.map(k => `<button class="c-aba${t.filtro === k ? ' on' : ''}" data-act="cfiltro" data-r="${k}" style="--rc:${RACES[k].c}" title="${RACES[k].n}">${sgImg(k)}</button>`)).join('');
   const filtros = `<button class="c-aba c-ciclo${nvF ? ' on' : ''}" data-act="cnivel">${T.filtroNivel}: <b>${nvF ? `${T.nv}${nvF}` : T.todos}</b></button>`
     + `<button class="c-aba c-ciclo${rarF !== 'todas' ? ' on' : ''}" data-act="crar">${T.filtroRaridade}: <b>${rarF === 'todas' ? T.todas : NOMES_R[rarF]}</b></button>`

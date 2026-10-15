@@ -167,14 +167,14 @@ function figHtml(c: Card, cid: string, cell: { atk: boolean; strike: boolean }, 
       const ph = ((Date.now() / 1000 + uid * 0.77) % 3).toFixed(2);
       // a tira do golpe já fica na página, invisível: assim o navegador deixa ela pronta e a troca não pisca
       const espera = pronta(urlAtk) ? tiraHtml(urlAtk, an.ataque, base, '', 'ataque espera') : '';
-      return `<span class="fig has-anim" style="${sz}">${tiraHtml(animUrl(cid, c.race, 'idle'), an.idle, base, `--pa:-${ph}s`, 'idle')}${espera}</span>`;
+      return `<span class="fig has-anim" data-fk="${uid}:${cid}:i${espera ? '+' : ''}" style="${sz}">${tiraHtml(animUrl(cid, c.race, 'idle'), an.idle, base, `--pa:-${ph}s`, 'idle')}${espera}</span>`;
     }
     // o ataque continua do ponto certo quando a tela é redesenhada no quadro do golpe
     const delay = cell.strike ? -ATK_MS.start : 0;
-    return `<span class="fig has-anim" style="${sz}">${tiraHtml(urlAtk, an.ataque, base, `--pa:${delay}ms`, 'ataque')}</span>`;
+    return `<span class="fig has-anim" data-fk="${uid}:${cid}:a${cell.strike ? 's' : ''}" style="${sz}">${tiraHtml(urlAtk, an.ataque, base, `--pa:${delay}ms`, 'ataque')}</span>`;
   }
   const ar = ARTE[cid];
-  if (!ar) return `<span class="fig" style="${idlePhase(uid)};--s:${porte(cid, c.cost, c.r)}">${artOrEmoji(c)}</span>`;
+  if (!ar) return `<span class="fig" data-fk="${uid}:${cid}:e" style="${idlePhase(uid)};--s:${porte(cid, c.cost, c.r)}">${artOrEmoji(c)}</span>`;
   // a pose parada define o lugar da figura; a de ataque (mais larga, o golpe vai para a frente)
   // fica por cima, deslocada para o corpo não sair do lugar
   const podeGolpear = pronta(artUrl(cid, c.race, 'ataque'));
@@ -184,7 +184,7 @@ function figHtml(c: Card, cid: string, cell: { atk: boolean; strike: boolean }, 
   if (cell.atk || cell.strike) {
     h += `<img class="art ataque ${cell.strike ? '' : 'late'}" decoding="sync" src="${artUrl(cid, c.race, 'ataque')}" style="--rw:${ar[1]};--dx:${(ar[1] - ar[0]) / 2}" alt="">`;
   }
-  return `<span class="fig has-art" style="${idlePhase(uid)};--s:${escalaFig(c, cid)}">${h}</span>`;
+  return `<span class="fig has-art" data-fk="${uid}:${cid}:${mode || 'p'}" style="${idlePhase(uid)};--s:${escalaFig(c, cid)}">${h}</span>`;
 }
 
 const HEART_MAX = 30;

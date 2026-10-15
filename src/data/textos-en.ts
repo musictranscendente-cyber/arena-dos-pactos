@@ -285,6 +285,7 @@ export const T_EN: TextosPT = {
   volta: 'returns',
   nv: 'Lv',
   oRival: 'The rival',
+  dono: { seu: 'yours', sua: 'yours', rival: "rival's" },
   habilidades: 'Abilities',
   envenenada: 'Poisoned',
   cfgIdioma: 'Language',

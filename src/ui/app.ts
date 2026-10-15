@@ -360,7 +360,7 @@ async function battle(): Promise<void> {
     if (inv && inv.t === 'Attack') {
       m.active = [{ side: inv.side, l: inv.l, d: inv.d }];
       m.striking = null;
-      m.msg = T.investidaMsg(name(inv.cid), inv.side === 'p' ? 'sua' : 'do rival');
+      m.msg = T.investidaMsg(name(inv.cid), inv.side === 'p' ? T.dono.sua : T.dono.rival);
       render();
       avisoInvestida(`c-${inv.side}-${inv.l}-${inv.d}`);
       const t = PAUSE['step-start'] * (reduce ? 0.4 : 1);
@@ -371,7 +371,7 @@ async function battle(): Promise<void> {
     if (f.kind === 'ferrao') {
       m.active = null;
       m.striking = null;
-      for (const e of f.events) if (e.t === 'Sting') { m.msg = T.ferraoMsg(name(e.cid), e.from.side === 'p' ? 'seu' : 'do rival'); }
+      for (const e of f.events) if (e.t === 'Sting') { m.msg = T.ferraoMsg(name(e.cid), e.from.side === 'p' ? T.dono.seu : T.dono.rival); }
       render();
       await sleep(FERRAO_ESPERA_MS); if (m.abortado) return;
       for (const e of f.events) if (e.t === 'Sting') animaFerrao(e);
@@ -454,8 +454,8 @@ function frameMsg(f: Frame): string | null {
     switch (e.t) {
       case 'Reveal': return T.invocou(T.oRival, name(e.cid));
       case 'SpellResolved': return T.usou(who(e.side), name(e.cid));
-      case 'SpellFizzled': return T.perdeuAlvo(name(e.cid), e.side === 'p' ? '(sua)' : 'do rival');
-      case 'ArrivalResolved': return T.chegada(name(e.cid), e.side === 'p' ? 'seu' : 'do rival');
+      case 'SpellFizzled': return T.perdeuAlvo(name(e.cid), e.side === 'p' ? `(${T.dono.sua})` : T.dono.rival);
+      case 'ArrivalResolved': return T.chegada(name(e.cid), e.side === 'p' ? T.dono.seu : T.dono.rival);
     }
   }
   if (f.kind === 'spells') return T.magias;
@@ -632,7 +632,16 @@ function marcarNovasVistas(): void {
   vistaAntes = agora;
 }
 
+/** Janelas com rolagem que não podem voltar para o topo quando a tela é redesenhada (ex.: coletar uma missão). */
+const ROLAGENS = ['.ov.missoes', '.ov.missoes .panel', '.ov.config', '.ov.config .panel'];
+
 function render(): void {
+  const antes = ROLAGENS.map(s => document.querySelector(s)?.scrollTop ?? 0);
+  desenhar();
+  ROLAGENS.forEach((s, i) => { const el = document.querySelector(s); if (el && antes[i]) el.scrollTop = antes[i]; });
+}
+
+function desenhar(): void {
   // login obrigatório: sem conta, só aparece a tela de entrada
   if (nuvemAtiva() && !logado() && !convidado && !M) {
     app().innerHTML = entrarHtml(entrarComEmail, avisoCfg);
@@ -651,7 +660,7 @@ function render(): void {
     root.innerHTML = gal ? galleryHtml(gal, galSel)
       : tela === 'montar' && montagem ? montarHtml(montagem, meus.decks, meus.ativo, prog)
       : tela === 'conhecer' ? startHtml(new Date())
-      : tela === 'colecao' ? colecaoHtml(prog, telaColecao)
+      : tela === 'colecao' ? colecaoHtml(prog, telaColecao, deckAtivo(meus)?.cartas)
       : tela === 'campanha' ? campanhaHtml(prog, telaCamp, deckAtivo(meus))
       : tela === 'pacotes' ? hubHtml(new Date(), deckAtivo(meus), prog, temColeta(prog, hoje()), perfil.nome) + pacotesHtml(prog, telaPacotes)
       : hubHtml(new Date(), deckAtivo(meus), prog, temColeta(prog, hoje()), perfil.nome) + dlg + (prog.inicial ? '' : inicialHtml());
@@ -677,7 +686,15 @@ function render(): void {
     : tutorialHtml({ rodada: M.g.round, ocupado: M.busy, selecionou: M.sel !== null, jogou: M.plan.length > 0,
       podeInvocar: M.g.p.hand.some(h => card(h.cid).type === 'unit' && costOf(M!.g.p, h.cid) <= M!.g.p.mana),
       carta: ((P: typeof v.s.p) => { const i = P.hand.findIndex(h => card(h.cid).type === 'unit' && costOf(P, h.cid) <= P.mana); return i < 0 ? null : i; })(v.s.p) });
+  // guarda as figuras das criaturas que já estão na tela: as que não mudaram voltam no lugar das novas
+  // (sem recriar as imagens, que piscavam no celular quando a rodada virava)
+  const figs = new Map<string, Element>();
+  root.querySelectorAll('.cell .fig[data-fk]').forEach(f => figs.set(`${f.closest('.cell')?.id}|${f.getAttribute('data-fk')}`, f));
   root.innerHTML = gameHtml(v) + tut.html + (M.confirma ? desistirHtml() : '') + (M.g.phase === 'over' && M.fim === 'pronto' ? endHtml(M.g, M.premio, botoesFim(M), M.cartasFim, botaoAnuncio(M)) : '');
+  root.querySelectorAll('.cell .fig[data-fk]').forEach(f => {
+    const velha = figs.get(`${f.closest('.cell')?.id}|${f.getAttribute('data-fk')}`);
+    if (velha) f.replaceWith(velha);
+  });
   root.insertAdjacentHTML('beforeend', somHtml() + (revela ?? '') + (desafio && !desafio.saindo ? desafioHtml(desafio.cfg.signo, desafio.cfg.fase, desafio.cfg.deck) : ''));
   if (tut.alvo) {
     const alvos = [...root.querySelectorAll<HTMLElement>(tut.alvo)];
@@ -892,7 +909,7 @@ function menuClick(a: string | undefined, t: HTMLElement): boolean {
       mostrarDesafio({ modo: 'campanha', deck: d, signo: telaCamp.signo, fase: telaCamp.fase });
       return true;
     }
-    case 'colecao': tela = 'colecao'; telaColecao = { filtro: prog.inicial ?? 'todas', sel: null, msg: '' }; render(); return true;
+    case 'colecao': tela = 'colecao'; telaColecao = { filtro: deckAtivo(meus)?.cartas.length ? 'deck' : prog.inicial ?? 'todas', sel: null, msg: '' }; render(); return true;
     case 'pacotes': tela = 'pacotes'; telaPacotes = { aberto: null, qtd: 1, confirmar: false }; render(); return true;
     case 'inicial': {
       const s = t.dataset.r as Signo;
@@ -918,7 +935,7 @@ function menuClick(a: string | undefined, t: HTMLElement): boolean {
       aviso(prog.teste ? T.modoTesteLigado : T.modoTesteDesligado);
       return true;
     case 'teste-poeira': if (prog.teste) { mudarProgresso({ ...prog, poeira: prog.poeira + 1000 }); render(); } return true;
-    case 'cfiltro': telaColecao = { ...telaColecao, filtro: t.dataset.r as Signo | 'todas', sel: null, msg: '' }; render(); return true;
+    case 'cfiltro': telaColecao = { ...telaColecao, filtro: t.dataset.r as TelaColecao['filtro'], sel: null, msg: '' }; render(); return true;
     case 'cnivel': telaColecao = proximoFiltro(telaColecao, 'nivel'); render(); return true;
     case 'crar': telaColecao = proximoFiltro(telaColecao, 'rar'); render(); return true;
     case 'ctipo': telaColecao = proximoFiltro(telaColecao, 'tipo'); render(); return true;

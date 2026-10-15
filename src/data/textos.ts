@@ -285,6 +285,8 @@ const T_PT = {
   volta: 'volta',
   nv: 'Nv',
   oRival: 'O rival',
+  /** De quem é a carta, no meio das mensagens da Batalha. */
+  dono: { seu: 'seu', sua: 'sua', rival: 'do rival' },
   habilidades: 'Habilidades',
   envenenada: 'Envenenada',
   cfgIdioma: 'Idioma',
