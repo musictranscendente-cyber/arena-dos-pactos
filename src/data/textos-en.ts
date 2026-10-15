@@ -227,7 +227,7 @@ export const T_EN: TextosPT = {
   comoFundir: 'How to fuse',
   comoFunciona: 'How it works',
   ajudaCampanha: (n: string) => `Win a stage to unlock the next one. The 1st win gives Stardust ✨ and 1 ${n} card (the boss also gives 1 epic and 💎); replaying gives +10 ✨. Stage 5 is the guardian and stage 10 is the world boss.`,
-  legendaFase: "🧠 AI difficulty · 🃏 rival's card level · ❤️ rival's health · 🎁 1st-win reward",
+  legendaFase: "🧠 AI difficulty · 🎴 rival's card level · ❤️ rival's health · 🎁 1st-win reward",
   umaCarta: '1 card',
   umaEpica: '1 epic',
   outrosNiveis: 'Other levels:',

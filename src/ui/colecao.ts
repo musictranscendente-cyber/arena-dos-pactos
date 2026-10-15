@@ -78,7 +78,7 @@ export function colecaoHtml(p: Progresso, t: TelaColecao, deck: readonly string[
   entradas.sort((x, y) => peso(x) - peso(y) || ORDER.indexOf(card(x.id).race) - ORDER.indexOf(card(y.id).race)
     || card(x.id).cost - card(y.id).cost || baseCid(x.id).localeCompare(baseCid(y.id)) || nivelDe(y.id) - nivelDe(x.id));
   const tem = Object.keys(p.cartas).length;
-  const abas = (deck.length ? [`<button class="c-aba c-aba-deck${t.filtro === 'deck' ? ' on' : ''}" data-act="cfiltro" data-r="deck" title="${T.noDeck}">🃏 Deck</button>`] : [])
+  const abas = (deck.length ? [`<button class="c-aba c-aba-deck${t.filtro === 'deck' ? ' on' : ''}" data-act="cfiltro" data-r="deck" title="${T.noDeck}">${ic('carta')} Deck</button>`] : [])
     .concat(`<button class="c-aba${t.filtro === 'todas' ? ' on' : ''}" data-act="cfiltro" data-r="todas">${T.todas}</button>`)
     .concat(ORDER.map(k => `<button class="c-aba${t.filtro === k ? ' on' : ''}" data-act="cfiltro" data-r="${k}" style="--rc:${RACES[k].c}" title="${RACES[k].n}">${sgImg(k)}</button>`)).join('');
   const filtros = `<button class="c-aba c-ciclo${nvF ? ' on' : ''}" data-act="cnivel">${T.filtroNivel}: <b>${nvF ? `${T.nv}${nvF}` : T.todos}</b></button>`

@@ -227,7 +227,7 @@ const T_PT = {
   comoFundir: 'Como fundir',
   comoFunciona: 'Como funciona',
   ajudaCampanha: (n: string) => `Vença uma fase para liberar a próxima. A 1ª vitória dá Poeira ✨ e 1 carta de ${n} (o chefe dá também 1 épica e 💎); repetir dá +10 ✨. A fase 5 é o guardião e a 10 é o chefe do mundo.`,
-  legendaFase: '🧠 dificuldade da IA · 🃏 nível das cartas do rival · ❤️ vida do rival · 🎁 prêmio da 1ª vitória',
+  legendaFase: '🧠 dificuldade da IA · 🎴 nível das cartas do rival · ❤️ vida do rival · 🎁 prêmio da 1ª vitória',
   umaCarta: '1 carta',
   umaEpica: '1 épica',
   outrosNiveis: 'Outros níveis:',

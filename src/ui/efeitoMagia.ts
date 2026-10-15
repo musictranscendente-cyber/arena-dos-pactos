@@ -1,4 +1,5 @@
 // Efeito visual de magia na Batalha: a animação da magia toca sobre o alvo (criatura, fileira ou herói).
+import { ic } from './icones';
 import { card } from '../data/cards';
 import { MAGIA, MAGIA_LIVRE, magiaUrl } from '../data/arte';
 import { RACES } from '../data/signos';
@@ -46,7 +47,7 @@ function anunciar(root: HTMLElement, e: Extract<GameEvent, { t: 'SpellResolved' 
     ico = '❤️'; num = `+${n}`; txt = T.efeito.cura(e.side, n); cls = 'cura'; destino = `hero-${e.side}`;
   } else if (c.sp === 'draw') {
     const n = events.filter(x => x.t === 'CardDrawn' && x.side === e.side).length;
-    ico = '🃏'; num = `+${n}`; txt = T.efeito.compra(e.side, n); cls = 'compra'; destino = e.side === 'p' ? 'mao' : `hero-${e.side}`;
+    ico = ic('carta'); num = `+${n}`; txt = T.efeito.compra(e.side, n); cls = 'compra'; destino = e.side === 'p' ? 'mao' : `hero-${e.side}`;
   } else if (c.sp === 'face') {
     const n = events.filter(x => x.t === 'HeroDamaged' && x.side === foe).reduce((a, x) => a + (x.t === 'HeroDamaged' ? x.amount : 0), 0);
     ico = '💥'; num = `-${n}`; txt = T.efeito.dano(foe, n); cls = 'dano'; destino = `hero-${foe}`;
@@ -68,7 +69,7 @@ function anunciar(root: HTMLElement, e: Extract<GameEvent, { t: 'SpellResolved' 
     const q = center(alvo, root);
     const voo = document.createElement('div');
     voo.className = `voo-efeito ${cls}`;
-    voo.textContent = ico;
+    voo.innerHTML = ico;
     voo.style.cssText = `left:${p.x}px;top:${p.y}px;--dx:${q.x - p.x}px;--dy:${q.y - p.y}px`;
     root.appendChild(voo);
     setTimeout(() => voo.remove(), 650);

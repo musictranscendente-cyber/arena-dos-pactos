@@ -7,7 +7,7 @@ import { RACES } from '../data/signos';
 import { T } from '../data/textos';
 import type { DeckMontado } from '../engine';
 import { fase, FASES, nivelMedioDeck } from '../meta/campanha';
-import { sg as sgImg } from './icones';
+import { ic, sg as sgImg } from './icones';
 import { criatura, nomeDeckMontado } from './menu';
 
 /** Quanto tempo a tela fica antes de entrar sozinha na arena (ms). */
@@ -44,6 +44,6 @@ export function desafioHtml(signo: Signo, n: number, deck: DeckMontado, saindo =
     + '<div class="df-vs">VS</div>'
     + `<div class="df-lado df-rival"><div class="df-fig">${criatura(fr, 'df-img', true) || (CARDS[fr]?.e ? `<span class="df-emoji">${CARDS[fr].e}</span>` : sgImg(signo, 'df-emoji'))}</div>`
     + `<span class="df-sg">${sg(signo)}</span><b>${rival}</b>`
-    + `<small><span>🧠 ${T.nivelNome[f.nivelIA]}</span> <span>🃏 ${T.nv}${f.nivelCartas}</span> <span>❤️ ${f.vidaRival}</span></small></div>`
+    + `<small><span>🧠 ${T.nivelNome[f.nivelIA]}</span> <span>${ic('carta')} ${T.nv}${f.nivelCartas}</span> <span>❤️ ${f.vidaRival}</span></small></div>`
     + `<div class="df-dica">${T.toqueParaLutar}</div><div class="df-barra"><i></i></div></div>`;
 }
