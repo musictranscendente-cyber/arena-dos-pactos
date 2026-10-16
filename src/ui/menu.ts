@@ -29,6 +29,12 @@ import { moedasHtml, NOMES_R } from './colecao';
 import { copiasNoNivel, copiasParaDeck, niveisQueTem, type Progresso } from '../meta/progresso';
 
 /** Criatura de pé numa ilha (arte parada); `vira` espelha para ela olhar para a esquerda. */
+/**
+ * Atraso negativo de uma animação em loop calculado pelo relógio: o menu é redesenhado a cada janela que abre ou
+ * fecha, e com um atraso fixo o movimento recomeçava (as ilhas e o céu davam um pulinho). Assim continua do ponto certo.
+ */
+const fase = (periodo: number, extra = 0): string => `-${((Date.now() / 1000 + extra) % periodo).toFixed(2)}s`;
+
 export function criatura(cid: string, cls = '', vira = false): string {
   const c = CARDS[cid];
   if (!c || !ARTE[cid]) return '';
@@ -49,13 +55,13 @@ interface Ilha {
 function ilhaHtml(i: Ilha, k: number): string {
   const arte = ARTES[i.act];
   if (arte) {
-    return `<button class="ilha ilha-arte ${i.cls ?? ''}${i.breve ? ' breve' : ''}" data-act="${i.act}" style="--x:${i.x}%;--y:${i.y}%;--d:${(k % 4) * -1.3}s" aria-label="${i.nome}${i.sub ? `: ${i.sub}` : ''}${i.breve ? ` (${T.emBreve})` : ''}">`
+    return `<button class="ilha ilha-arte ${i.cls ?? ''}${i.breve ? ' breve' : ''}" data-act="${i.act}" style="--x:${i.x}%;--y:${i.y}%;--d:${fase(6, k * 1.3)}" aria-label="${i.nome}${i.sub ? `: ${i.sub}` : ''}${i.breve ? ` (${T.emBreve})` : ''}">`
       + `<img src="${arte}" alt="" draggable="false">`
       + `<span class="placa"><i class="pl-gema c" aria-hidden="true"></i><i class="pl-gema b" aria-hidden="true"></i><b>${i.nome}</b>${i.sub ? `<small>${i.sub}</small>` : ''}</span>`
       + (i.breve ? `<span class="cadeado" aria-hidden="true">${ic('cadeado')}<small>${T.emBreve}</small></span>` : '')
       + '</button>';
   }
-  return `<button class="ilha ${i.cls ?? ''}${i.breve ? ' breve' : ''}" data-act="${i.act}" style="--x:${i.x}%;--y:${i.y}%;--w:${i.w};--d:${(k % 4) * -1.3}s" aria-label="${i.nome}${i.breve ? ` (${T.emBreve})` : ''}">`
+  return `<button class="ilha ${i.cls ?? ''}${i.breve ? ' breve' : ''}" data-act="${i.act}" style="--x:${i.x}%;--y:${i.y}%;--w:${i.w};--d:${fase(6, k * 1.3)}" aria-label="${i.nome}${i.breve ? ` (${T.emBreve})` : ''}">`
     + `<span class="ilha-figs">${i.figs}</span><span class="ilha-rocha"><i></i></span>`
     + `<span class="placa"><i class="pl-gema c" aria-hidden="true"></i><i class="pl-gema b" aria-hidden="true"></i><b>${i.nome}</b>${i.sub ? `<small>${i.sub}</small>` : ''}</span>`
     + (i.breve ? `<span class="cadeado" aria-hidden="true">${ic('cadeado')}<small>${T.emBreve}</small></span>` : '')
@@ -89,7 +95,7 @@ export function hubHtml(now: Date, deck: DeckMontado | null, prog: Progresso, al
   const r = RACES[avatar];
   const estrelasTotais = MUNDOS.reduce((t, sg) => t + estrelasDoMundo(prog, sg), 0), cartasTem = Object.keys(prog.cartas).length;
   return `<div class="hub hub-v2" style="--rc:${r.c}">`
-    + '<div class="hub-ceu"></div><div class="hub-brilho"></div>'
+    + `<div class="hub-ceu" style="animation-delay:${fase(80)}"></div><div class="hub-brilho"></div>`
     // canto de cima à esquerda: Coleção e Pacotes; no meio, a logo
     + `<div class="hub-col esq"><button class="hub-bt hub-bt-arte" data-act="colecao"><img src="${icColecao}" alt="" draggable="false"><b>${T.colecao}</b></button>`
     + `<button class="hub-bt hub-bt-arte" data-act="pacotes"><img src="${icPacotes}" alt="" draggable="false"><b>${T.pacotes}</b></button></div>`

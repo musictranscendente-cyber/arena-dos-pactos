@@ -162,16 +162,15 @@ function figHtml(c: Card, cid: string, cell: { atk: boolean; strike: boolean }, 
     const ox = CENTRO[cid]?.[0] ?? 0;
     const sz = `--s:${escalaFig(c, cid)};--ox:${ox}`;
     const urlAtk = animUrl(cid, c.race, 'ataque');
-    // só troca para o golpe se a imagem dele já carregou; senão continua respirando
-    if ((!cell.atk && !cell.strike) || !pronta(urlAtk)) {
-      const ph = ((Date.now() / 1000 + uid * 0.77) % 3).toFixed(2);
-      // a tira do golpe já fica na página, invisível: assim o navegador deixa ela pronta e a troca não pisca
-      const espera = pronta(urlAtk) ? tiraHtml(urlAtk, an.ataque, base, '', 'ataque espera') : '';
-      return `<span class="fig has-anim" data-fk="${uid}:${cid}:i${espera ? '+' : ''}" style="${sz}">${tiraHtml(animUrl(cid, c.race, 'idle'), an.idle, base, `--pa:-${ph}s`, 'idle')}${espera}</span>`;
-    }
-    // o ataque continua do ponto certo quando a tela é redesenhada no quadro do golpe
-    const delay = cell.strike ? -ATK_MS.start : 0;
-    return `<span class="fig has-anim" data-fk="${uid}:${cid}:a${cell.strike ? 's' : ''}" style="${sz}">${tiraHtml(urlAtk, an.ataque, base, `--pa:${delay}ms`, 'ataque')}</span>`;
+    // as duas tiras (respirando e golpe) ficam sempre dentro da figura e só a visível muda: trocar uma imagem
+    // por outra no celular deixa a criatura em branco por um instante (piscava, principalmente na virada da rodada)
+    const pronto = pronta(urlAtk);
+    const atacando = pronto && (cell.atk || cell.strike);
+    const ph = ((Date.now() / 1000 + uid * 0.77) % 3).toFixed(2);
+    const idle = tiraHtml(animUrl(cid, c.race, 'idle'), an.idle, base, `--pa:-${ph}s`, atacando ? 'idle oculta' : 'idle');
+    // o golpe continua do ponto certo quando a tela é redesenhada no quadro do golpe
+    const golpe = pronto ? tiraHtml(urlAtk, an.ataque, base, `--pa:${cell.strike ? -ATK_MS.start : 0}ms`, atacando ? 'ataque' : 'ataque espera') : '';
+    return `<span class="fig has-anim" data-fk="${uid}:${cid}:${pronto ? 2 : 1}" style="${sz}">${idle}${golpe}</span>`;
   }
   const ar = ARTE[cid];
   if (!ar) return `<span class="fig" data-fk="${uid}:${cid}:e" style="${idlePhase(uid)};--s:${porte(cid, c.cost, c.r)}">${artOrEmoji(c)}</span>`;
@@ -181,10 +180,11 @@ function figHtml(c: Card, cid: string, cell: { atk: boolean; strike: boolean }, 
   if (!podeGolpear) cell = { atk: false, strike: false };
   const mode = cell.strike ? 'gone' : cell.atk ? 'wind' : '';
   let h = `<img class="art parado ${mode}" decoding="sync" src="${artUrl(cid, c.race, 'parado')}" style="--rw:${ar[0]};${idlePhase(uid)}" alt="">`;
-  if (cell.atk || cell.strike) {
-    h += `<img class="art ataque ${cell.strike ? '' : 'late'}" decoding="sync" src="${artUrl(cid, c.race, 'ataque')}" style="--rw:${ar[1]};--dx:${(ar[1] - ar[0]) / 2}" alt="">`;
+  // a pose de golpe fica sempre na figura (escondida quando não ataca): trocar imagens pisca no celular
+  if (podeGolpear) {
+    h += `<img class="art ataque ${cell.strike ? '' : cell.atk ? 'late' : 'oculta'}" decoding="sync" src="${artUrl(cid, c.race, 'ataque')}" style="--rw:${ar[1]};--dx:${(ar[1] - ar[0]) / 2}" alt="">`;
   }
-  return `<span class="fig has-art" data-fk="${uid}:${cid}:${mode || 'p'}" style="${idlePhase(uid)};--s:${escalaFig(c, cid)}">${h}</span>`;
+  return `<span class="fig has-art" data-fk="${uid}:${cid}:${podeGolpear ? 2 : 1}" style="${idlePhase(uid)};--s:${escalaFig(c, cid)}">${h}</span>`;
 }
 
 const HEART_MAX = 30;

@@ -272,6 +272,24 @@ function partidaGuiada(sign: Signo, seed: number): GameState {
   return state;
 }
 
+/**
+ * Põe a figura antiga (com as imagens já prontas) no lugar da nova, com as classes e estilos da nova.
+ * Os estilos trazem a fase das animações calculada pelo relógio (ver idlePhase em desenho.ts): ao voltar para a
+ * tela a animação recomeça, mas exatamente no ponto em que estaria, então nada pula.
+ * Só vale se as duas têm a mesma estrutura (mesmas imagens); senão fica a nova.
+ */
+function reaproveitar(velha: Element, nova: Element): boolean {
+  const a = [velha, ...velha.querySelectorAll('*')], b = [nova, ...nova.querySelectorAll('*')];
+  if (a.length !== b.length || a.some((x, i) => x.tagName !== b[i].tagName || x.getAttribute('src') !== b[i].getAttribute('src'))) return false;
+  a.forEach((x, i) => {
+    for (const at of ['class', 'style']) {
+      const v = b[i].getAttribute(at);
+      if (v === null) x.removeAttribute(at); else if (x.getAttribute(at) !== v) x.setAttribute(at, v);
+    }
+  });
+  return true;
+}
+
 /** Rival planeja em segredo e o jogador recebe a vez. */
 function beginPlanning(tickEvents: GameEvent[]): void {
   const m = M!;
@@ -718,10 +736,22 @@ function desenhar(): void {
   // (sem recriar as imagens, que piscavam no celular quando a rodada virava)
   const figs = new Map<string, Element>();
   root.querySelectorAll('.cell .fig[data-fk]').forEach(f => figs.set(`${f.closest('.cell')?.id}|${f.getAttribute('data-fk')}`, f));
+  // as outras imagens (cartas da mão, heróis, ícones) também voltam no lugar das novas iguais, já prontas
+  const imgs = new Map<string, HTMLImageElement[]>();
+  root.querySelectorAll<HTMLImageElement>('img').forEach(im => {
+    if (im.closest('.cell')) return; // as das criaturas já foram tratadas acima (e as que estão morrendo ficam com as delas)
+    const k = im.getAttribute('src') ?? '';
+    (imgs.get(k) ?? imgs.set(k, []).get(k)!).push(im);
+  });
   root.innerHTML = gameHtml(v) + tut.html + (M.confirma ? desistirHtml() : '') + (M.g.phase === 'over' && M.fim === 'pronto' ? endHtml(M.g, M.premio, botoesFim(M), M.cartasFim, botaoAnuncio(M)) : '');
   root.querySelectorAll('.cell .fig[data-fk]').forEach(f => {
     const velha = figs.get(`${f.closest('.cell')?.id}|${f.getAttribute('data-fk')}`);
-    if (velha) f.replaceWith(velha);
+    if (velha && reaproveitar(velha, f)) f.replaceWith(velha);
+  });
+  root.querySelectorAll<HTMLImageElement>('img').forEach(im => {
+    if (im.closest('.cell')) return; // as das criaturas já foram tratadas acima (e as que estão morrendo ficam com as delas)
+    const velha = imgs.get(im.getAttribute('src') ?? '')?.shift();
+    if (velha && reaproveitar(velha, im)) im.replaceWith(velha);
   });
   root.insertAdjacentHTML('beforeend', somHtml() + (revela ?? '') + (desafio && !desafio.saindo ? desafioHtml(desafio.cfg.signo, desafio.cfg.fase, desafio.cfg.deck) : ''));
   if (tut.alvo) {

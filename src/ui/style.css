@@ -2535,3 +2535,6 @@ body.palco #app .desafio{zoom:var(--zinv,1)}
   border-radius:14px;background:linear-gradient(180deg,#3a1f78,#1d0f45);border:2px solid #e8b54a;color:#fff;font-weight:800;font-size:14px;box-shadow:0 6px 18px #000a;white-space:nowrap}
 .atualizar .btn{padding:6px 14px;font-size:14px}
 .atualizar .at-fecha{background:none;border:0;color:#fffa;font-size:16px;cursor:pointer;padding:4px}
+/* as duas poses ficam sempre na figura; a que não está em uso fica invisível (trocar imagens pisca no celular) */
+.unit .fig.has-anim .spr.idle.oculta{opacity:0}
+.unit .fig.has-art .art.ataque.oculta{opacity:0;animation:none}
