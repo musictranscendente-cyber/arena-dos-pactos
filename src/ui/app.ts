@@ -587,24 +587,51 @@ function showFx(events: GameEvent[]): void {
       if (e.t === 'HeroDamaged') golpeNoHeroi(e.side, e.amount);
     }
     if (fx[2] === 'buff' || fx[2] === 'sh ganho') {
-      // fortalecer: coluna de luz dourada com setas subindo e a criatura brilhando
-      const au = document.createElement('span');
-      au.className = fx[2] === 'buff' ? 'buff-aura' : 'buff-aura escudo';
-      au.innerHTML = '<i></i><i></i><i></i>';
-      el.appendChild(au);
+      // fortalecer: coluna de luz dourada com setas subindo, por cima da criatura (a animação dela não muda)
+      efeitoNaCasa(fx[0], fx[2] === 'buff' ? 'buff-aura' : 'buff-aura escudo', '<i></i><i></i><i></i>', 1200);
       el.classList.add('fortalecida');
-      setTimeout(() => { au.remove(); el.classList.remove('fortalecida'); }, 1200);
+      setTimeout(() => el.classList.remove('fortalecida'), 1200);
     }
     if (e.t === 'HeroHealed') {
       const hc = el.closest<HTMLElement>('.hcard');
       if (hc) { hc.classList.add('curado'); setTimeout(() => hc.classList.remove('curado'), 900); }
     }
-    const s = document.createElement('span');
-    s.className = 'fx ' + fx[2];
-    s.textContent = fx[1];
-    el.appendChild(s);
-    setTimeout(() => s.remove(), 1100);
+    efeitoNaCasa(fx[0], 'fx ' + fx[2], fx[1].replace(/&/g, '&amp;').replace(/</g, '&lt;'), 1100);
   }
+}
+
+/*
+ * Efeitos que ficam um tempo na casa (números flutuantes, luz de fortalecer). A tela é redesenhada a todo momento
+ * (um toque numa carta já redesenha): sem isto o efeito sumia no meio e o próximo começava do zero, e as criaturas
+ * pareciam piscar. Cada efeito guarda quando começou e, depois de cada redesenho, volta do ponto em que estava.
+ */
+interface EfeitoAtivo { id: string; cls: string; html: string; t0: number; dur: number; k: number }
+let efeitosAtivos: EfeitoAtivo[] = [];
+let efeitoSeq = 0;
+
+function efeitoNaCasa(id: string, cls: string, html: string, dur: number): void {
+  const e: EfeitoAtivo = { id, cls, html, t0: performance.now(), dur, k: ++efeitoSeq };
+  efeitosAtivos.push(e);
+  porEfeito(e, 0);
+}
+
+function porEfeito(e: EfeitoAtivo, passou: number): void {
+  const alvo = document.getElementById(e.id);
+  if (!alvo) return;
+  const s = document.createElement('span');
+  s.className = e.cls;
+  s.dataset.efeito = String(e.k);
+  s.innerHTML = e.html;
+  if (passou > 0) s.style.animationDelay = `-${Math.round(passou)}ms`;
+  alvo.appendChild(s);
+  setTimeout(() => s.remove(), Math.max(0, e.dur - passou));
+}
+
+/** Depois de redesenhar a partida: devolve os efeitos que ainda não terminaram, continuando de onde estavam. */
+function reporEfeitos(): void {
+  const agora = performance.now();
+  efeitosAtivos = efeitosAtivos.filter(e => agora - e.t0 < e.dur);
+  for (const e of efeitosAtivos) if (!document.querySelector(`[data-efeito="${e.k}"]`)) porEfeito(e, agora - e.t0);
 }
 
 /* ---------- desenho ---------- */
@@ -708,6 +735,7 @@ function desenhar(): void {
     }
   }
   reporMortos();
+  reporEfeitos();
   const h2 = root.querySelector('.hand');
   if (h2) h2.scrollLeft = sl;
   ajustarZooms(root);
