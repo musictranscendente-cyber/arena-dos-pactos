@@ -24,7 +24,7 @@ import { configHtml } from './config';
 import { entrarEmail, entrarGoogle, iniciarNuvem, logado, nuvemAtiva, restaurarBackup, sair } from '../services/nuvem';
 import { entrarHtml } from './entrar';
 import { anotar } from '../services/estatisticas';
-import { noCrazyGames, anuncioIntervalo, anuncioRecompensa, avisarCarregou, avisarJogando, iniciarAnuncios, temAnuncios } from '../services/anuncios';
+import { emPortal, anuncioIntervalo, anuncioRecompensa, avisarCarregou, avisarJogando, iniciarAnuncios, temAnuncios } from '../services/anuncios';
 import { lerPerfil, salvarPerfil } from '../services/perfil';
 import { avisoHtml, dificuldadeHtml, hubHtml, montarHtml, regrasHtml, type Montagem } from './menu';
 import { deckAtivo, lerDecks, salvarDecks } from '../services/deckSalvo';
@@ -131,7 +131,7 @@ let perfil = lerPerfil(), avisoCfg = '';
 let entrarComEmail = false;
 /** Escolheu jogar sem conta (dá para entrar depois pelas Configurações). */
 // dentro do CrazyGames não há login próprio (regra do portal): joga direto, progresso no aparelho
-let convidado = lerConvidado() || noCrazyGames();
+let convidado = lerConvidado() || emPortal();
 /** Modo desenvolvedor: mostra o Modo teste (7 toques na versão, nas Configurações). */
 let dev = lerDev(), toquesVersao = 0;
 /** Última dificuldade escolhida na Partida Rápida. */

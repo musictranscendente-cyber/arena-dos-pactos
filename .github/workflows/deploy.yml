@@ -30,6 +30,9 @@ jobs:
       # versão para o CrazyGames: gera o zip e deixa para baixar em /baixar/cosmic-citadel-crazygames.zip
       - run: npm run build:crazy
       - run: mkdir -p dist/baixar && cd dist-crazygames && zip -qr ../dist/baixar/cosmic-citadel-crazygames.zip .
+      # versões para o GameDistribution e o itch.io: /baixar/cosmic-citadel-gamedistribution.zip e cosmic-citadel-itch.zip
+      - run: npm run build:gd && cd dist-gd && zip -qr ../dist/baixar/cosmic-citadel-gamedistribution.zip .
+      - run: npm run build:itch && cd dist-itch && zip -qr ../dist/baixar/cosmic-citadel-itch.zip .
       # app Android de teste (APK): fica para baixar em /baixar/cosmic-citadel.apk
       - uses: actions/setup-java@v4
         with:

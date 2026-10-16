@@ -11,8 +11,10 @@
     "test:watch": "vitest",
     "lint": "eslint .",
     "sim": "tsx src/sim/rodar.ts",
-    "build:crazy": "tsc --noEmit && vite build --mode crazygames --outDir dist-crazygames && node ferramentas/enxugar-crazygames.mjs",
-    "build:android": "tsc --noEmit && vite build --outDir dist-android && cap sync android"
+    "build:crazy": "tsc --noEmit && vite build --mode crazygames --outDir dist-crazygames && node ferramentas/enxugar-leve.mjs dist-crazygames",
+    "build:android": "tsc --noEmit && vite build --outDir dist-android && cap sync android",
+    "build:gd": "tsc --noEmit && vite build --mode gamedistribution --outDir dist-gd && node ferramentas/enxugar-leve.mjs dist-gd",
+    "build:itch": "tsc --noEmit && vite build --mode itch --outDir dist-itch && node ferramentas/enxugar-leve.mjs dist-itch"
   },
   "devDependencies": {
     "@capacitor/cli": "^8.5.3",

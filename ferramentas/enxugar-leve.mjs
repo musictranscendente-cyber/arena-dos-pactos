@@ -1,9 +1,10 @@
-// Tira do pacote do CrazyGames as animações em tira que a versão leve não usa (ver ANIM em src/data/arte.ts).
+// Tira das versões leves (sites de jogos) as animações em tira que elas não usam (ver ANIM em src/data/arte.ts).
+// Uso: node ferramentas/enxugar-leve.mjs dist-crazygames
 import { readFileSync, rmSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
 
 const arte = JSON.parse(readFileSync('src/data/arte.json', 'utf8'));
-const pasta = 'dist-crazygames/art';
+const pasta = `${process.argv[2] ?? 'dist-crazygames'}/art`;
 let n = 0;
 for (const signo of readdirSync(pasta)) {
   for (const f of readdirSync(join(pasta, signo))) {

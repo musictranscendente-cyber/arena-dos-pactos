@@ -5,3 +5,5 @@ dist/
 dist-crazygames/
 *.zip
 dist-android/
+dist-gd/
+dist-itch/

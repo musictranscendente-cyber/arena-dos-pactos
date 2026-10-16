@@ -1,4 +1,5 @@
 // Janela de missões: calendário de 7 dias, missões do dia (com a de compartilhar) e o Baú Diário.
+import { emPortal } from '../services/anuncios';
 import { T } from '../data/textos';
 import {
   bauPronto, BAU_CARTAS, BAU_POEIRA, CALENDARIO, COMPARTILHAR, loginDisponivel, missao, pronta, type PremioLogin,
@@ -31,7 +32,8 @@ export function missoesHtml(p: Progresso, dia: string): string {
   }).join('');
   const lista = p.missoes.lista.map(md => {
     const m = missao(md.id);
-    if (!m) return '';
+    // nos sites de jogos não há link para fora: a missão de compartilhar não aparece
+    if (!m || (m.id === COMPARTILHAR.id && emPortal())) return '';
     const pct = Math.round((Math.min(md.prog, m.alvo) / m.alvo) * 100);
     const comp = m.id === COMPARTILHAR.id;
     const acao = md.coletada ? `<i class="ms-ok">${T.coletado}</i>`

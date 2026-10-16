@@ -4,7 +4,7 @@ import { T } from '../data/textos';
 import { emailConta, listarBackups, logado, nuvemAtiva, situacaoNuvem } from '../services/nuvem';
 import type { Perfil } from '../services/perfil';
 import { giroLigado } from './orientacao';
-import { noCrazyGames } from '../services/anuncios';
+import { emPortal } from '../services/anuncios';
 import { prefsSom } from './som';
 
 const esc = (t: string) => t.replace(/[&<>"']/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[ch]!);
@@ -18,7 +18,7 @@ const chave = (on: boolean) => `<b class="cfg-chave${on ? ' on' : ''}">${on ? T.
 export function configHtml(perfil: Perfil, aviso: string): string {
   const s = prefsSom();
   let conta: string;
-  if (noCrazyGames()) conta = '';
+  if (emPortal()) conta = '';
   else if (!nuvemAtiva()) conta = `<p class="cfg-dica">${T.cfgNuvemOff}</p>`;
   else if (logado()) {
     conta = `<p>${T.cfgConectado(esc(emailConta() ?? ''))}</p><p class="cfg-sit">${T.cfgSituacao[situacaoNuvem()] ?? ''}</p>`
