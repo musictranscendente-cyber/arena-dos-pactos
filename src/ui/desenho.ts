@@ -366,7 +366,7 @@ export function startHtml(now: Date): string {
   const signs = ORDER.map(k => {
     const r = RACES[k];
     return `<button class="sign" data-act="pick" data-r="${k}" style="--rc:${r.c}">${k === cur ? `<span class="tag">${T.temporada}</span>` : ''}`
-      + `<span class="g">${sgImg(k)}</span><span class="sn">${r.n}</span><span class="sm">${r.el}, ${r.m}</span></button>`;
+      + `<span class="g">${sgImg(k)}</span><span class="sn">${r.n}</span><span class="sm">${nomeElemento(r.el)}, ${r.m}</span></button>`;
   }).join('');
   const legend = Object.values(KW).map(k => `<span>${k.i}</span><span>${k.n}: ${k.d}</span>`).join('') + `<span>⭐</span><span>${T.efeitoChegada}</span>`;
   return `<div class="ov conhecer"><div class="panel wide">

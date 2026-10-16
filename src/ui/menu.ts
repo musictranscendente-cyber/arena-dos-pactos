@@ -2,7 +2,7 @@
 import { baseCid, card, CARDS, nivelDe } from '../data/cards';
 import { ARTE, artUrl } from '../data/arte';
 import type { Signo } from '../data/schema';
-import { currentSign, ORDER, RACES } from '../data/signos';
+import { currentSign, nomeElemento, ORDER, RACES } from '../data/signos';
 import { ic, sg as sgImg } from './icones';
 import { estrelasDoMundo, MUNDOS } from '../meta/campanha';
 import { iconeSom } from './som';
@@ -208,7 +208,7 @@ export function montarHtml(m: Montagem, decks: (DeckMontado | null)[], ativo: nu
       const r = RACES[k], on = m.signos.includes(k);
       return `<button class="sign${on ? ' on' : ''}" data-act="msigno" data-r="${k}" style="--rc:${r.c}" aria-pressed="${on}">`
         + (on ? `<span class="tag">${m.signos.indexOf(k) + 1}º</span>` : '')
-        + `<span class="g">${sgImg(k)}</span><span class="sn">${r.n}</span><span class="sm">${r.el}, ${r.m}</span></button>`;
+        + `<span class="g">${sgImg(k)}</span><span class="sn">${r.n}</span><span class="sm">${nomeElemento(r.el)}, ${r.m}</span></button>`;
     }).join('');
     return `<div class="ov montar m-signos"><div class="panel wide">`
       + `<div class="gtop"><h2>${T.deckN(m.espaco + 1)}: ${T.escolhaOsSignos}</h2><span class="m-topo-bts"><button class="btn rc" data-act="mdecks">${T.voltar}</button>${fechaHtml()}</span></div>`
