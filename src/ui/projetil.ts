@@ -96,6 +96,7 @@ export function launch(root: HTMLElement, shot: Shot, delayMs: number, durMs: nu
     const dx = p1.x - p0.x, dy = p1.y - p0.y;
     const el = document.createElement('div');
     el.className = `shot ${shot.kind}`;
+    el.setAttribute('data-ef', ''); // o redesenho da tela não mexe nele
     el.style.cssText = `left:${p0.x}px;top:${p0.y}px;--dx:${dx}px;--dy:${dy}px;--ang:${Math.atan2(dy, dx)}rad;--c:${shot.color};animation-duration:${durMs}ms`;
     el.innerHTML = '<i></i>';
     root.appendChild(el);
@@ -103,6 +104,7 @@ export function launch(root: HTMLElement, shot: Shot, delayMs: number, durMs: nu
       el.remove();
       const boom = document.createElement('div');
       boom.className = `boom ${shot.kind}`;
+      boom.setAttribute('data-ef', '');
       boom.style.cssText = `left:${p1.x}px;top:${p1.y}px;--c:${shot.color}`;
       root.appendChild(boom);
       setTimeout(() => boom.remove(), 450);

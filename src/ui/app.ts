@@ -5,6 +5,7 @@ import { baseCid, card, cardsOfSign, comNivel, nivelDe } from '../data/cards';
 import type { Signo } from '../data/schema';
 import { ORDER, RACES } from '../data/signos';
 import { cardText, KW, T } from '../data/textos';
+import { morph, EFEMERO } from './morph';
 import { rarMinusc } from '../data/raridades';
 import {
   applyAction, costOf, deckAleatorio, deckForte, doisSignos, DECK_SIZE, effAtk, newGame, resolveBattle, Rng, surrender,
@@ -272,24 +273,6 @@ function partidaGuiada(sign: Signo, seed: number): GameState {
   return state;
 }
 
-/**
- * Põe a figura antiga (com as imagens já prontas) no lugar da nova, com as classes e estilos da nova.
- * Os estilos trazem a fase das animações calculada pelo relógio (ver idlePhase em desenho.ts): ao voltar para a
- * tela a animação recomeça, mas exatamente no ponto em que estaria, então nada pula.
- * Só vale se as duas têm a mesma estrutura (mesmas imagens); senão fica a nova.
- */
-function reaproveitar(velha: Element, nova: Element): boolean {
-  const a = [velha, ...velha.querySelectorAll('*')], b = [nova, ...nova.querySelectorAll('*')];
-  if (a.length !== b.length || a.some((x, i) => x.tagName !== b[i].tagName || x.getAttribute('src') !== b[i].getAttribute('src'))) return false;
-  a.forEach((x, i) => {
-    for (const at of ['class', 'style']) {
-      const v = b[i].getAttribute(at);
-      if (v === null) x.removeAttribute(at); else if (x.getAttribute(at) !== v) x.setAttribute(at, v);
-    }
-  });
-  return true;
-}
-
 /** Rival planeja em segredo e o jogador recebe a vez. */
 function beginPlanning(tickEvents: GameEvent[]): void {
   const m = M!;
@@ -518,7 +501,7 @@ function capturarMortos(events: GameEvent[]): { id: string; el: HTMLElement }[] 
     if (e.t !== 'UnitDied') continue;
     const id = `c-${e.side}-${e.l}-${e.d}`;
     const el = document.getElementById(id)?.querySelector<HTMLElement>('.unit');
-    if (el) out.push({ id, el });
+    if (el) { el.setAttribute(EFEMERO, ''); out.push({ id, el }); } // o redesenho deixa ela no lugar
   }
   return out;
 }
@@ -531,18 +514,20 @@ function soltarMortos(novos: { id: string; el: HTMLElement }[]): void {
     x.el.insertAdjacentHTML('beforeend', '<span class="morte-onda"></span><span class="morte-nuvem"></span><span class="morte-alma"></span>');
     morrendo.push({ ...x, t0 });
   }
+  if (novos.length) setTimeout(reporMortos, MORTE_MS + 50); // tira da tela quando a animação acaba
   reporMortos();
 }
 
 /** Recoloca as que ainda estão morrendo (a tela foi redesenhada), continuando do ponto em que estavam. */
 function reporMortos(): void {
   const agora = Date.now();
-  morrendo = morrendo.filter(x => agora - x.t0 < MORTE_MS);
+  morrendo = morrendo.filter(x => agora - x.t0 < MORTE_MS || (x.el.remove(), false));
   for (const x of morrendo) {
     const cell = document.getElementById(x.id);
-    if (!cell || cell.querySelector('.unit:not(.morrendo)')) continue; // a casa já tem outra criatura
+    if (!cell || cell.querySelector('.unit:not(.morrendo)')) { x.el.remove(); continue; } // a casa já tem outra criatura
+    if (x.el.parentElement === cell) continue; // continua no lugar, animando
     x.el.style.setProperty('--md', `-${agora - x.t0}ms`);
-    if (x.el.parentElement !== cell) cell.appendChild(x.el);
+    cell.appendChild(x.el);
   }
 }
 
@@ -550,6 +535,7 @@ function reporMortos(): void {
 function golpeNoHeroi(side: Side, amount: number): void {
   const v = document.createElement('div');
   v.className = `vinheta ${side}${amount >= 5 ? ' forte' : ''}`;
+  v.setAttribute(EFEMERO, '');
   app().appendChild(v);
   setTimeout(() => v.remove(), 800);
 }
@@ -565,6 +551,7 @@ function animaFerrao(e: Extract<GameEvent, { t: 'Sting' }>): void {
   if (!cell) return;
   const g = document.createElement('span');
   g.className = 'ferrao-fantasma';
+  g.setAttribute(EFEMERO, '');
   g.innerHTML = `<i>🦂</i><b>${T.ferrao}</b>`;
   cell.appendChild(g);
   setTimeout(() => g.remove(), FERRAO_ANIM_MS + 500);
@@ -583,10 +570,14 @@ function avisoInvestida(id: string): void {
 }
 
 /** Tremida rápida em quem levou dano. */
+const tremendo = new WeakMap<HTMLElement, number>();
 function shake(el: HTMLElement): void {
   el.classList.remove('hit');
   void el.offsetWidth; // reinicia a animação
   el.classList.add('hit');
+  // o redesenho não tira a classe (ver morph.ts): sai quando a tremida acaba
+  clearTimeout(tremendo.get(el));
+  tremendo.set(el, window.setTimeout(() => el.classList.remove('hit'), 550));
 }
 
 function showFx(events: GameEvent[]): void {
@@ -600,6 +591,7 @@ function showFx(events: GameEvent[]): void {
       // impacto bem visível onde o golpe acertou
       const imp = document.createElement('span');
       imp.className = 'impacto';
+      imp.setAttribute(EFEMERO, '');
       el.appendChild(imp);
       setTimeout(() => imp.remove(), 500);
       if (e.t === 'HeroDamaged') golpeNoHeroi(e.side, e.amount);
@@ -639,6 +631,7 @@ function porEfeito(e: EfeitoAtivo, passou: number): void {
   const s = document.createElement('span');
   s.className = e.cls;
   s.dataset.efeito = String(e.k);
+  s.setAttribute(EFEMERO, '');
   s.innerHTML = e.html;
   if (passou > 0) s.style.animationDelay = `-${Math.round(passou)}ms`;
   alvo.appendChild(s);
@@ -732,37 +725,20 @@ function desenhar(): void {
     : tutorialHtml({ rodada: M.g.round, ocupado: M.busy, selecionou: M.sel !== null, jogou: M.plan.length > 0,
       podeInvocar: M.g.p.hand.some(h => card(h.cid).type === 'unit' && costOf(M!.g.p, h.cid) <= M!.g.p.mana),
       carta: ((P: typeof v.s.p) => { const i = P.hand.findIndex(h => card(h.cid).type === 'unit' && costOf(P, h.cid) <= P.mana); return i < 0 ? null : i; })(v.s.p) });
-  // guarda as figuras das criaturas que já estão na tela: as que não mudaram voltam no lugar das novas
-  // (sem recriar as imagens, que piscavam no celular quando a rodada virava)
-  const figs = new Map<string, Element>();
-  root.querySelectorAll('.cell .fig[data-fk]').forEach(f => figs.set(`${f.closest('.cell')?.id}|${f.getAttribute('data-fk')}`, f));
-  // as outras imagens (cartas da mão, heróis, ícones) também voltam no lugar das novas iguais, já prontas
-  const imgs = new Map<string, HTMLImageElement[]>();
-  root.querySelectorAll<HTMLImageElement>('img').forEach(im => {
-    if (im.closest('.cell')) return; // as das criaturas já foram tratadas acima (e as que estão morrendo ficam com as delas)
-    const k = im.getAttribute('src') ?? '';
-    (imgs.get(k) ?? imgs.set(k, []).get(k)!).push(im);
-  });
-  root.innerHTML = gameHtml(v) + tut.html + (M.confirma ? desistirHtml() : '') + (M.g.phase === 'over' && M.fim === 'pronto' ? endHtml(M.g, M.premio, botoesFim(M), M.cartasFim, botaoAnuncio(M)) : '');
-  root.querySelectorAll('.cell .fig[data-fk]').forEach(f => {
-    const velha = figs.get(`${f.closest('.cell')?.id}|${f.getAttribute('data-fk')}`);
-    if (velha && reaproveitar(velha, f)) f.replaceWith(velha);
-  });
-  root.querySelectorAll<HTMLImageElement>('img').forEach(im => {
-    if (im.closest('.cell')) return; // as das criaturas já foram tratadas acima (e as que estão morrendo ficam com as delas)
-    const velha = imgs.get(im.getAttribute('src') ?? '')?.shift();
-    if (velha && reaproveitar(velha, im)) im.replaceWith(velha);
-  });
-  root.insertAdjacentHTML('beforeend', somHtml() + (revela ?? '') + (desafio && !desafio.saindo ? desafioHtml(desafio.cfg.signo, desafio.cfg.fase, desafio.cfg.deck) : ''));
-  if (tut.alvo) {
-    const alvos = [...root.querySelectorAll<HTMLElement>(tut.alvo)];
-    alvos.forEach(el => el.classList.add('tut-alvo'));
-    // mãozinha: na casa do meio da frente, se der; senão no primeiro alvo
-    const el = alvos.find(x => x.id === 'c-p-1-0') ?? alvos.find(x => /^c-p-\d-0$/.test(x.id)) ?? alvos[0];
-    if (tut.mao && el) {
-      if (getComputedStyle(el).position === 'static') el.style.position = 'relative';
-      el.insertAdjacentHTML('beforeend', '<span class="tut-mao" aria-hidden="true">👇</span>');
-    }
+  const html = gameHtml(v) + tut.html + (M.confirma ? desistirHtml() : '') + (M.g.phase === 'over' && M.fim === 'pronto' ? endHtml(M.g, M.premio, botoesFim(M), M.cartasFim, botaoAnuncio(M)) : '')
+    + somHtml() + (revela ?? '') + (desafio && !desafio.saindo ? desafioHtml(desafio.cfg.signo, desafio.cfg.fase, desafio.cfg.deck) : '');
+  // a partida não é remontada: só muda o que mudou (ver morph.ts); as criaturas, imagens e animações continuam as mesmas
+  if (root.querySelector(':scope > .table')) morph(root, html); else root.innerHTML = html;
+  // destaque do tutorial: fica nos mesmos elementos entre um redesenho e outro (sem recomeçar a pulsação)
+  const alvos = tut.alvo ? [...root.querySelectorAll<HTMLElement>(tut.alvo)] : [];
+  root.querySelectorAll('.tut-alvo').forEach(el => { if (!alvos.includes(el as HTMLElement)) el.classList.remove('tut-alvo'); });
+  alvos.forEach(el => el.classList.add('tut-alvo'));
+  // mãozinha: na casa do meio da frente, se der; senão no primeiro alvo
+  const comMao = tut.mao ? alvos.find(x => x.id === 'c-p-1-0') ?? alvos.find(x => /^c-p-\d-0$/.test(x.id)) ?? alvos[0] : undefined;
+  root.querySelectorAll('.tut-mao').forEach(m => { if (m.parentElement !== comMao) m.remove(); });
+  if (comMao && !comMao.querySelector(':scope > .tut-mao')) {
+    if (getComputedStyle(comMao).position === 'static') comMao.style.position = 'relative';
+    comMao.insertAdjacentHTML('beforeend', `<span class="tut-mao" ${EFEMERO} aria-hidden="true">👇</span>`);
   }
   reporMortos();
   reporEfeitos();
@@ -1258,6 +1234,7 @@ function aviso(txt: string): void {
 function faixaRodada(n: number): void {
   const f = document.createElement('div');
   f.className = 'faixa-rodada';
+  f.setAttribute(EFEMERO, '');
   // roda do zodíaco dourada girando, estrelas em volta e o número da rodada no meio
   f.innerHTML = '<i class="fr-roda"></i><i class="fr-brilho"></i>'
     + Array.from({ length: 10 }, (_, k) => `<b class="fr-estrela" style="--a:${k * 36}deg;--d:${(k % 3) * 80}ms"></b>`).join('')

@@ -327,7 +327,7 @@ function handHtml(v: View): string {
     const cls: string[] = [];
     if (v.sel === i) cls.push('sel');
     if (cost > P.mana) cls.push('poor');
-    return cardHtml(c, cost, `data-act="hand" data-i="${i}" tabindex="0" role="button"`, cls.join(' '), h.cid);
+    return cardHtml(c, cost, `data-act="hand" data-i="${i}" data-fk="h${h.hid}" tabindex="0" role="button"`, cls.join(' '), h.cid);
   }).join('') + '</div>';
 }
 

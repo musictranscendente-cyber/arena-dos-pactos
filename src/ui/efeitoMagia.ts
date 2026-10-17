@@ -58,6 +58,7 @@ function anunciar(root: HTMLElement, e: Extract<GameEvent, { t: 'SpellResolved' 
   p.y += board.offsetHeight * 0.16; // o quadro fica um pouco abaixo; o efeito animado da magia, um pouco acima
   const el = document.createElement('div');
   el.className = `anuncio-centro ${cls}`;
+  el.setAttribute('data-ef', ''); // o redesenho da tela não mexe nele
   el.style.cssText = `left:${p.x}px;top:${p.y}px;--c:${RACES[c.race].c}`;
   el.innerHTML = `<div class="ac-ico">${ico}<b>${num}</b></div><div class="ac-nome">${c.name}</div><div class="ac-txt">${txt}</div>`;
   root.appendChild(el);
@@ -69,6 +70,7 @@ function anunciar(root: HTMLElement, e: Extract<GameEvent, { t: 'SpellResolved' 
     const q = center(alvo, root);
     const voo = document.createElement('div');
     voo.className = `voo-efeito ${cls}`;
+    voo.setAttribute('data-ef', '');
     voo.innerHTML = ico;
     voo.style.cssText = `left:${p.x}px;top:${p.y}px;--dx:${q.x - p.x}px;--dy:${q.y - p.y}px`;
     root.appendChild(voo);
@@ -96,6 +98,7 @@ export function efeitosDeMagia(root: HTMLElement, events: GameEvent[]): void {
         const p = center(el, root);
         if (id === CENTRO) p.y -= el.offsetHeight * 0.22;
         const fx = document.createElement('div');
+        fx.setAttribute('data-ef', '');
         if (comArte) {
           fx.className = MAGIA_LIVRE.has(e.cid) ? 'magia-fx livre' : 'magia-fx';
           fx.style.cssText = `left:${p.x}px;top:${p.y}px;--n:${MAGIA[e.cid]};--t:${MAGIA_MS - i * ONDA_MS}ms`;
