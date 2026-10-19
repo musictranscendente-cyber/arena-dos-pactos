@@ -30,7 +30,14 @@ export function precarregar(cids: Iterable<string>): void {
 }
 
 /** A imagem já está carregada (pode ser mostrada sem piscar)? */
-export const pronta = (url: string): boolean => prontas.has(url);
+export function pronta(url: string): boolean {
+  if (prontas.has(url)) return true;
+  // a tira do golpe também fica na figura desde que a criatura entra: se ela já carregou ali, serve
+  for (const im of document.images) {
+    if (im.complete && im.naturalWidth > 0 && im.getAttribute('src') === url) { prontas.add(url); return true; }
+  }
+  return false;
+}
 
 /** Cartas visíveis para quem joga: a própria mão e tudo que está em campo (dos dois lados). */
 export function precarregarVisiveis(s: { p: { hand: { cid: string }[]; board: ({ cid: string } | null)[][] }; e: { hand: { cid: string }[]; board: ({ cid: string } | null)[][] } }): void {

@@ -94,22 +94,23 @@ b{font-weight:800}
 /* ataque em dois tempos: prepara (recua) e avança; depois segura o golpe enquanto o dano aparece e volta.
    Quem ataca de longe (.ranged) quase não sai do lugar: o projétil é que viaja. */
 .cell.atk .unit{--dir:1;--reach:30%;animation:windup .74s linear forwards;will-change:transform}
-.cell.strike .unit{--dir:1;--reach:30%;animation:recover .62s linear forwards;will-change:transform}
+.cell.strike .unit{--dir:1;--reach:30%;animation:recover .62s linear;will-change:transform}
 .cell.atk .unit.foe,.cell.strike .unit.foe{--dir:-1}
 .cell.ranged .unit{--reach:5%}
 /* ordem de profundidade: a fileira de baixo (mais perto) fica sempre na frente; quem ataca só passa à frente
    dos vizinhos da MESMA fileira */
-.cell{z-index:calc(var(--z,1) * 10)}
-.cell.atk,.cell.strike{z-index:calc(var(--z,1) * 10 + 5)}
+.cell{z-index:calc(var(--z,1) * 10 + var(--zd,0))}
+/* quem ataca não muda de camada (mudar a camada no fim do golpe fazia a casa piscar no celular): as casas de trás
+   já ficam acima das da frente, então a criatura que avança por cima da casa da frente aparece por cima dela */
 @keyframes windup{
   0%{transform:none;animation-timing-function:cubic-bezier(.25,.1,.3,1)}
-  48%{transform:translateX(calc(var(--dir) * -11%)) rotate(calc(var(--dir) * -5deg)) scale(.98,1.02);animation-timing-function:cubic-bezier(.7,0,.9,.5)}
-  68%{transform:translateX(calc(var(--dir) * (var(--reach) + 5%))) rotate(calc(var(--dir) * 3deg)) scale(1.1);animation-timing-function:cubic-bezier(.2,.7,.3,1)}
-  100%{transform:translateX(calc(var(--dir) * var(--reach))) scale(1.06)}}
+  48%{transform:translateX(calc(var(--dir) * -11%)) rotate(calc(var(--dir) * -5deg));animation-timing-function:cubic-bezier(.7,0,.9,.5)}
+  68%{transform:translateX(calc(var(--dir) * (var(--reach) + 5%))) rotate(calc(var(--dir) * 3deg));animation-timing-function:cubic-bezier(.2,.7,.3,1)}
+  100%{transform:translateX(calc(var(--dir) * var(--reach)))}}
 @keyframes recover{
-  0%{transform:translateX(calc(var(--dir) * var(--reach))) scale(1.06)}
-  30%{transform:translateX(calc(var(--dir) * var(--reach))) scale(1.06);animation-timing-function:cubic-bezier(.45,0,.25,1)}
-  82%{transform:translateX(calc(var(--dir) * -2%)) scale(.995);animation-timing-function:ease-out}
+  0%{transform:translateX(calc(var(--dir) * var(--reach)))}
+  30%{transform:translateX(calc(var(--dir) * var(--reach)));animation-timing-function:cubic-bezier(.45,0,.25,1)}
+  82%{transform:translateX(calc(var(--dir) * -2%));animation-timing-function:ease-out}
   100%{transform:none}}
 .hit{animation:hit .35s ease-out}
 @keyframes hit{0%,100%{transform:none}20%{transform:translateX(-4px)}40%{transform:translateX(4px)}60%{transform:translateX(-3px)}80%{transform:translateX(2px)}}
@@ -2536,6 +2537,11 @@ body.palco #app .desafio{zoom:var(--zinv,1)}
   border-radius:14px;background:linear-gradient(180deg,#3a1f78,#1d0f45);border:2px solid #e8b54a;color:#fff;font-weight:800;font-size:14px;box-shadow:0 6px 18px #000a;white-space:nowrap}
 .atualizar .btn{padding:6px 14px;font-size:14px}
 .atualizar .at-fecha{background:none;border:0;color:#fffa;font-size:16px;cursor:pointer;padding:4px}
-/* as duas poses ficam sempre na figura; a que não está em uso fica invisível (trocar imagens pisca no celular) */
-.unit .fig.has-anim .spr.idle.oculta{opacity:0}
+/* as duas poses ficam sempre na figura; a que não está em uso fica invisível (trocar imagens pisca no celular).
+   Uma pose que acabou de aparecer leva alguns quadros para ser desenhada no celular (nesse meio tempo a casa fica vazia):
+   por isso as trocas se sobrepõem. No começo do golpe a pose parada só some depois que o golpe já está na tela; no fim,
+   ela volta um pouco antes de o golpe sumir (classe "volta", no quadro do golpe). */
+.unit .fig.has-anim .spr.idle.oculta{opacity:0;transition:opacity 0s linear .2s}
+.unit .fig.has-anim .spr.idle.oculta.volta{opacity:1;transition:opacity 0s linear .7s}
+.unit .fig.has-art .art.parado.gone.volta{visibility:visible;transition:visibility 0s linear .7s}
 .unit .fig.has-art .art.ataque.oculta{opacity:0;animation:none}

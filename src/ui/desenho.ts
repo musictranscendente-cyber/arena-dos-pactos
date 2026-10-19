@@ -139,7 +139,8 @@ function idlePhase(uid: number): string {
 export const ATK_MS = { start: 900, strike: 900 };
 
 function tiraHtml(src: string, t: Tira, base: number, extra: string, cls: string): string {
-  return `<span class="spr ${cls}" style="--n:${t.n};--fw:${t.w / base};--fh:${t.h / base};--ax:${t.ax};--by:${t.by};${extra}">`
+  // data-fk: cada pose é sempre o mesmo elemento (o redesenho nunca troca a imagem de uma pela da outra)
+  return `<span class="spr ${cls}" data-fk="${cls.split(' ')[0]}" style="--n:${t.n};--fw:${t.w / base};--fh:${t.h / base};--ax:${t.ax};--by:${t.by};${extra}">`
     + `<img src="${src}" decoding="sync" alt=""></span>`;
 }
 
@@ -167,10 +168,11 @@ function figHtml(c: Card, cid: string, cell: { atk: boolean; strike: boolean }, 
     const pronto = pronta(urlAtk);
     const atacando = pronto && (cell.atk || cell.strike);
     const ph = ((Date.now() / 1000 + uid * 0.77) % 3).toFixed(2);
-    const idle = tiraHtml(animUrl(cid, c.race, 'idle'), an.idle, base, `--pa:-${ph}s`, atacando ? 'idle oculta' : 'idle');
+    const idle = tiraHtml(animUrl(cid, c.race, 'idle'), an.idle, base, `--pa:-${ph}s`, atacando ? (cell.strike ? 'idle oculta volta' : 'idle oculta') : 'idle');
     // o golpe continua do ponto certo quando a tela é redesenhada no quadro do golpe
-    const golpe = pronto ? tiraHtml(urlAtk, an.ataque, base, `--pa:${cell.strike ? -ATK_MS.start : 0}ms`, atacando ? 'ataque' : 'ataque espera') : '';
-    return `<span class="fig has-anim" data-fk="${uid}:${cid}:${pronto ? 2 : 1}" style="${sz}">${idle}${golpe}</span>`;
+    // (a tira do golpe entra na figura mesmo antes de carregar, escondida: assim a figura nunca precisa ser trocada)
+    const golpe = tiraHtml(urlAtk, an.ataque, base, `--pa:${cell.strike ? -ATK_MS.start : 0}ms`, atacando ? 'ataque' : 'ataque espera');
+    return `<span class="fig has-anim" data-fk="${uid}:${cid}" style="${sz}">${idle}${golpe}</span>`;
   }
   const ar = ARTE[cid];
   if (!ar) return `<span class="fig" data-fk="${uid}:${cid}:e" style="${idlePhase(uid)};--s:${porte(cid, c.cost, c.r)}">${artOrEmoji(c)}</span>`;
@@ -178,13 +180,11 @@ function figHtml(c: Card, cid: string, cell: { atk: boolean; strike: boolean }, 
   // fica por cima, deslocada para o corpo não sair do lugar
   const podeGolpear = pronta(artUrl(cid, c.race, 'ataque'));
   if (!podeGolpear) cell = { atk: false, strike: false };
-  const mode = cell.strike ? 'gone' : cell.atk ? 'wind' : '';
+  const mode = cell.strike ? 'gone volta' : cell.atk ? 'wind' : '';
   let h = `<img class="art parado ${mode}" decoding="sync" src="${artUrl(cid, c.race, 'parado')}" style="--rw:${ar[0]};${idlePhase(uid)}" alt="">`;
-  // a pose de golpe fica sempre na figura (escondida quando não ataca): trocar imagens pisca no celular
-  if (podeGolpear) {
-    h += `<img class="art ataque ${cell.strike ? '' : cell.atk ? 'late' : 'oculta'}" decoding="sync" src="${artUrl(cid, c.race, 'ataque')}" style="--rw:${ar[1]};--dx:${(ar[1] - ar[0]) / 2}" alt="">`;
-  }
-  return `<span class="fig has-art" data-fk="${uid}:${cid}:${podeGolpear ? 2 : 1}" style="${idlePhase(uid)};--s:${escalaFig(c, cid)}">${h}</span>`;
+  // a pose de golpe fica sempre na figura (escondida quando não ataca, ou enquanto ainda carrega): trocar imagens pisca no celular
+  h += `<img class="art ataque ${cell.strike ? '' : cell.atk ? 'late' : 'oculta'}" decoding="sync" src="${artUrl(cid, c.race, 'ataque')}" style="--rw:${ar[1]};--dx:${(ar[1] - ar[0]) / 2}" alt="">`;
+  return `<span class="fig has-art" data-fk="${uid}:${cid}" style="${idlePhase(uid)};--s:${escalaFig(c, cid)}">${h}</span>`;
 }
 
 const HEART_MAX = 30;
@@ -230,7 +230,7 @@ function cellHtml(v: View, side: Side, l: number, d: number): string {
       + `<b class="a${compara(atk, c.type === 'unit' ? c.atk : atk)}">${atk}</b><b class="h${compara(u.hp, c.type === 'unit' ? c.hp : u.hp)}">${u.hp}</b></div>`;
   }
   const col = side === 'p' ? 3 - d : 5 + d;
-  return `<div class="${cls.join(' ')}" style="grid-row:${l + 1};grid-column:${col};--z:${l + 1}" id="c-${side}-${l}-${d}" data-act="cell" data-side="${side}" data-l="${l}" data-d="${d}">${inner}${pend ? `<span class="spell-mark">${pend}</span>` : ''}</div>`;
+  return `<div class="${cls.join(' ')}" style="grid-row:${l + 1};grid-column:${col};--z:${l + 1};--zd:${d}" id="c-${side}-${l}-${d}" data-act="cell" data-side="${side}" data-l="${l}" data-d="${d}">${inner}${pend ? `<span class="spell-mark">${pend}</span>` : ''}</div>`;
 }
 
 function boardHtml(v: View): string {
