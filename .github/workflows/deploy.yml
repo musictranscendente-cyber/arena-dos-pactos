@@ -41,6 +41,20 @@ jobs:
       - run: npm run build:android
       - run: cd android && chmod +x gradlew && ./gradlew assembleDebug --no-daemon
       - run: cp android/app/build/outputs/apk/debug/app-debug.apk dist/baixar/cosmic-citadel.apk
+      # versão da Play Store (AAB assinado com a chave de envio): /baixar/cosmic-citadel.aab
+      # só sai quando os segredos PLAY_CHAVE (arquivo da chave em base64) e PLAY_SENHA existem no GitHub
+      - name: AAB para a Play Store
+        env:
+          PLAY_CHAVE: ${{ secrets.PLAY_CHAVE }}
+          PLAY_SENHA: ${{ secrets.PLAY_SENHA }}
+        run: |
+          if [ -z "$PLAY_CHAVE" ] || [ -z "$PLAY_SENHA" ]; then echo "sem chave da Play Store ainda: pulando o AAB"; exit 0; fi
+          export PLAY_CHAVE_ARQUIVO="$RUNNER_TEMP/upload.keystore"
+          echo "$PLAY_CHAVE" | base64 -d > "$PLAY_CHAVE_ARQUIVO"
+          npm run build:play
+          cd android && ./gradlew bundleRelease --no-daemon
+          cp app/build/outputs/bundle/release/app-release.aab ../dist/baixar/cosmic-citadel.aab
+          rm -f "$PLAY_CHAVE_ARQUIVO"
       - uses: actions/upload-pages-artifact@v3
         with:
           path: dist

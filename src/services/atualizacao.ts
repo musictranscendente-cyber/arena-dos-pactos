@@ -7,7 +7,8 @@ export const URL_APK = `${SITE}baixar/cosmic-citadel.apk`;
 
 /** Devolve true se o site tem um build mais novo que este app. */
 export async function temVersaoNova(): Promise<boolean> {
-  if (!Capacitor.isNativePlatform() || !__BUILD__) return false;
+  // versão da Play Store: quem atualiza é a loja
+  if (!Capacitor.isNativePlatform() || !__BUILD__ || import.meta.env.VITE_LOJA === 'play') return false;
   try {
     const r = await fetch(`${SITE}versao.json?t=${Date.now()}`, { cache: 'no-store' });
     const v = (await r.json()) as { build?: number };

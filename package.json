@@ -13,6 +13,7 @@
     "sim": "tsx src/sim/rodar.ts",
     "build:crazy": "tsc --noEmit && vite build --mode crazygames --outDir dist-crazygames && node ferramentas/enxugar-leve.mjs dist-crazygames",
     "build:android": "tsc --noEmit && vite build --outDir dist-android && cap sync android",
+    "build:play": "tsc --noEmit && vite build --mode play --outDir dist-android && cap sync android",
     "build:gd": "tsc --noEmit && vite build --mode gamedistribution --outDir dist-gd && node ferramentas/enxugar-leve.mjs dist-gd",
     "build:itch": "tsc --noEmit && vite build --mode itch --outDir dist-itch && node ferramentas/enxugar-leve.mjs dist-itch"
   },

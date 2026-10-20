@@ -26,12 +26,23 @@ android {
             keyAlias 'teste'
             keyPassword 'cosmicteste'
         }
+        // chave de envio da Play Store: nunca fica no repositório. No GitHub ela vem dos segredos PLAY_CHAVE/PLAY_SENHA
+        // (o arquivo é montado numa pasta temporária, ver deploy.yml)
+        if (System.getenv('PLAY_CHAVE_ARQUIVO') && System.getenv('PLAY_SENHA')) {
+            play {
+                storeFile file(System.getenv('PLAY_CHAVE_ARQUIVO'))
+                storePassword System.getenv('PLAY_SENHA')
+                keyAlias 'upload'
+                keyPassword System.getenv('PLAY_SENHA')
+            }
+        }
     }
     buildTypes {
         debug {
             signingConfig signingConfigs.teste
         }
         release {
+            if (signingConfigs.findByName('play')) signingConfig signingConfigs.play
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
