@@ -1,0 +1,68 @@
+TEXTOS DA PÁGINA DA LOJA — Cosmic Citadel
+(copie e cole cada parte no campo certo do Play Console: Crescimento > Presença na loja > Página principal)
+
+==================================================
+NOME DO APP (máx. 30 caracteres)
+==================================================
+Cosmic Citadel: Cartas Zodíaco
+
+==================================================
+DESCRIÇÃO CURTA (máx. 80 caracteres)
+==================================================
+Duelos rápidos de cartas nos 12 mundos do zodíaco. Monte seu deck e vença!
+
+==================================================
+DESCRIÇÃO COMPLETA (máx. 4000 caracteres)
+==================================================
+Entre na Cidadela Cósmica e lidere as criaturas dos 12 signos do zodíaco em duelos de cartas rápidos e cheios de estratégia!
+
+⚔️ BATALHAS DE 3 A 5 MINUTOS
+Você e o rival planejam a rodada ao mesmo tempo, em segredo. Posicione suas criaturas no tabuleiro 3x3, prepare suas magias e aperte "Batalha!": as criaturas se enfrentam fileira por fileira, sozinhas. Perfeito para jogar em qualquer pausa do dia.
+
+♈ 12 MUNDOS, 12 ESTILOS DE JOGO
+Cada signo tem seu próprio deck, cores e jeito de lutar:
+• Áries investe e ataca na hora em que entra
+• Touro fica mais forte a cada golpe que aguenta
+• Gêmeos cria cópias de suas criaturas
+• Câncer se protege com carapaças
+• Leão lidera e fortalece os aliados
+• Virgem cura a fileira inteira
+• Libra devolve o dano a quem ataca
+• Escorpião envenena os inimigos
+• Sagitário acerta de longe
+• Capricórnio cresce rodada após rodada
+• Aquário domina as magias
+• Peixes engana com ilusões que voltam à mão
+
+🃏 360 CARTAS PARA COLECIONAR
+Criaturas e magias comuns, raras, épicas e lendárias, com artes e animações próprias. Ganhe cartas novas, funda cópias para subir de nível e monte decks misturando dois signos.
+
+🗺️ CAMPANHA
+Atravesse os 12 mundos do zodíaco, fase por fase, até enfrentar os chefes lendários de cada signo.
+
+🎯 E MAIS
+• Partida Rápida contra o computador em 3 níveis de dificuldade
+• Missões diárias e recompensas por entrar todo dia
+• Primeira partida guiada: aprenda jogando
+• Salve seu progresso na nuvem entrando com o Google (opcional)
+• Jogue em português ou inglês
+
+Sem NFT, sem cripto: só cartas, estratégia e diversão.
+
+Escolha seu signo e prove que é o maior invocador da Cidadela Cósmica!
+
+==================================================
+OUTRAS INFORMAÇÕES QUE O PLAY CONSOLE PEDE
+==================================================
+Categoria: Jogos > Cartas
+Tags sugeridas: Cartas colecionáveis, Estratégia, Fantasia, Um jogador
+E-mail de contato: transcendenteuniversal@gmail.com
+Site: https://musictranscendente-cyber.github.io/arena-dos-pactos/
+Política de privacidade: https://musictranscendente-cyber.github.io/arena-dos-pactos/privacidade.html
+
+==================================================
+IMAGENS (todas nesta mesma pasta)
+==================================================
+icone-512.png ............. Ícone do app (512 x 512)
+destaque-1024x500.png ..... Recurso gráfico / imagem de destaque (1024 x 500)
+captura-*.png ............. Capturas de tela do celular (1920 x 1080, celular deitado) — envie as 5
