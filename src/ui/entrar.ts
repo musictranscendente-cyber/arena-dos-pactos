@@ -12,7 +12,7 @@ export function entrarHtml(comEmail: boolean, aviso: string): string {
     + '<div class="en-caixa"><div class="en-logo" role="img" aria-label="Cosmic Citadel"></div>'
     + `<h2>${T.entrarTitulo}</h2><p>${T.entrarTexto}</p>`
     + (ocupado ? `<p class="en-sit">${T.entrarConectando}</p>`
-      : `<button class="btn go en-google" data-act="cfg-google"><span class="cfg-g" aria-hidden="true">G</span>${T.cfgGoogle}</button>${email}`)
+      : `<button class="btn go en-google" data-act="cfg-google">${T.cfgGoogle}</button>${email}`)
     + (ocupado ? '' : `<button class="en-convidado" data-act="en-convidado" title="${T.semContaAviso}">${T.jogarSemConta}</button><p class="en-dica">${T.semContaAviso}</p>`)
     + (aviso ? `<p class="en-aviso">${aviso}</p>` : situacaoNuvem() === 'erro' ? `<p class="en-aviso">${T.cfgSituacao.erro}</p>` : '')
     + `<p class="en-legal">${T.entrarAviso} <a href="./termos.html" target="_blank" rel="noopener">${T.termosLink}</a> ${T.eLigacao} <a href="./privacidade.html" target="_blank" rel="noopener">${T.privacidadeLink}</a>.</p>`

@@ -25,7 +25,7 @@ export function configHtml(perfil: Perfil, aviso: string): string {
       + `<button class="btn rc" data-act="cfg-sair">${T.cfgSair}</button>`;
   } else {
     conta = `<p class="cfg-dica">${T.cfgEntreTexto}</p>`
-      + `<button class="btn go cfg-google" data-act="cfg-google"><span class="cfg-g" aria-hidden="true">G</span>${T.cfgGoogle}</button>`
+      + `<button class="btn go cfg-google" data-act="cfg-google">${T.cfgGoogle}</button>`
       + `<div class="cfg-email"><input id="cfg-email" type="email" inputmode="email" autocomplete="email" placeholder="${T.cfgEmailDica}">`
       + `<button class="btn rc" data-act="cfg-email">${T.cfgEmailBt}</button></div>`
       + `<p class="cfg-sit">${T.cfgSituacao[situacaoNuvem()] ?? ''}</p>`;
