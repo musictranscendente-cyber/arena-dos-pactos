@@ -1,7 +1,6 @@
 package com.cosmiccitadel.game;
 
 import android.os.Bundle;
-import androidx.activity.EdgeToEdge;
 import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.core.view.WindowInsetsControllerCompat;
@@ -10,8 +9,6 @@ import com.getcapacitor.BridgeActivity;
 public class MainActivity extends BridgeActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        // desenha de ponta a ponta em todas as versões do Android (o Android 15+ já faz isso sozinho)
-        EdgeToEdge.enable(this);
         super.onCreate(savedInstanceState);
         telaCheia();
     }
