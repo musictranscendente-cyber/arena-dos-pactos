@@ -5,6 +5,11 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
+    inputs:
+      enviar_play:
+        description: 'Enviar esta versão para a Play Store (produção)'
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -18,6 +23,8 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      TEM_CONTA_PLAY: ${{ secrets.PLAY_CONTA_SERVICO != '' }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -55,6 +62,18 @@ jobs:
           cd android && ./gradlew bundleRelease --no-daemon
           cp app/build/outputs/bundle/release/app-release.aab ../dist/baixar/cosmic-citadel.aab
           rm -f "$PLAY_CHAVE_ARQUIVO"
+      # envio automático para a Play Store (produção): só quando a publicação é disparada à mão com "enviar_play"
+      # e o segredo PLAY_CONTA_SERVICO (conta de serviço do Google Cloud, em JSON) existe. Notas em android/notas-da-versao/
+      - name: Enviar para a Play Store
+        if: ${{ inputs.enviar_play && env.TEM_CONTA_PLAY == 'true' }}
+        uses: r0adkll/upload-google-play@v1.1.3
+        with:
+          serviceAccountJsonPlainText: ${{ secrets.PLAY_CONTA_SERVICO }}
+          packageName: com.cosmiccitadel.game
+          releaseFiles: dist/baixar/cosmic-citadel.aab
+          track: production
+          status: completed
+          whatsNewDirectory: android/notas-da-versao
       - uses: actions/upload-pages-artifact@v3
         with:
           path: dist
