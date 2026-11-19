@@ -23,7 +23,7 @@ function figuraRival(signo: Signo, n: number): string {
 }
 
 /** Criatura que representa o jogador: a mais cara do deck que já tem arte (e não é a mesma do rival). */
-function figuraJogador(d: DeckMontado, evitar: string): string {
+export function figuraJogador(d: DeckMontado, evitar: string): string {
   const ids = [...new Set(d.cartas.map(baseCid))].filter(k => CARDS[k]?.type === 'unit' && ARTE[k] && k !== evitar);
   ids.sort((a, b) => CARDS[b].cost - CARDS[a].cost);
   return ids[0] ?? '';

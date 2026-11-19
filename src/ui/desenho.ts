@@ -32,6 +32,8 @@ export interface View {
   info?: boolean;
   /** Dificuldade do bot (Partida Rápida), mostrada embaixo do nome do rival. */
   nivel?: string;
+  /** Nome do adversário (Ranqueada); sem ele aparece "Rival de <signos>". */
+  rival?: string;
   /** Fim de partida: o lado de quem perdeu afunda, treme e racha ('anim'); depois fica parado assim ('fixo'). */
   fim?: 'anim' | 'fixo' | null;
   /** Perguntando se o jogador quer mesmo desistir. */
@@ -252,11 +254,11 @@ export function nomeLado(H: GameState['p']): string {
   return H.sign2 ? `${RACES[H.sign].n} + ${RACES[H.sign2].n}` : RACES[H.sign].n;
 }
 
-function heroCard(s: GameState, side: Side, nivel?: string): string {
+function heroCard(s: GameState, side: Side, nivel?: string, rival?: string): string {
   const H = s[side], r = RACES[H.sign];
   const hp = Math.max(0, H.hp);
   const pct = Math.min(100, (hp / HEART_MAX) * 100);
-  const name = side === 'p' ? T.voce : T.rivalDe(nomeLado(H));
+  const name = side === 'p' ? T.voce : rival ? rival.replace(/[&<>"']/g, c => `&#${c.charCodeAt(0)};`) : T.rivalDe(nomeLado(H));
   const sub = T.deck(H.deck.length) + (side === 'e' && nivel ? ` · <b class="nv-tag">${nivel}</b>` : '');
   const extra = side === 'e' ? `<span class="gem" title="Mana">${H.max}</span>` : '';
   return `<div class="hcard ${side === 'p' ? 'mine' : 'theirs'}" style="--rc:${r.c}">`
@@ -270,10 +272,10 @@ function heroCard(s: GameState, side: Side, nivel?: string): string {
 /** Bandeira branca (desistir): mastro dourado e pano que tremula. */
 const BANDEIRA = ic('bandeira', 'ic-flag');
 
-function hudHtml(s: GameState, nivel?: string): string {
+function hudHtml(s: GameState, nivel?: string, rival?: string): string {
   return `<div class="hud">${heroCard(s, 'p')}`
     + `<div class="vs"><span class="vs-bts"><button class="rotbtn" data-act="som" aria-label="${T.som}" title="${T.som}">${iconeSom()}</button></span><span class="vsb">VS</span><span class="rd">${T.rodadaN(s.round)}<button class="infobtn" data-act="info" aria-label="${T.info}">i</button></span></div>`
-    + `${heroCard(s, 'e', nivel)}</div>`;
+    + `${heroCard(s, 'e', nivel, rival)}</div>`;
 }
 
 function manaHtml(v: View): string {
@@ -342,7 +344,7 @@ function preparadasHtml(v: View): string {
 }
 
 export function gameHtml(v: View): string {
-  return hudHtml(v.s, v.nivel)
+  return hudHtml(v.s, v.nivel, v.rival)
     + `<div class="table">${boardHtml(v)}<div class="mid${v.info ? ' aberta' : ''}" aria-live="polite">${v.msg}</div>${preparadasHtml(v)}</div>`
     + `<div class="bottom">${manaHtml(v)}${actsEsqHtml(v)}${handHtml(v)}${actsHtml(v)}</div>`
     + (v.zoom ? zoomHtml(v.zoom) : '');

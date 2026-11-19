@@ -31,6 +31,9 @@ export const nuvemAtiva = () => situacao !== 'desligada';
 export const situacaoNuvem = () => situacao;
 export const emailConta = () => usuario?.email ?? null;
 export const logado = () => !!usuario;
+/** Conexão com o Supabase e id da conta (para o ranking). */
+export const clienteNuvem = () => sb;
+export const idConta = () => usuario?.id ?? null;
 /** Ainda descobrindo se há uma sessão salva (logo ao abrir o jogo). */
 export const verificandoConta = () => situacao === 'iniciando';
 

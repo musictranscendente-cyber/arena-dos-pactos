@@ -41,6 +41,9 @@ import { deckDaFase, fase as dadosFase, FASES, estrelas, faseLiberada, mundoAtua
 import { abrirBau, BAU_POEIRA, coletar, coletarLogin, garantirDia, loginDisponivel, registrar, trocar, type Contagem } from '../meta/missoes';
 import { missoesHtml, temColeta } from './missoes';
 import { colecaoHtml, inicialHtml, pacotesHtml, proximoFiltro, cartasGanhasHtml, revelarHtml, type TelaColecao, type TelaPacotes } from './colecao';
+import { classificacaoAtual, carregarRanking, comecarRanqueada, situacaoRanking, terminarRanqueada } from '../services/ranking';
+import { sortearRival, type Rival } from '../meta/ranking';
+import { buscaHtml, ligaNome, premioTemporadaHtml, rankingHtml, vsRankHtml, type AcessoRanking } from './ranking';
 import { lerConvidado, lerDev, lerNivel, salvarDev, lerTelaCampanha, salvarConvidado, salvarNivel, salvarTelaCampanha } from '../services/preferencias';
 
 /** Nome da raridade em minúsculas, para os avisos. */
@@ -125,7 +128,7 @@ let fundindo = false;
 /** Cartas recebidas mostradas por cima de tudo (pacote, prêmio). */
 let revela: string | null = null;
 let montagem: Montagem | null = null;
-let dialogo: 'nivel' | 'regras' | 'missoes' | 'config' | null = null;
+let dialogo: 'nivel' | 'regras' | 'missoes' | 'config' | 'ranking' | null = null;
 /** Nome de invocador e mensagem curta da janela de Configurações. */
 let perfil = lerPerfil(), avisoCfg = '';
 /** Tela de entrada: mostrando o campo de e-mail? */
@@ -163,15 +166,25 @@ function sincronizarDecks(): void {
 }
 sincronizarDecks();
 /** Como foi a última partida (para a Revanche repetir igual). */
-type Modo = { modo: 'signo'; sign: Signo } | { modo: 'tutorial'; sign: Signo } | { modo: 'rapida'; deck: DeckMontado; nivel: Nivel } | { modo: 'campanha'; deck: DeckMontado; signo: Signo; fase: number };
+type Modo = { modo: 'signo'; sign: Signo } | { modo: 'tutorial'; sign: Signo } | { modo: 'rapida'; deck: DeckMontado; nivel: Nivel } | { modo: 'campanha'; deck: DeckMontado; signo: Signo; fase: number }
+  | { modo: 'ranqueada'; deck: DeckMontado; rival: Rival };
 let ultimo: Modo | null = null;
 const app = () => document.getElementById('app')!;
 
 /* ---------- tela de "próximo desafio" antes de cada fase da campanha ---------- */
 type ModoCampanha = Extract<Modo, { modo: 'campanha' }>;
-let desafio: { cfg: ModoCampanha; timer: number; saindo: boolean } | null = null;
+type ModoRanqueada = Extract<Modo, { modo: 'ranqueada' }>;
+let desafio: { cfg: ModoCampanha | ModoRanqueada; timer: number; saindo: boolean } | null = null;
 
-function mostrarDesafio(cfg: ModoCampanha): void {
+/** Tela de VS antes da partida (campanha: o rival da fase; ranqueada: o adversário encontrado). */
+function htmlDesafio(): string {
+  if (!desafio || desafio.saindo) return '';
+  const c = desafio.cfg;
+  return c.modo === 'campanha' ? desafioHtml(c.signo, c.fase, c.deck)
+    : vsRankHtml(c.deck, c.rival, situacaoRanking().meu?.pontos ?? 0, TEMPO_DESAFIO);
+}
+
+function mostrarDesafio(cfg: ModoCampanha | ModoRanqueada): void {
   if (desafio) clearTimeout(desafio.timer);
   desafio = { cfg, timer: window.setTimeout(entrarDesafio, TEMPO_DESAFIO), saindo: false };
   // enquanto o desafio aparece, já carrega o fundo da arena e as cartas do deck (a entrada fica sem travadinha)
@@ -239,6 +252,16 @@ function startMatch(cfg: Modo): void {
       pSign: pa, pSign2: pb === pa ? undefined : pb, pDeck: [...cfg.deck.cartas],
       eSign: cfg.signo, eDeck: deckDaFase(f, rng), eHp: f.vidaRival, seed, record: false,
     }).state;
+  } else if (cfg.modo === 'ranqueada') {
+    // Ranqueada: os signos e a força do adversário vêm dele (ver meta/ranking.ts)
+    const rng = new Rng(seed ^ 0x3c6ef372), r = cfg.rival;
+    const [pa, pb] = cfg.deck.signos;
+    const base = r.forte ? deckForte(rng, r.signo, r.signo2) : deckAleatorio(rng, r.signo, r.signo2);
+    state = newGame({
+      pSign: pa, pSign2: pb === pa ? undefined : pb, pDeck: [...cfg.deck.cartas],
+      eSign: r.signo, eSign2: r.signo2 === r.signo ? undefined : r.signo2, eDeck: base.map(c => comNivel(c, r.nv)), seed, record: false,
+    }).state;
+    comecarRanqueada(r.pontos);
   } else {
     // Partida Rápida: o seu deck contra um bot com 2 signos e 30 cartas (sorteadas; no difícil, as mais fortes)
     const rng = new Rng(seed ^ 0x2545f491);
@@ -248,7 +271,7 @@ function startMatch(cfg: Modo): void {
     // cada carta do deck já tem o seu nível (escolhido na Montagem)
     state = newGame({ pSign: pa, pSign2: pb === pa ? undefined : pb, pDeck: [...cfg.deck.cartas], eSign: ea, eSign2: eb, eDeck, seed, record: false }).state;
   }
-  M = { g: state, shown: state, sel: null, busy: false, msg: '', active: null, striking: null, aiRng: new Rng(seed ^ 0x5bd1e995), base: state, plan: [], inspect: null, cont: {}, inicio: Date.now(), nivel: cfg.modo === 'rapida' ? cfg.nivel : cfg.modo === 'campanha' ? dadosFase(cfg.signo, cfg.fase).nivelIA : cfg.modo === 'tutorial' ? 'facil' : 'normal' };
+  M = { g: state, shown: state, sel: null, busy: false, msg: '', active: null, striking: null, aiRng: new Rng(seed ^ 0x5bd1e995), base: state, plan: [], inspect: null, cont: {}, inicio: Date.now(), nivel: cfg.modo === 'rapida' ? cfg.nivel : cfg.modo === 'ranqueada' ? cfg.rival.ia : cfg.modo === 'campanha' ? dadosFase(cfg.signo, cfg.fase).nivelIA : cfg.modo === 'tutorial' ? 'facil' : 'normal' };
   beginPlanning([]);
 }
 
@@ -695,7 +718,8 @@ function desenhar(): void {
   if (!M) {
     emDia();
     const dlg = dialogo === 'nivel' ? dificuldadeHtml(deckAtivo(meus), nivel) : dialogo === 'regras' ? regrasHtml(prog.teste, dev)
-      : dialogo === 'missoes' ? missoesHtml(prog, hoje()) : dialogo === 'config' ? configHtml(perfil, avisoCfg) : '';
+      : dialogo === 'missoes' ? missoesHtml(prog, hoje()) : dialogo === 'config' ? configHtml(perfil, avisoCfg)
+      : dialogo === 'ranking' ? rankingHtml(situacaoRanking(), situacaoRanking().estado !== 'carregando' && acessoRanking() !== 'indisponivel' ? classificacaoAtual() : null, acessoRanking()) + (busca ? buscaHtml(busca.rival) : '') + (premioRank ?? '') : '';
     root.innerHTML = gal ? galleryHtml(gal, galSel)
       : tela === 'montar' && montagem ? montarHtml(montagem, meus.decks, meus.ativo, prog)
       : tela === 'conhecer' ? startHtml(new Date())
@@ -703,7 +727,7 @@ function desenhar(): void {
       : tela === 'campanha' ? campanhaHtml(prog, telaCamp, deckAtivo(meus))
       : tela === 'pacotes' ? hubHtml(new Date(), deckAtivo(meus), prog, temColeta(prog, hoje()), perfil.nome) + pacotesHtml(prog, telaPacotes)
       : hubHtml(new Date(), deckAtivo(meus), prog, temColeta(prog, hoje()), perfil.nome) + dlg + (prog.inicial ? '' : inicialHtml());
-    root.insertAdjacentHTML('beforeend', somHtml() + (revela ?? '') + (desafio && !desafio.saindo ? desafioHtml(desafio.cfg.signo, desafio.cfg.fase, desafio.cfg.deck) : ''));
+    root.insertAdjacentHTML('beforeend', somHtml() + (revela ?? '') + htmlDesafio());
     ajustarZooms(root);
     return;
   }
@@ -719,6 +743,7 @@ function desenhar(): void {
     preparadas: preparadasAtual(M),
     info: infoAberta,
     nivel: ultimo?.modo === 'rapida' ? T.nivelNome[M.nivel] : ultimo?.modo === 'campanha' ? `${T.faseN(ultimo.fase)}/${FASES}` : undefined,
+    rival: ultimo?.modo === 'ranqueada' ? ultimo.rival.nome : undefined,
     fim: M.g.phase !== 'over' || M.busy ? null : M.fim === 'pronto' ? 'fixo' : 'anim',
   };
   const tut = M.confirma || M.g.phase === 'over' ? { html: '' }
@@ -726,7 +751,7 @@ function desenhar(): void {
       podeInvocar: M.g.p.hand.some(h => card(h.cid).type === 'unit' && costOf(M!.g.p, h.cid) <= M!.g.p.mana),
       carta: ((P: typeof v.s.p) => { const i = P.hand.findIndex(h => card(h.cid).type === 'unit' && costOf(P, h.cid) <= P.mana); return i < 0 ? null : i; })(v.s.p) });
   const html = gameHtml(v) + tut.html + (M.confirma ? desistirHtml() : '') + (M.g.phase === 'over' && M.fim === 'pronto' ? endHtml(M.g, M.premio, botoesFim(M), M.cartasFim, botaoAnuncio(M)) : '')
-    + somHtml() + (revela ?? '') + (desafio && !desafio.saindo ? desafioHtml(desafio.cfg.signo, desafio.cfg.fase, desafio.cfg.deck) : '');
+    + somHtml() + (revela ?? '') + htmlDesafio();
   // a partida não é remontada: só muda o que mudou (ver morph.ts); as criaturas, imagens e animações continuam as mesmas
   if (root.querySelector(':scope > .table')) morph(root, html); else root.innerHTML = html;
   // destaque do tutorial: fica nos mesmos elementos entre um redesenho e outro (sem recomeçar a pulsação)
@@ -749,6 +774,9 @@ function desenhar(): void {
 
 /** Botões da tela final na campanha: próxima fase (se venceu) ou tentar de novo, e voltar ao mapa. */
 function botoesFim(m: Match): string | undefined {
+  if (ultimo?.modo === 'ranqueada') {
+    return `<button class="btn go" data-act="rk-de-novo">${T.rank.proximaPartida}</button><button class="btn rc" data-act="rk-ver">${T.rank.verRanking}</button>`;
+  }
   if (ultimo?.modo !== 'campanha') return undefined;
   const prox = m.g.result === 'p' && ultimo.fase < FASES;
   // venceu o chefe (fase 10) pela primeira vez: mundo concluído e atalho para o próximo mundo
@@ -847,6 +875,14 @@ function premioDaPartida(m: Match): string | undefined {
     }
     return partes.join(' · ');
   }
+  if (ultimo?.modo === 'ranqueada') {
+    const r = terminarRanqueada(m.g.result === 'p' ? 'vitoria' : m.g.result === 'draw' ? 'empate' : 'derrota', ultimo.rival.pontos);
+    if (!r) return undefined;
+    const li = r.e.ligaMax;
+    const partes = [`${r.delta >= 0 ? '+' : '−'}${Math.abs(r.delta)} 🏆`, `${r.e.pontos} ${T.rank.pontos}`];
+    if (r.subiu) partes.push(T.rank.subiuLiga(ligaNome(li)));
+    return partes.join(' · ');
+  }
   if (ultimo?.modo === 'tutorial') {
     if (m.g.result !== 'p') return undefined;
     mudarProgresso({ ...prog, poeira: prog.poeira + PREMIO_GUIADA });
@@ -862,7 +898,7 @@ function premioDaPartida(m: Match): string | undefined {
 function menuClick(a: string | undefined, t: HTMLElement): boolean {
   switch (a) {
     case 'hub': tela = 'hub'; gal = null; dialogo = null; render(); return true;
-    case 'fechar': dialogo = null; render(); return true;
+    case 'fechar': dialogo = null; busca = null; render(); return true;
     case 'conhecer': tela = 'conhecer'; render(); return true;
     case 'regras': dialogo = 'regras'; render(); return true;
     case 'config': avisoCfg = ''; dialogo = 'config'; tocar('clique'); render(); return true;
@@ -887,7 +923,10 @@ function menuClick(a: string | undefined, t: HTMLElement): boolean {
     case 'cfg-sair': void sair().then(() => { avisoCfg = ''; dialogo = null; tela = 'hub'; render(); }); return true;
     case 'en-convidado': convidado = true; salvarConvidado(true); avisoCfg = ''; render(); return true;
     case 'en-email': entrarComEmail = true; render(); app().querySelector<HTMLInputElement>('#cfg-email')?.focus(); return true;
-    case 'torneio': case 'ranqueada': case 'evento': emBreve(); return true;
+    case 'torneio': case 'evento': emBreve(); return true;
+    case 'ranqueada': case 'rk-recarregar': abrirRanking(); return true;
+    case 'rk-jogar': buscarRival(); return true;
+    case 'rk-premio-ok': premioRank = null; render(); return true;
     case 'missoes': emDia(); dialogo = 'missoes'; render(); return true;
     case 'login': {
       const r = coletarLogin(prog, hoje(), new Rng(randomSeed()), prog.inicial ?? undefined);
@@ -1208,6 +1247,61 @@ function keepScroll(): void {
   if (sc) sc.scrollTop = top;
 }
 
+/* ---------- Ranqueada ---------- */
+
+/** Busca de adversário em andamento (rival = já encontrado, mostrando o nome antes do VS). */
+let busca: { rival: Rival | null } | null = null;
+/** Prêmio do fim da temporada, aberto por cima do ranking até tocar em OK. */
+let premioRank: string | null = null;
+
+function acessoRanking(): AcessoRanking {
+  if (emPortal() || !nuvemAtiva()) return 'indisponivel';
+  return logado() ? 'sim' : 'conta';
+}
+
+const signoDoJogador = (): Signo => prog.inicial ?? deckAtivo(meus)?.signos[0] ?? 'aries';
+
+/** Abre o ranking e lê a nuvem; na virada de temporada entrega o prêmio. */
+function abrirRanking(): void {
+  dialogo = 'ranking';
+  render();
+  if (acessoRanking() === 'indisponivel') return;
+  void carregarRanking(perfil.nome, signoDoJogador()).then(premio => {
+    if (premio) {
+      mudarProgresso({ ...prog, poeira: prog.poeira + premio.poeira, gemas: prog.gemas + premio.gemas });
+      premioRank = premioTemporadaHtml(premio);
+      tocar('vitoria');
+    }
+    if (!M && dialogo === 'ranking') render();
+  });
+}
+
+/** "Procurando adversário..." por alguns segundos, mostra quem foi encontrado e vai para o VS. */
+function buscarRival(): void {
+  const meu = situacaoRanking().meu;
+  if (busca || !meu || acessoRanking() !== 'sim') return;
+  const d = deckPronto();
+  if (!d) return;
+  busca = { rival: null };
+  tocar('clique');
+  render();
+  const espera = 1200 + Math.floor(Math.random() * 1600);
+  window.setTimeout(() => {
+    if (!busca) return;
+    busca.rival = sortearRival(new Rng(randomSeed()), situacaoRanking().temporada, Date.now(), meu.pontos, nivelMedioDeck(d.cartas));
+    tocar('rodada');
+    render();
+    window.setTimeout(() => {
+      const rival = busca?.rival;
+      busca = null;
+      if (!rival || M) return;
+      dialogo = null;
+      void tryLandscape();
+      mostrarDesafio({ modo: 'ranqueada', deck: d, rival });
+    }, 1100);
+  }, espera);
+}
+
 function emBreve(): void { aviso(`${ic('cadeado')} ${T.emBreveAviso}`); }
 
 /** Faixa "Nova versão disponível" (app Android pelo APK). Fica fora do #app para não sumir quando a tela é redesenhada. */
@@ -1291,6 +1385,8 @@ function onClick(ev: Event): void {
     return;
   }
   if ((a === 'again' || a === 'menu' || a === 'mapa' || a === 'proxfase' || a === 'proxmundo') && M?.fim) intervalo();
+  if (a === 'rk-de-novo' && M?.fim) { intervalo(); M = null; dialogo = 'ranking'; tela = 'hub'; render(); buscarRival(); return; }
+  if (a === 'rk-ver' && M?.fim) { intervalo(); M = null; tela = 'hub'; abrirRanking(); return; }
   if (a === 'again' && M && ultimo) { revela = M.revelaDepois ?? null; startMatch(ultimo); render(); return; }
   if ((a === 'mapa' || a === 'proxfase' || a === 'proxmundo') && M && ultimo?.modo === 'campanha') {
     const u = ultimo;

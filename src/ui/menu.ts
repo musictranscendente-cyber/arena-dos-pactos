@@ -90,7 +90,7 @@ export function hubHtml(now: Date, deck: DeckMontado | null, prog: Progresso, al
     { act: 'torneio', nome: T.torneio, sub: T.torneioSub, x: 74, y: 40, w: .58, breve: true, figs: criatura('sagitario25') },
     { act: 'montar', nome: T.montarDeck, sub: T.montarSubHub, x: 26, y: 75, w: .64, cls: 'deck', figs: '<span class="leque"><i></i><i></i><i></i></span>' + criatura(tem === 'aquario' ? 'cancer25' : 'aquario25', 'peq frente') },
     { act: 'rapida', nome: T.partidaRapida, sub: T.rapidaSub, x: 50, y: 75, w: .86, cls: 'principal', figs: criatura('aries25') + criatura('leao25', '', true) },
-    { act: 'ranqueada', nome: T.ranqueada, sub: T.ranqueadaSub, x: 74, y: 75, w: .6, breve: true, figs: criatura('touro25') + criatura('escorpiao25', '', true) },
+    { act: 'ranqueada', nome: T.ranqueada, sub: T.ranqueadaSub, x: 74, y: 75, w: .6, figs: criatura('touro25') + criatura('escorpiao25', '', true) },
   ];
   const r = RACES[avatar];
   const estrelasTotais = MUNDOS.reduce((t, sg) => t + estrelasDoMundo(prog, sg), 0), cartasTem = Object.keys(prog.cartas).length;
