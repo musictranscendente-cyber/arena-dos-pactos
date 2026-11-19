@@ -34,6 +34,7 @@
     "@capacitor/app": "^8.1.2",
     "@capacitor/browser": "^8.0.5",
     "@capacitor/core": "^8.5.3",
+    "@capawesome/capacitor-app-update": "8.1.0",
     "@supabase/supabase-js": "^2.117.3",
     "zod": "^4.6.5"
   }
