@@ -1,0 +1,22 @@
+# Passa a versão que está no teste interno da Play Store para produção (todos os jogadores).
+# Disparado à mão (Actions > Promover para produção > Run workflow). O Google ainda revisa antes de liberar.
+name: Promover para produção
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  promover:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - run: npm install --no-save --no-package-lock google-auth-library@9.15.1
+      - run: node ferramentas/promover-play.mjs
+        env:
+          PLAY_CONTA_SERVICO: ${{ secrets.PLAY_CONTA_SERVICO }}
