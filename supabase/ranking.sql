@@ -36,17 +36,21 @@ create policy "atualizar a propria linha" on public.ranking for update to authen
 
 -- Proteção contra pontos inventados:
 -- - linha nova começa com no máximo 40 pontos;
--- - na mesma temporada, cada gravação sobe no máximo 40 (a maior vitória dá 35) e desce no máximo 20,
---   e só pode subir se a última gravação foi há pelo menos 40 segundos (uma partida dura mais que isso);
+-- - na mesma temporada, os pontos sobem no máximo 40 a cada 40 segundos desde a última gravação
+--   (a maior vitória dá 35 e nenhuma partida dura menos que isso; vitórias que ficaram sem enviar somam juntas),
+--   e só podem subir se a última gravação foi há pelo menos 20 segundos;
 -- - na virada de temporada, os pontos novos são no máximo a metade dos antigos (+40) e o troféu sobe no máximo 1.
 create or replace function public.ranking_protege() returns trigger language plpgsql as $$
+declare
+  limite int;
 begin
   if tg_op = 'INSERT' then
     if new.pontos > 40 or new.trofeus > 0 then raise exception 'ranking: pontos iniciais invalidos'; end if;
   else
     if new.temporada = old.temporada then
-      if new.pontos - old.pontos > 40 or old.pontos - new.pontos > 20 then raise exception 'ranking: variacao invalida'; end if;
-      if new.pontos > old.pontos and now() - old.atualizado < interval '40 seconds' then raise exception 'ranking: rapido demais'; end if;
+      limite := 40 * greatest(1, floor(extract(epoch from (now() - old.atualizado)) / 40))::int;
+      if new.pontos - old.pontos > limite then raise exception 'ranking: variacao invalida'; end if;
+      if new.pontos > old.pontos and now() - old.atualizado < interval '20 seconds' then raise exception 'ranking: rapido demais'; end if;
       if new.trofeus <> old.trofeus then raise exception 'ranking: trofeu invalido'; end if;
     else
       if new.pontos > ceil(old.pontos / 2.0) + 40 then raise exception 'ranking: virada invalida'; end if;

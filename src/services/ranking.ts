@@ -57,13 +57,21 @@ export function nomeNoRanking(nome: string, conta: string): string {
   return n || `Invocador${parseInt(conta.replace(/-/g, '').slice(0, 6), 16) % 10000}`;
 }
 
-async function enviar(e: EstadoRank, extra: Record<string, unknown> = {}): Promise<boolean> {
+/**
+ * Grava a sua linha. Linha nova: insert; linha que já existe: update.
+ * (Não usa upsert: no banco, o upsert passa pela regra de linha nova — no máximo 40 pontos — e era recusado
+ * para quem já tinha mais que isso; os pontos ficavam só na tela.)
+ */
+async function enviar(e: EstadoRank, extra: Record<string, unknown> = {}, nova = false): Promise<boolean> {
   const sb = clienteNuvem(), conta = idConta();
   if (!sb || !conta) return false;
-  const { error } = await sb.from(TABELA).upsert({
-    id: conta, nome: nomeNoRanking(nomeAtual, conta), signo: signoAtual, temporada: e.temporada, pontos: e.pontos,
+  const dados = {
+    nome: nomeNoRanking(nomeAtual, conta), signo: signoAtual, temporada: e.temporada, pontos: e.pontos,
     liga_max: e.ligaMax, seguidas: e.seguidas, vitorias: e.vitorias, derrotas: e.derrotas, trofeus: e.trofeus, ...extra,
-  });
+  };
+  const { error } = nova
+    ? await sb.from(TABELA).insert({ id: conta, ...dados })
+    : await sb.from(TABELA).update(dados).eq('id', conta);
   gravarLocal(CACHE, { conta, e, enviar: !!error } satisfies Cache);
   return !error;
 }
@@ -98,11 +106,11 @@ export async function carregarRanking(nome: string, signo: Signo): Promise<Premi
       if (error) throw error;
       const cache = ler<Cache>(CACHE);
       meu = data ? doBanco(data as LinhaNuvem) : null;
-      // resultado que não chegou a ser enviado (sem internet no fim da partida)
-      if (cache && cache.conta === conta && cache.enviar && (!meu || cache.e.temporada === meu.temporada)) {
+      if (!meu) { meu = novoEstado(temporada.id); await enviar(meu, {}, true); }
+      // resultado que não chegou a ser enviado (sem internet, ou recusado pelo banco): manda de novo
+      if (cache && cache.conta === conta && cache.enviar && cache.e.temporada === meu.temporada) {
         if (await enviar(cache.e)) meu = cache.e;
       }
-      if (!meu) { meu = novoEstado(temporada.id); await enviar(meu); }
       if (meu.temporada !== temporada.id) {
         const velho = meu;
         const pos = await posicaoFinal(velho);
