@@ -2608,3 +2608,13 @@ body.palco #app .desafio{zoom:var(--zinv,1)}
 .ov.rk-premio h2{margin:0;font-size:clamp(20px,6.5vmin,30px);line-height:1.1}.ov.rk-premio p{margin:0}
 .rk-top10{font-weight:900;color:var(--gold,#ffd34d)}
 @media (max-height:420px){.rk-topo h2{font-size:22px}.rk-eu{gap:3px}.rk-meus span{padding:2px 6px}.rk-jogar.btn.go{min-height:44px;font-size:19px}.ov.ranking .rk-painel{padding:8px 14px 10px}}
+
+/* relógio da rodada (Ranqueada): barra acima do botão Batalha; vermelha e pulsando nos últimos 10 s */
+.relogio{position:relative;height:22px;border-radius:11px;background:#0b0722cc;box-shadow:inset 0 1px 3px #000c,0 0 0 2px #ffe29a88;overflow:hidden;flex:none}
+.relogio i{position:absolute;left:0;top:0;bottom:0;border-radius:11px;background:linear-gradient(90deg,#3fb86b,#9be36a);transition:width .2s linear}
+.relogio b{position:relative;display:block;text-align:center;font-size:13px;line-height:22px;font-weight:900;color:#fff;text-shadow:0 1px 2px #000}
+.relogio.fim{box-shadow:inset 0 1px 3px #000c,0 0 0 2px #ff5a5a,0 0 12px #ff3b3b99;animation:relogio-pulsa 1s ease-in-out infinite}
+.relogio.fim i{background:linear-gradient(90deg,#d62f2f,#ff7a5a)}
+@keyframes relogio-pulsa{50%{transform:scale(1.06)}}
+@media (prefers-reduced-motion:reduce){.relogio.fim{animation:none}}
+.fim-parado{font-size:13px;color:#ffb4a8;margin:4px 0 0}

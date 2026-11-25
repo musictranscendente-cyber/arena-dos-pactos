@@ -34,6 +34,8 @@ export interface View {
   nivel?: string;
   /** Nome do adversário (Ranqueada); sem ele aparece "Rival de <signos>". */
   rival?: string;
+  /** Tempo que falta na rodada (ms), quando há relógio (Ranqueada). */
+  relogio?: number;
   /** Fim de partida: o lado de quem perdeu afunda, treme e racha ('anim'); depois fica parado assim ('fixo'). */
   fim?: 'anim' | 'fixo' | null;
   /** Perguntando se o jogador quer mesmo desistir. */
@@ -285,8 +287,18 @@ function manaHtml(v: View): string {
   return `<div class="manaorb" aria-label="Mana ${P.mana}/${P.max}"><div class="orbc"><b>${P.mana}</b><small>/${P.max}</small></div><span class="pips">${pips}</span></div>`;
 }
 
+/** Tempo da rodada na Ranqueada (ms). */
+export const TEMPO_RODADA_MS = 40_000;
+
+/** Barra do relógio da rodada (acima do botão Batalha). */
+export function relogioHtml(resta: number): string {
+  const seg = Math.max(0, Math.ceil(resta / 1000));
+  const pct = Math.max(0, Math.min(100, (resta / TEMPO_RODADA_MS) * 100));
+  return `<div class="relogio${seg <= 10 ? ' fim' : ''}" id="relogio" role="timer" aria-label="${T.tempoRestante(seg)}"><i style="width:${pct.toFixed(1)}%"></i><b>⏱ ${seg}s</b></div>`;
+}
+
 function actsHtml(v: View): string {
-  return `<div class="acts"><button class="btn go" data-act="punch" title="${T.atalhos}" ${v.canAct ? '' : 'disabled'}><span class="ico">${ic('lutar', 'ic-bt')}</span>${T.batalha}<kbd class="tecla">${T.teclaEspaco}</kbd></button></div>`;
+  return `<div class="acts">${v.relogio !== undefined ? relogioHtml(v.relogio) : ''}<button class="btn go" data-act="punch" title="${T.atalhos}" ${v.canAct ? '' : 'disabled'}><span class="ico">${ic('lutar', 'ic-bt')}</span>${T.batalha}<kbd class="tecla">${T.teclaEspaco}</kbd></button></div>`;
 }
 
 /** Voltar e queimar: logo à direita da mana. */

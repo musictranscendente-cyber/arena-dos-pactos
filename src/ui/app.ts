@@ -12,7 +12,7 @@ import {
   maxCopias, planTurnNivel, type DeckMontado, type Nivel,
   type Action, type Frame, type GameEvent, type GameState, type Side, type Target,
 } from '../engine';
-import { ajustarZooms, ATK_MS, desistirHtml, endHtml, galleryHtml, gameHtml, startHtml, zoomHtml, type View, type Zoom } from './desenho';
+import { ajustarZooms, ATK_MS, relogioHtml, TEMPO_RODADA_MS, desistirHtml, endHtml, galleryHtml, gameHtml, startHtml, zoomHtml, type View, type Zoom } from './desenho';
 import { toggleRot, tryLandscape } from './orientacao';
 import { efeitoGeral, efeitosDeMagia, EXTRA_GERAL_MS, MAGIA_MS } from './efeitoMagia';
 import { precarregar, precarregarVisiveis } from './precarga';
@@ -100,6 +100,11 @@ interface Match {
   cartasFim?: string;
   /** Venceu a fase 10 do mundo pela primeira vez (mostra "Mundo concluído"). */
   concluiu?: boolean;
+  /** Ranqueada: fim do tempo da rodada (Date.now) e o relógio que confere. */
+  prazo?: number;
+  tique?: number;
+  /** Rodadas seguidas em que o tempo acabou sem nenhuma jogada (3 = desistência). */
+  paradas?: number;
   /** O que o jogador fez na partida (para as missões). */
   cont: Partial<Record<Contagem, number>>;
 }
@@ -311,8 +316,51 @@ function beginPlanning(tickEvents: GameEvent[]): void {
   if (tickEvents.some(e => e.t === 'DrawDiscarded' && e.side === 'p')) extra.push(T.maoCheia);
   m.msg = [...extra, T.rodadaInicio(m.g.round)].join(' ');
   m.inspect = null;
+  iniciarRelogio(m);
   render();
   if (m.g.phase === 'plan') faixaRodada(m.g.round);
+}
+
+/* ---------- relógio da rodada (só na Ranqueada) ---------- */
+const PARADAS_MAX = 3;
+
+function pararRelogio(m: Match): void {
+  if (m.tique) clearInterval(m.tique);
+  m.tique = undefined;
+}
+
+/** Começa a contar os 40 s do planejamento; quando acaba, a Batalha começa sozinha. */
+function iniciarRelogio(m: Match): void {
+  pararRelogio(m);
+  m.prazo = undefined;
+  if (ultimo?.modo !== 'ranqueada' || m.g.phase !== 'plan') return;
+  m.prazo = Date.now() + TEMPO_RODADA_MS;
+  let ultimoSeg = -1;
+  m.tique = window.setInterval(() => {
+    if (M !== m || m.g.phase !== 'plan' || m.busy || m.fim) { pararRelogio(m); return; }
+    const resta = m.prazo! - Date.now();
+    const el = document.getElementById('relogio');
+    if (el) el.outerHTML = relogioHtml(resta);
+    const seg = Math.ceil(resta / 1000);
+    if (seg <= 10 && seg > 0 && seg !== ultimoSeg) { ultimoSeg = seg; tocar('tique'); }
+    if (resta <= 0) tempoEsgotado(m);
+  }, 200);
+}
+
+/** Acabou o tempo: o que foi jogado vale e a Batalha começa. 3 rodadas seguidas sem jogar nada = desistência. */
+function tempoEsgotado(m: Match): void {
+  pararRelogio(m);
+  m.confirma = false;
+  m.sel = null;
+  m.inspect = null;
+  m.paradas = m.plan.length ? 0 : (m.paradas ?? 0) + 1;
+  if (m.paradas >= PARADAS_MAX) {
+    const r = surrender(m.base, 'p');
+    if (r.ok) { m.g = m.shown = r.state; m.msg = T.paradoDesistiu; fimDeJogo(m); }
+    return;
+  }
+  aviso(`⏱ ${T.tempoEsgotado}`);
+  void battle();
 }
 
 /** Cartas da mão do começo da rodada que ainda não foram usadas (na ordem em que aparecem na mão). */
@@ -745,13 +793,14 @@ function desenhar(): void {
     info: infoAberta,
     nivel: ultimo?.modo === 'rapida' ? T.nivelNome[M.nivel] : ultimo?.modo === 'campanha' ? `${T.faseN(ultimo.fase)}/${FASES}` : undefined,
     rival: ultimo?.modo === 'ranqueada' ? ultimo.rival.nome : undefined,
+    relogio: M.prazo && M.g.phase === 'plan' && !M.busy ? Math.max(0, M.prazo - Date.now()) : undefined,
     fim: M.g.phase !== 'over' || M.busy ? null : M.fim === 'pronto' ? 'fixo' : 'anim',
   };
   const tut = M.confirma || M.g.phase === 'over' ? { html: '' }
     : tutorialHtml({ rodada: M.g.round, ocupado: M.busy, selecionou: M.sel !== null, jogou: M.plan.length > 0,
       podeInvocar: M.g.p.hand.some(h => card(h.cid).type === 'unit' && costOf(M!.g.p, h.cid) <= M!.g.p.mana),
       carta: ((P: typeof v.s.p) => { const i = P.hand.findIndex(h => card(h.cid).type === 'unit' && costOf(P, h.cid) <= P.mana); return i < 0 ? null : i; })(v.s.p) });
-  const html = gameHtml(v) + tut.html + (M.confirma ? desistirHtml() : '') + (M.g.phase === 'over' && M.fim === 'pronto' ? endHtml(M.g, M.premio, botoesFim(M), M.cartasFim, botaoAnuncio(M)) : '')
+  const html = gameHtml(v) + tut.html + (M.confirma ? desistirHtml() : '') + (M.g.phase === 'over' && M.fim === 'pronto' ? endHtml(M.g, M.premio, botoesFim(M), M.cartasFim, (M.paradas && M.paradas >= PARADAS_MAX ? `<p class="fim-parado">⏱ ${T.paradoDesistiu}</p>` : '') + botaoAnuncio(M)) : '')
     + somHtml() + (revela ?? '') + htmlDesafio();
   // a partida não é remontada: só muda o que mudou (ver morph.ts); as criaturas, imagens e animações continuam as mesmas
   if (root.querySelector(':scope > .table')) morph(root, html); else root.innerHTML = html;
@@ -1533,7 +1582,7 @@ function onClick(ev: Event): void {
     return;
   }
 
-  if (a === 'punch') void battle();
+  if (a === 'punch') { m.paradas = 0; pararRelogio(m); void battle(); }
 }
 
 /** Magias sem escolha de casa (curar/comprar/dano no herói): o alvo é fixo, então ela é preparada direto da mão. */

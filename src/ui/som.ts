@@ -7,7 +7,7 @@
 export type Efeito =
   | 'clique' | 'selecionar' | 'carta' | 'comprar' | 'voltar' | 'ataque' | 'golpe' | 'heroi' | 'morte'
   | 'magia' | 'buff' | 'escudo' | 'bloqueio' | 'cura' | 'veneno' | 'ferrao' | 'empurrao' | 'ilusao'
-  | 'queimar' | 'batalha' | 'rodada' | 'vitoria' | 'derrota';
+  | 'queimar' | 'batalha' | 'rodada' | 'vitoria' | 'derrota' | 'tique';
 
 const CHAVE = 'arena-dos-pactos:som2';
 const CHAVE_ANTIGA = 'arena-dos-pactos:som';
@@ -198,6 +198,8 @@ export function tocar(e: Efeito): void {
       corpo(t, 900, 500, 0.04, 0.12, d);
       break;
     }
+    // relógio da Ranqueada nos últimos segundos: um "toc" curto e seco
+    case 'tique': corpo(t, 1500, 1200, 0.03, 0.16, saida(0.04)); break;
     case 'selecionar': sopro(t, 0.09, 0.22, 'bandpass', 2600, 5200, 1.2, saida(0.1)); break;
     case 'carta': {
       const d = saida(0.15);

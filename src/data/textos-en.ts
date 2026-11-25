@@ -429,6 +429,9 @@ export const T_EN: TextosPT = {
   cartaEpica: '1 epic card',
   nCartas: (n: number) => `${n} cards`,
   temPremio: 'There is a reward to collect!',
+  tempoEsgotado: "Time's up!",
+  tempoRestante: (s: number) => `${s} seconds left`,
+  paradoDesistiu: 'You were idle for 3 rounds: the match counted as a surrender.',
   rank: {
     titulo: 'Ranked',
     temporada: (s: string) => `${s} Season`,

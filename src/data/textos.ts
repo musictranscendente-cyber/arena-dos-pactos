@@ -430,6 +430,9 @@ const T_PT = {
   cartaEpica: '1 carta épica',
   nCartas: (n: number) => `${n} cartas`,
   temPremio: 'Tem prêmio para coletar!',
+  tempoEsgotado: 'Tempo esgotado!',
+  tempoRestante: (s: number) => `${s} segundos restantes`,
+  paradoDesistiu: 'Você ficou 3 rodadas sem jogar: a partida contou como desistência.',
   rank: {
     titulo: 'Ranqueada',
     temporada: (s: string) => `Temporada de ${s}`,
