@@ -2618,3 +2618,73 @@ body.palco #app .desafio{zoom:var(--zinv,1)}
 @keyframes relogio-pulsa{50%{transform:scale(1.06)}}
 @media (prefers-reduced-motion:reduce){.relogio.fim{animation:none}}
 .fim-parado{font-size:13px;color:#ffb4a8;margin:4px 0 0}
+
+/* ================= Visuais (cosméticos) ================= */
+/* tabuleiro: as casas ganham a tinta do tema por cima do mármore; o bloco, a borda, o friso e o cenário mudam de cor */
+body.tab-skin .cell,body.tab-skin .cell.front,.pv-tab.tab-skin i{
+  background:linear-gradient(var(--tab-tinta),var(--tab-tinta)) center/100% 100% no-repeat,var(--laje) center/100% 100% no-repeat;
+  background-blend-mode:var(--tab-modo),normal}
+body.tab-skin.batalha .plat,.pv-tab.tab-skin .pv-plat{
+  background:url('./img/constelacoes.svg') 0 0/120px 120px,radial-gradient(120% 90% at 50% 0,#ffffff44,transparent 60%),linear-gradient(180deg,var(--tab-p1),var(--tab-p2) 55%,var(--tab-p3));
+  box-shadow:inset 0 0 0 3px var(--tab-borda),inset 0 0 0 6px #ffffff40,inset 0 0 34px color-mix(in srgb,var(--tab-brilho) 55%,transparent),0 0 0 1px #0008}
+body.tab-skin.batalha .plat::after{filter:var(--tab-friso);box-shadow:inset 0 3px 0 var(--tab-borda),inset 0 -6px 10px #0006,0 10px 18px #0009,0 18px 50px color-mix(in srgb,var(--tab-brilho) 55%,transparent)}
+body.tab-skin.batalha .chasm{background:linear-gradient(90deg,transparent,color-mix(in srgb,var(--tab-brilho) 35%,transparent) 35%,color-mix(in srgb,var(--tab-brilho) 75%,#fff) 50%,color-mix(in srgb,var(--tab-brilho) 35%,transparent) 65%,transparent);box-shadow:0 0 26px var(--tab-brilho)}
+body.tab-skin.batalha:not(.rot)::before,body.tab-skin.batalha.rot #app::before{filter:var(--tab-cena)}
+
+/* cenário de duelo (tela de VS) */
+.desafio.df-skin,.pv-duelo.df-skin{background:radial-gradient(ellipse at 50% 55%,var(--df1) 0%,var(--df2) 42%,var(--df3) 100%)}
+.desafio.df-skin .df-raios,.pv-duelo.df-skin .df-raios{background:repeating-conic-gradient(from 0deg,var(--dfr) 0 4deg,transparent 4deg 18deg);opacity:.3}
+.desafio.df-skin .df-faixa,.pv-duelo.df-skin .df-faixa{background:linear-gradient(90deg,transparent,color-mix(in srgb,var(--dff) 60%,transparent) 30%,color-mix(in srgb,var(--dff) 60%,transparent) 70%,transparent)}
+.desafio.df-skin .df-vs,.pv-duelo.df-skin .df-vs{text-shadow:0 0 6px #fff,0 0 22px var(--dfb),0 0 40px var(--dfb),0 4px 0 #0009}
+.desafio.df-estrelas::before,.pv-duelo.df-estrelas::before{content:'';position:absolute;inset:0;pointer-events:none;background:url('./img/constelacoes.svg') 0 0/180px 180px;opacity:.4}
+
+/* avatar de criatura: a arte num círculo com a cor do signo (no lugar do medalhão) */
+.av{display:inline-block;position:relative;border-radius:50%;overflow:hidden;width:100%;height:100%;vertical-align:middle;
+  background:radial-gradient(circle at 50% 35%,color-mix(in srgb,var(--avc) 55%,#fff),var(--avc) 55%,color-mix(in srgb,var(--avc) 50%,#000));
+  box-shadow:inset 0 0 0 2px #ffe29a,inset 0 0 8px #0008}
+.av img{position:absolute;left:50%;top:6%;width:118%;height:118%;translate:-50% 0;object-fit:cover;object-position:50% 12%}
+.medal>.av,.rk-sg>.av{width:100%;height:100%}
+.rk-sg .av{width:26px;height:26px}
+
+/* loja de visuais */
+.ov.visual .vs-painel{max-width:900px;max-height:94%;display:flex;flex-direction:column;padding:10px 16px 12px;overflow:hidden}
+.vs-topo{flex:none}.vs-topo h2{margin:0;flex:1}
+.vs-abas{flex:none;display:flex;gap:6px;margin:6px 0 8px}
+.vs-aba{font:inherit;font-weight:800;font-size:14px;color:#e6defa;background:#ffffff14;border:1px solid #ffffff2a;border-radius:20px;padding:6px 14px;cursor:pointer}
+.vs-aba.on{background:linear-gradient(180deg,#ffd76a,#e0a43a);color:#3a1d00;border-color:#fff2b0}
+.vs-corpo{flex:1;min-height:0;display:grid;grid-template-columns:minmax(190px,30%) 1fr;gap:14px}
+.vs-det{display:flex;flex-direction:column;align-items:center;text-align:center;gap:6px;overflow:auto;padding:2px}
+.vs-det-nome{font-family:var(--fonte-titulo);font-size:19px;color:#fff;line-height:1.1}
+.vs-rar{font-size:12px;color:var(--rr);font-weight:800}
+.vs-det .btn{width:100%}
+.vs-det .btn.sem{filter:grayscale(.6) brightness(.85)}
+.vs-det .btn .ic,.vs-preco .ic{width:16px;height:16px;vertical-align:-3px}
+.vs-bts{display:flex;gap:6px;width:100%}.vs-bts .btn{flex:1;min-height:44px;font-size:15px}
+.vs-conf{margin:0;font-size:14px}
+.vs-msg{margin:0;font-size:13px;color:#ffd76a;font-weight:800}
+.vs-dica{margin:2px 0 0;font-size:11px;line-height:1.35;color:#a99ad6}
+.vs-grade{min-height:0;overflow-y:auto;display:grid;grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:8px;align-content:start;padding:2px 4px 2px 2px;-webkit-overflow-scrolling:touch}
+.vs-item{font:inherit;color:#f3eefc;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 4px 5px;border-radius:12px;
+  background:linear-gradient(180deg,#ffffff12,#ffffff06);border:2px solid color-mix(in srgb,var(--rr) 55%,transparent);position:relative}
+.vs-item.sel{border-color:#fff;box-shadow:0 0 0 2px var(--rr),0 0 14px color-mix(in srgb,var(--rr) 70%,transparent)}
+.vs-item.usando::after{content:'✓';position:absolute;top:4px;right:6px;font-weight:900;color:#7dff9a;text-shadow:0 1px 2px #000}
+.vs-nome{font-size:11px;font-weight:700;line-height:1.15;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.vs-preco{font-size:12px;font-weight:800;color:#ffe9a8}
+/* prévias */
+.pv-tab{display:flex;gap:4px;padding:4px;border-radius:8px;background:radial-gradient(ellipse at 50% 30%,#3a2a6a,#120a2a)}
+.pv-tab .pv-plat{display:grid;grid-template-columns:repeat(3,13px);gap:2px;padding:3px;border-radius:5px;
+  background:linear-gradient(180deg,#efe7f8,#d6c9e8 55%,#bfb0d8);box-shadow:inset 0 0 0 1.5px #e9c77a}
+.pv-tab i{display:block;height:11px;border-radius:2px;background:var(--laje) center/100% 100% no-repeat}
+.pv-tab.grande{gap:8px;padding:10px}.pv-tab.grande .pv-plat{grid-template-columns:repeat(3,30px);gap:4px;padding:6px;border-radius:8px}.pv-tab.grande i{height:25px;border-radius:4px}
+.pv-duelo{position:relative;overflow:hidden;display:grid;place-items:center;width:96px;height:54px;border-radius:8px;
+  background:radial-gradient(ellipse at 50% 55%,color-mix(in srgb,var(--rc) 45%,#1a1040) 0%,#120b2e 55%,#06040f 100%)}
+.pv-duelo .df-raios{position:absolute;left:50%;top:55%;width:300%;height:300%;translate:-50% -50%;opacity:.22;background:repeating-conic-gradient(from 0deg,#fff 0 4deg,transparent 4deg 18deg);mask:radial-gradient(circle,#000 0,transparent 45%)}
+.pv-duelo .df-faixa{position:absolute;left:0;right:0;top:50%;height:40%;translate:0 -50%;opacity:.4;background:linear-gradient(90deg,transparent,color-mix(in srgb,var(--rc) 55%,transparent) 30%,color-mix(in srgb,var(--rc) 55%,transparent) 70%,transparent)}
+.pv-duelo .df-vs{position:relative;font-family:var(--fonte-titulo);font-size:24px;color:#fff;text-shadow:0 0 6px #fff,0 0 16px var(--rc)}
+.pv-duelo.grande{width:200px;height:112px}.pv-duelo.grande .df-vs{font-size:48px}
+.pv-av{display:block;width:58px;height:58px}.pv-av .sgm{width:100%;height:100%}
+.pv-av.grande{width:110px;height:110px}
+@media (max-height:420px){.vs-det-nome{font-size:16px}.pv-av.grande{width:84px;height:84px}.pv-duelo.grande{width:170px;height:95px}.vs-dica{display:none}}
+@media (max-width:620px){body:not(.rot) .vs-corpo{grid-template-columns:1fr;overflow:auto}body:not(.rot) .vs-grade{overflow:visible}}
+/* botão Visual no menu */
+.hub-bt .hub-vis-ic{display:grid;place-items:center;font-size:30px;line-height:1;filter:drop-shadow(0 2px 3px #000a)}

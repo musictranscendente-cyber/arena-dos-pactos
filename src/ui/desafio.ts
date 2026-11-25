@@ -9,6 +9,7 @@ import type { DeckMontado } from '../engine';
 import { fase, FASES, nivelMedioDeck } from '../meta/campanha';
 import { ic, sg as sgImg } from './icones';
 import { criatura, nomeDeckMontado } from './menu';
+import { dueloAttrs } from './visual';
 
 /** Quanto tempo a tela fica antes de entrar sozinha na arena (ms). */
 export const TEMPO_DESAFIO = 3200;
@@ -29,14 +30,15 @@ export function figuraJogador(d: DeckMontado, evitar: string): string {
   return ids[0] ?? '';
 }
 
-export function desafioHtml(signo: Signo, n: number, deck: DeckMontado, saindo = false): string {
+export function desafioHtml(signo: Signo, n: number, deck: DeckMontado, saindo = false, duelo = ''): string {
+  const dv = dueloAttrs(duelo);
   const f = fase(signo, n, nivelMedioDeck(deck.cartas)), r = RACES[signo];
   const titulo = f.tipo === 'chefe' ? T.desafioChefe : f.tipo === 'guardiao' ? T.desafioGuardiao : T.proximoDesafio;
   const rival = f.tipo === 'normal' ? T.rivalDoMundo(r.n) : f.rival;
   const [a, b] = deck.signos;
   const sg = (s: Signo) => `<i style="--rc:${RACES[s].c}">${sgImg(s)}</i>`;
   const fr = figuraRival(signo, n), fj = figuraJogador(deck, fr);
-  return `<div class="desafio t-${f.tipo}${saindo ? ' sai' : ''}" data-act="desafio-ir" style="--rc:${r.c};--tempo:${TEMPO_DESAFIO}ms" role="dialog" aria-label="${titulo}">`
+  return `<div class="desafio t-${f.tipo}${dv.cls}${saindo ? ' sai' : ''}" data-act="desafio-ir" style="--rc:${r.c};--tempo:${TEMPO_DESAFIO}ms${dv.vars}" role="dialog" aria-label="${titulo}">`
     + '<div class="df-raios"></div><div class="df-faixa"></div>'
     + `<div class="df-topo"><small>${sgImg(signo)} ${T.mundo(r.n)} · ${T.faseN(n)}/${FASES}</small><b>${titulo}</b></div>`
     + `<div class="df-lado df-voce"><div class="df-fig">${fj ? criatura(fj, 'df-img') : ''}</div>`

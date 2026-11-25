@@ -19,6 +19,8 @@ create table if not exists public.ranking (
   ant_pontos int,
   atualizado timestamptz not null default now()
 );
+-- avatar (foto do perfil) escolhido em Visual
+alter table public.ranking add column if not exists avatar text check (char_length(avatar) <= 40);
 create index if not exists ranking_temporada_pontos on public.ranking (temporada, pontos desc);
 create index if not exists ranking_ant on public.ranking (ant_temporada, ant_pontos desc);
 

@@ -44,6 +44,8 @@ import { colecaoHtml, inicialHtml, pacotesHtml, proximoFiltro, cartasGanhasHtml,
 import { classificacaoAtual, carregarRanking, comecarRanqueada, situacaoRanking, terminarRanqueada } from '../services/ranking';
 import { sortearRival, type Rival } from '../meta/ranking';
 import { buscaHtml, ligaNome, premioTemporadaHtml, rankingHtml, vsRankHtml, type AcessoRanking } from './ranking';
+import { aplicarTabuleiro, avatarHtml, nomeVisual, visualHtml, type TelaVisual } from './visual';
+import { comprarVisual, itemVisual, podeComprar, usarVisual } from '../meta/cosmeticos';
 import { lerConvidado, lerDev, lerNivel, salvarDev, lerTelaCampanha, salvarConvidado, salvarNivel, salvarTelaCampanha } from '../services/preferencias';
 
 /** Nome da raridade em minúsculas, para os avisos. */
@@ -133,7 +135,9 @@ let fundindo = false;
 /** Cartas recebidas mostradas por cima de tudo (pacote, prêmio). */
 let revela: string | null = null;
 let montagem: Montagem | null = null;
-let dialogo: 'nivel' | 'regras' | 'missoes' | 'config' | 'ranking' | null = null;
+let dialogo: 'nivel' | 'regras' | 'missoes' | 'config' | 'ranking' | 'visual' | null = null;
+/** Loja de visuais: aba aberta, item escolhido e confirmação de compra. */
+let telaVisual: TelaVisual = { aba: 'tabuleiro', sel: null, confirmar: false, msg: '' };
 /** Nome de invocador e mensagem curta da janela de Configurações. */
 let perfil = lerPerfil(), avisoCfg = '';
 /** Tela de entrada: mostrando o campo de e-mail? */
@@ -185,8 +189,8 @@ let desafio: { cfg: ModoCampanha | ModoRanqueada; timer: number; saindo: boolean
 function htmlDesafio(): string {
   if (!desafio || desafio.saindo) return '';
   const c = desafio.cfg;
-  return c.modo === 'campanha' ? desafioHtml(c.signo, c.fase, c.deck)
-    : vsRankHtml(c.deck, c.rival, situacaoRanking().meu?.pontos ?? 0, TEMPO_DESAFIO);
+  return c.modo === 'campanha' ? desafioHtml(c.signo, c.fase, c.deck, false, prog.visual.duelo)
+    : vsRankHtml(c.deck, c.rival, situacaoRanking().meu?.pontos ?? 0, TEMPO_DESAFIO, false, prog.visual.duelo);
 }
 
 function mostrarDesafio(cfg: ModoCampanha | ModoRanqueada): void {
@@ -764,10 +768,13 @@ function desenhar(): void {
   document.body.classList.toggle('batalha', !!M);
   trilha(M ? 'batalha' : 'menu');
   if (!M) {
+    // o progresso pode ter vindo da nuvem: o tabuleiro acompanha
+    aplicarTabuleiro(prog.visual.tabuleiro);
     if (temAtualizacao) mostrarAtualizacao();
     emDia();
     const dlg = dialogo === 'nivel' ? dificuldadeHtml(deckAtivo(meus), nivel) : dialogo === 'regras' ? regrasHtml(prog.teste, dev)
       : dialogo === 'missoes' ? missoesHtml(prog, hoje()) : dialogo === 'config' ? configHtml(perfil, avisoCfg)
+      : dialogo === 'visual' ? visualHtml(prog, telaVisual, signoDoJogador())
       : dialogo === 'ranking' ? rankingHtml(situacaoRanking(), situacaoRanking().estado !== 'carregando' && acessoRanking() !== 'indisponivel' ? classificacaoAtual() : null, acessoRanking()) + (busca ? buscaHtml(busca.rival) : '') + (premioRank ?? '') : '';
     root.innerHTML = gal ? galleryHtml(gal, galSel)
       : tela === 'montar' && montagem ? montarHtml(montagem, meus.decks, meus.ativo, prog)
@@ -793,6 +800,8 @@ function desenhar(): void {
     info: infoAberta,
     nivel: ultimo?.modo === 'rapida' ? T.nivelNome[M.nivel] : ultimo?.modo === 'campanha' ? `${T.faseN(ultimo.fase)}/${FASES}` : undefined,
     rival: ultimo?.modo === 'ranqueada' ? ultimo.rival.nome : undefined,
+    avatarP: prog.visual.avatar ? avatarHtml(prog.visual.avatar, M.g.p.sign) : undefined,
+    avatarE: ultimo?.modo === 'ranqueada' ? avatarHtml(ultimo.rival.avatar, M.g.e.sign) : undefined,
     relogio: M.prazo && M.g.phase === 'plan' && !M.busy ? Math.max(0, M.prazo - Date.now()) : undefined,
     fim: M.g.phase !== 'over' || M.busy ? null : M.fim === 'pronto' ? 'fixo' : 'anim',
   };
@@ -975,6 +984,35 @@ function menuClick(a: string | undefined, t: HTMLElement): boolean {
     case 'en-email': entrarComEmail = true; render(); app().querySelector<HTMLInputElement>('#cfg-email')?.focus(); return true;
     case 'torneio': case 'evento': emBreve(); return true;
     case 'ranqueada': case 'rk-recarregar': abrirRanking(); return true;
+    case 'visual': telaVisual = { aba: telaVisual.aba, sel: null, confirmar: false, msg: '' }; dialogo = 'visual'; render(); return true;
+    case 'vis-aba': telaVisual = { aba: t.dataset.a as TelaVisual['aba'], sel: null, confirmar: false, msg: '' }; render(); return true;
+    case 'vis-item': telaVisual = { ...telaVisual, sel: t.dataset.id!, confirmar: false, msg: '' }; tocar('selecionar'); render(); return true;
+    case 'vis-comprar-nao': telaVisual = { ...telaVisual, confirmar: false }; render(); return true;
+    case 'vis-comprar': {
+      // 1º toque: confere a moeda e pede confirmação (nada é gasto ainda)
+      const falta = podeComprar(prog, t.dataset.id!);
+      telaVisual = { ...telaVisual, confirmar: !falta, msg: falta === 'gemas' ? T.vis.semGemas : falta === 'poeira' ? T.vis.semPoeira : '' };
+      render();
+      return true;
+    }
+    case 'vis-comprar-ok': {
+      const id = t.dataset.id!, novo = comprarVisual(prog, id), item = itemVisual(id);
+      if (novo === prog || !item) { telaVisual = { ...telaVisual, confirmar: false }; render(); return true; }
+      mudarProgresso(novo);
+      aplicarTabuleiro(prog.visual.tabuleiro);
+      telaVisual = { ...telaVisual, confirmar: false, msg: T.vis.comprou(nomeVisual(item)) };
+      tocar('vitoria');
+      render();
+      return true;
+    }
+    case 'vis-usar': {
+      mudarProgresso(usarVisual(prog, t.dataset.id!));
+      aplicarTabuleiro(prog.visual.tabuleiro);
+      telaVisual = { ...telaVisual, confirmar: false, msg: '' };
+      tocar('carta');
+      render();
+      return true;
+    }
     case 'rk-jogar': buscarRival(); return true;
     case 'rk-premio-ok': premioRank = null; render(); return true;
     case 'missoes': emDia(); dialogo = 'missoes'; render(); return true;
@@ -1316,7 +1354,7 @@ function abrirRanking(): void {
   dialogo = 'ranking';
   render();
   if (acessoRanking() === 'indisponivel') return;
-  void carregarRanking(perfil.nome, signoDoJogador()).then(premio => {
+  void carregarRanking(perfil.nome, signoDoJogador(), prog.visual.avatar).then(premio => {
     if (premio) {
       mudarProgresso({ ...prog, poeira: prog.poeira + premio.poeira, gemas: prog.gemas + premio.gemas });
       premioRank = premioTemporadaHtml(premio);
@@ -1609,6 +1647,7 @@ export function startApp(): void {
   // jogador comum nunca fica com o Modo teste ligado
   if (!dev && prog.teste) mudarProgresso({ ...prog, teste: false });
   anotar('abriu');
+  aplicarTabuleiro(prog.visual.tabuleiro);
   conferirAtualizacao();
   void import('@capacitor/app').then(({ App }) => App.addListener('resume', conferirAtualizacao)).catch(() => undefined);
   void iniciarAnuncios(pausarSom, () => { prog = lerProgresso(); meus = lerDecks(); perfil = lerPerfil(); if (!M) render(); }).then(() => { avisarCarregou(); if (temAnuncios() && M?.fim) render(); });

@@ -9,6 +9,7 @@ import type { PremioTemporada, SituacaoRanking } from '../services/ranking';
 import { figuraJogador } from './desafio';
 import { sg as sgImg } from './icones';
 import { criatura, nomeDeckMontado } from './menu';
+import { avatarHtml, dueloAttrs } from './visual';
 
 const num = (n: number) => n.toLocaleString(IDIOMA === 'en' ? 'en-US' : 'pt-BR');
 const esc = (s: string) => s.replace(/[&<>"']/g, c => `&#${c.charCodeAt(0)};`);
@@ -20,7 +21,7 @@ export const ligaHtml = (i: number) => `<span class="rk-liga l-${LIGAS[i].id}" t
 
 function linhaHtml(l: Linha, pos: number): string {
   return `<li class="rk-l${l.eu ? ' eu' : ''}${pos <= 3 ? ` p${pos}` : ''}" style="--rc:${RACES[l.signo].c}">`
-    + `<b class="rk-pos">${num(pos)}</b><i class="rk-sg">${sgImg(l.signo)}</i>`
+    + `<b class="rk-pos">${num(pos)}</b><i class="rk-sg">${avatarHtml(l.avatar, l.signo)}</i>`
     + `<span class="rk-nome">${l.eu ? `${esc(l.nome)} <small>(${T.rank.voce})</small>` : esc(l.nome)}${l.trofeus ? ` <small class="rk-trofeu">🏆${l.trofeus > 1 ? l.trofeus : ''}</small>` : ''}</span>`
     + `${ligaHtml(ligaDe(l.pontos))}<b class="rk-pts">${num(l.pontos)}</b></li>`;
 }
@@ -59,7 +60,7 @@ export function rankingHtml(sit: SituacaoRanking, cls: Classificacao | null, ace
 
 export function buscaHtml(achou: Rival | null): string {
   return `<div class="ov rk-busca"><div class="rk-radar${achou ? ' achou' : ''}"><i></i><i></i><i></i>`
-    + (achou ? `<span class="rk-radar-sg" style="--rc:${RACES[achou.signo].c}">${sgImg(achou.signo)}</span>` : '<span class="rk-radar-sg">🔍</span>')
+    + (achou ? `<span class="rk-radar-sg" style="--rc:${RACES[achou.signo].c}">${avatarHtml(achou.avatar, achou.signo)}</span>` : '<span class="rk-radar-sg">🔍</span>')
     + `</div><p>${achou ? `${T.rank.achou}<br><b>${esc(achou.nome)}</b>` : T.rank.procurando}</p></div>`;
 }
 
@@ -69,12 +70,13 @@ function figuraRival(r: Rival): string {
   return '';
 }
 
-export function vsRankHtml(deck: DeckMontado, rival: Rival, meus: number, tempo: number, saindo = false): string {
+export function vsRankHtml(deck: DeckMontado, rival: Rival, meus: number, tempo: number, saindo = false, duelo = ''): string {
+  const dv = dueloAttrs(duelo);
   const [a, b] = deck.signos;
   const sg = (s: typeof a) => `<i style="--rc:${RACES[s].c}">${sgImg(s)}</i>`;
   const fr = figuraRival(rival), fj = figuraJogador(deck, fr);
   const li = ligaDe(rival.pontos), lm = ligaDe(meus);
-  return `<div class="desafio t-rank${saindo ? ' sai' : ''}" data-act="desafio-ir" style="--rc:${RACES[rival.signo].c};--tempo:${tempo}ms" role="dialog" aria-label="${T.rank.titulo}">`
+  return `<div class="desafio t-rank${dv.cls}${saindo ? ' sai' : ''}" data-act="desafio-ir" style="--rc:${RACES[rival.signo].c};--tempo:${tempo}ms${dv.vars}" role="dialog" aria-label="${T.rank.titulo}">`
     + '<div class="df-raios"></div><div class="df-faixa"></div>'
     + `<div class="df-topo"><small>🏆 ${T.rank.titulo}</small><b>${T.rank.achou}</b></div>`
     + `<div class="df-lado df-voce"><div class="df-fig">${fj ? criatura(fj, 'df-img') : ''}</div>`

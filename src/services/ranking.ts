@@ -34,7 +34,9 @@ export interface SituacaoRanking {
 }
 
 let sit: SituacaoRanking = { estado: 'carregando', temporada: temporadaDe(Date.now()), meu: null, reais: [], reaisAcima: 0 };
-let nomeAtual = '', signoAtual: Signo = 'aries';
+let nomeAtual = '', signoAtual: Signo = 'aries', avatarAtual = '';
+/** O banco ainda não tem a coluna do avatar (SQL antigo): grava sem ela. */
+let semColunaAvatar = false;
 /** Envio do último resultado (a leitura espera ele terminar, para não trazer pontos velhos). */
 let gravando: Promise<unknown> = Promise.resolve();
 
@@ -42,7 +44,7 @@ export const situacaoRanking = () => sit;
 
 interface LinhaNuvem {
   id: string; nome: string; signo: string; temporada: string; pontos: number; liga_max: number; seguidas: number;
-  vitorias: number; derrotas: number; trofeus: number;
+  vitorias: number; derrotas: number; trofeus: number; avatar?: string | null;
 }
 
 const doBanco = (r: LinhaNuvem): EstadoRank => ({
@@ -69,9 +71,15 @@ async function enviar(e: EstadoRank, extra: Record<string, unknown> = {}, nova =
     nome: nomeNoRanking(nomeAtual, conta), signo: signoAtual, temporada: e.temporada, pontos: e.pontos,
     liga_max: e.ligaMax, seguidas: e.seguidas, vitorias: e.vitorias, derrotas: e.derrotas, trofeus: e.trofeus, ...extra,
   };
-  const { error } = nova
-    ? await sb.from(TABELA).insert({ id: conta, ...dados })
-    : await sb.from(TABELA).update(dados).eq('id', conta);
+  const gravar = (d: Record<string, unknown>) => nova
+    ? sb.from(TABELA).insert({ id: conta, ...d })
+    : sb.from(TABELA).update(d).eq('id', conta);
+  let { error } = await gravar(semColunaAvatar ? dados : { ...dados, avatar: avatarAtual || null });
+  // banco sem a coluna "avatar" (o SQL novo ainda não foi rodado): grava o resto
+  if (error && !semColunaAvatar && /avatar/i.test(error.message ?? '')) {
+    semColunaAvatar = true;
+    ({ error } = await gravar(dados));
+  }
   gravarLocal(CACHE, { conta, e, enviar: !!error } satisfies Cache);
   return !error;
 }
@@ -91,8 +99,8 @@ async function posicaoFinal(e: EstadoRank): Promise<number> {
  * Lê o ranking da temporada. Com conta: lê (ou cria) a sua linha, vira a temporada se mudou (devolve o prêmio),
  * conta a partida que ficou pela metade como derrota e envia o que estava faltando.
  */
-export async function carregarRanking(nome: string, signo: Signo): Promise<PremioTemporada | null> {
-  nomeAtual = nome; signoAtual = signo;
+export async function carregarRanking(nome: string, signo: Signo, avatar = ''): Promise<PremioTemporada | null> {
+  nomeAtual = nome; signoAtual = signo; avatarAtual = avatar;
   await gravando.catch(() => undefined);
   const temporada = temporadaDe(Date.now());
   sit = { ...sit, estado: 'carregando', temporada };
@@ -127,11 +135,11 @@ export async function carregarRanking(nome: string, signo: Signo): Promise<Premi
         if (p.temporada === meu.temporada) { meu = aplicarResultado(meu, 'derrota', p.rival).e; await enviar(meu); }
       }
     }
-    const { data: lista, error: e2 } = await sb.from(TABELA).select('id, nome, signo, pontos, trofeus')
+    const { data: lista, error: e2 } = await sb.from(TABELA).select('*')
       .eq('temporada', temporada.id).order('pontos', { ascending: false }).limit(101);
     if (e2) throw e2;
     const reais: Linha[] = (lista as LinhaNuvem[]).filter(r => r.id !== conta)
-      .map(r => ({ nome: r.nome, signo: signoValido(r.signo), pontos: r.pontos, trofeus: r.trofeus, id: r.id })).slice(0, 100);
+      .map(r => ({ nome: r.nome, signo: signoValido(r.signo), pontos: r.pontos, trofeus: r.trofeus, avatar: r.avatar ?? undefined, id: r.id })).slice(0, 100);
     let reaisAcima = meu ? reais.filter(r => r.pontos > meu!.pontos).length : 0;
     // a lista só traz os primeiros: se você está abaixo de todos eles, conta quantos há acima na nuvem
     if (meu && reais.length >= 100 && reaisAcima === reais.length) {
@@ -148,7 +156,7 @@ export async function carregarRanking(nome: string, signo: Signo): Promise<Premi
 /** Top 100 e a sua posição, agora. */
 export function classificacaoAtual(): Classificacao {
   const conta = idConta();
-  const eu: Linha | null = sit.meu && conta ? { nome: nomeNoRanking(nomeAtual, conta), signo: signoAtual, pontos: sit.meu.pontos, trofeus: sit.meu.trofeus, id: conta } : null;
+  const eu: Linha | null = sit.meu && conta ? { nome: nomeNoRanking(nomeAtual, conta), signo: signoAtual, pontos: sit.meu.pontos, trofeus: sit.meu.trofeus, avatar: avatarAtual || undefined, id: conta } : null;
   return classificar(sit.temporada, Date.now(), eu, sit.reais, sit.reaisAcima);
 }
 

@@ -16,6 +16,7 @@ import { ORDER, RACES } from '../data/signos';
 import type { Signo } from '../data/schema';
 import type { Nivel } from '../engine/ai/niveis';
 import type { Rng } from '../engine/rng';
+import { avatarDoBot } from './cosmeticos';
 
 /* ---------- ligas ---------- */
 
@@ -212,6 +213,8 @@ export interface Linha {
   signo: Signo;
   pontos: number;
   trofeus: number;
+  /** Avatar (id do visual); sem ele, o medalhão do signo. */
+  avatar?: string;
   /** Bot (índice) ou jogador real (id da conta). */
   bot?: number;
   id?: string;
@@ -219,7 +222,7 @@ export interface Linha {
 }
 
 export function linhasDosBots(temp: Temporada, agora: number): Linha[] {
-  return BOTS.map(b => ({ nome: b.nome, signo: b.signo, pontos: pontosBot(b.i, temp, agora), trofeus: sorte(b.i, 7) < 0.12 ? 1 + Math.floor(sorte(b.i, 8) * 3) : 0, bot: b.i }));
+  return BOTS.map(b => ({ nome: b.nome, signo: b.signo, pontos: pontosBot(b.i, temp, agora), trofeus: sorte(b.i, 7) < 0.12 ? 1 + Math.floor(sorte(b.i, 8) * 3) : 0, avatar: avatarDoBot(b.signo, sorte(b.i, 9)), bot: b.i }));
 }
 
 /* ---------- a multidão abaixo do Top 100 ---------- */
@@ -276,6 +279,8 @@ export interface Rival {
   nv: number;
   /** Usa as cartas mais fortes dos signos. */
   forte: boolean;
+  /** Avatar (id do visual). */
+  avatar: string;
 }
 
 /** Força do rival pela liga dele; acompanha o nível médio das cartas do seu deck (como na campanha). */
@@ -317,19 +322,20 @@ export function apelidoSorteado(rng: Rng): string {
 export function sortearRival(rng: Rng, temp: Temporada, agora: number, meus: number, nivelDeck = 1): Rival {
   const bots = linhasDosBots(temp, agora);
   const corte = Math.min(...bots.map(b => b.pontos));
-  let nome: string, signo: Signo, signo2: Signo, pontos: number;
+  let nome: string, signo: Signo, signo2: Signo, pontos: number, avatar: string;
   if (meus < corte - 60) {
     nome = apelidoSorteado(rng);
     signo = ORDER[rng.int(ORDER.length)];
     const outros = ORDER.filter(s => s !== signo);
     signo2 = rng.float() < 0.25 ? signo : outros[rng.int(outros.length)];
     pontos = Math.max(0, meus - 40 + rng.int(100));
+    avatar = avatarDoBot(signo, rng.float());
   } else {
     // os 6 mais próximos dos seus pontos; sorteia um deles
     const perto = [...bots].sort((a, b) => Math.abs(a.pontos - meus) - Math.abs(b.pontos - meus)).slice(0, 6);
     const l = perto[rng.int(perto.length)];
     const b = BOTS[l.bot!];
-    nome = b.nome; signo = b.signo; signo2 = b.signo2; pontos = l.pontos;
+    nome = b.nome; signo = b.signo; signo2 = b.signo2; pontos = l.pontos; avatar = l.avatar ?? `av-sg-${signo}`;
   }
-  return { nome, signo, signo2, pontos, ...forcaDaLiga(pontos, nivelDeck) };
+  return { nome, signo, signo2, pontos, avatar, ...forcaDaLiga(pontos, nivelDeck) };
 }
