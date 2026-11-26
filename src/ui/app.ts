@@ -137,7 +137,7 @@ let revela: string | null = null;
 let montagem: Montagem | null = null;
 let dialogo: 'nivel' | 'regras' | 'missoes' | 'config' | 'ranking' | 'visual' | null = null;
 /** Loja de visuais: aba aberta, item escolhido e confirmação de compra. */
-let telaVisual: TelaVisual = { aba: 'tabuleiro', sel: null, confirmar: false, msg: '' };
+let telaVisual: TelaVisual = { modo: 'loja', aba: 'avatar', sel: null, confirmar: false, msg: '' };
 /** Nome de invocador e mensagem curta da janela de Configurações. */
 let perfil = lerPerfil(), avisoCfg = '';
 /** Tela de entrada: mostrando o campo de e-mail? */
@@ -774,7 +774,7 @@ function desenhar(): void {
     emDia();
     const dlg = dialogo === 'nivel' ? dificuldadeHtml(deckAtivo(meus), nivel) : dialogo === 'regras' ? regrasHtml(prog.teste, dev)
       : dialogo === 'missoes' ? missoesHtml(prog, hoje()) : dialogo === 'config' ? configHtml(perfil, avisoCfg)
-      : dialogo === 'visual' ? visualHtml(prog, telaVisual, signoDoJogador())
+      : dialogo === 'visual' ? visualHtml(prog, telaVisual, signoDoJogador(), perfil.nome)
       : dialogo === 'ranking' ? rankingHtml(situacaoRanking(), situacaoRanking().estado !== 'carregando' && acessoRanking() !== 'indisponivel' ? classificacaoAtual() : null, acessoRanking()) + (busca ? buscaHtml(busca.rival) : '') + (premioRank ?? '') : '';
     root.innerHTML = gal ? galleryHtml(gal, galSel)
       : tela === 'montar' && montagem ? montarHtml(montagem, meus.decks, meus.ativo, prog)
@@ -984,8 +984,10 @@ function menuClick(a: string | undefined, t: HTMLElement): boolean {
     case 'en-email': entrarComEmail = true; render(); app().querySelector<HTMLInputElement>('#cfg-email')?.focus(); return true;
     case 'torneio': case 'evento': emBreve(); return true;
     case 'ranqueada': case 'rk-recarregar': abrirRanking(); return true;
-    case 'visual': telaVisual = { aba: telaVisual.aba, sel: null, confirmar: false, msg: '' }; dialogo = 'visual'; render(); return true;
-    case 'vis-aba': telaVisual = { aba: t.dataset.a as TelaVisual['aba'], sel: null, confirmar: false, msg: '' }; render(); return true;
+    case 'loja': case 'personalizar':
+      telaVisual = { modo: a === 'loja' ? 'loja' : 'meus', aba: telaVisual.aba, sel: null, confirmar: false, msg: '' };
+      dialogo = 'visual'; render(); return true;
+    case 'vis-aba': telaVisual = { ...telaVisual, aba: t.dataset.a as TelaVisual['aba'], sel: null, confirmar: false, msg: '' }; render(); return true;
     case 'vis-item': telaVisual = { ...telaVisual, sel: t.dataset.id!, confirmar: false, msg: '' }; tocar('selecionar'); render(); return true;
     case 'vis-comprar-nao': telaVisual = { ...telaVisual, confirmar: false }; render(); return true;
     case 'vis-comprar': {

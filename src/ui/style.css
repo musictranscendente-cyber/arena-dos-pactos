@@ -2680,3 +2680,14 @@ body.tab-skin.batalha:not(.rot)::before,body.tab-skin.batalha.rot #app::before{f
 @media (max-width:620px){body:not(.rot) .vs-corpo{grid-template-columns:1fr;overflow:auto}body:not(.rot) .vs-grade{overflow:visible}}
 /* botão Visual no menu */
 .hub-bt .hub-vis-ic{display:grid;place-items:center;font-size:30px;line-height:1;filter:drop-shadow(0 2px 3px #000a)}
+/* loja x personalizar */
+.vs-abas .vs-atalho{width:auto;flex:none;margin-left:auto;min-height:34px;padding:4px 12px;font-size:13px}
+.vs-nome-campo{flex:none;display:flex;align-items:center;gap:8px;font-size:13px;font-weight:800;color:#d9cff5;margin:0 0 8px}
+.vs-nome-campo input{font:inherit;font-weight:700;font-size:15px;color:#fff;background:#0006;border:1px solid #ffffff33;border-radius:10px;padding:5px 10px;width:min(220px,50vw)}
+.vs-vazio{grid-column:1/-1;margin:20px 0;text-align:center;color:#cfc4ee;font-size:14px}
+.vs-item.comprado{opacity:.75}
+.vs-item.comprado .vs-preco{color:#7dff9a}
+.hub-nome-linha{display:flex;align-items:center;gap:6px;min-width:0}
+.hub-nome-linha b{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hub-edit{flex:none;font:inherit;font-size:min(3cqh,11.5px);font-weight:800;color:#3a1d00;background:linear-gradient(180deg,#ffe9a8,#e8b04a);border:1px solid #fff2b0;border-radius:12px;padding:1px 8px;cursor:pointer;line-height:1.5;box-shadow:0 1px 3px #0008}
+@media (max-height:420px){.pv-tab.grande{gap:6px;padding:6px}.pv-tab.grande .pv-plat{grid-template-columns:repeat(3,22px);gap:3px;padding:4px}.pv-tab.grande i{height:18px}.pv-camp.grande{width:130px;height:96px}.vs-nome-campo{margin-bottom:4px}}

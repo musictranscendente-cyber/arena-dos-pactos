@@ -101,11 +101,11 @@ export function hubHtml(now: Date, deck: DeckMontado | null, prog: Progresso, al
     // canto de cima à esquerda: Coleção e Pacotes; no meio, a logo
     + `<div class="hub-col esq"><button class="hub-bt hub-bt-arte" data-act="colecao"><img src="${icColecao}" alt="" draggable="false"><b>${T.colecao}</b></button>`
     + `<button class="hub-bt hub-bt-arte" data-act="pacotes"><img src="${icPacotes}" alt="" draggable="false"><b>${T.pacotes}</b></button>`
-    + `<button class="hub-bt hub-bt-arte" data-act="visual"><img src="${icVisual}" alt="" draggable="false"><b>${T.vis.botao}</b></button></div>`
+    + `<button class="hub-bt hub-bt-arte" data-act="loja"><img src="${icVisual}" alt="" draggable="false"><b>${T.vis.botao}</b></button></div>`
     + `<div class="hub-titulo" role="img" aria-label="${T.titulo}"></div>`
     // canto de cima à direita: perfil, evento da temporada e o som
     + `<div class="hub-col dir"><div class="hub-perfil perfil-v3"><button class="medal medal-bt" data-act="config" aria-label="${T.config}" title="${T.config}">${avatarHtml(prog.visual.avatar, avatar)}<i class="medal-eng" aria-hidden="true"><svg viewBox="0 0 24 24"><defs><linearGradient id="eng-ouro" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff3c4"/><stop offset=".5" stop-color="#f2c75a"/><stop offset="1" stop-color="#b9801f"/></linearGradient></defs><path fill="url(#eng-ouro)" stroke="#4a2c0a" stroke-width=".8" d="M13.7 2.6l.5 2.3a7.5 7.5 0 0 1 1.8.8l2-1.3 2.4 2.4-1.3 2a7.5 7.5 0 0 1 .8 1.8l2.3.5v3.4l-2.3.5a7.5 7.5 0 0 1-.8 1.8l1.3 2-2.4 2.4-2-1.3a7.5 7.5 0 0 1-1.8.8l-.5 2.3h-3.4l-.5-2.3a7.5 7.5 0 0 1-1.8-.8l-2 1.3-2.4-2.4 1.3-2a7.5 7.5 0 0 1-.8-1.8l-2.3-.5v-3.4l2.3-.5a7.5 7.5 0 0 1 .8-1.8l-1.3-2 2.4-2.4 2 1.3a7.5 7.5 0 0 1 1.8-.8l.5-2.3z"/><circle cx="12" cy="12" r="3.2" fill="#2a1660" stroke="#4a2c0a" stroke-width=".8"/></svg></i></button>`
-    + `<div class="hub-nome"><b>${nome ? esc(nome) : T.invocador}</b><small>${deck ? nomeDeckMontado(deck) : T.semDeck}</small>`
+    + `<div class="hub-nome"><span class="hub-nome-linha"><b>${nome ? esc(nome) : T.invocador}</b><button class="hub-edit" data-act="personalizar" aria-label="${T.vis.personalizar}" title="${T.vis.personalizar}">✏️ ${T.vis.personalizar}</button></span><small>${deck ? nomeDeckMontado(deck) : T.semDeck}</small>`
     + `<span class="hub-linha"><span class="hub-stats"><span title="${T.estrelasCampanha}">${ic('trofeu')}<b>${estrelasTotais}★</b></span><span title="${T.cartasNaColecao}">${ic('carta')}<b>${cartasTem}/360</b></span></span>`
     + `${moedasHtml(prog)}</span></div></div>`
     + `<button class="hub-som" data-act="som" aria-label="${T.som}" title="${T.som}">${iconeSom()}</button></div>`
