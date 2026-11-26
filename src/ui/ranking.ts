@@ -9,7 +9,7 @@ import type { PremioTemporada, SituacaoRanking } from '../services/ranking';
 import { figuraJogador } from './desafio';
 import { sg as sgImg } from './icones';
 import { criatura, nomeDeckMontado } from './menu';
-import { avatarHtml, dueloAttrs } from './visual';
+import { avatarHtml, campeaoCid } from './visual';
 
 const num = (n: number) => n.toLocaleString(IDIOMA === 'en' ? 'en-US' : 'pt-BR');
 const esc = (s: string) => s.replace(/[&<>"']/g, c => `&#${c.charCodeAt(0)};`);
@@ -66,17 +66,19 @@ export function buscaHtml(achou: Rival | null): string {
 
 /** Criatura que representa o rival: a lendária do signo dele (ou outra forte com arte). */
 function figuraRival(r: Rival): string {
+  // o mesmo jogador da arena aparece sempre com o mesmo campeão: a criatura do avatar dele, se tiver
+  const doAvatar = r.avatar.startsWith('av-') && !r.avatar.startsWith('av-sg-') ? r.avatar.slice(3) : '';
+  if (doAvatar && ARTE[doAvatar]) return doAvatar;
   for (const n of ['25', '24', '23', '22']) if (ARTE[r.signo + n]) return r.signo + n;
   return '';
 }
 
-export function vsRankHtml(deck: DeckMontado, rival: Rival, meus: number, tempo: number, saindo = false, duelo = ''): string {
-  const dv = dueloAttrs(duelo);
+export function vsRankHtml(deck: DeckMontado, rival: Rival, meus: number, tempo: number, saindo = false, campeao = ''): string {
   const [a, b] = deck.signos;
   const sg = (s: typeof a) => `<i style="--rc:${RACES[s].c}">${sgImg(s)}</i>`;
-  const fr = figuraRival(rival), fj = figuraJogador(deck, fr);
+  const fr = figuraRival(rival), fj = campeaoCid(campeao) ?? figuraJogador(deck, fr);
   const li = ligaDe(rival.pontos), lm = ligaDe(meus);
-  return `<div class="desafio t-rank${dv.cls}${saindo ? ' sai' : ''}" data-act="desafio-ir" style="--rc:${RACES[rival.signo].c};--tempo:${tempo}ms${dv.vars}" role="dialog" aria-label="${T.rank.titulo}">`
+  return `<div class="desafio t-rank${saindo ? ' sai' : ''}" data-act="desafio-ir" style="--rc:${RACES[rival.signo].c};--tempo:${tempo}ms" role="dialog" aria-label="${T.rank.titulo}">`
     + '<div class="df-raios"></div><div class="df-faixa"></div>'
     + `<div class="df-topo"><small>🏆 ${T.rank.titulo}</small><b>${T.rank.achou}</b></div>`
     + `<div class="df-lado df-voce"><div class="df-fig">${fj ? criatura(fj, 'df-img') : ''}</div>`

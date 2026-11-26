@@ -435,8 +435,8 @@ const T_PT = {
   paradoDesistiu: 'Você ficou 3 rodadas sem jogar: a partida contou como desistência.',
   vis: {
     titulo: 'Visual',
-    abas: { tabuleiro: 'Tabuleiros', avatar: 'Avatares', duelo: 'Duelo' } as Record<string, string>,
-    tipo: { tabuleiro: 'Tabuleiro', avatar: 'Avatar', duelo: 'Cenário de duelo' } as Record<string, string>,
+    abas: { tabuleiro: 'Tabuleiros', avatar: 'Avatares', duelo: 'Campeão' } as Record<string, string>,
+    tipo: { tabuleiro: 'Tabuleiro', avatar: 'Avatar', duelo: 'Campeão do duelo' } as Record<string, string>,
     medalhao: 'Medalhão',
     gratis: 'Grátis',
     usando: 'Usando',

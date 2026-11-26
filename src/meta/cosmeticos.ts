@@ -1,4 +1,4 @@
-// Visuais (cosméticos): tabuleiros, avatares (foto do perfil) e cenários de duelo (tela de VS antes da partida).
+// Visuais (cosméticos): tabuleiros, avatares (foto do perfil) e campeões do duelo (quem representa você na tela de VS).
 // Não mudam nada na partida: só a aparência. Alguns são grátis; os outros custam Poeira ou Gemas.
 // Lógica pura (sem tela): comprar e usar devolvem um progresso novo.
 import { ORDER } from '../data/signos';
@@ -20,16 +20,6 @@ export interface TemaTabuleiro {
   friso: string;
 }
 
-/** Cores de um cenário de duelo: fundo (centro → borda), raios, faixa e brilho do VS. */
-export interface TemaDuelo {
-  fundo: [string, string, string];
-  raios: string;
-  faixa: string;
-  brilho: string;
-  /** Estrelas/constelações por cima do fundo. */
-  estrelas?: boolean;
-}
-
 export interface ItemVisual {
   id: string;
   tipo: TipoVisual;
@@ -39,8 +29,7 @@ export interface ItemVisual {
   /** null = grátis. */
   preco: { m: Moeda; v: number } | null;
   tab?: TemaTabuleiro;
-  duelo?: TemaDuelo;
-  /** Avatar: criatura (id da carta) ou medalhão do signo. */
+  /** Avatar ou campeão: criatura (id da carta); avatar sem criatura = medalhão do signo. */
   cid?: string;
   signo?: Signo;
 }
@@ -66,21 +55,31 @@ export const TABULEIROS: readonly ItemVisual[] = [
     tab: { tinta: '#6a4a9a', modo: 'multiply', plat: ['#5a4680', '#36285a', '#1c1430'], borda: '#c79cff', brilho: '#a45cff', cena: 'saturate(1.2) brightness(.6) contrast(1.1)', friso: 'brightness(.45) saturate(1.4) hue-rotate(20deg)' } },
 ];
 
-export const DUELOS: readonly ItemVisual[] = [
-  { id: 'duelo-classico', tipo: 'duelo', n: ['Arena Clássica', 'Classic Arena'], r: 'c', preco: null },
-  { id: 'duelo-supernova', tipo: 'duelo', n: ['Supernova', 'Supernova'], r: 'e', preco: p(1500),
-    duelo: { fundo: ['#fff2c4', '#ff8a2a', '#3a0a00'], raios: '#fff6d0', faixa: '#ff9a3a', brilho: '#ffb02e' } },
-  { id: 'duelo-nebulosa', tipo: 'duelo', n: ['Nebulosa Rosa', 'Pink Nebula'], r: 'e', preco: p(1500),
-    duelo: { fundo: ['#ff9ad8', '#8a2a9a', '#14041e'], raios: '#ffd0f0', faixa: '#ff6ac0', brilho: '#ff7ad0', estrelas: true } },
-  { id: 'duelo-aurora', tipo: 'duelo', n: ['Aurora Boreal', 'Northern Lights'], r: 'l', preco: g(80),
-    duelo: { fundo: ['#8affd0', '#0a6a7a', '#020e1a'], raios: '#c8fff0', faixa: '#3affb0', brilho: '#3affc8', estrelas: true } },
-  { id: 'duelo-eclipse', tipo: 'duelo', n: ['Eclipse Dourado', 'Golden Eclipse'], r: 'l', preco: g(80),
-    duelo: { fundo: ['#ffd76a', '#2a1a04', '#000000'], raios: '#ffd76a', faixa: '#ffc23a', brilho: '#ffd76a' } },
-  { id: 'duelo-lua-sangue', tipo: 'duelo', n: ['Lua de Sangue', 'Blood Moon'], r: 'l', preco: g(100),
-    duelo: { fundo: ['#ff4a3a', '#5a0a10', '#0a0002'], raios: '#ff9a8a', faixa: '#ff2a2a', brilho: '#ff3a2a', estrelas: true } },
-  { id: 'duelo-abismo', tipo: 'duelo', n: ['Abismo Cósmico', 'Cosmic Abyss'], r: 'l', preco: g(100),
-    duelo: { fundo: ['#6ab8ff', '#0a1a5a', '#00020a'], raios: '#bfe0ff', faixa: '#3a7aff', brilho: '#5ab0ff', estrelas: true } },
+/**
+ * Campeões do duelo: a criatura que representa você na tela de VS antes da partida (Campanha e Ranqueada).
+ * "Automático" (grátis) = a criatura mais forte do seu deck. As outras: lendária e épica de cada signo por Gemas, rara por Poeira.
+ */
+export const CAMPEAO_AUTO = 'camp-auto';
+export const CAMPEOES: readonly ItemVisual[] = [
+  { id: CAMPEAO_AUTO, tipo: 'duelo', n: ['Automático', 'Automatic'], r: 'c', preco: null },
+  ...ORDER.flatMap((s): ItemVisual[] => [
+    { id: `camp-${s}25`, tipo: 'duelo', n: ['', ''], r: 'l', preco: g(60), cid: `${s}25`, signo: s },
+    { id: `camp-${s}24`, tipo: 'duelo', n: ['', ''], r: 'e', preco: g(35), cid: `${s}24`, signo: s },
+    { id: `camp-${s}22`, tipo: 'duelo', n: ['', ''], r: 'r', preco: p(900), cid: `${s}22`, signo: s },
+  ]),
 ];
+
+/** Cenários de duelo da primeira versão (retirados): quem comprou recebe a moeda de volta. */
+const DUELOS_ANTIGOS: Record<string, { m: Moeda; v: number }> = {
+  'duelo-supernova': p(1500), 'duelo-nebulosa': p(1500), 'duelo-aurora': g(80), 'duelo-eclipse': g(80), 'duelo-lua-sangue': g(100), 'duelo-abismo': g(100),
+};
+/** Moedas a devolver pelos cenários antigos que estão no salvo. */
+export function reembolsoAntigo(raw: unknown): { poeira: number; gemas: number } {
+  const r = { poeira: 0, gemas: 0 };
+  const tem = (raw as { tem?: unknown } | null)?.tem;
+  if (Array.isArray(tem)) for (const id of new Set(tem)) { const x = typeof id === 'string' ? DUELOS_ANTIGOS[id] : undefined; if (x) r[x.m] += x.v; }
+  return r;
+}
 
 /** Avatares: criaturas (lendária e épica por Gemas, rara por Poeira) e, no fim, o medalhão de cada signo, grátis. */
 export const AVATARES: readonly ItemVisual[] = [
@@ -92,11 +91,11 @@ export const AVATARES: readonly ItemVisual[] = [
   ...ORDER.map((s): ItemVisual => ({ id: `av-sg-${s}`, tipo: 'avatar', n: ['Medalhão', 'Medallion'], r: 'c', preco: null, signo: s })),
 ];
 
-export const VISUAIS: readonly ItemVisual[] = [...TABULEIROS, ...AVATARES, ...DUELOS];
+export const VISUAIS: readonly ItemVisual[] = [...TABULEIROS, ...AVATARES, ...CAMPEOES];
 const POR_ID = new Map(VISUAIS.map(i => [i.id, i]));
 export const itemVisual = (id: string): ItemVisual | undefined => POR_ID.get(id);
 
-export const PADRAO: Record<TipoVisual, string> = { tabuleiro: 'tab-classico', avatar: '', duelo: 'duelo-classico' };
+export const PADRAO: Record<TipoVisual, string> = { tabuleiro: 'tab-classico', avatar: '', duelo: CAMPEAO_AUTO };
 
 /** O que o jogador tem e está usando. avatar '' = medalhão do signo do deck. */
 export interface EstadoVisual { tem: string[]; tabuleiro: string; avatar: string; duelo: string }

@@ -2631,13 +2631,6 @@ body.tab-skin.batalha .plat::after{filter:var(--tab-friso);box-shadow:inset 0 3p
 body.tab-skin.batalha .chasm{background:linear-gradient(90deg,transparent,color-mix(in srgb,var(--tab-brilho) 35%,transparent) 35%,color-mix(in srgb,var(--tab-brilho) 75%,#fff) 50%,color-mix(in srgb,var(--tab-brilho) 35%,transparent) 65%,transparent);box-shadow:0 0 26px var(--tab-brilho)}
 body.tab-skin.batalha:not(.rot)::before,body.tab-skin.batalha.rot #app::before{filter:var(--tab-cena)}
 
-/* cenário de duelo (tela de VS) */
-.desafio.df-skin,.pv-duelo.df-skin{background:radial-gradient(ellipse at 50% 55%,var(--df1) 0%,var(--df2) 42%,var(--df3) 100%)}
-.desafio.df-skin .df-raios,.pv-duelo.df-skin .df-raios{background:repeating-conic-gradient(from 0deg,var(--dfr) 0 4deg,transparent 4deg 18deg);opacity:.3}
-.desafio.df-skin .df-faixa,.pv-duelo.df-skin .df-faixa{background:linear-gradient(90deg,transparent,color-mix(in srgb,var(--dff) 60%,transparent) 30%,color-mix(in srgb,var(--dff) 60%,transparent) 70%,transparent)}
-.desafio.df-skin .df-vs,.pv-duelo.df-skin .df-vs{text-shadow:0 0 6px #fff,0 0 22px var(--dfb),0 0 40px var(--dfb),0 4px 0 #0009}
-.desafio.df-estrelas::before,.pv-duelo.df-estrelas::before{content:'';position:absolute;inset:0;pointer-events:none;background:url('./img/constelacoes.svg') 0 0/180px 180px;opacity:.4}
-
 /* avatar de criatura: a arte num círculo com a cor do signo (no lugar do medalhão) */
 .av{display:inline-block;position:relative;border-radius:50%;overflow:hidden;width:100%;height:100%;vertical-align:middle;
   background:radial-gradient(circle at 50% 35%,color-mix(in srgb,var(--avc) 55%,#fff),var(--avc) 55%,color-mix(in srgb,var(--avc) 50%,#000));
@@ -2676,15 +2669,14 @@ body.tab-skin.batalha:not(.rot)::before,body.tab-skin.batalha.rot #app::before{f
   background:linear-gradient(180deg,#efe7f8,#d6c9e8 55%,#bfb0d8);box-shadow:inset 0 0 0 1.5px #e9c77a}
 .pv-tab i{display:block;height:11px;border-radius:2px;background:var(--laje) center/100% 100% no-repeat}
 .pv-tab.grande{gap:8px;padding:10px}.pv-tab.grande .pv-plat{grid-template-columns:repeat(3,30px);gap:4px;padding:6px;border-radius:8px}.pv-tab.grande i{height:25px;border-radius:4px}
-.pv-duelo{position:relative;overflow:hidden;display:grid;place-items:center;width:96px;height:54px;border-radius:8px;
-  background:radial-gradient(ellipse at 50% 55%,color-mix(in srgb,var(--rc) 45%,#1a1040) 0%,#120b2e 55%,#06040f 100%)}
-.pv-duelo .df-raios{position:absolute;left:50%;top:55%;width:300%;height:300%;translate:-50% -50%;opacity:.22;background:repeating-conic-gradient(from 0deg,#fff 0 4deg,transparent 4deg 18deg);mask:radial-gradient(circle,#000 0,transparent 45%)}
-.pv-duelo .df-faixa{position:absolute;left:0;right:0;top:50%;height:40%;translate:0 -50%;opacity:.4;background:linear-gradient(90deg,transparent,color-mix(in srgb,var(--rc) 55%,transparent) 30%,color-mix(in srgb,var(--rc) 55%,transparent) 70%,transparent)}
-.pv-duelo .df-vs{position:relative;font-family:var(--fonte-titulo);font-size:24px;color:#fff;text-shadow:0 0 6px #fff,0 0 16px var(--rc)}
-.pv-duelo.grande{width:200px;height:112px}.pv-duelo.grande .df-vs{font-size:48px}
+.pv-camp{position:relative;display:block;width:96px;height:72px;border-radius:8px;overflow:hidden;
+  background:radial-gradient(ellipse at 50% 65%,color-mix(in srgb,var(--avc) 55%,#1a1040),#120b2e 75%)}
+.pv-camp img{position:absolute;left:50%;bottom:2px;height:94%;translate:-50% 0;filter:drop-shadow(0 3px 4px #000a)}
+.pv-camp .pv-auto{position:absolute;inset:0;display:grid;place-items:center;font-size:34px}
+.pv-camp.grande{width:170px;height:150px}.pv-camp.grande .pv-auto{font-size:60px}
 .pv-av{display:block;width:58px;height:58px}.pv-av .sgm{width:100%;height:100%}
 .pv-av.grande{width:110px;height:110px}
-@media (max-height:420px){.vs-det-nome{font-size:16px}.pv-av.grande{width:84px;height:84px}.pv-duelo.grande{width:170px;height:95px}.vs-dica{display:none}}
+@media (max-height:420px){.vs-det-nome{font-size:16px}.pv-av.grande{width:84px;height:84px}.pv-camp.grande{width:150px;height:120px}.vs-dica{display:none}}
 @media (max-width:620px){body:not(.rot) .vs-corpo{grid-template-columns:1fr;overflow:auto}body:not(.rot) .vs-grade{overflow:visible}}
 /* botão Visual no menu */
 .hub-bt .hub-vis-ic{display:grid;place-items:center;font-size:30px;line-height:1;filter:drop-shadow(0 2px 3px #000a)}

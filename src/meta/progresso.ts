@@ -5,7 +5,7 @@ import { ORDER } from '../data/signos';
 import type { Raridade, Signo } from '../data/schema';
 import { maxCopias } from '../engine/deck';
 import type { Rng } from '../engine/rng';
-import { normalizarVisual, visualPadrao, type EstadoVisual } from './cosmeticos';
+import { normalizarVisual, reembolsoAntigo, visualPadrao, type EstadoVisual } from './cosmeticos';
 
 /** Quantas cópias de uma carta o jogador tem em cada nível: [nv1, nv2, nv3, nv4, nv5]. */
 export type Copias = [number, number, number, number, number];
@@ -30,7 +30,7 @@ export interface Progresso {
   login: { dia: string; passo: number };
   /** Cartas que acabaram de entrar na coleção e o jogador ainda não viu (mostram "NOVA" piscando). */
   novas: string[];
-  /** Visuais (tabuleiro, avatar, cenário de duelo): o que tem e o que está usando. */
+  /** Visuais (tabuleiro, avatar, campeão do duelo): o que tem e o que está usando. */
   visual: EstadoVisual;
 }
 
@@ -80,6 +80,9 @@ export function normalizar(raw: unknown): Progresso {
   }
   if (r.login && typeof r.login.dia === 'string') p.login = { dia: r.login.dia, passo: num(r.login.passo) % 7 };
   p.visual = normalizarVisual(r.visual);
+  // cenários de duelo da primeira versão foram retirados: devolve o que foi pago
+  const volta = reembolsoAntigo(r.visual);
+  p.poeira += volta.poeira; p.gemas += volta.gemas;
   if (Array.isArray(r.novas)) p.novas = [...new Set(r.novas.filter(k => typeof k === 'string' && p.cartas[k]))];
   return p;
 }

@@ -434,8 +434,8 @@ export const T_EN: TextosPT = {
   paradoDesistiu: 'You were idle for 3 rounds: the match counted as a surrender.',
   vis: {
     titulo: 'Style',
-    abas: { tabuleiro: 'Boards', avatar: 'Avatars', duelo: 'Duel' } as Record<string, string>,
-    tipo: { tabuleiro: 'Board', avatar: 'Avatar', duelo: 'Duel scene' } as Record<string, string>,
+    abas: { tabuleiro: 'Boards', avatar: 'Avatars', duelo: 'Champion' } as Record<string, string>,
+    tipo: { tabuleiro: 'Board', avatar: 'Avatar', duelo: 'Duel champion' } as Record<string, string>,
     medalhao: 'Medallion',
     gratis: 'Free',
     usando: 'Equipped',

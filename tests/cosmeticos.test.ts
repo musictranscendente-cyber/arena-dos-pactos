@@ -1,17 +1,17 @@
 import { describe, expect, it } from 'vitest';
-import { AVATARES, comprarVisual, DUELOS, itemVisual, normalizarVisual, podeComprar, TABULEIROS, temVisual, usarVisual, VISUAIS } from '../src/meta/cosmeticos';
+import { AVATARES, CAMPEOES, comprarVisual, itemVisual, normalizarVisual, podeComprar, TABULEIROS, temVisual, usarVisual, VISUAIS } from '../src/meta/cosmeticos';
 import { normalizar, novoProgresso } from '../src/meta/progresso';
 
 const rico = () => ({ ...novoProgresso(), gemas: 500, poeira: 5000 });
 
 describe('visuais', () => {
-  it('catálogo: ids únicos, um tabuleiro e um duelo grátis, 12 medalhões grátis', () => {
+  it('catálogo: ids únicos, um tabuleiro e um campeão grátis (automático), 12 medalhões grátis', () => {
     expect(new Set(VISUAIS.map(i => i.id)).size).toBe(VISUAIS.length);
     expect(TABULEIROS.filter(i => !i.preco)).toHaveLength(1);
-    expect(DUELOS.filter(i => !i.preco)).toHaveLength(1);
+    expect(CAMPEOES.filter(i => !i.preco)).toHaveLength(1);
+    expect(CAMPEOES.filter(i => i.preco).every(i => i.cid)).toBe(true);
     expect(AVATARES.filter(i => !i.preco)).toHaveLength(12);
     expect(TABULEIROS.filter(i => i.preco).every(i => i.tab)).toBe(true);
-    expect(DUELOS.filter(i => i.preco).every(i => i.duelo)).toBe(true);
   });
   it('itens grátis já são seus; pagos não', () => {
     const p = novoProgresso();
@@ -34,9 +34,10 @@ describe('visuais', () => {
     expect(podeComprar(pobre, 'tab-gelo')).toBe('gemas');
     expect(podeComprar(pobre, 'tab-ouro')).toBe('poeira');
     expect(comprarVisual(pobre, 'tab-gelo')).toBe(pobre);
-    const p = comprarVisual(rico(), 'duelo-eclipse');
-    expect(podeComprar(p, 'duelo-eclipse')).toBe('tem');
-    expect(comprarVisual(p, 'duelo-eclipse')).toBe(p);
+    const p = comprarVisual(rico(), 'camp-leao25');
+    expect(p.visual.duelo).toBe('camp-leao25');
+    expect(podeComprar(p, 'camp-leao25')).toBe('tem');
+    expect(comprarVisual(p, 'camp-leao25')).toBe(p);
   });
   it('só usa o que tem; trocar entre os seus', () => {
     const p = novoProgresso();
@@ -47,10 +48,18 @@ describe('visuais', () => {
   });
   it('salvo mexido: itens inexistentes ou não comprados não ficam em uso', () => {
     const v = normalizarVisual({ tem: ['tab-gelo', 'lixo', 'tab-classico'], tabuleiro: 'tab-fogo', avatar: 'av-leao25', duelo: 'duelo-classico' });
+    expect(v.duelo).toBe('camp-auto');
     expect(v.tem).toEqual(['tab-gelo']);
     expect(v.tabuleiro).toBe('tab-classico');
     expect(v.avatar).toBe('');
     expect(normalizar({ visual: { tem: ['tab-gelo'], tabuleiro: 'tab-gelo' } }).visual.tabuleiro).toBe('tab-gelo');
     expect(normalizar({}).visual.tabuleiro).toBe('tab-classico');
+  });
+  it('cenários de duelo antigos (retirados): a moeda volta', () => {
+    const p = normalizar({ gemas: 10, poeira: 0, visual: { tem: ['duelo-aurora', 'duelo-supernova', 'tab-gelo'], duelo: 'duelo-aurora' } });
+    expect(p.gemas).toBe(90);
+    expect(p.poeira).toBe(1500);
+    expect(p.visual.tem).toEqual(['tab-gelo']);
+    expect(p.visual.duelo).toBe('camp-auto');
   });
 });

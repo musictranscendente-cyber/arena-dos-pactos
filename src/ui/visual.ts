@@ -1,13 +1,13 @@
-// Visuais: a loja/personalização (tabuleiros, avatares e cenários de duelo), o avatar desenhado em qualquer lugar
-// e as cores que o tabuleiro e a tela de VS ganham com o visual escolhido.
+// Visuais: a loja/personalização (tabuleiros, avatares e campeões do duelo), o avatar desenhado em qualquer lugar,
+// as cores do tabuleiro escolhido e a criatura que representa o jogador na tela de VS.
 import { CARDS } from '../data/cards';
-import { artUrl } from '../data/arte';
+import { ARTE, artUrl } from '../data/arte';
 import { EN } from '../data/idioma';
 import { RARITY } from '../data/raridades';
 import { RACES } from '../data/signos';
 import type { Signo } from '../data/schema';
 import { T } from '../data/textos';
-import { AVATARES, DUELOS, itemVisual, podeComprar, TABULEIROS, temVisual, type ItemVisual, type TipoVisual } from '../meta/cosmeticos';
+import { AVATARES, CAMPEOES, itemVisual, podeComprar, TABULEIROS, temVisual, type ItemVisual, type TipoVisual } from '../meta/cosmeticos';
 import type { Progresso } from '../meta/progresso';
 import { moedasHtml } from './colecao';
 import { ic, sg as sgImg } from './icones';
@@ -54,16 +54,12 @@ export function aplicarTabuleiro(id: string): void {
   for (const par of vars.split(';')) { const [k, v] = par.split(':'); if (k && v) st.setProperty(k, v); }
 }
 
-/* ---------- cenário de duelo ---------- */
+/* ---------- campeão do duelo ---------- */
 
-/** Classe e variáveis para a tela de VS (vazio = a clássica). */
-export function dueloAttrs(id: string): { cls: string; vars: string } {
-  const d = itemVisual(id)?.duelo;
-  if (!d) return { cls: '', vars: '' };
-  return {
-    cls: ` df-skin${d.estrelas ? ' df-estrelas' : ''}`,
-    vars: `;--df1:${d.fundo[0]};--df2:${d.fundo[1]};--df3:${d.fundo[2]};--dfr:${d.raios};--dff:${d.faixa};--dfb:${d.brilho}`,
-  };
+/** Criatura que aparece como você na tela de VS: a do campeão escolhido (ou null = automático, a mais forte do deck). */
+export function campeaoCid(id: string): string | null {
+  const c = itemVisual(id)?.cid;
+  return c && ARTE[c] ? c : null;
 }
 
 /* ---------- prévias ---------- */
@@ -73,14 +69,15 @@ function previaTabuleiro(i: ItemVisual, grande = false): string {
   return `<span class="pv-tab${grande ? ' grande' : ''}${i.tab ? ' tab-skin' : ''}" style="${varsTabuleiro(i.id)}"><span class="pv-plat">${casas}</span><span class="pv-plat">${casas}</span></span>`;
 }
 
-function previaDuelo(i: ItemVisual, grande = false): string {
-  const a = dueloAttrs(i.id);
-  return `<span class="pv-duelo${grande ? ' grande' : ''}${a.cls}" style="--rc:#7a5ad6${a.vars}"><span class="df-raios"></span><span class="df-faixa"></span><b class="df-vs">VS</b></span>`;
+function previaCampeao(i: ItemVisual, grande = false): string {
+  const c = i.cid ? CARDS[i.cid] : undefined;
+  const fig = c && i.cid ? `<img src="${artUrl(i.cid, c.race, 'parado')}" alt="" draggable="false" loading="lazy">` : '<b class="pv-auto">✨</b>';
+  return `<span class="pv-camp${grande ? ' grande' : ''}" style="--avc:${c ? RACES[c.race].c : '#7a5ad6'}">${fig}</span>`;
 }
 
 function previa(i: ItemVisual, grande = false): string {
   if (i.tipo === 'tabuleiro') return previaTabuleiro(i, grande);
-  if (i.tipo === 'duelo') return previaDuelo(i, grande);
+  if (i.tipo === 'duelo') return previaCampeao(i, grande);
   return `<span class="pv-av${grande ? ' grande' : ''}">${avatarHtml(i.id, i.signo ?? 'aries')}</span>`;
 }
 
@@ -91,7 +88,7 @@ const precoHtml = (i: ItemVisual) => !i.preco ? T.vis.gratis
 
 /** `signo` = signo do jogador (o avatar padrão é o medalhão dele). */
 export function visualHtml(p: Progresso, t: TelaVisual, signo: Signo): string {
-  const lista = t.aba === 'tabuleiro' ? TABULEIROS : t.aba === 'duelo' ? DUELOS : AVATARES;
+  const lista = t.aba === 'tabuleiro' ? TABULEIROS : t.aba === 'duelo' ? CAMPEOES : AVATARES;
   const usando = p.visual[t.aba] || (t.aba === 'avatar' ? `av-sg-${signo}` : '');
   const sel = (t.sel && itemVisual(t.sel)?.tipo === t.aba ? itemVisual(t.sel) : undefined) ?? itemVisual(usando) ?? lista[0];
   const abas = (['tabuleiro', 'avatar', 'duelo'] as TipoVisual[]).map(a =>

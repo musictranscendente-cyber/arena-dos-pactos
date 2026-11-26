@@ -7,7 +7,11 @@ const CHAVE = 'arena-dos-pactos:progresso';
 export function lerProgresso(): Progresso {
   try {
     const raw = localStorage.getItem(CHAVE);
-    return raw ? normalizar(JSON.parse(raw)) : novoProgresso();
+    if (!raw) return novoProgresso();
+    const p = normalizar(JSON.parse(raw));
+    // o salvo tinha cenários de duelo antigos (devolvidos em normalizar): grava já, para não devolver de novo
+    if (/"duelo-(supernova|nebulosa|aurora|eclipse|lua-sangue|abismo)"/.test(raw)) salvarProgresso(p);
+    return p;
   } catch {
     return novoProgresso();
   }
